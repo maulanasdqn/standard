@@ -1,7 +1,8 @@
 import { connect, type Channel, type ChannelModel } from "amqplib";
 import { Context, Effect, Layer } from "effect";
-import { env } from "#/infrastructure/config/env.ts";
 import { EQueue } from "#/application/shared/errors.ts";
+import { env } from "#/infrastructure/config/env.ts";
+import { SERVICE_TAG } from "#/infrastructure/service-tags.ts";
 
 export type TQueueConnection = {
 	model: ChannelModel;
@@ -19,7 +20,7 @@ export const createQueueConnection = async (
 export class QueueService extends Context.Service<
 	QueueService,
 	{ readonly channel: Channel }
->()("app/QueueService") {
+>()(SERVICE_TAG.QUEUE) {
 	static readonly layer = Layer.effect(
 		QueueService,
 		Effect.gen(function* () {

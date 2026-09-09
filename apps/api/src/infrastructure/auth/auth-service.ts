@@ -11,13 +11,14 @@ import {
 	resolvePermissions,
 	resolveRole,
 } from "#/infrastructure/auth/permissions.ts";
+import { SERVICE_TAG } from "#/infrastructure/service-tags.ts";
 
 export type IAuthServiceShape = IAuthService & { readonly auth: TAuth };
 
 export class AuthService extends Context.Service<
 	AuthService,
 	IAuthServiceShape
->()("app/AuthService") {
+>()(SERVICE_TAG.AUTH) {
 	static readonly layer = Layer.effect(
 		AuthService,
 		Effect.gen(function* () {

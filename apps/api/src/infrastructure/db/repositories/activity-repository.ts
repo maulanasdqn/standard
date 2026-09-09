@@ -1,9 +1,10 @@
 import type { TActivityEntry, TActivityRepo } from "@app/core";
 import { Context, Effect, Layer } from "effect";
 import { EDatabase } from "#/application/shared/errors.ts";
-import { DbService } from "#/infrastructure/db/db-service.ts";
 import type { TDb } from "#/infrastructure/db/client.ts";
+import { DbService } from "#/infrastructure/db/db-service.ts";
 import { activityLog } from "#/infrastructure/db/schema/activity.ts";
+import { SERVICE_TAG } from "#/infrastructure/service-tags.ts";
 
 export const createActivityRepository = (db: TDb): TActivityRepo => ({
 	insert: async (entry: TActivityEntry): Promise<void> => {
@@ -24,7 +25,7 @@ export type IActivityRepo = {
 export class ActivityRepo extends Context.Service<
 	ActivityRepo,
 	IActivityRepo
->()("app/ActivityRepo") {
+>()(SERVICE_TAG.ACTIVITY_REPO) {
 	static readonly layer = Layer.effect(
 		ActivityRepo,
 		Effect.gen(function* () {

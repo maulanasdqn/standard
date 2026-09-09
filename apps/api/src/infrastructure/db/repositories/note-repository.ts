@@ -7,6 +7,7 @@ import type { INoteQuery, INoteRepo, INoteRow } from "#/domain/note/note.ts";
 import { offsetFor } from "#/domain/shared/pagination.ts";
 import { DbService } from "#/infrastructure/db/db-service.ts";
 import { note } from "#/infrastructure/db/schema/note.ts";
+import { SERVICE_TAG } from "#/infrastructure/service-tags.ts";
 
 const searchWhere = (search: string | undefined): SQL | undefined =>
 	match(search)
@@ -14,7 +15,7 @@ const searchWhere = (search: string | undefined): SQL | undefined =>
 		.otherwise(() => undefined);
 
 export class NoteRepo extends Context.Service<NoteRepo, INoteRepo>()(
-	"app/NoteRepo",
+	SERVICE_TAG.NOTE_REPO,
 ) {
 	static readonly layer = Layer.effect(
 		NoteRepo,
