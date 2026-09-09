@@ -4,7 +4,7 @@
 	"private": true,
 	"type": "module",
 	"exports": {
-		".": "./src/index.ts"
+		".": "./src/bootstrap/index.ts"
 	},
 	"imports": {
 		"#/*": "./src/*"
@@ -12,7 +12,8 @@
 	"scripts": {
 		"dev": "tsx watch --env-file=.env src/main.ts",
 		"start": "tsx --env-file=.env src/main.ts",
-		"worker": "tsx --env-file=.env src/worker.ts",
+		"worker": "tsx --env-file=.env src/worker/run.ts",
+		"migrate": "tsx --env-file=.env src/infrastructure/db/migrate.ts",
 		"build": "tsc --noEmit",
 		"test": "vitest run",
 		"db:generate": "drizzle-kit generate",
@@ -34,8 +35,8 @@
 		"@orpc/openapi": "^1.13.6",
 		"@orpc/server": "^1.13.6",
 		"@orpc/zod": "^1.13.6",
+		"amqplib": "^2.0.1",
 		"better-auth": "^1.5.3",
-		"bullmq": "^5.56.0",
 		"drizzle-orm": "^0.45.1",
 		"hono": "^4.12.9",
 		"ioredis": "^5.10.1",

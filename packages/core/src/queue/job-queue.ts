@@ -1,35 +1,50 @@
 import { createHash } from "node:crypto";
-import { Queue, Worker, type Job, type Processor } from "bullmq";
-import type { Redis } from "ioredis";
+import type { Channel, ConsumeMessage } from "amqplib";
+import { match, P } from "ts-pattern";
 
-const idempotencyJobId = (name: string, payload: unknown): string =>
+const idempotencyMessageId = (name: string, payload: unknown): string =>
 	createHash("sha256")
 		.update(`${name}:${JSON.stringify(payload)}`)
 		.digest("hex");
 
 export type TJobQueue<TPayload> = {
-	queue: Queue<TPayload>;
-	add: (payload: TPayload) => Promise<Job<TPayload>>;
+	add: (payload: TPayload) => Promise<boolean>;
 };
 
 export const createJobQueue = <TPayload>(
 	name: string,
-	connection: Redis,
-): TJobQueue<TPayload> => {
-	// biome-ignore lint/suspicious/noExplicitAny: bullmq's Queue<Data, Result, Name> generics
-	const queue = new Queue<any, any, string>(name, { connection });
+	channel: Channel,
+): TJobQueue<TPayload> => ({
+	add: async (payload: TPayload): Promise<boolean> => {
+		await channel.assertQueue(name, { durable: true });
+		return channel.sendToQueue(name, Buffer.from(JSON.stringify(payload)), {
+			persistent: true,
+			messageId: idempotencyMessageId(name, payload),
+		});
+	},
+});
 
-	return {
-		queue: queue as Queue<TPayload>,
-		add: (payload: TPayload): Promise<Job<TPayload>> =>
-			queue.add(name, payload, {
-				jobId: idempotencyJobId(name, payload),
-			}) as Promise<Job<TPayload>>,
-	};
-};
+export type TJobHandler<TPayload> = (
+	payload: TPayload,
+	message: ConsumeMessage,
+) => Promise<void>;
 
-export const createBullWorker = <TPayload>(
+export const createQueueWorker = async <TPayload>(
 	name: string,
-	connection: Redis,
-	processor: Processor<TPayload>,
-): Worker<TPayload> => new Worker<TPayload>(name, processor, { connection });
+	channel: Channel,
+	handler: TJobHandler<TPayload>,
+): Promise<void> => {
+	await channel.assertQueue(name, { durable: true });
+	await channel.prefetch(1);
+
+	await channel.consume(name, (message) => {
+		match(message)
+			.with(P.nullish, () => undefined)
+			.otherwise((found) => {
+				const payload = JSON.parse(found.content.toString()) as TPayload;
+				handler(payload, found)
+					.then(() => channel.ack(found))
+					.catch(() => channel.nack(found, false, false));
+			});
+	});
+};

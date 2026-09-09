@@ -24,6 +24,11 @@ tasks:
       persistent: true
       runInCI: false
 
+  migrate:
+    command: 'pnpm migrate'
+    options:
+      runInCI: false
+
   build:
     command: 'pnpm build'
     inputs:

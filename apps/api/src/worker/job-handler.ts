@@ -1,12 +1,12 @@
-import type { Job } from "bullmq";
+import type { TJobHandler } from "@app/core";
 import { logger } from "#/infrastructure/observability/logger.ts";
 
 export type TExampleJobPayload = {
 	noteId: string;
 };
 
-export const processExampleJob = async (
-	job: Job<TExampleJobPayload>,
+export const processExampleJob: TJobHandler<TExampleJobPayload> = async (
+	payload,
 ): Promise<void> => {
-	logger.info({ jobId: job.id, noteId: job.data.noteId }, "processing job");
+	logger.info({ noteId: payload.noteId }, "processing job");
 };

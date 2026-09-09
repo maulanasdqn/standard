@@ -1,10 +1,10 @@
-import "#/polyfill.ts";
+import "#/bootstrap/polyfill.ts";
 
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { requestId } from "hono/request-id";
-import { compose } from "#/compose.ts";
+import { compose } from "#/bootstrap/compose.ts";
 import { env } from "#/infrastructure/config/env.ts";
 import { logger } from "#/infrastructure/observability/logger.ts";
 import { mountAuth } from "#/presentation/http/mount-auth.ts";
@@ -14,7 +14,7 @@ import { mountWebDist } from "#/presentation/http/mount-web-dist.ts";
 import type { ORPCContext } from "#/presentation/orpc/context.ts";
 import { buildRouter } from "#/presentation/routers/index.ts";
 
-const { auth, authService, useCases } = compose();
+const { auth, authService, useCases } = await compose();
 
 const router = buildRouter();
 

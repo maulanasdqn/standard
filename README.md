@@ -1,6 +1,6 @@
 # Standard
 
-A single-app boilerplate: **moon + pnpm workspaces · Hono + oRPC (RPC and REST from one router) · Drizzle · better-auth · Redis/BullMQ · React 19 + TanStack Router (foldered file-based routes) + Vite + Tailwind v4 · Biome · Vitest · Playwright**.
+A single-app boilerplate: **moon + pnpm workspaces · Hono + oRPC (RPC and REST from one router) · Drizzle · better-auth · Redis + RabbitMQ · React 19 + TanStack Router (foldered file-based routes) + Vite + Tailwind v4 · Biome · Vitest · Playwright**.
 
 Distilled from a larger production monorepo — same layering and conventions, scoped to one app so it's a starting point rather than a template you have to strip down.
 
@@ -12,7 +12,7 @@ Distilled from a larger production monorepo — same layering and conventions, s
 | API | Hono host, business logic in [oRPC](https://orpc.unnoq.com) procedures — served as typed RPC **and** plain REST + OpenAPI from the same router |
 | DB | Drizzle ORM + Postgres |
 | Auth | [better-auth](https://better-auth.com), role stored on `user.role` |
-| Jobs | BullMQ + Redis, separate worker entrypoint |
+| Jobs | RabbitMQ (queue) + Redis (cache), separate worker entrypoint |
 | Web | React 19, TanStack Router (SPA, file-based) + Query + Form + Table + Store, Vite, Tailwind v4 |
 | Lint/format | [Biome](https://biomejs.dev) |
 | Tests | Vitest (unit/integration), Playwright (web e2e) |
@@ -29,25 +29,26 @@ apps/
 packages/
   schemas/      Zod source of truth shared by api + web
   permissions/  PERMISSION constants, role→permission map, canAll/canAny
-  core/         BullMQ queue helper, transactional outbox, activity log
+  core/         RabbitMQ queue helper, transactional outbox, activity log
   logger/       pino factory
   format/       date/money/string formatters
   messages/     user-facing message constants
-  migrations/   shared runMigrations() used by apps/api/src/migrate.ts
+  migrations/   shared runMigrations() used by apps/api/src/infrastructure/db/migrate.ts
   components/   shadcn-style UI primitives + permission Guard + route-guard + theme.css
 ```
 
-Packages and the api export **raw TypeScript source** (`"exports": { ".": "./src/index.ts" }`) — no build step; `build` is just `tsc --noEmit`. Everything is wired through moon tasks; run `moon run <project>:<task>` or the root `pnpm <script>` (which fans out via `moon run :<task>`).
+Packages and the api export **raw TypeScript source** (e.g. `"exports": { ".": "./src/index.ts" }`; the api's public surface lives at `src/bootstrap/index.ts`) — no build step; `build` is just `tsc --noEmit`. Everything is wired through moon tasks; run `moon run <project>:<task>` or the root `pnpm <script>` (which fans out via `moon run :<task>`).
 
 ### API layering
 
 ```
 domain/          entities + port interfaces — no framework imports
 application/     use cases (makeXxx(deps) => (input) => ...), depend only on ports
-infrastructure/  concrete adapters: db (Drizzle), auth (better-auth), cache (Redis), config, logging
+infrastructure/  concrete adapters: db (Drizzle), auth (better-auth), cache (Redis), queue (RabbitMQ), config, logging
 presentation/    orpc/ (context, middleware, error-mapping), routers/, http/ (Hono mounts)
-worker/          BullMQ job handlers + outbox drain
-compose.ts       the single composition root — wires infrastructure into use cases
+worker/          RabbitMQ job handlers + outbox drain
+bootstrap/       compose.ts (the composition root), polyfill.ts, index.ts (public exports)
+main.ts          the only file at src/ root — the HTTP entrypoint
 ```
 
 `presentation/http/mount-orpc.ts` mounts the **same** oRPC router twice: `RPCHandler` at `/rpc` for the typed client used by the web app, and `OpenAPIHandler` at `/api` for conventional REST — with a browsable OpenAPI reference at `/api`.
@@ -79,7 +80,7 @@ Every form (`login-form.tsx`, `create-note-form.tsx`) is built on `@tanstack/rea
 Requires [moon](https://moonrepo.dev/docs/install) and [proto](https://moonrepo.dev/proto) (or Node 24.16.0 / pnpm 11.6.0 installed directly) — not yet installed in this environment; `.prototools` pins the versions.
 
 ```sh
-make setup                          # docker services (postgres, redis) + .env + pnpm install
+make setup                          # docker services (postgres, redis, rabbitmq) + .env + pnpm install
 cd apps/api && pnpm db:migrate && pnpm db:seed
 moon run api:dev                    # api on :3001
 moon run web:dev                    # spa on :5173
@@ -95,7 +96,7 @@ Using the `note` resource as the template:
 2. **Domain** — add the row type + repo port to `apps/api/src/domain/<feature>/`
 3. **Infrastructure** — add the Drizzle table to `apps/api/src/infrastructure/db/schema/`, then the repository implementation under `db/repositories/`; run `pnpm db:generate` to create the migration
 4. **Application** — add one `makeXxx(deps) => (input) => ...` use case per operation under `apps/api/src/application/<feature>/`, composed by `build<Feature>UseCases`
-5. **Wire it into `compose.ts`** and `application/use-cases.ts`
+5. **Wire it into `bootstrap/compose.ts`** and `application/use-cases.ts`
 6. **Presentation** — add oRPC procedures in `apps/api/src/presentation/routers/<feature>.ts`, gated with `requirePermission(...)`; register in `routers/index.ts`
 7. **Permissions** — add any new `PERMISSION.*` constants and extend `ROLE_PERMISSIONS` in `packages/permissions`
 8. **Web** — add the route under `apps/web/src/routes/_authenticated/<feature>/` with colocated `_components`/`_hooks`, calling the feature through `orpc.<feature>.*` from `src/libs/orpc/client.ts`
@@ -105,7 +106,7 @@ Using the `note` resource as the template:
 ```sh
 make check | lint | format | test | build    # moon run :task across the workspace
 moon run api:db-generate                     # drizzle-kit generate
-moon run api:worker                          # run the BullMQ worker locally
+moon run api:worker                          # run the RabbitMQ worker locally
 ```
 
 The e2e suites (`api-e2e`, `web-e2e`) are **not** run in CI (`runInCI: false`) — they spin up a real API against a throwaway Postgres database and are meant as a local pre-PR gate:

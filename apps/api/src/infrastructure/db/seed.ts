@@ -1,11 +1,11 @@
 import { eq } from "drizzle-orm";
 import { match, P } from "ts-pattern";
-import { compose } from "#/compose.ts";
+import { compose } from "#/bootstrap/compose.ts";
 import { user } from "#/infrastructure/db/schema/auth.ts";
 import { note } from "#/infrastructure/db/schema/note.ts";
 import { logger } from "#/infrastructure/observability/logger.ts";
 
-const { db, auth } = compose();
+const { db, auth } = await compose();
 
 const ADMIN_EMAIL = "admin@app.test";
 const ADMIN_PASSWORD = "admin-password-123";

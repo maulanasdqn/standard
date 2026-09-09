@@ -28,6 +28,7 @@ const env = {
 	PORT: String(E2E_PORT),
 	DATABASE_URL: E2E_DATABASE_URL,
 	REDIS_URL: process.env.REDIS_URL ?? "redis://localhost:6379",
+	RABBITMQ_URL: process.env.RABBITMQ_URL ?? "amqp://app:app@localhost:5672",
 	BETTER_AUTH_URL: `http://127.0.0.1:${E2E_PORT}`,
 	BETTER_AUTH_SECRET: "e2e-test-secret-please-do-not-use-in-prod",
 	WEB_ORIGIN: "http://localhost:5173",
