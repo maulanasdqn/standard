@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("signs in and creates a note", async ({ page }) => {
+test("signs in and creates a note", async ({ page }): Promise<void> => {
 	await page.goto("/login");
 
 	await page.getByLabel("Email").fill("admin@app.test");

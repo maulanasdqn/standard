@@ -27,9 +27,7 @@ const waitForHealth = async (timeoutMs = 15_000): Promise<void> => {
 			if (response.ok) {
 				return;
 			}
-		} catch {
-			// not up yet
-		}
+		} catch {}
 		await new Promise((resolve) => setTimeout(resolve, 300));
 	}
 	throw new Error("API did not become healthy in time for web-e2e");

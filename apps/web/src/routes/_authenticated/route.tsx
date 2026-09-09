@@ -1,16 +1,20 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import type { ReactElement } from "react";
+import { match, P } from "ts-pattern";
 import { AppSidebar } from "#/routes/_authenticated/_components/app-sidebar.tsx";
 
 export const Route = createFileRoute("/_authenticated")({
 	beforeLoad: ({ context }) => {
-		if (!context.session) {
-			throw redirect({ to: "/login" });
-		}
+		match(context.session)
+			.with(P.nullish, () => {
+				throw redirect({ to: "/login" });
+			})
+			.otherwise(() => undefined);
 	},
 	component: AuthenticatedLayout,
 });
 
-function AuthenticatedLayout() {
+function AuthenticatedLayout(): ReactElement {
 	return (
 		<div className="flex h-screen">
 			<AppSidebar />

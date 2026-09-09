@@ -32,7 +32,7 @@ const app = new Hono();
 
 app.use("*", requestId());
 
-app.use("*", async (context, next) => {
+app.use("*", async (context, next): Promise<void> => {
 	const reqId = context.get("requestId");
 	const start = Date.now();
 	await next();
@@ -63,6 +63,6 @@ mountAuth(app, auth);
 mountOrpc({ app, router, logger, buildContext });
 mountWebDist(app, env.WEB_DIST_PATH);
 
-serve({ fetch: app.fetch, port: env.PORT }, (info) => {
+serve({ fetch: app.fetch, port: env.PORT }, (info): void => {
 	logger.info({ port: info.port }, "api listening");
 });

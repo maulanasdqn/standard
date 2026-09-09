@@ -44,6 +44,9 @@ importers:
       '@hono/node-server':
         specifier: ^1.19.11
         version: 1.19.17(hono@4.13.7)
+      '@mobily/ts-belt':
+        specifier: ^3.13.1
+        version: 3.13.1
       '@orpc/json-schema':
         specifier: ^1.13.6
         version: 1.15.0
@@ -107,6 +110,10 @@ importers:
         version: 3.2.7(@types/node@24.13.3)(jiti@2.7.0)(jsdom@28.1.0(@noble/hashes@2.4.0))(lightningcss@1.32.0)(tsx@4.23.13)
 
   apps/api-e2e:
+    dependencies:
+      '@mobily/ts-belt':
+        specifier: ^3.13.1
+        version: 3.13.1
     devDependencies:
       '@app/api':
         specifier: workspace:*
@@ -153,6 +160,9 @@ importers:
       '@app/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
+      '@mobily/ts-belt':
+        specifier: ^3.13.1
+        version: 3.13.1
       '@orpc/client':
         specifier: ^1.13.6
         version: 1.15.0
@@ -246,6 +256,10 @@ importers:
         version: 3.2.7(@types/node@24.13.3)(jiti@2.7.0)(jsdom@28.1.0(@noble/hashes@2.4.0))(lightningcss@1.32.0)(tsx@4.23.13)
 
   apps/web-e2e:
+    dependencies:
+      ts-pattern:
+        specifier: ^5.9.0
+        version: 5.9.0
     devDependencies:
       '@playwright/test':
         specifier: ^1.49.0
@@ -259,6 +273,9 @@ importers:
       '@app/permissions':
         specifier: workspace:*
         version: link:../permissions
+      '@mobily/ts-belt':
+        specifier: ^3.13.1
+        version: 3.13.1
       '@tanstack/react-router':
         specifier: ^1.132.0
         version: 1.170.33(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -283,6 +300,9 @@ importers:
       tailwind-merge:
         specifier: ^3.0.2
         version: 3.6.0
+      ts-pattern:
+        specifier: ^5.9.0
+        version: 5.9.0
     devDependencies:
       '@tanstack/react-query':
         specifier: ^5.66.0
@@ -320,6 +340,9 @@ importers:
       '@app/schemas':
         specifier: workspace:*
         version: link:../schemas
+      '@mobily/ts-belt':
+        specifier: ^3.13.1
+        version: 3.13.1
       bullmq:
         specifier: ^5.56.0
         version: 5.81.4
@@ -329,6 +352,9 @@ importers:
       ioredis:
         specifier: ^5.10.1
         version: 5.11.1
+      ts-pattern:
+        specifier: ^5.9.0
+        version: 5.9.0
     devDependencies:
       '@types/node':
         specifier: ^24.0.0
@@ -350,6 +376,10 @@ importers:
         version: 3.2.7(@types/node@24.13.3)(jiti@2.7.0)(jsdom@28.1.0(@noble/hashes@2.4.0))(lightningcss@1.32.0)(tsx@4.23.13)
 
   packages/format:
+    dependencies:
+      ts-pattern:
+        specifier: ^5.9.0
+        version: 5.9.0
     devDependencies:
       typescript:
         specifier: ^5.9.3
@@ -363,6 +393,9 @@ importers:
       pino:
         specifier: ^9.6.0
         version: 9.14.0
+      ts-pattern:
+        specifier: ^5.9.0
+        version: 5.9.0
     devDependencies:
       typescript:
         specifier: ^5.9.3
@@ -391,6 +424,13 @@ importers:
         version: 3.2.7(@types/node@24.13.3)(jiti@2.7.0)(jsdom@28.1.0(@noble/hashes@2.4.0))(lightningcss@1.32.0)(tsx@4.23.13)
 
   packages/permissions:
+    dependencies:
+      '@mobily/ts-belt':
+        specifier: ^3.13.1
+        version: 3.13.1
+      ts-pattern:
+        specifier: ^5.9.0
+        version: 5.9.0
     devDependencies:
       typescript:
         specifier: ^5.9.3
@@ -1222,6 +1262,10 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@mobily/ts-belt@3.13.1':
+    resolution: {integrity: sha512-K5KqIhPI/EoCTbA6CGbrenM9s41OouyK8A03fGJJcla/zKucsgLbz8HNbeseoLarRPgyWJsUyCYqFhI7t3Ra9Q==}
+    engines: {node: '>= 10.*'}
 
   '@msgpackr-extract/msgpackr-extract-darwin-arm64@3.0.4':
     resolution: {integrity: sha512-LCkGo6JDfaBhgST7UpPWgNgLINpcpabaHfyz5OBx75nUYxBsaEPxjnyNjWpeb/xBup/682QnBfRBy2/LvPutZQ==}
@@ -4501,6 +4545,8 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.6.0
+
+  '@mobily/ts-belt@3.13.1': {}
 
   '@msgpackr-extract/msgpackr-extract-darwin-arm64@3.0.4':
     optional: true

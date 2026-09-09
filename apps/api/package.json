@@ -29,6 +29,7 @@
 		"@app/permissions": "workspace:*",
 		"@app/schemas": "workspace:*",
 		"@hono/node-server": "^1.19.11",
+		"@mobily/ts-belt": "^3.13.1",
 		"@orpc/json-schema": "^1.13.6",
 		"@orpc/openapi": "^1.13.6",
 		"@orpc/server": "^1.13.6",
@@ -45,8 +46,8 @@
 	"devDependencies": {
 		"@electric-sql/pglite": "^0.3.6",
 		"@types/pg": "^8.15.6",
-		"drizzle-kit": "^0.31.9",
 		"dotenv": "^17.3.1",
+		"drizzle-kit": "^0.31.9",
 		"tsx": "^4.21.0",
 		"typescript": "^5.9.3",
 		"vite-tsconfig-paths": "^5.1.4",

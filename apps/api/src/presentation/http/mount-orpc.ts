@@ -5,6 +5,7 @@ import { onError } from "@orpc/server";
 import { RPCHandler } from "@orpc/server/fetch";
 import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
 import type { Hono } from "hono";
+import { match, P } from "ts-pattern";
 import type { ORPCContext } from "#/presentation/orpc/context.ts";
 import type { TAppRouter } from "#/presentation/routers/index.ts";
 
@@ -20,10 +21,6 @@ type TDeps = {
 	buildContext: (headers: Headers) => Promise<ORPCContext>;
 };
 
-/**
- * Mounts one oRPC router on two transports: `RPCHandler` at `/rpc` for the typed
- * web client, and `OpenAPIHandler` at `/api` for plain REST + browsable OpenAPI docs.
- */
 export const mountOrpc = ({
 	app,
 	router,
@@ -41,7 +38,12 @@ export const mountOrpc = ({
 			prefix: RPC_PREFIX,
 			context: await buildContext(context.req.raw.headers),
 		});
-		return matched && response ? response : context.notFound();
+		return match({ matched, response })
+			.with(
+				{ matched: true, response: P.nonNullable },
+				({ response: found }) => found,
+			)
+			.otherwise(() => context.notFound());
 	});
 
 	const openApiHandler = new OpenAPIHandler(router, {
@@ -66,6 +68,11 @@ export const mountOrpc = ({
 			prefix: OPENAPI_PREFIX,
 			context: await buildContext(context.req.raw.headers),
 		});
-		return matched && response ? response : context.notFound();
+		return match({ matched, response })
+			.with(
+				{ matched: true, response: P.nonNullable },
+				({ response: found }) => found,
+			)
+			.otherwise(() => context.notFound());
 	});
 };

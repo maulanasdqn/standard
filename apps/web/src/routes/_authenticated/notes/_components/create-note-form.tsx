@@ -9,7 +9,7 @@ export const CreateNoteForm = (): ReactElement => {
 	const [title, setTitle] = useState("");
 	const [body, setBody] = useState("");
 
-	const onSubmit = (event: FormEvent) => {
+	const onSubmit = (event: FormEvent): void => {
 		event.preventDefault();
 		createNote.mutate(
 			{ title, body },

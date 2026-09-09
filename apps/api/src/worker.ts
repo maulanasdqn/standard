@@ -17,11 +17,11 @@ const worker = createBullWorker<TExampleJobPayload>(
 	processExampleJob,
 );
 
-worker.on("completed", (job) =>
-	logger.info({ jobId: job.id }, "job completed"),
-);
-worker.on("failed", (job, error) =>
-	logger.error({ jobId: job?.id, err: error }, "job failed"),
-);
+worker.on("completed", (job): void => {
+	logger.info({ jobId: job.id }, "job completed");
+});
+worker.on("failed", (job, error): void => {
+	logger.error({ jobId: job?.id, err: error }, "job failed");
+});
 
 logger.info({ env: env.NODE_ENV }, "worker started");

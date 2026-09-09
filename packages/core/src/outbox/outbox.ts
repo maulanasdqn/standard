@@ -1,3 +1,6 @@
+import { A, D } from "@mobily/ts-belt";
+import { match, P } from "ts-pattern";
+
 export type TOutboxEvent = {
 	id: string;
 	type: string;
@@ -14,22 +17,20 @@ export type TOutboxRepo = {
 
 export type TOutboxHandler = (event: TOutboxEvent) => Promise<void>;
 
-/**
- * Drains pending outbox events through the registered handlers.
- * Call on an interval from the worker process.
- */
 export const drainOutbox = async (
 	repo: TOutboxRepo,
 	handlers: Record<string, TOutboxHandler>,
 	batchSize = 20,
 ): Promise<number> => {
 	const events = await repo.claimPending(batchSize);
+
 	for (const event of events) {
-		const handler = handlers[event.type];
-		if (handler) {
-			await handler(event);
-		}
+		const handler = D.get(handlers, event.type);
+		await match(handler)
+			.with(P.nonNullable, (run) => run(event))
+			.otherwise(() => Promise.resolve());
 		await repo.markProcessed(event.id);
 	}
-	return events.length;
+
+	return A.length(events);
 };

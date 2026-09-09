@@ -8,10 +8,6 @@ type TRunMigrationsOptions = {
 	databaseUrl: string;
 };
 
-/**
- * Applies pending Drizzle migrations from `migrationsFolder` against `databaseUrl`.
- * Each app's `src/migrate.ts` is a thin entrypoint over this.
- */
 export const runMigrations = async ({
 	service,
 	migrationsFolder,

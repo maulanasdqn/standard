@@ -4,8 +4,9 @@ import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Toaster } from "sonner";
-import { fetchMe } from "#/libs/auth/session.ts";
+import { match, P } from "ts-pattern";
 import { syncPermissions } from "#/libs/auth/permissions.ts";
+import { fetchMe } from "#/libs/auth/session.ts";
 import { queryClient } from "#/libs/tanstack-query/index.ts";
 import { routeTree } from "./routeTree.gen.ts";
 import "./styles.css";
@@ -22,30 +23,33 @@ declare module "@tanstack/react-router" {
 	}
 }
 
-const bootstrap = async () => {
+const bootstrap = async (): Promise<void> => {
 	const me = await fetchMe();
 	syncPermissions(me);
 
 	const rootElement = document.getElementById("root");
-	if (!rootElement) {
-		throw new Error("Root element not found");
-	}
 
-	createRoot(rootElement).render(
-		<StrictMode>
-			<QueryClientProvider client={queryClient}>
-				<RouterProvider
-					router={router}
-					context={{
-						queryClient,
-						session: me,
-						permissions: (me?.permissions ?? []) as TPermission[],
-					}}
-				/>
-				<Toaster />
-			</QueryClientProvider>
-		</StrictMode>,
-	);
+	match(rootElement)
+		.with(P.nullish, () => {
+			throw new Error("Root element not found");
+		})
+		.otherwise((root) => {
+			createRoot(root).render(
+				<StrictMode>
+					<QueryClientProvider client={queryClient}>
+						<RouterProvider
+							router={router}
+							context={{
+								queryClient,
+								session: me,
+								permissions: (me?.permissions ?? []) as TPermission[],
+							}}
+						/>
+						<Toaster />
+					</QueryClientProvider>
+				</StrictMode>,
+			);
+		});
 };
 
 void bootstrap();

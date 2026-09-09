@@ -1,4 +1,5 @@
-import pino from "pino";
+import pino, { type Logger, type LoggerOptions } from "pino";
+import { match } from "ts-pattern";
 
 type TCreateLoggerOptions = {
 	service: string;
@@ -6,14 +7,25 @@ type TCreateLoggerOptions = {
 	level?: string;
 };
 
-export const createLogger = ({ service, env, level }: TCreateLoggerOptions) =>
+const transportFor = (env: string): LoggerOptions["transport"] =>
+	match(env)
+		.with("production", () => undefined)
+		.otherwise(() => ({ target: "pino-pretty", options: { colorize: true } }));
+
+const defaultLevelFor = (env: string): string =>
+	match(env)
+		.with("production", () => "info")
+		.otherwise(() => "debug");
+
+export const createLogger = ({
+	service,
+	env,
+	level,
+}: TCreateLoggerOptions): Logger =>
 	pino({
-		level: level ?? (env === "production" ? "info" : "debug"),
+		level: level ?? defaultLevelFor(env),
 		base: { service },
-		transport:
-			env === "production"
-				? undefined
-				: { target: "pino-pretty", options: { colorize: true } },
+		transport: transportFor(env),
 	});
 
 export type TLogger = ReturnType<typeof createLogger>;

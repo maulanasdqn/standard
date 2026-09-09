@@ -14,7 +14,7 @@ const row: INoteRow = {
 };
 
 describe("makeCreateNote", () => {
-	it("creates a note and logs the activity", async () => {
+	it("creates a note and logs the activity", async (): Promise<void> => {
 		const noteRepo: Pick<INoteRepo, "create"> = {
 			create: vi.fn().mockResolvedValue(row),
 		};

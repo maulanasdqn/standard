@@ -4,7 +4,7 @@ import { makeGetNote } from "#/application/note/get-note.ts";
 import { AppError } from "#/application/shared/errors.ts";
 
 describe("makeGetNote", () => {
-	it("throws a NOT_FOUND AppError when the note doesn't exist", async () => {
+	it("throws a NOT_FOUND AppError when the note doesn't exist", async (): Promise<void> => {
 		const noteRepo: Pick<INoteRepo, "findById"> = {
 			findById: vi.fn().mockResolvedValue(null),
 		};

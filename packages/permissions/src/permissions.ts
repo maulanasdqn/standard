@@ -1,3 +1,5 @@
+import { D } from "@mobily/ts-belt";
+
 export const PERMISSION = {
 	NOTE_READ: "note:read",
 	NOTE_WRITE: "note:write",
@@ -7,5 +9,4 @@ export const PERMISSION = {
 
 export type TPermission = (typeof PERMISSION)[keyof typeof PERMISSION];
 
-export const ALL_PERMISSIONS: readonly TPermission[] =
-	Object.values(PERMISSION);
+export const ALL_PERMISSIONS: readonly TPermission[] = D.values(PERMISSION);

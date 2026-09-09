@@ -1,3 +1,4 @@
+import { D } from "@mobily/ts-belt";
 import {
 	ALL_PERMISSIONS,
 	PERMISSION,
@@ -19,4 +20,4 @@ export const ROLE_PERMISSIONS: Record<TRole, readonly TPermission[]> = {
 };
 
 export const permissionsForRole = (role: TRole): readonly TPermission[] =>
-	ROLE_PERMISSIONS[role] ?? [];
+	D.get(ROLE_PERMISSIONS, role) ?? [];

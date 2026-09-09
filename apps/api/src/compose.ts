@@ -1,14 +1,27 @@
-import { buildUseCases } from "#/application/use-cases.ts";
-import { env } from "#/infrastructure/config/env.ts";
-import { createCache } from "#/infrastructure/cache/redis.ts";
-import { createAuth } from "#/infrastructure/auth/better-auth.ts";
+import type { TActivityRepo } from "@app/core";
+import type { Redis } from "ioredis";
+import { buildUseCases, type TUseCases } from "#/application/use-cases.ts";
+import type { INoteRepo } from "#/domain/note/note.ts";
+import type { IAuthService } from "#/domain/ports/auth-service.ts";
 import { createAuthService } from "#/infrastructure/auth/auth-service.ts";
-import { createDb } from "#/infrastructure/db/client.ts";
+import { createAuth, type TAuth } from "#/infrastructure/auth/better-auth.ts";
+import { createCache } from "#/infrastructure/cache/redis.ts";
+import { env } from "#/infrastructure/config/env.ts";
+import { createDb, type TDb } from "#/infrastructure/db/client.ts";
 import { createActivityRepository } from "#/infrastructure/db/repositories/activity-repository.ts";
 import { createNoteRepository } from "#/infrastructure/db/repositories/note-repository.ts";
 
-/** The single composition root: builds every infrastructure adapter and wires it into the use cases. */
-export const compose = () => {
+export type TComposed = {
+	db: TDb;
+	cache: Redis;
+	auth: TAuth;
+	authService: IAuthService;
+	useCases: TUseCases;
+	activityRepo: TActivityRepo;
+	noteRepo: INoteRepo;
+};
+
+export const compose = (): TComposed => {
 	const db = createDb(env.DATABASE_URL);
 	const cache = createCache(env.REDIS_URL);
 
@@ -22,5 +35,3 @@ export const compose = () => {
 
 	return { db, cache, auth, authService, useCases, activityRepo, noteRepo };
 };
-
-export type TComposed = ReturnType<typeof compose>;

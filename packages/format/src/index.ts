@@ -1,9 +1,12 @@
+import { match, P } from "ts-pattern";
+
 export const NOT_SET = "—";
 
 export const orDash = (value: string | number | null | undefined): string =>
-	value === null || value === undefined || value === ""
-		? NOT_SET
-		: String(value);
+	match(value)
+		.with(P.nullish, () => NOT_SET)
+		.with("", () => NOT_SET)
+		.otherwise((present) => String(present));
 
 export const formatDate = (value: string | Date): string =>
 	new Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(

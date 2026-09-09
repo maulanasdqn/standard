@@ -1,13 +1,20 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { match, P } from "ts-pattern";
 import { authClient } from "#/libs/auth/client.ts";
 
-export const useLogin = () => {
+export type TUseLogin = {
+	login: (email: string, password: string) => Promise<void>;
+	error: string | null;
+	isSubmitting: boolean;
+};
+
+export const useLogin = (): TUseLogin => {
 	const navigate = useNavigate();
 	const [error, setError] = useState<string | null>(null);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
-	const login = async (email: string, password: string) => {
+	const login = async (email: string, password: string): Promise<void> => {
 		setError(null);
 		setIsSubmitting(true);
 		const { error: signInError } = await authClient.signIn.email({
@@ -16,13 +23,14 @@ export const useLogin = () => {
 		});
 		setIsSubmitting(false);
 
-		if (signInError) {
-			setError(signInError.message ?? "That email or password is incorrect.");
-			return;
-		}
-
-		window.location.href = "/notes";
-		void navigate({ to: "/notes" });
+		match(signInError)
+			.with(P.nullish, () => {
+				window.location.href = "/notes";
+				void navigate({ to: "/notes" });
+			})
+			.otherwise((found) => {
+				setError(found.message ?? "That email or password is incorrect.");
+			});
 	};
 
 	return { login, error, isSubmitting };

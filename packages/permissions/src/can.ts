@@ -1,11 +1,13 @@
+import { A } from "@mobily/ts-belt";
 import type { TPermission } from "./permissions.ts";
 
 export const canAll = (
 	granted: readonly TPermission[],
 	required: readonly TPermission[],
-): boolean => required.every((permission) => granted.includes(permission));
+): boolean =>
+	A.every(required, (permission) => A.includes(granted, permission));
 
 export const canAny = (
 	granted: readonly TPermission[],
 	required: readonly TPermission[],
-): boolean => required.some((permission) => granted.includes(permission));
+): boolean => A.some(required, (permission) => A.includes(granted, permission));

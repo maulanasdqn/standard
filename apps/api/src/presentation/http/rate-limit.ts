@@ -1,5 +1,6 @@
 import type { Context, Next } from "hono";
 import type { Redis } from "ioredis";
+import { match } from "ts-pattern";
 
 type TRateLimitOptions = {
 	cache: Redis;
@@ -8,10 +9,9 @@ type TRateLimitOptions = {
 	keyPrefix: string;
 };
 
-/** Fixed-window rate limiter backed by Redis; keyed by client IP. */
 export const rateLimit =
 	({ cache, windowSeconds, max, keyPrefix }: TRateLimitOptions) =>
-	async (context: Context, next: Next) => {
+	async (context: Context, next: Next): Promise<Response | undefined> => {
 		const ip =
 			context.req.header("x-forwarded-for") ??
 			context.env?.remoteAddr ??
@@ -19,13 +19,15 @@ export const rateLimit =
 		const key = `${keyPrefix}:${ip}`;
 
 		const count = await cache.incr(key);
-		if (count === 1) {
-			await cache.expire(key, windowSeconds);
-		}
 
-		if (count > max) {
-			return context.json({ error: "Too many requests" }, 429);
-		}
+		await match(count)
+			.with(1, () => cache.expire(key, windowSeconds))
+			.otherwise(() => undefined);
 
-		await next();
+		return match(count > max)
+			.with(true, () => context.json({ error: "Too many requests" }, 429))
+			.otherwise(async (): Promise<undefined> => {
+				await next();
+				return undefined;
+			});
 	};

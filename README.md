@@ -16,6 +16,7 @@ Distilled from a larger production monorepo — same layering and conventions, s
 | Web | React 19, TanStack Router (SPA, file-based) + Query + Form + Table + Store, Vite, Tailwind v4 |
 | Lint/format | [Biome](https://biomejs.dev) |
 | Tests | Vitest (unit/integration), Playwright (web e2e) |
+| Code style | [ts-pattern](https://github.com/gvergnaud/ts-pattern) for conditionals, [@mobily/ts-belt](https://github.com/mobily/ts-belt) for arrays/objects — see `.claude/skills/ts-conventions/SKILL.md` |
 
 ## Layout
 

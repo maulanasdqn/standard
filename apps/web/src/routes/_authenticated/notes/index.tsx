@@ -1,6 +1,7 @@
-import { PERMISSION } from "@app/permissions";
 import { checkRoutePermissions } from "@app/components/guard/route-guard";
+import { PERMISSION } from "@app/permissions";
 import { createFileRoute } from "@tanstack/react-router";
+import type { ReactElement } from "react";
 import { CreateNoteForm } from "#/routes/_authenticated/notes/_components/create-note-form.tsx";
 import { NoteList } from "#/routes/_authenticated/notes/_components/note-list.tsx";
 import { notesSearchSchema } from "#/routes/_authenticated/notes/_constants/search.ts";
@@ -12,7 +13,7 @@ export const Route = createFileRoute("/_authenticated/notes/")({
 	component: NotesPage,
 });
 
-function NotesPage() {
+function NotesPage(): ReactElement {
 	const { data, isLoading } = useNotes();
 
 	return (

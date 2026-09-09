@@ -1,5 +1,6 @@
 import type { TPermission } from "@app/permissions";
 import type { ReactElement, ReactNode } from "react";
+import { match } from "ts-pattern";
 import { usePermissions } from "./use-permissions.ts";
 
 type TGuardProps = {
@@ -9,7 +10,6 @@ type TGuardProps = {
 	children: ReactNode;
 };
 
-/** Renders `children` only when the current user holds the required permissions. */
 export const Guard = ({
 	permissions,
 	mode = "all",
@@ -17,7 +17,11 @@ export const Guard = ({
 	children,
 }: TGuardProps): ReactElement => {
 	const { canAll, canAny } = usePermissions();
-	const allowed = mode === "all" ? canAll(permissions) : canAny(permissions);
+
+	const allowed = match(mode)
+		.with("all", () => canAll(permissions))
+		.with("any", () => canAny(permissions))
+		.exhaustive();
 
 	return <>{allowed ? children : fallback}</>;
 };

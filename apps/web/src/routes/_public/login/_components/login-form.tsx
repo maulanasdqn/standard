@@ -9,7 +9,7 @@ export const LoginForm = (): ReactElement => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 
-	const onSubmit = (event: FormEvent) => {
+	const onSubmit = (event: FormEvent): void => {
 		event.preventDefault();
 		void login(email, password);
 	};

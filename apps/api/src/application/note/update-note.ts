@@ -1,7 +1,8 @@
 import type { TNote, TUpdateNoteInput } from "@app/schemas";
 import { NOTE_MESSAGE } from "@app/errors";
-import { notFound } from "#/application/shared/errors.ts";
+import { match } from "ts-pattern";
 import { toNoteDto } from "#/application/note/to-note-dto.ts";
+import { notFound } from "#/application/shared/errors.ts";
 import type { IDependencies } from "#/application/use-cases-deps.ts";
 
 export const makeUpdateNote =
@@ -13,16 +14,20 @@ export const makeUpdateNote =
 		{ id, ...patch }: TUpdateNoteInput,
 		actorId: string,
 	): Promise<TNote> => {
-		const row = await noteRepo.update(id, patch);
-		if (!row) {
-			throw notFound(NOTE_MESSAGE.NOT_FOUND);
-		}
+		const updated = await noteRepo.update(id, patch);
+		const row = match(updated)
+			.with(null, () => {
+				throw notFound(NOTE_MESSAGE.NOT_FOUND);
+			})
+			.otherwise((found) => found);
+
 		await activityRepo.insert({
 			actorId,
 			action: "note.update",
 			entityType: "note",
 			entityId: row.id,
 		});
+
 		return toNoteDto(row);
 	};
 

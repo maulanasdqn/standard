@@ -7,7 +7,16 @@ export const paginationSchema = z.object({
 
 export type TPagination = z.infer<typeof paginationSchema>;
 
-export const paginated = <TItem extends z.ZodTypeAny>(item: TItem) =>
+type TPaginatedOutput<TItem extends z.ZodTypeAny> = {
+	items: readonly z.infer<TItem>[];
+	total: number;
+	page: number;
+	pageSize: number;
+};
+
+export const paginated = <TItem extends z.ZodTypeAny>(
+	item: TItem,
+): z.ZodType<TPaginatedOutput<TItem>> =>
 	z.object({
 		items: z.array(item),
 		total: z.number().int().min(0),

@@ -1,4 +1,5 @@
 import type { TCreateNoteInput, TNote } from "@app/schemas";
+import { D } from "@mobily/ts-belt";
 import { toNoteDto } from "#/application/note/to-note-dto.ts";
 import type { IDependencies } from "#/application/use-cases-deps.ts";
 
@@ -8,7 +9,7 @@ export const makeCreateNote =
 		activityRepo,
 	}: Pick<IDependencies, "noteRepo" | "activityRepo">) =>
 	async (input: TCreateNoteInput, authorId: string): Promise<TNote> => {
-		const row = await noteRepo.create({ ...input, authorId });
+		const row = await noteRepo.create(D.merge(input, { authorId }));
 		await activityRepo.insert({
 			actorId: authorId,
 			action: "note.create",

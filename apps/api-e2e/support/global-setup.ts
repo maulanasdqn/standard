@@ -16,9 +16,7 @@ const waitForHealth = async (timeoutMs = 15_000): Promise<void> => {
 			if (response.ok) {
 				return;
 			}
-		} catch {
-			// API not up yet — keep polling.
-		}
+		} catch {}
 		await new Promise((resolve) => setTimeout(resolve, 300));
 	}
 	throw new Error(`API did not become healthy at ${HEALTH_URL} within ${timeoutMs}ms`);

@@ -1,9 +1,10 @@
+import { A } from "@mobily/ts-belt";
 import { beforeAll, describe, expect, it } from "vitest";
 import { BASE_URL } from "../support/client.ts";
 
 let cookie = "";
 
-beforeAll(async () => {
+beforeAll(async (): Promise<void> => {
 	const signInResponse = await fetch(`${BASE_URL}/api/auth/sign-in/email`, {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
@@ -16,7 +17,7 @@ beforeAll(async () => {
 });
 
 describe("notes REST endpoints", () => {
-	it("creates and lists a note over /api as the seeded admin", async () => {
+	it("creates and lists a note over /api as the seeded admin", async (): Promise<void> => {
 		const createResponse = await fetch(`${BASE_URL}/api/notes`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json", cookie },
@@ -31,8 +32,6 @@ describe("notes REST endpoints", () => {
 			},
 		);
 		const list = (await listResponse.json()) as { items: { title: string }[] };
-		expect(
-			list.items.some((item: { title: string }) => item.title === "From e2e"),
-		).toBe(true);
+		expect(A.some(list.items, (item) => item.title === "From e2e")).toBe(true);
 	});
 });

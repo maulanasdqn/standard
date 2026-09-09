@@ -12,9 +12,11 @@
 	},
 	"dependencies": {
 		"@app/schemas": "workspace:*",
+		"@mobily/ts-belt": "^3.13.1",
 		"bullmq": "^5.56.0",
 		"drizzle-orm": "^0.45.1",
-		"ioredis": "^5.10.1"
+		"ioredis": "^5.10.1",
+		"ts-pattern": "^5.9.0"
 	},
 	"devDependencies": {
 		"@types/node": "^24.0.0",

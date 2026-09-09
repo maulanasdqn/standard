@@ -1,7 +1,8 @@
 import { eq } from "drizzle-orm";
+import { match, P } from "ts-pattern";
 import { compose } from "#/compose.ts";
-import { note } from "#/infrastructure/db/schema/note.ts";
 import { user } from "#/infrastructure/db/schema/auth.ts";
+import { note } from "#/infrastructure/db/schema/note.ts";
 
 const { db, auth } = compose();
 
@@ -14,15 +15,18 @@ const existing = await db
 	.where(eq(user.email, ADMIN_EMAIL))
 	.limit(1);
 
-let adminId = existing[0]?.id;
-
-if (!adminId) {
-	const result = await auth.api.signUpEmail({
-		body: { email: ADMIN_EMAIL, password: ADMIN_PASSWORD, name: "Admin" },
+const adminId: string = await match(existing[0])
+	.with(P.nonNullable, (found) => Promise.resolve(found.id))
+	.otherwise(async () => {
+		const result = await auth.api.signUpEmail({
+			body: { email: ADMIN_EMAIL, password: ADMIN_PASSWORD, name: "Admin" },
+		});
+		await db
+			.update(user)
+			.set({ role: "admin" })
+			.where(eq(user.id, result.user.id));
+		return result.user.id;
 	});
-	adminId = result.user.id;
-	await db.update(user).set({ role: "admin" }).where(eq(user.id, adminId));
-}
 
 await db.insert(note).values({
 	title: "Welcome",

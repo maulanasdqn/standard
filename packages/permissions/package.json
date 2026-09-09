@@ -13,5 +13,9 @@
 	"devDependencies": {
 		"typescript": "^5.9.3",
 		"vitest": "^3.0.5"
+	},
+	"dependencies": {
+		"@mobily/ts-belt": "^3.13.1",
+		"ts-pattern": "^5.9.0"
 	}
 }

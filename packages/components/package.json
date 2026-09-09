@@ -18,6 +18,7 @@
 	},
 	"dependencies": {
 		"@app/permissions": "workspace:*",
+		"@mobily/ts-belt": "^3.13.1",
 		"@tanstack/react-router": "^1.132.0",
 		"@tanstack/react-store": "^0.7.0",
 		"@tanstack/store": "^0.7.0",
@@ -25,7 +26,8 @@
 		"clsx": "^2.1.1",
 		"lucide-react": "^0.577.0",
 		"radix-ui": "^1.4.3",
-		"tailwind-merge": "^3.0.2"
+		"tailwind-merge": "^3.0.2",
+		"ts-pattern": "^5.9.0"
 	},
 	"peerDependencies": {
 		"@tanstack/react-query": "^5.66.0",
