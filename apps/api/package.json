@@ -27,7 +27,6 @@
 		"@app/logger": "workspace:*",
 		"@app/messages": "workspace:*",
 		"@app/migrations": "workspace:*",
-		"@app/outbox": "workspace:*",
 		"@app/permissions": "workspace:*",
 		"@app/queue": "workspace:*",
 		"@app/schemas": "workspace:*",

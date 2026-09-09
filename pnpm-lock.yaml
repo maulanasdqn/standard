@@ -35,9 +35,6 @@ importers:
       '@app/migrations':
         specifier: workspace:*
         version: link:../../packages/migrations
-      '@app/outbox':
-        specifier: workspace:*
-        version: link:../../packages/outbox
       '@app/permissions':
         specifier: workspace:*
         version: link:../../packages/permissions
@@ -428,25 +425,6 @@ importers:
       '@types/pg':
         specifier: ^8.15.6
         version: 8.23.1
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-      vitest:
-        specifier: ^3.0.5
-        version: 3.2.7(@types/node@24.13.3)(jiti@2.7.0)(jsdom@28.1.0(@noble/hashes@2.4.0))(lightningcss@1.32.0)(tsx@4.23.13)
-
-  packages/outbox:
-    dependencies:
-      '@mobily/ts-belt':
-        specifier: ^3.13.1
-        version: 3.13.1
-      ts-pattern:
-        specifier: ^5.9.0
-        version: 5.9.0
-    devDependencies:
-      '@types/node':
-        specifier: ^24.0.0
-        version: 24.13.3
       typescript:
         specifier: ^5.9.3
         version: 5.9.3

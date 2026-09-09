@@ -30,7 +30,6 @@ apps/
 packages/
   schemas/      Zod source of truth shared by api + web
   permissions/  PERMISSION constants, role→permission map, canAll/canAny
-  outbox/       transactional outbox
   activity/     activity log
   queue/        RabbitMQ queue helper
   storage/      S3-compatible object storage (aws4fetch)
@@ -51,7 +50,7 @@ domain/          entities + port interfaces (Effect-returning: Effect<A, EDataba
 application/     use cases as Effect.fn programs — depend on services via yield*, not manual DI
 infrastructure/  Context.Service classes + their Layer: db (Drizzle), auth (better-auth), cache (Redis), queue (RabbitMQ)
 presentation/    orpc/ (context, middleware, error-mapping, run-effect — the Effect↔Promise bridge), routers/, http/ (Hono mounts)
-worker/          RabbitMQ job handlers + outbox drain
+worker/          RabbitMQ job handlers
 bootstrap/       compose.ts (AppLayer + ManagedRuntime), polyfill.ts, index.ts (public exports)
 main.ts          the only file at src/ root — the HTTP entrypoint
 ```
