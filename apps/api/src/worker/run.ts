@@ -1,6 +1,6 @@
 import "#/bootstrap/polyfill.ts";
 
-import { queueWorkerCreate } from "@app/core";
+import { queueWorkerCreate } from "@app/queue";
 import { Effect } from "effect";
 import { runtime } from "#/bootstrap/compose.ts";
 import { env } from "#/infrastructure/config/env.ts";

@@ -30,7 +30,11 @@ apps/
 packages/
   schemas/      Zod source of truth shared by api + web
   permissions/  PERMISSION constants, role→permission map, canAll/canAny
-  core/         RabbitMQ queue helper, transactional outbox, activity log
+  outbox/       transactional outbox
+  activity/     activity log
+  queue/        RabbitMQ queue helper
+  storage/      S3-compatible object storage (aws4fetch)
+  grpc/         gRPC server/client (@grpc/grpc-js + proto-loader)
   logger/       pino factory
   format/       date/money/string formatters
   messages/     user-facing message constants
@@ -60,7 +64,7 @@ main.ts          the only file at src/ root — the HTTP entrypoint
 - **Services** are `Context.Service` classes that carry their own `static readonly layer` — e.g. `NoteRepo` (`infrastructure/db/repositories/note-repository.ts`) wraps Drizzle calls in `Effect.tryPromise`, mapping failures to `EDatabase`. A service that needs another service builds its layer with `.pipe(Layer.provide(OtherService.layer))`.
 - **`bootstrap/compose.ts`** merges every service layer into one `AppLayer` and builds a single `ManagedRuntime` (with a shared `memoMap`, so a service used by two other layers — e.g. `DbService` under both `NoteRepo` and `AuthService` — is only constructed once).
 - **`presentation/orpc/run-effect.ts`** is the only place Effect programs cross into oRPC's Promise world: it runs an effect on the shared runtime, catches every `TDomainError` into a plain success value first (never lets `runPromise` reject on an *expected* failure — only real defects propagate), then maps the caught error to an `ORPCError` by `_tag`.
-- Third-party Promise-based APIs that aren't Effect-aware (better-auth's `databaseHooks`, `@app/core`'s `TActivityRepo`/`TJobHandler`) are left as plain async functions at that seam — a Context.Service wraps them in `Effect.tryPromise` for the Effect side, rather than forcing the whole third-party surface through Effect.
+- Third-party Promise-based APIs that aren't Effect-aware (better-auth's `databaseHooks`, `@app/activity`'s `TActivityRepo`, `@app/queue`'s `TJobHandler`) are left as plain async functions at that seam — a Context.Service wraps them in `Effect.tryPromise` for the Effect side, rather than forcing the whole third-party surface through Effect.
 
 ### Web route colocation
 

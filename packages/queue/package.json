@@ -1,5 +1,5 @@
 {
-	"name": "@app/core",
+	"name": "@app/queue",
 	"version": "0.1.0",
 	"private": true,
 	"type": "module",
@@ -11,10 +11,7 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
-		"@app/schemas": "workspace:*",
-		"@mobily/ts-belt": "^3.13.1",
 		"amqplib": "^2.0.1",
-		"drizzle-orm": "^0.45.1",
 		"ts-pattern": "^5.9.0"
 	},
 	"devDependencies": {

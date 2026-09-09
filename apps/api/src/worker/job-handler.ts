@@ -1,4 +1,4 @@
-import type { TJobHandler } from "@app/core";
+import type { TJobHandler } from "@app/queue";
 import { logger } from "#/infrastructure/observability/logger.ts";
 
 export type TExampleJobPayload = {

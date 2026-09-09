@@ -23,11 +23,13 @@
 		"db:seed": "tsx --env-file=.env src/infrastructure/db/seed.ts"
 	},
 	"dependencies": {
-		"@app/core": "workspace:*",
+		"@app/activity": "workspace:*",
 		"@app/logger": "workspace:*",
 		"@app/messages": "workspace:*",
 		"@app/migrations": "workspace:*",
+		"@app/outbox": "workspace:*",
 		"@app/permissions": "workspace:*",
+		"@app/queue": "workspace:*",
 		"@app/schemas": "workspace:*",
 		"@hono/node-server": "^1.19.11",
 		"@mobily/ts-belt": "^3.13.1",

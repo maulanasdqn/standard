@@ -1,4 +1,4 @@
-import type { TActivityEntry, TActivityRepo } from "@app/core";
+import type { TActivityEntry, TActivityRepo } from "@app/activity";
 import { Context, Effect, Layer } from "effect";
 import { EDatabase } from "#/application/shared/errors.ts";
 import type { TDb } from "#/infrastructure/db/client.ts";

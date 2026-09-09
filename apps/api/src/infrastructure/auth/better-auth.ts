@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import type { TActivityRepo } from "@app/core";
+import type { TActivityRepo } from "@app/activity";
 import { ROLE } from "@app/permissions";
 import type { TDb } from "#/infrastructure/db/client.ts";
 import { env } from "#/infrastructure/config/env.ts";
