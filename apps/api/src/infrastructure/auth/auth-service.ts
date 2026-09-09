@@ -1,3 +1,4 @@
+import { ROLE } from "@app/permissions";
 import { Context, Effect, Layer } from "effect";
 import { match, P } from "ts-pattern";
 import { EAuth } from "#/application/shared/errors.ts";
@@ -36,7 +37,7 @@ export class AuthService extends Context.Service<
 							.with({ user: P.nullish }, () => null)
 							.otherwise(({ user }) => {
 								const role = resolveRole(
-									(user as { role?: string }).role ?? "viewer",
+									(user as { role?: string }).role ?? ROLE.VIEWER,
 								);
 								return {
 									user: {

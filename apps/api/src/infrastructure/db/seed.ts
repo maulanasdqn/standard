@@ -1,3 +1,4 @@
+import { ROLE } from "@app/permissions";
 import { eq } from "drizzle-orm";
 import { Effect } from "effect";
 import { match, P } from "ts-pattern";
@@ -28,7 +29,7 @@ const seed = Effect.gen(function* () {
 				});
 				await db
 					.update(user)
-					.set({ role: "admin" })
+					.set({ role: ROLE.ADMIN })
 					.where(eq(user.id, result.user.id));
 				return result.user.id;
 			}),

@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import type { TActivityRepo } from "@app/core";
+import { ROLE } from "@app/permissions";
 import type { TDb } from "#/infrastructure/db/client.ts";
 import { env } from "#/infrastructure/config/env.ts";
 
@@ -18,7 +19,7 @@ export const createAuth = ({ db, activityRepo }: TCreateAuthOptions) =>
 		emailAndPassword: { enabled: true },
 		user: {
 			additionalFields: {
-				role: { type: "string", defaultValue: "viewer", input: false },
+				role: { type: "string", defaultValue: ROLE.VIEWER, input: false },
 			},
 		},
 		databaseHooks: {

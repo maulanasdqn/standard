@@ -1,3 +1,4 @@
+import { ROLE } from "@app/permissions";
 import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
@@ -6,7 +7,7 @@ export const user = pgTable("user", {
 	email: text("email").notNull().unique(),
 	emailVerified: boolean("email_verified").notNull().default(false),
 	image: text("image"),
-	role: text("role").notNull().default("viewer"),
+	role: text("role").notNull().default(ROLE.VIEWER),
 	createdAt: timestamp("created_at", { withTimezone: true })
 		.notNull()
 		.defaultNow(),

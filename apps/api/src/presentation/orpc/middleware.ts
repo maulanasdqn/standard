@@ -1,4 +1,4 @@
-import { canAll, type TPermission, type TRole } from "@app/permissions";
+import { canAll, ROLE, type TPermission, type TRole } from "@app/permissions";
 import { A, D } from "@mobily/ts-belt";
 import { ORPCError, os } from "@orpc/server";
 import { match, P } from "ts-pattern";
@@ -51,4 +51,4 @@ export const requirePermission = (...required: TPermission[]) =>
 			.otherwise(() => next()),
 	);
 
-export const adminProcedure = requireRole("admin");
+export const adminProcedure = requireRole(ROLE.ADMIN);
