@@ -1,0 +1,21 @@
+{
+	"name": "@app/storage",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"scripts": {
+		"build": "tsc --noEmit",
+		"test": "vitest run"
+	},
+	"dependencies": {
+		"aws4fetch": "^1.0.20",
+		"ts-pattern": "^5.9.0"
+	},
+	"devDependencies": {
+		"typescript": "^5.9.3",
+		"vitest": "^3.0.5"
+	}
+}
