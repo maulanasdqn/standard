@@ -8,27 +8,33 @@ import {
 	updateNoteInputSchema,
 } from "@app/schemas";
 import { z } from "zod";
+import { createNote } from "#/application/note/create-note.ts";
+import { deleteNote } from "#/application/note/delete-note.ts";
+import { getNote } from "#/application/note/get-note.ts";
+import { listNotes } from "#/application/note/list-notes.ts";
+import { updateNote } from "#/application/note/update-note.ts";
 import { requirePermission } from "#/presentation/orpc/middleware.ts";
+import { runEffect } from "#/presentation/orpc/run-effect.ts";
 
 export const buildNoteRouter = () => ({
 	list: requirePermission(PERMISSION.NOTE_READ)
 		.route({ method: "GET", path: "/notes" })
 		.input(listNotesInputSchema)
 		.output(noteListSchema)
-		.handler(({ input, context }) => context.useCases.note.list(input)),
+		.handler(({ input }) => runEffect(listNotes(input))),
 
 	get: requirePermission(PERMISSION.NOTE_READ)
 		.route({ method: "GET", path: "/notes/{id}" })
 		.input(noteIdInputSchema)
 		.output(noteSchema)
-		.handler(({ input, context }) => context.useCases.note.get(input)),
+		.handler(({ input }) => runEffect(getNote(input))),
 
 	create: requirePermission(PERMISSION.NOTE_WRITE)
 		.route({ method: "POST", path: "/notes" })
 		.input(createNoteInputSchema)
 		.output(noteSchema)
 		.handler(({ input, context }) =>
-			context.useCases.note.create(input, context.session!.user.id),
+			runEffect(createNote(input, context.session!.user.id)),
 		),
 
 	update: requirePermission(PERMISSION.NOTE_WRITE)
@@ -36,7 +42,7 @@ export const buildNoteRouter = () => ({
 		.input(updateNoteInputSchema)
 		.output(noteSchema)
 		.handler(({ input, context }) =>
-			context.useCases.note.update(input, context.session!.user.id),
+			runEffect(updateNote(input, context.session!.user.id)),
 		),
 
 	remove: requirePermission(PERMISSION.NOTE_DELETE)
@@ -44,6 +50,6 @@ export const buildNoteRouter = () => ({
 		.input(noteIdInputSchema)
 		.output(z.object({ id: z.uuid() }))
 		.handler(({ input, context }) =>
-			context.useCases.note.remove(input, context.session!.user.id),
+			runEffect(deleteNote(input, context.session!.user.id)),
 		),
 });

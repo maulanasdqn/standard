@@ -1,19 +1,19 @@
-import type { TNote, TNoteIdInput } from "@app/schemas";
 import { NOTE_MESSAGE } from "@app/messages";
-import { match } from "ts-pattern";
+import type { TNote, TNoteIdInput } from "@app/schemas";
+import { Effect } from "effect";
 import { toNoteDto } from "#/application/note/to-note-dto.ts";
-import { notFound } from "#/application/shared/errors.ts";
-import type { IDependencies } from "#/application/use-cases-deps.ts";
+import { ENotFound, type EDatabase } from "#/application/shared/errors.ts";
+import { NoteRepo } from "#/infrastructure/db/repositories/note-repository.ts";
 
-export const makeGetNote =
-	({ noteRepo }: Pick<IDependencies, "noteRepo">) =>
-	async ({ id }: TNoteIdInput): Promise<TNote> => {
-		const row = await noteRepo.findById(id);
-		return match(row)
-			.with(null, () => {
-				throw notFound(NOTE_MESSAGE.NOT_FOUND);
-			})
-			.otherwise((found) => toNoteDto(found));
-	};
+export const getNote = Effect.fn("getNote")(function* ({
+	id,
+}: TNoteIdInput): Effect.fn.Return<TNote, ENotFound | EDatabase, NoteRepo> {
+	const noteRepo = yield* NoteRepo;
+	const row = yield* noteRepo.findById(id);
 
-export type TGetNote = ReturnType<typeof makeGetNote>;
+	if (row === null) {
+		return yield* new ENotFound({ message: NOTE_MESSAGE.NOT_FOUND });
+	}
+
+	return toNoteDto(row);
+});

@@ -1,6 +1,9 @@
+import { Effect, Layer } from "effect";
 import { describe, expect, it, vi } from "vitest";
-import type { INoteRepo, INoteRow } from "#/domain/note/note.ts";
-import { makeCreateNote } from "#/application/note/create-note.ts";
+import { createNote } from "#/application/note/create-note.ts";
+import type { INoteRow } from "#/domain/note/note.ts";
+import { ActivityRepo } from "#/infrastructure/db/repositories/activity-repository.ts";
+import { NoteRepo } from "#/infrastructure/db/repositories/note-repository.ts";
 
 const AUTHOR_ID = "22222222-2222-4222-8222-222222222222";
 
@@ -13,30 +16,38 @@ const row: INoteRow = {
 	updatedAt: new Date("2026-01-01T00:00:00Z"),
 };
 
-describe("makeCreateNote", () => {
+describe("createNote", () => {
 	it("creates a note and logs the activity", async (): Promise<void> => {
-		const noteRepo: Pick<INoteRepo, "create"> = {
-			create: vi.fn().mockResolvedValue(row),
-		};
-		const activityRepo = { insert: vi.fn().mockResolvedValue(undefined) };
+		const create = vi.fn().mockReturnValue(Effect.succeed(row));
+		const insert = vi.fn().mockReturnValue(Effect.succeed(undefined));
 
-		const createNote = makeCreateNote({
-			noteRepo: noteRepo as INoteRepo,
-			activityRepo,
-		});
+		const testLayer = Layer.merge(
+			Layer.succeed(
+				NoteRepo,
+				NoteRepo.of({
+					list: vi.fn(),
+					findById: vi.fn(),
+					create,
+					update: vi.fn(),
+					remove: vi.fn(),
+				}),
+			),
+			Layer.succeed(ActivityRepo, ActivityRepo.of({ insert })),
+		);
 
-		const result = await createNote(
-			{ title: "Title", body: "Body" },
-			AUTHOR_ID,
+		const result = await Effect.runPromise(
+			createNote({ title: "Title", body: "Body" }, AUTHOR_ID).pipe(
+				Effect.provide(testLayer),
+			),
 		);
 
 		expect(result.id).toBe(row.id);
-		expect(noteRepo.create).toHaveBeenCalledWith({
+		expect(create).toHaveBeenCalledWith({
 			title: "Title",
 			body: "Body",
 			authorId: AUTHOR_ID,
 		});
-		expect(activityRepo.insert).toHaveBeenCalledWith(
+		expect(insert).toHaveBeenCalledWith(
 			expect.objectContaining({ action: "note.create", entityId: row.id }),
 		);
 	});

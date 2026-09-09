@@ -1,31 +1,33 @@
-import type { TNoteIdInput } from "@app/schemas";
 import { NOTE_MESSAGE } from "@app/messages";
-import { match } from "ts-pattern";
-import { notFound } from "#/application/shared/errors.ts";
-import type { IDependencies } from "#/application/use-cases-deps.ts";
+import type { TNoteIdInput } from "@app/schemas";
+import { Effect } from "effect";
+import { ENotFound, type EDatabase } from "#/application/shared/errors.ts";
+import { ActivityRepo } from "#/infrastructure/db/repositories/activity-repository.ts";
+import { NoteRepo } from "#/infrastructure/db/repositories/note-repository.ts";
 
-export const makeDeleteNote =
-	({
-		noteRepo,
-		activityRepo,
-	}: Pick<IDependencies, "noteRepo" | "activityRepo">) =>
-	async ({ id }: TNoteIdInput, actorId: string): Promise<{ id: string }> => {
-		const removed = await noteRepo.remove(id);
+export const deleteNote = Effect.fn("deleteNote")(function* (
+	{ id }: TNoteIdInput,
+	actorId: string,
+): Effect.fn.Return<
+	{ id: string },
+	ENotFound | EDatabase,
+	NoteRepo | ActivityRepo
+> {
+	const noteRepo = yield* NoteRepo;
+	const activityRepo = yield* ActivityRepo;
 
-		match(removed)
-			.with(false, () => {
-				throw notFound(NOTE_MESSAGE.NOT_FOUND);
-			})
-			.otherwise(() => undefined);
+	const removed = yield* noteRepo.remove(id);
 
-		await activityRepo.insert({
-			actorId,
-			action: "note.delete",
-			entityType: "note",
-			entityId: id,
-		});
+	if (!removed) {
+		return yield* new ENotFound({ message: NOTE_MESSAGE.NOT_FOUND });
+	}
 
-		return { id };
-	};
+	yield* activityRepo.insert({
+		actorId,
+		action: "note.delete",
+		entityType: "note",
+		entityId: id,
+	});
 
-export type TDeleteNote = ReturnType<typeof makeDeleteNote>;
+	return { id };
+});

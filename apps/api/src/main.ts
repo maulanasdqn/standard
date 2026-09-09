@@ -1,10 +1,12 @@
 import "#/bootstrap/polyfill.ts";
 
 import { serve } from "@hono/node-server";
+import { Effect } from "effect";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { requestId } from "hono/request-id";
-import { compose } from "#/bootstrap/compose.ts";
+import { runtime } from "#/bootstrap/compose.ts";
+import { AuthService } from "#/infrastructure/auth/auth-service.ts";
 import { env } from "#/infrastructure/config/env.ts";
 import { logger } from "#/infrastructure/observability/logger.ts";
 import { mountAuth } from "#/presentation/http/mount-auth.ts";
@@ -14,17 +16,22 @@ import { mountWebDist } from "#/presentation/http/mount-web-dist.ts";
 import type { ORPCContext } from "#/presentation/orpc/context.ts";
 import { buildRouter } from "#/presentation/routers/index.ts";
 
-const { auth, authService, useCases } = await compose();
+const { auth } = await runtime.runPromise(
+	AuthService.use((service) => Effect.succeed(service)),
+);
 
 const router = buildRouter();
 
 const buildContext = async (headers: Headers): Promise<ORPCContext> => {
-	const session = await authService.getSession(headers);
+	const session = await runtime.runPromise(
+		AuthService.use((service) => service.getSession(headers)).pipe(
+			Effect.catch(() => Effect.succeed(null)),
+		),
+	);
 	return {
 		headers,
 		session,
 		permissions: session?.permissions ?? [],
-		useCases,
 	};
 };
 

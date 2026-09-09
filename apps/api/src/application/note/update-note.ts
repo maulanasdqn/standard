@@ -1,34 +1,30 @@
-import type { TNote, TUpdateNoteInput } from "@app/schemas";
 import { NOTE_MESSAGE } from "@app/messages";
-import { match } from "ts-pattern";
+import type { TNote, TUpdateNoteInput } from "@app/schemas";
+import { Effect } from "effect";
 import { toNoteDto } from "#/application/note/to-note-dto.ts";
-import { notFound } from "#/application/shared/errors.ts";
-import type { IDependencies } from "#/application/use-cases-deps.ts";
+import { ENotFound, type EDatabase } from "#/application/shared/errors.ts";
+import { ActivityRepo } from "#/infrastructure/db/repositories/activity-repository.ts";
+import { NoteRepo } from "#/infrastructure/db/repositories/note-repository.ts";
 
-export const makeUpdateNote =
-	({
-		noteRepo,
-		activityRepo,
-	}: Pick<IDependencies, "noteRepo" | "activityRepo">) =>
-	async (
-		{ id, ...patch }: TUpdateNoteInput,
-		actorId: string,
-	): Promise<TNote> => {
-		const updated = await noteRepo.update(id, patch);
-		const row = match(updated)
-			.with(null, () => {
-				throw notFound(NOTE_MESSAGE.NOT_FOUND);
-			})
-			.otherwise((found) => found);
+export const updateNote = Effect.fn("updateNote")(function* (
+	{ id, ...patch }: TUpdateNoteInput,
+	actorId: string,
+): Effect.fn.Return<TNote, ENotFound | EDatabase, NoteRepo | ActivityRepo> {
+	const noteRepo = yield* NoteRepo;
+	const activityRepo = yield* ActivityRepo;
 
-		await activityRepo.insert({
-			actorId,
-			action: "note.update",
-			entityType: "note",
-			entityId: row.id,
-		});
+	const updated = yield* noteRepo.update(id, patch);
 
-		return toNoteDto(row);
-	};
+	if (updated === null) {
+		return yield* new ENotFound({ message: NOTE_MESSAGE.NOT_FOUND });
+	}
 
-export type TUpdateNote = ReturnType<typeof makeUpdateNote>;
+	yield* activityRepo.insert({
+		actorId,
+		action: "note.update",
+		entityType: "note",
+		entityId: updated.id,
+	});
+
+	return toNoteDto(updated);
+});

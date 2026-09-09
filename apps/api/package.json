@@ -38,6 +38,7 @@
 		"amqplib": "^2.0.1",
 		"better-auth": "^1.5.3",
 		"drizzle-orm": "^0.45.1",
+		"effect": "4.0.0-rc.112",
 		"hono": "^4.12.9",
 		"ioredis": "^5.10.1",
 		"pg": "^8.16.3",

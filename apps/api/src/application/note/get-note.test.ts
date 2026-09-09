@@ -1,17 +1,29 @@
+import { Effect, Layer } from "effect";
 import { describe, expect, it, vi } from "vitest";
-import type { INoteRepo } from "#/domain/note/note.ts";
-import { makeGetNote } from "#/application/note/get-note.ts";
-import { AppError } from "#/application/shared/errors.ts";
+import { getNote } from "#/application/note/get-note.ts";
+import { ENotFound } from "#/application/shared/errors.ts";
+import { NoteRepo } from "#/infrastructure/db/repositories/note-repository.ts";
 
-describe("makeGetNote", () => {
-	it("throws a NOT_FOUND AppError when the note doesn't exist", async (): Promise<void> => {
-		const noteRepo: Pick<INoteRepo, "findById"> = {
-			findById: vi.fn().mockResolvedValue(null),
-		};
-		const getNote = makeGetNote({ noteRepo: noteRepo as INoteRepo });
+describe("getNote", () => {
+	it("fails with ENotFound when the note doesn't exist", async (): Promise<void> => {
+		const testLayer = Layer.succeed(
+			NoteRepo,
+			NoteRepo.of({
+				list: vi.fn(),
+				findById: vi.fn().mockReturnValue(Effect.succeed(null)),
+				create: vi.fn(),
+				update: vi.fn(),
+				remove: vi.fn(),
+			}),
+		);
 
-		await expect(
-			getNote({ id: "11111111-1111-4111-8111-111111111111" }),
-		).rejects.toBeInstanceOf(AppError);
+		const error = await Effect.runPromise(
+			getNote({ id: "11111111-1111-4111-8111-111111111111" }).pipe(
+				Effect.provide(testLayer),
+				Effect.flip,
+			),
+		);
+
+		expect(error).toBeInstanceOf(ENotFound);
 	});
 });

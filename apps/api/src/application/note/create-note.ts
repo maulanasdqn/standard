@@ -1,22 +1,25 @@
 import type { TCreateNoteInput, TNote } from "@app/schemas";
 import { D } from "@mobily/ts-belt";
+import { Effect } from "effect";
 import { toNoteDto } from "#/application/note/to-note-dto.ts";
-import type { IDependencies } from "#/application/use-cases-deps.ts";
+import type { EDatabase } from "#/application/shared/errors.ts";
+import { ActivityRepo } from "#/infrastructure/db/repositories/activity-repository.ts";
+import { NoteRepo } from "#/infrastructure/db/repositories/note-repository.ts";
 
-export const makeCreateNote =
-	({
-		noteRepo,
-		activityRepo,
-	}: Pick<IDependencies, "noteRepo" | "activityRepo">) =>
-	async (input: TCreateNoteInput, authorId: string): Promise<TNote> => {
-		const row = await noteRepo.create(D.merge(input, { authorId }));
-		await activityRepo.insert({
-			actorId: authorId,
-			action: "note.create",
-			entityType: "note",
-			entityId: row.id,
-		});
-		return toNoteDto(row);
-	};
+export const createNote = Effect.fn("createNote")(function* (
+	input: TCreateNoteInput,
+	authorId: string,
+): Effect.fn.Return<TNote, EDatabase, NoteRepo | ActivityRepo> {
+	const noteRepo = yield* NoteRepo;
+	const activityRepo = yield* ActivityRepo;
 
-export type TCreateNote = ReturnType<typeof makeCreateNote>;
+	const row = yield* noteRepo.create(D.merge(input, { authorId }));
+	yield* activityRepo.insert({
+		actorId: authorId,
+		action: "note.create",
+		entityType: "note",
+		entityId: row.id,
+	});
+
+	return toNoteDto(row);
+});

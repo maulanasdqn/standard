@@ -1,6 +1,6 @@
 # Standard
 
-A single-app boilerplate: **moon + pnpm workspaces · Hono + oRPC (RPC and REST from one router) · Drizzle · better-auth · Redis + RabbitMQ · React 19 + TanStack Router (foldered file-based routes) + Vite + Tailwind v4 · Biome · Vitest · Playwright**.
+A single-app boilerplate: **moon + pnpm workspaces · Hono + oRPC (RPC and REST from one router) · Effect (business logic, DI, error handling) · Drizzle · better-auth · Redis + RabbitMQ · React 19 + TanStack Router (foldered file-based routes) + Vite + Tailwind v4 · Biome · Vitest · Playwright**.
 
 Distilled from a larger production monorepo — same layering and conventions, scoped to one app so it's a starting point rather than a template you have to strip down.
 
@@ -10,13 +10,14 @@ Distilled from a larger production monorepo — same layering and conventions, s
 |---|---|
 | Monorepo | [moon](https://moonrepo.dev) + pnpm workspaces |
 | API | Hono host, business logic in [oRPC](https://orpc.unnoq.com) procedures — served as typed RPC **and** plain REST + OpenAPI from the same router |
+| Business logic | [Effect](https://effect.website) (`effect@rc`, v4) — use cases as `Effect.fn` programs, dependencies as `Context.Service` + `Layer`, errors as `Schema.TaggedError` |
 | DB | Drizzle ORM + Postgres |
 | Auth | [better-auth](https://better-auth.com), role stored on `user.role` |
 | Jobs | RabbitMQ (queue) + Redis (cache), separate worker entrypoint |
 | Web | React 19, TanStack Router (SPA, file-based) + Query + Form + Table + Store, Vite, Tailwind v4 |
 | Lint/format | [Biome](https://biomejs.dev) |
 | Tests | Vitest (unit/integration), Playwright (web e2e) |
-| Code style | [ts-pattern](https://github.com/gvergnaud/ts-pattern) for conditionals, [@mobily/ts-belt](https://github.com/mobily/ts-belt) for arrays/objects — see `.claude/skills/ts-conventions/SKILL.md` |
+| Code style | [ts-pattern](https://github.com/gvergnaud/ts-pattern) for conditionals, [@mobily/ts-belt](https://github.com/mobily/ts-belt) for arrays/objects — see `.claude/skills/ts-conventions/SKILL.md` (inside `Effect.gen`/`Effect.fn` bodies, error-raising control flow uses Effect's own `if (...) { return yield* new EError({...}) }` idiom instead, per Effect's own style guide) |
 
 ## Layout
 
@@ -42,16 +43,24 @@ Packages and the api export **raw TypeScript source** (e.g. `"exports": { ".": "
 ### API layering
 
 ```
-domain/          entities + port interfaces — no framework imports
-application/     use cases (makeXxx(deps) => (input) => ...), depend only on ports
-infrastructure/  concrete adapters: db (Drizzle), auth (better-auth), cache (Redis), queue (RabbitMQ), config, logging
-presentation/    orpc/ (context, middleware, error-mapping), routers/, http/ (Hono mounts)
+domain/          entities + port interfaces (Effect-returning: Effect<A, EDatabase>, etc.) — no framework imports
+application/     use cases as Effect.fn programs — depend on services via yield*, not manual DI
+infrastructure/  Context.Service classes + their Layer: db (Drizzle), auth (better-auth), cache (Redis), queue (RabbitMQ)
+presentation/    orpc/ (context, middleware, error-mapping, run-effect — the Effect↔Promise bridge), routers/, http/ (Hono mounts)
 worker/          RabbitMQ job handlers + outbox drain
-bootstrap/       compose.ts (the composition root), polyfill.ts, index.ts (public exports)
+bootstrap/       compose.ts (AppLayer + ManagedRuntime), polyfill.ts, index.ts (public exports)
 main.ts          the only file at src/ root — the HTTP entrypoint
 ```
 
 `presentation/http/mount-orpc.ts` mounts the **same** oRPC router twice: `RPCHandler` at `/rpc` for the typed client used by the web app, and `OpenAPIHandler` at `/api` for conventional REST — with a browsable OpenAPI reference at `/api`.
+
+### Effect: services, errors, and the oRPC bridge
+
+- **Errors** (`application/shared/errors.ts`) are `Schema.TaggedError` classes (`ENotFound`, `EForbidden`, `EUnauthorized`, `EDatabase`, `EAuth`, `EQueue`) — a use case fails by `return yield* new ENotFound({ message })`, never by throwing.
+- **Services** are `Context.Service` classes that carry their own `static readonly layer` — e.g. `NoteRepo` (`infrastructure/db/repositories/note-repository.ts`) wraps Drizzle calls in `Effect.tryPromise`, mapping failures to `EDatabase`. A service that needs another service builds its layer with `.pipe(Layer.provide(OtherService.layer))`.
+- **`bootstrap/compose.ts`** merges every service layer into one `AppLayer` and builds a single `ManagedRuntime` (with a shared `memoMap`, so a service used by two other layers — e.g. `DbService` under both `NoteRepo` and `AuthService` — is only constructed once).
+- **`presentation/orpc/run-effect.ts`** is the only place Effect programs cross into oRPC's Promise world: it runs an effect on the shared runtime, catches every `TDomainError` into a plain success value first (never lets `runPromise` reject on an *expected* failure — only real defects propagate), then maps the caught error to an `ORPCError` by `_tag`.
+- Third-party Promise-based APIs that aren't Effect-aware (better-auth's `databaseHooks`, `@app/core`'s `TActivityRepo`/`TJobHandler`) are left as plain async functions at that seam — a Context.Service wraps them in `Effect.tryPromise` for the Effect side, rather than forcing the whole third-party surface through Effect.
 
 ### Web route colocation
 
@@ -93,11 +102,11 @@ Seeded login: `admin@app.test` / `admin-password-123`.
 Using the `note` resource as the template:
 
 1. **Schema** — add input/output Zod schemas to `packages/schemas/src/<feature>/`
-2. **Domain** — add the row type + repo port to `apps/api/src/domain/<feature>/`
-3. **Infrastructure** — add the Drizzle table to `apps/api/src/infrastructure/db/schema/`, then the repository implementation under `db/repositories/`; run `pnpm db:generate` to create the migration
-4. **Application** — add one `makeXxx(deps) => (input) => ...` use case per operation under `apps/api/src/application/<feature>/`, composed by `build<Feature>UseCases`
-5. **Wire it into `bootstrap/compose.ts`** and `application/use-cases.ts`
-6. **Presentation** — add oRPC procedures in `apps/api/src/presentation/routers/<feature>.ts`, gated with `requirePermission(...)`; register in `routers/index.ts`
+2. **Domain** — add the row type + an Effect-returning repo port (`Effect.Effect<A, EDatabase>`) to `apps/api/src/domain/<feature>/`
+3. **Infrastructure** — add the Drizzle table to `apps/api/src/infrastructure/db/schema/`, then a `Context.Service` implementing the port under `db/repositories/` (wrap each Drizzle call in `Effect.tryPromise`, mapping failures to `EDatabase`); run `pnpm db:generate` to create the migration
+4. **Application** — add one `Effect.fn("name")(function* (input) {...})` use case per operation under `apps/api/src/application/<feature>/`, pulling its dependencies with `yield* SomeRepo`
+5. **Wire it into `bootstrap/compose.ts`** — add the new repo's `.layer` to `AppLayer`
+6. **Presentation** — add oRPC procedures in `apps/api/src/presentation/routers/<feature>.ts` calling `runEffect(useCase(input))`, gated with `requirePermission(...)`; register in `routers/index.ts`
 7. **Permissions** — add any new `PERMISSION.*` constants and extend `ROLE_PERMISSIONS` in `packages/permissions`
 8. **Web** — add the route under `apps/web/src/routes/_authenticated/<feature>/` with colocated `_components`/`_hooks`, calling the feature through `orpc.<feature>.*` from `src/libs/orpc/client.ts`
 

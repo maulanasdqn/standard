@@ -1,20 +1,36 @@
-export type TAppErrorCode =
-	| "NOT_FOUND"
-	| "FORBIDDEN"
-	| "UNAUTHORIZED"
-	| "BAD_REQUEST";
+import { Schema } from "effect";
 
-export class AppError extends Error {
-	readonly code: TAppErrorCode;
+export class ENotFound extends Schema.TaggedError<ENotFound>()("ENotFound", {
+	message: Schema.String,
+}) {}
 
-	constructor(code: TAppErrorCode, message: string) {
-		super(message);
-		this.code = code;
-		this.name = "AppError";
-	}
-}
+export class EForbidden extends Schema.TaggedError<EForbidden>()("EForbidden", {
+	message: Schema.String,
+}) {}
 
-export const notFound = (message: string): AppError =>
-	new AppError("NOT_FOUND", message);
-export const forbidden = (message: string): AppError =>
-	new AppError("FORBIDDEN", message);
+export class EUnauthorized extends Schema.TaggedError<EUnauthorized>()(
+	"EUnauthorized",
+	{
+		message: Schema.String,
+	},
+) {}
+
+export class EDatabase extends Schema.TaggedError<EDatabase>()("EDatabase", {
+	cause: Schema.Defect(),
+}) {}
+
+export class EAuth extends Schema.TaggedError<EAuth>()("EAuth", {
+	cause: Schema.Defect(),
+}) {}
+
+export class EQueue extends Schema.TaggedError<EQueue>()("EQueue", {
+	cause: Schema.Defect(),
+}) {}
+
+export type TDomainError =
+	| ENotFound
+	| EForbidden
+	| EUnauthorized
+	| EDatabase
+	| EAuth
+	| EQueue;
