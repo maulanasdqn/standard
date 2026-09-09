@@ -43,9 +43,7 @@ export const LoginForm = (): ReactElement => {
 					</div>
 				)}
 			</form.Field>
-			{serverError ? (
-				<p className="text-sm text-red-600">{serverError}</p>
-			) : null}
+			<FieldError errors={serverError ? [{ message: serverError }] : []} />
 			<form.Subscribe selector={(state) => state.isSubmitting}>
 				{(isSubmitting) => (
 					<Button type="submit" disabled={isSubmitting}>
