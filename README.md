@@ -70,6 +70,10 @@ URL search params are the source of truth for list state (`validateSearch`); per
 
 `sessionStore` (`src/libs/auth/session-store.ts`) is the single source of truth for the signed-in session — set via `setSession`/`refreshSession`, read via the `useSession()` hook. `permissionsStore` (`@app/components/guard/permissions-store`) stays in sync as a side effect of `setSession`, so `Guard`, `checkRoutePermissions`, and any `useSession()` consumer update together. `main.tsx` subscribes the store to the router (`router.update` + `router.invalidate`) so login/sign-out re-run route guards reactively — no full-page reloads.
 
+### Forms — TanStack Form
+
+Every form (`login-form.tsx`, `create-note-form.tsx`) is built on `@tanstack/react-form`, validated by the same Zod schema used at the API boundary (`loginInputSchema`, `createNoteInputSchema` from `@app/schemas`) — one schema, client and server. The form's logic lives in a colocated `_hooks/use-*-form.ts` (defaultValues, validators, `onSubmit`); the component only renders `form.Field`/`form.Subscribe`. Per-field errors render through the shared `FieldError` component (`@app/components/ui/field-error`).
+
 ## Getting started
 
 Requires [moon](https://moonrepo.dev/docs/install) and [proto](https://moonrepo.dev/proto) (or Node 24.16.0 / pnpm 11.6.0 installed directly) — not yet installed in this environment; `.prototools` pins the versions.

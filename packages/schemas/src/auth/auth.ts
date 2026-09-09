@@ -13,3 +13,9 @@ export const meSchema = z.object({
 	permissions: z.array(z.string()),
 });
 export type TMe = z.infer<typeof meSchema>;
+
+export const loginInputSchema = z.object({
+	email: z.email("Enter a valid email address."),
+	password: z.string().min(1, "Enter your password."),
+});
+export type TLoginInput = z.infer<typeof loginInputSchema>;

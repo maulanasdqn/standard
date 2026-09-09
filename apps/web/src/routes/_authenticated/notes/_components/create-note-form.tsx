@@ -1,50 +1,49 @@
 import { Button } from "@app/components/ui/button";
+import { FieldError } from "@app/components/ui/field-error";
 import { Input } from "@app/components/ui/input";
-import type { FormEvent, ReactElement } from "react";
-import { useState } from "react";
-import { useCreateNote } from "#/routes/_authenticated/notes/_hooks/use-notes.ts";
+import type { ReactElement } from "react";
+import { useCreateNoteForm } from "#/routes/_authenticated/notes/_hooks/use-create-note-form.ts";
 
 export const CreateNoteForm = (): ReactElement => {
-	const createNote = useCreateNote();
-	const [title, setTitle] = useState("");
-	const [body, setBody] = useState("");
-
-	const onSubmit = (event: FormEvent): void => {
-		event.preventDefault();
-		createNote.mutate(
-			{ title, body },
-			{
-				onSuccess: () => {
-					setTitle("");
-					setBody("");
-				},
-			},
-		);
-	};
+	const { form, onSubmit } = useCreateNoteForm();
 
 	return (
 		<form
 			onSubmit={onSubmit}
 			className="flex flex-col gap-3 border border-neutral-200 p-4"
 		>
-			<Input
-				placeholder="Title"
-				value={title}
-				onChange={(event) => setTitle(event.target.value)}
-				required
-			/>
-			<Input
-				placeholder="Body"
-				value={body}
-				onChange={(event) => setBody(event.target.value)}
-			/>
-			<Button
-				type="submit"
-				disabled={createNote.isPending}
-				className="self-start"
-			>
-				{createNote.isPending ? "Adding…" : "Add note"}
-			</Button>
+			<form.Field name="title">
+				{(field) => (
+					<div className="flex flex-col gap-1">
+						<Input
+							id={field.name}
+							placeholder="Title"
+							value={field.state.value}
+							onBlur={field.handleBlur}
+							onChange={(event) => field.handleChange(event.target.value)}
+						/>
+						<FieldError errors={field.state.meta.errors} />
+					</div>
+				)}
+			</form.Field>
+			<form.Field name="body">
+				{(field) => (
+					<Input
+						id={field.name}
+						placeholder="Body"
+						value={field.state.value}
+						onBlur={field.handleBlur}
+						onChange={(event) => field.handleChange(event.target.value)}
+					/>
+				)}
+			</form.Field>
+			<form.Subscribe selector={(state) => state.isSubmitting}>
+				{(isSubmitting) => (
+					<Button type="submit" disabled={isSubmitting} className="self-start">
+						{isSubmitting ? "Adding…" : "Add note"}
+					</Button>
+				)}
+			</form.Subscribe>
 		</form>
 	);
 };

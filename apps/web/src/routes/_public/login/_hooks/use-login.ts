@@ -1,38 +1,42 @@
+import { loginInputSchema, type TLoginInput } from "@app/schemas";
+import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
+import type { FormEvent } from "react";
 import { useState } from "react";
 import { match, P } from "ts-pattern";
 import { authClient } from "#/libs/auth/client.ts";
 import { refreshSession } from "#/libs/auth/session.ts";
 
-export type TUseLogin = {
-	login: (email: string, password: string) => Promise<void>;
-	error: string | null;
-	isSubmitting: boolean;
-};
+const DEFAULT_VALUES: TLoginInput = { email: "", password: "" };
 
-export const useLogin = (): TUseLogin => {
+export const useLoginForm = () => {
 	const navigate = useNavigate();
-	const [error, setError] = useState<string | null>(null);
-	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [serverError, setServerError] = useState<string | null>(null);
 
-	const login = async (email: string, password: string): Promise<void> => {
-		setError(null);
-		setIsSubmitting(true);
-		const { error: signInError } = await authClient.signIn.email({
-			email,
-			password,
-		});
-		setIsSubmitting(false);
+	const form = useForm({
+		defaultValues: DEFAULT_VALUES,
+		validators: { onChange: loginInputSchema },
+		onSubmit: async ({ value }) => {
+			setServerError(null);
+			const { error: signInError } = await authClient.signIn.email(value);
 
-		await match(signInError)
-			.with(P.nullish, async () => {
-				await refreshSession();
-				void navigate({ to: "/notes" });
-			})
-			.otherwise(async (found) => {
-				setError(found.message ?? "That email or password is incorrect.");
-			});
+			await match(signInError)
+				.with(P.nullish, async () => {
+					await refreshSession();
+					void navigate({ to: "/notes" });
+				})
+				.otherwise(async (found) => {
+					setServerError(
+						found.message ?? "That email or password is incorrect.",
+					);
+				});
+		},
+	});
+
+	const onSubmit = (event: FormEvent): void => {
+		event.preventDefault();
+		void form.handleSubmit();
 	};
 
-	return { login, error, isSubmitting };
+	return { form, serverError, onSubmit };
 };
