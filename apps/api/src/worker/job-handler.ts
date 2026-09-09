@@ -1,4 +1,5 @@
 import type { Job } from "bullmq";
+import { logger } from "#/infrastructure/observability/logger.ts";
 
 export type TExampleJobPayload = {
 	noteId: string;
@@ -7,5 +8,5 @@ export type TExampleJobPayload = {
 export const processExampleJob = async (
 	job: Job<TExampleJobPayload>,
 ): Promise<void> => {
-	console.log(`processing job ${job.id} for note ${job.data.noteId}`);
+	logger.info({ jobId: job.id, noteId: job.data.noteId }, "processing job");
 };

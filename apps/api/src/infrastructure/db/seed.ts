@@ -3,6 +3,7 @@ import { match, P } from "ts-pattern";
 import { compose } from "#/compose.ts";
 import { user } from "#/infrastructure/db/schema/auth.ts";
 import { note } from "#/infrastructure/db/schema/note.ts";
+import { logger } from "#/infrastructure/observability/logger.ts";
 
 const { db, auth } = compose();
 
@@ -34,5 +35,5 @@ await db.insert(note).values({
 	authorId: adminId,
 });
 
-console.log(`seeded: ${ADMIN_EMAIL} / ${ADMIN_PASSWORD} (role=admin)`);
+logger.info({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD }, "seeded admin");
 process.exit(0);

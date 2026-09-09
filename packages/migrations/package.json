@@ -11,6 +11,7 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
+		"@app/logger": "workspace:*",
 		"drizzle-orm": "^0.45.1",
 		"pg": "^8.16.3"
 	},

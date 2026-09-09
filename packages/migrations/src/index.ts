@@ -1,3 +1,4 @@
+import { createLogger } from "@app/logger";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { Pool } from "pg";
@@ -13,13 +14,17 @@ export const runMigrations = async ({
 	migrationsFolder,
 	databaseUrl,
 }: TRunMigrationsOptions): Promise<void> => {
+	const logger = createLogger({
+		service,
+		env: process.env.NODE_ENV ?? "development",
+	});
 	const pool = new Pool({ connectionString: databaseUrl });
 	const db = drizzle(pool);
 
 	try {
-		console.log(`[${service}] running migrations from ${migrationsFolder}`);
+		logger.info({ migrationsFolder }, "running migrations");
 		await migrate(db, { migrationsFolder });
-		console.log(`[${service}] migrations applied`);
+		logger.info("migrations applied");
 	} finally {
 		await pool.end();
 	}
