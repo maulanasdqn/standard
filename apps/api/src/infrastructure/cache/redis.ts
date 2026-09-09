@@ -6,9 +6,11 @@ import { SERVICE_TAG } from "#/infrastructure/service-tags.ts";
 export const createCache = (redisUrl: string): Redis =>
 	new Redis(redisUrl, { maxRetriesPerRequest: null });
 
+export type ICacheService = { readonly client: Redis };
+
 export class CacheService extends Context.Service<
 	CacheService,
-	{ readonly client: Redis }
+	ICacheService
 >()(SERVICE_TAG.CACHE) {
 	static readonly layer = Layer.effect(
 		CacheService,
