@@ -1,6 +1,7 @@
 import { Effect, Layer } from "effect";
 import { describe, expect, it, vi } from "vitest";
 import { noteCreate } from "#/application/note/note-create.ts";
+import { ACTIVITY_ACTION } from "#/application/shared/activity.ts";
 import type { INoteRow } from "#/domain/note/note.ts";
 import { ActivityRepo } from "#/infrastructure/db/repositories/activity-repository.ts";
 import { NoteRepo } from "#/infrastructure/db/repositories/note-repository.ts";
@@ -48,7 +49,10 @@ describe("noteCreate", () => {
 			authorId: AUTHOR_ID,
 		});
 		expect(insert).toHaveBeenCalledWith(
-			expect.objectContaining({ action: "note.create", entityId: row.id }),
+			expect.objectContaining({
+				action: ACTIVITY_ACTION.NOTE_CREATE,
+				entityId: row.id,
+			}),
 		);
 	});
 });

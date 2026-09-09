@@ -1,6 +1,10 @@
 import { NOTE_MESSAGE } from "@app/messages";
 import type { TNoteIdInput } from "@app/schemas";
 import { Effect } from "effect";
+import {
+	ACTIVITY_ACTION,
+	ACTIVITY_ENTITY_TYPE,
+} from "#/application/shared/activity.ts";
 import { ENotFound, type EDatabase } from "#/application/shared/errors.ts";
 import { ActivityRepo } from "#/infrastructure/db/repositories/activity-repository.ts";
 import { NoteRepo } from "#/infrastructure/db/repositories/note-repository.ts";
@@ -24,8 +28,8 @@ export const noteDelete = Effect.fn("noteDelete")(function* (
 
 	yield* activityRepo.insert({
 		actorId,
-		action: "note.delete",
-		entityType: "note",
+		action: ACTIVITY_ACTION.NOTE_DELETE,
+		entityType: ACTIVITY_ENTITY_TYPE.NOTE,
 		entityId: id,
 	});
 

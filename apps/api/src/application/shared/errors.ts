@@ -1,29 +1,39 @@
 import { Schema } from "effect";
+import { ERROR_TAG } from "#/application/shared/error-tags.ts";
 
-export class ENotFound extends Schema.TaggedError<ENotFound>()("ENotFound", {
-	message: Schema.String,
-}) {}
-
-export class EForbidden extends Schema.TaggedError<EForbidden>()("EForbidden", {
-	message: Schema.String,
-}) {}
-
-export class EUnauthorized extends Schema.TaggedError<EUnauthorized>()(
-	"EUnauthorized",
+export class ENotFound extends Schema.TaggedError<ENotFound>()(
+	ERROR_TAG.NOT_FOUND,
 	{
 		message: Schema.String,
 	},
 ) {}
 
-export class EDatabase extends Schema.TaggedError<EDatabase>()("EDatabase", {
+export class EForbidden extends Schema.TaggedError<EForbidden>()(
+	ERROR_TAG.FORBIDDEN,
+	{
+		message: Schema.String,
+	},
+) {}
+
+export class EUnauthorized extends Schema.TaggedError<EUnauthorized>()(
+	ERROR_TAG.UNAUTHORIZED,
+	{
+		message: Schema.String,
+	},
+) {}
+
+export class EDatabase extends Schema.TaggedError<EDatabase>()(
+	ERROR_TAG.DATABASE,
+	{
+		cause: Schema.Defect(),
+	},
+) {}
+
+export class EAuth extends Schema.TaggedError<EAuth>()(ERROR_TAG.AUTH, {
 	cause: Schema.Defect(),
 }) {}
 
-export class EAuth extends Schema.TaggedError<EAuth>()("EAuth", {
-	cause: Schema.Defect(),
-}) {}
-
-export class EQueue extends Schema.TaggedError<EQueue>()("EQueue", {
+export class EQueue extends Schema.TaggedError<EQueue>()(ERROR_TAG.QUEUE, {
 	cause: Schema.Defect(),
 }) {}
 

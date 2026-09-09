@@ -1,38 +1,39 @@
 import { ORPCError } from "@orpc/server";
 import { Effect } from "effect";
 import { match } from "ts-pattern";
+import { ERROR_TAG } from "#/application/shared/error-tags.ts";
 import type { TDomainError } from "#/application/shared/errors.ts";
 import { runtime, type TAppRuntimeServices } from "#/bootstrap/compose.ts";
 
 const toORPCError = (error: TDomainError): ORPCError<string, undefined> =>
 	match(error)
 		.with(
-			{ _tag: "ENotFound" },
+			{ _tag: ERROR_TAG.NOT_FOUND },
 			(e): ORPCError<string, undefined> =>
 				new ORPCError("NOT_FOUND", { message: e.message }),
 		)
 		.with(
-			{ _tag: "EForbidden" },
+			{ _tag: ERROR_TAG.FORBIDDEN },
 			(e): ORPCError<string, undefined> =>
 				new ORPCError("FORBIDDEN", { message: e.message }),
 		)
 		.with(
-			{ _tag: "EUnauthorized" },
+			{ _tag: ERROR_TAG.UNAUTHORIZED },
 			(e): ORPCError<string, undefined> =>
 				new ORPCError("UNAUTHORIZED", { message: e.message }),
 		)
 		.with(
-			{ _tag: "EDatabase" },
+			{ _tag: ERROR_TAG.DATABASE },
 			(): ORPCError<string, undefined> =>
 				new ORPCError("INTERNAL_SERVER_ERROR", { message: "Database error" }),
 		)
 		.with(
-			{ _tag: "EAuth" },
+			{ _tag: ERROR_TAG.AUTH },
 			(): ORPCError<string, undefined> =>
 				new ORPCError("INTERNAL_SERVER_ERROR", { message: "Auth error" }),
 		)
 		.with(
-			{ _tag: "EQueue" },
+			{ _tag: ERROR_TAG.QUEUE },
 			(): ORPCError<string, undefined> =>
 				new ORPCError("INTERNAL_SERVER_ERROR", { message: "Queue error" }),
 		)
