@@ -1,5 +1,5 @@
 import type { TNote, TNoteIdInput } from "@app/schemas";
-import { NOTE_MESSAGE } from "@app/errors";
+import { NOTE_MESSAGE } from "@app/messages";
 import { match } from "ts-pattern";
 import { toNoteDto } from "#/application/note/to-note-dto.ts";
 import { notFound } from "#/application/shared/errors.ts";

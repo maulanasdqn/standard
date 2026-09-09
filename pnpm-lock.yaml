@@ -26,12 +26,12 @@ importers:
       '@app/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@app/errors':
-        specifier: workspace:*
-        version: link:../../packages/errors
       '@app/logger':
         specifier: workspace:*
         version: link:../../packages/logger
+      '@app/messages':
+        specifier: workspace:*
+        version: link:../../packages/messages
       '@app/migrations':
         specifier: workspace:*
         version: link:../../packages/migrations
@@ -366,15 +366,6 @@ importers:
         specifier: ^3.0.5
         version: 3.2.7(@types/node@24.13.3)(jiti@2.7.0)(jsdom@28.1.0(@noble/hashes@2.4.0))(lightningcss@1.32.0)(tsx@4.23.13)
 
-  packages/errors:
-    devDependencies:
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-      vitest:
-        specifier: ^3.0.5
-        version: 3.2.7(@types/node@24.13.3)(jiti@2.7.0)(jsdom@28.1.0(@noble/hashes@2.4.0))(lightningcss@1.32.0)(tsx@4.23.13)
-
   packages/format:
     dependencies:
       ts-pattern:
@@ -396,6 +387,15 @@ importers:
       ts-pattern:
         specifier: ^5.9.0
         version: 5.9.0
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.0.5
+        version: 3.2.7(@types/node@24.13.3)(jiti@2.7.0)(jsdom@28.1.0(@noble/hashes@2.4.0))(lightningcss@1.32.0)(tsx@4.23.13)
+
+  packages/messages:
     devDependencies:
       typescript:
         specifier: ^5.9.3

@@ -32,7 +32,7 @@ packages/
   core/         BullMQ queue helper, transactional outbox, activity log
   logger/       pino factory
   format/       date/money/string formatters
-  errors/       user-facing error message constants
+  messages/     user-facing message constants
   migrations/   shared runMigrations() used by apps/api/src/migrate.ts
   components/   shadcn-style UI primitives + permission Guard + route-guard + theme.css
 ```

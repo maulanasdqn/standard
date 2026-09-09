@@ -23,8 +23,8 @@
 	},
 	"dependencies": {
 		"@app/core": "workspace:*",
-		"@app/errors": "workspace:*",
 		"@app/logger": "workspace:*",
+		"@app/messages": "workspace:*",
 		"@app/migrations": "workspace:*",
 		"@app/permissions": "workspace:*",
 		"@app/schemas": "workspace:*",
