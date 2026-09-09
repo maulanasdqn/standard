@@ -1,0 +1,10 @@
+pre-push:
+  parallel: true
+  jobs:
+    - name: format check
+      run: npx @biomejs/biome format .
+      glob: "*.{js,ts,jsx,tsx,json}"
+
+    - name: lint check
+      run: npx @biomejs/biome lint .
+      glob: "*.{js,ts,jsx,tsx}"

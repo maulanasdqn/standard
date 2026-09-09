@@ -1,0 +1,90 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.4.5/schema.json",
+  "vcs": {
+    "enabled": false,
+    "clientKind": "git",
+    "useIgnoreFile": false
+  },
+  "files": {
+    "ignoreUnknown": false,
+    "includes": [
+      "**/apps/*/src/**/*",
+      "**/apps/web/index.html",
+      "**/apps/web/vite.config.ts",
+      "**/packages/*/src/**/*",
+      "**/packages/components/ui/**/*",
+      "**/packages/components/guard/**/*",
+      "**/packages/components/lib/**/*",
+      "**/apps/api-e2e/tests/**/*",
+      "**/apps/api-e2e/vitest.config.ts",
+      "**/apps/web-e2e/tests/**/*",
+      "**/apps/web-e2e/support/**/*",
+      "**/apps/web-e2e/playwright.config.ts",
+      "!**/apps/web/src/routeTree.gen.ts",
+      "!**/apps/web/src/styles.css"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "tab"
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "off"
+      }
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "correctness": {
+        "useExhaustiveDependencies": "off"
+      },
+      "suspicious": {
+        "noArrayIndexKey": "off"
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double",
+      "semicolons": "always"
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["**/packages/components/ui/**"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
+          },
+          "style": {
+            "noNonNullAssertion": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "**/apps/api/src/main.ts",
+        "**/apps/api/src/infrastructure/auth/**",
+        "**/apps/api/src/infrastructure/db/seed.ts",
+        "**/apps/api/src/infrastructure/db/repositories/**",
+        "**/apps/api/src/presentation/routers/**"
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
+          },
+          "style": {
+            "noNonNullAssertion": "off"
+          }
+        }
+      }
+    }
+  ]
+}

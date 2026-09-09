@@ -1,0 +1,22 @@
+{
+	"name": "@app/api-e2e",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"e2e": "vitest run",
+		"e2e:local": "vitest run",
+		"typecheck": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@app/api": "workspace:*",
+		"@app/schemas": "workspace:*",
+		"@orpc/client": "^1.13.6",
+		"drizzle-kit": "^0.31.9",
+		"drizzle-orm": "^0.45.1",
+		"pg": "^8.16.3",
+		"typescript": "^5.9.3",
+		"vite-tsconfig-paths": "^5.1.4",
+		"vitest": "^3.0.5"
+	}
+}
