@@ -1,21 +1,21 @@
-import { createNoteInputSchema } from "@app/schemas";
+import { noteCreateInputSchema } from "@app/schemas";
 import { useForm } from "@tanstack/react-form";
 import type { FormEvent } from "react";
 import type { z } from "zod";
-import { useCreateNote } from "#/routes/_authenticated/notes/_hooks/use-notes.ts";
+import { useNoteCreate } from "#/routes/_authenticated/notes/_hooks/use-notes.ts";
 
-type TCreateNoteFormValues = z.input<typeof createNoteInputSchema>;
+type TCreateNoteFormValues = z.input<typeof noteCreateInputSchema>;
 
 const DEFAULT_VALUES: TCreateNoteFormValues = { title: "", body: "" };
 
-export const useCreateNoteForm = () => {
-	const createNote = useCreateNote();
+export const useNoteCreateForm = () => {
+	const noteCreate = useNoteCreate();
 
 	const form = useForm({
 		defaultValues: DEFAULT_VALUES,
-		validators: { onChange: createNoteInputSchema },
+		validators: { onChange: noteCreateInputSchema },
 		onSubmit: async ({ value, formApi }) => {
-			await createNote.mutateAsync({
+			await noteCreate.mutateAsync({
 				title: value.title,
 				body: value.body ?? "",
 			});

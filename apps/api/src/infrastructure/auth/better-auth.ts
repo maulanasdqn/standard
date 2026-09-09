@@ -10,7 +10,7 @@ type TCreateAuthOptions = {
 	activityRepo: TActivityRepo;
 };
 
-export const createAuth = ({ db, activityRepo }: TCreateAuthOptions) =>
+export const authCreate = ({ db, activityRepo }: TCreateAuthOptions) =>
 	betterAuth({
 		baseURL: env.BETTER_AUTH_URL,
 		secret: env.BETTER_AUTH_SECRET,
@@ -38,4 +38,4 @@ export const createAuth = ({ db, activityRepo }: TCreateAuthOptions) =>
 		},
 	});
 
-export type TAuth = ReturnType<typeof createAuth>;
+export type TAuth = ReturnType<typeof authCreate>;

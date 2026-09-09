@@ -20,7 +20,7 @@ Components render. Nothing else.
 
 ```
 note-list.tsx      -> renders <ul>, no useQuery/useMutation calls
-use-notes.ts        -> useNotes(), useCreateNote(), useDeleteNote()
+use-notes.ts        -> useNoteList(), useNoteCreate(), useNoteDelete()
 ```
 
 ## No comments

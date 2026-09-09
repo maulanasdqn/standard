@@ -2,10 +2,10 @@ import { checkRoutePermissions } from "@app/components/guard/route-guard";
 import { PERMISSION } from "@app/permissions";
 import { createFileRoute } from "@tanstack/react-router";
 import type { ReactElement } from "react";
-import { CreateNoteForm } from "#/routes/_authenticated/notes/_components/create-note-form.tsx";
+import { NoteCreateForm } from "#/routes/_authenticated/notes/_components/note-create-form.tsx";
 import { NoteList } from "#/routes/_authenticated/notes/_components/note-list.tsx";
 import { notesSearchSchema } from "#/routes/_authenticated/notes/_constants/search.ts";
-import { useNotes } from "#/routes/_authenticated/notes/_hooks/use-notes.ts";
+import { useNoteList } from "#/routes/_authenticated/notes/_hooks/use-notes.ts";
 
 export const Route = createFileRoute("/_authenticated/notes/")({
 	validateSearch: notesSearchSchema,
@@ -14,12 +14,12 @@ export const Route = createFileRoute("/_authenticated/notes/")({
 });
 
 function NotesPage(): ReactElement {
-	const { data, isLoading } = useNotes();
+	const { data, isLoading } = useNoteList();
 
 	return (
 		<div className="flex max-w-2xl flex-col gap-6">
 			<h1 className="text-xl font-semibold">Notes</h1>
-			<CreateNoteForm />
+			<NoteCreateForm />
 			{isLoading ? (
 				<p className="text-sm text-neutral-500">Loading…</p>
 			) : (

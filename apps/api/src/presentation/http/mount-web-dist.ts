@@ -2,7 +2,7 @@ import { serveStatic } from "@hono/node-server/serve-static";
 import type { Hono } from "hono";
 import { match, P } from "ts-pattern";
 
-export const mountWebDist = (
+export const webDistMount = (
 	app: Hono,
 	webDistPath: string | undefined,
 ): void => {

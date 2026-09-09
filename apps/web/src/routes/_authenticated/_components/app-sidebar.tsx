@@ -4,11 +4,11 @@ import { Link } from "@tanstack/react-router";
 import type { ReactElement } from "react";
 import { useSession } from "#/libs/auth/use-session.ts";
 import { NAV_ITEMS } from "#/routes/_authenticated/_constants/nav.ts";
-import { useSignOut } from "#/routes/_authenticated/_hooks/use-sign-out.ts";
+import { useSessionSignOut } from "#/routes/_authenticated/_hooks/use-session-sign-out.ts";
 
 export const AppSidebar = (): ReactElement => {
 	const session = useSession();
-	const signOut = useSignOut();
+	const signOut = useSessionSignOut();
 
 	return (
 		<aside className="flex w-56 flex-col justify-between border-r border-neutral-200 p-4">

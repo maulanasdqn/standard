@@ -6,7 +6,7 @@ import { DbService } from "#/infrastructure/db/db-service.ts";
 import { activityLog } from "#/infrastructure/db/schema/activity.ts";
 import { SERVICE_TAG } from "#/infrastructure/service-tags.ts";
 
-export const createActivityRepository = (db: TDb): TActivityRepo => ({
+export const activityRepositoryCreate = (db: TDb): TActivityRepo => ({
 	insert: async (entry: TActivityEntry): Promise<void> => {
 		await db.insert(activityLog).values({
 			actorId: entry.actorId,
@@ -30,7 +30,7 @@ export class ActivityRepo extends Context.Service<
 		ActivityRepo,
 		Effect.gen(function* () {
 			const { db } = yield* DbService;
-			const repo = createActivityRepository(db);
+			const repo = activityRepositoryCreate(db);
 
 			const insert: IActivityRepo["insert"] = (entry: TActivityEntry) =>
 				Effect.tryPromise({

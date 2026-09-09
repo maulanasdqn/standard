@@ -1,4 +1,4 @@
-import { createLogger } from "@app/logger";
+import { loggerCreate } from "@app/logger";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { Pool } from "pg";
@@ -9,12 +9,12 @@ type TRunMigrationsOptions = {
 	databaseUrl: string;
 };
 
-export const runMigrations = async ({
+export const migrationsRun = async ({
 	service,
 	migrationsFolder,
 	databaseUrl,
 }: TRunMigrationsOptions): Promise<void> => {
-	const logger = createLogger({
+	const logger = loggerCreate({
 		service,
 		env: process.env.NODE_ENV ?? "development",
 	});

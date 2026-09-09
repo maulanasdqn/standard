@@ -1,55 +1,55 @@
 import { PERMISSION } from "@app/permissions";
 import {
-	createNoteInputSchema,
-	listNotesInputSchema,
+	noteCreateInputSchema,
+	noteListInputSchema,
 	noteIdInputSchema,
 	noteListSchema,
 	noteSchema,
-	updateNoteInputSchema,
+	noteUpdateInputSchema,
 } from "@app/schemas";
 import { z } from "zod";
-import { createNote } from "#/application/note/create-note.ts";
-import { deleteNote } from "#/application/note/delete-note.ts";
-import { getNote } from "#/application/note/get-note.ts";
-import { listNotes } from "#/application/note/list-notes.ts";
-import { updateNote } from "#/application/note/update-note.ts";
-import { requirePermission } from "#/presentation/orpc/middleware.ts";
-import { runEffect } from "#/presentation/orpc/run-effect.ts";
+import { noteCreate } from "#/application/note/note-create.ts";
+import { noteDelete } from "#/application/note/note-delete.ts";
+import { noteGet } from "#/application/note/note-get.ts";
+import { noteList } from "#/application/note/note-list.ts";
+import { noteUpdate } from "#/application/note/note-update.ts";
+import { permissionRequire } from "#/presentation/orpc/middleware.ts";
+import { effectRun } from "#/presentation/orpc/run-effect.ts";
 
-export const buildNoteRouter = () => ({
-	list: requirePermission(PERMISSION.NOTE_READ)
+export const noteRouterBuild = () => ({
+	list: permissionRequire(PERMISSION.NOTE_READ)
 		.route({ method: "GET", path: "/notes" })
-		.input(listNotesInputSchema)
+		.input(noteListInputSchema)
 		.output(noteListSchema)
-		.handler(({ input }) => runEffect(listNotes(input))),
+		.handler(({ input }) => effectRun(noteList(input))),
 
-	get: requirePermission(PERMISSION.NOTE_READ)
+	get: permissionRequire(PERMISSION.NOTE_READ)
 		.route({ method: "GET", path: "/notes/{id}" })
 		.input(noteIdInputSchema)
 		.output(noteSchema)
-		.handler(({ input }) => runEffect(getNote(input))),
+		.handler(({ input }) => effectRun(noteGet(input))),
 
-	create: requirePermission(PERMISSION.NOTE_WRITE)
+	create: permissionRequire(PERMISSION.NOTE_WRITE)
 		.route({ method: "POST", path: "/notes" })
-		.input(createNoteInputSchema)
+		.input(noteCreateInputSchema)
 		.output(noteSchema)
 		.handler(({ input, context }) =>
-			runEffect(createNote(input, context.session!.user.id)),
+			effectRun(noteCreate(input, context.session!.user.id)),
 		),
 
-	update: requirePermission(PERMISSION.NOTE_WRITE)
+	update: permissionRequire(PERMISSION.NOTE_WRITE)
 		.route({ method: "PATCH", path: "/notes/{id}" })
-		.input(updateNoteInputSchema)
+		.input(noteUpdateInputSchema)
 		.output(noteSchema)
 		.handler(({ input, context }) =>
-			runEffect(updateNote(input, context.session!.user.id)),
+			effectRun(noteUpdate(input, context.session!.user.id)),
 		),
 
-	remove: requirePermission(PERMISSION.NOTE_DELETE)
+	remove: permissionRequire(PERMISSION.NOTE_DELETE)
 		.route({ method: "DELETE", path: "/notes/{id}" })
 		.input(noteIdInputSchema)
 		.output(z.object({ id: z.uuid() }))
 		.handler(({ input, context }) =>
-			runEffect(deleteNote(input, context.session!.user.id)),
+			effectRun(noteDelete(input, context.session!.user.id)),
 		),
 });

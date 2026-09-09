@@ -9,7 +9,7 @@ export type TQueueConnection = {
 	channel: Channel;
 };
 
-export const createQueueConnection = async (
+export const queueConnectionCreate = async (
 	rabbitmqUrl: string,
 ): Promise<TQueueConnection> => {
 	const model = await connect(rabbitmqUrl);
@@ -27,7 +27,7 @@ export class QueueService extends Context.Service<
 		QueueService,
 		Effect.gen(function* () {
 			const { channel } = yield* Effect.tryPromise({
-				try: () => createQueueConnection(env.RABBITMQ_URL),
+				try: () => queueConnectionCreate(env.RABBITMQ_URL),
 				catch: (cause) => new EQueue({ cause }),
 			});
 			return QueueService.of({ channel });

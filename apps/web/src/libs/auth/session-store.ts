@@ -1,12 +1,12 @@
 import type { TMe } from "@app/schemas";
 import { Store } from "@tanstack/store";
-import { syncPermissions } from "#/libs/auth/permissions.ts";
+import { permissionsSync } from "#/libs/auth/permissions.ts";
 
 export const sessionStore = new Store<TMe | null>(null);
 
-export const setSession = (me: TMe | null): void => {
+export const sessionSet = (me: TMe | null): void => {
 	sessionStore.setState(() => me);
-	syncPermissions(me);
+	permissionsSync(me);
 };
 
-export const clearSession = (): void => setSession(null);
+export const sessionClear = (): void => sessionSet(null);

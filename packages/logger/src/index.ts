@@ -17,7 +17,7 @@ const defaultLevelFor = (env: string): string =>
 		.with("production", () => "info")
 		.otherwise(() => "debug");
 
-export const createLogger = ({
+export const loggerCreate = ({
 	service,
 	env,
 	level,
@@ -28,4 +28,4 @@ export const createLogger = ({
 		transport: transportFor(env),
 	});
 
-export type TLogger = ReturnType<typeof createLogger>;
+export type TLogger = ReturnType<typeof loggerCreate>;

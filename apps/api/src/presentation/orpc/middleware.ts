@@ -26,7 +26,7 @@ export const protectedProcedure = publicProcedure.use(
 			.otherwise((session) => next({ context: D.merge(context, { session }) })),
 );
 
-export const requireRole = (...roles: TRole[]) =>
+export const roleRequire = (...roles: TRole[]) =>
 	protectedProcedure.use(async ({ context, next }) => {
 		const allowed =
 			context.session != null && A.includes(roles, context.session.user.role);
@@ -40,7 +40,7 @@ export const requireRole = (...roles: TRole[]) =>
 			.otherwise(() => next());
 	});
 
-export const requirePermission = (...required: TPermission[]) =>
+export const permissionRequire = (...required: TPermission[]) =>
 	protectedProcedure.use(async ({ context, next }) =>
 		match(canAll(context.permissions, required))
 			.with(false, () => {
@@ -51,4 +51,4 @@ export const requirePermission = (...required: TPermission[]) =>
 			.otherwise(() => next()),
 	);
 
-export const adminProcedure = requireRole(ROLE.ADMIN);
+export const adminProcedure = roleRequire(ROLE.ADMIN);

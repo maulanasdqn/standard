@@ -5,11 +5,11 @@ import { EAuth } from "#/application/shared/errors.ts";
 import type { IAuthService } from "#/domain/ports/auth-service.ts";
 import type { ISession } from "#/domain/session/session.ts";
 import { DbService } from "#/infrastructure/db/db-service.ts";
-import { createActivityRepository } from "#/infrastructure/db/repositories/activity-repository.ts";
-import { createAuth, type TAuth } from "#/infrastructure/auth/better-auth.ts";
+import { activityRepositoryCreate } from "#/infrastructure/db/repositories/activity-repository.ts";
+import { authCreate, type TAuth } from "#/infrastructure/auth/better-auth.ts";
 import {
-	resolvePermissions,
-	resolveRole,
+	permissionsResolve,
+	roleResolve,
 } from "#/infrastructure/auth/permissions.ts";
 import { SERVICE_TAG } from "#/infrastructure/service-tags.ts";
 
@@ -23,8 +23,8 @@ export class AuthService extends Context.Service<
 		AuthService,
 		Effect.gen(function* () {
 			const { db } = yield* DbService;
-			const activityRepo = createActivityRepository(db);
-			const auth = createAuth({ db, activityRepo });
+			const activityRepo = activityRepositoryCreate(db);
+			const auth = authCreate({ db, activityRepo });
 
 			const getSession: IAuthService["getSession"] = (headers: Headers) =>
 				Effect.tryPromise({
@@ -37,7 +37,7 @@ export class AuthService extends Context.Service<
 							.with({ session: P.nullish }, () => null)
 							.with({ user: P.nullish }, () => null)
 							.otherwise(({ user }) => {
-								const role = resolveRole(
+								const role = roleResolve(
 									(user as { role?: string }).role ?? ROLE.VIEWER,
 								);
 								return {
@@ -47,7 +47,7 @@ export class AuthService extends Context.Service<
 										name: user.name,
 										role,
 									},
-									permissions: resolvePermissions(role),
+									permissions: permissionsResolve(role),
 								};
 							}),
 					),

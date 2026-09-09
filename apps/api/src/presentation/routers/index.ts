@@ -1,11 +1,11 @@
-import { buildHealthRouter } from "#/presentation/routers/health.ts";
-import { buildMeRouter } from "#/presentation/routers/me.ts";
-import { buildNoteRouter } from "#/presentation/routers/note.ts";
+import { healthRouterBuild } from "#/presentation/routers/health.ts";
+import { meRouterBuild } from "#/presentation/routers/me.ts";
+import { noteRouterBuild } from "#/presentation/routers/note.ts";
 
-export const buildRouter = () => ({
-	health: buildHealthRouter(),
-	me: buildMeRouter(),
-	note: buildNoteRouter(),
+export const routerBuild = () => ({
+	health: healthRouterBuild(),
+	me: meRouterBuild(),
+	note: noteRouterBuild(),
 });
 
-export type TAppRouter = ReturnType<typeof buildRouter>;
+export type TAppRouter = ReturnType<typeof routerBuild>;

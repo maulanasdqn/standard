@@ -21,7 +21,7 @@ type TDeps = {
 	buildContext: (headers: Headers) => Promise<ORPCContext>;
 };
 
-export const mountOrpc = ({
+export const orpcMount = ({
 	app,
 	router,
 	logger,

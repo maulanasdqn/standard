@@ -42,7 +42,7 @@ type TResult<A> =
 	| { readonly _tag: "success"; readonly value: A }
 	| { readonly _tag: "failure"; readonly error: TDomainError };
 
-export const runEffect = async <A>(
+export const effectRun = async <A>(
 	effect: Effect.Effect<A, TDomainError, TAppRuntimeServices>,
 ): Promise<A> => {
 	const result = await runtime.runPromise(

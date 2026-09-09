@@ -4,7 +4,7 @@ import { orpc } from "#/libs/orpc/client.ts";
 
 const routeApi = getRouteApi("/_authenticated/notes/");
 
-export const useNotes = () => {
+export const useNoteList = () => {
 	const search = routeApi.useSearch();
 
 	return useQuery(
@@ -15,7 +15,7 @@ export const useNotes = () => {
 	);
 };
 
-export const useCreateNote = () => {
+export const useNoteCreate = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation(
@@ -27,7 +27,7 @@ export const useCreateNote = () => {
 	);
 };
 
-export const useDeleteNote = () => {
+export const useNoteDelete = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation(

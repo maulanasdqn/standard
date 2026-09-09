@@ -11,7 +11,7 @@ export type TJobQueue<TPayload> = {
 	add: (payload: TPayload) => Promise<boolean>;
 };
 
-export const createJobQueue = <TPayload>(
+export const jobQueueCreate = <TPayload>(
 	name: string,
 	channel: Channel,
 ): TJobQueue<TPayload> => ({
@@ -29,7 +29,7 @@ export type TJobHandler<TPayload> = (
 	message: ConsumeMessage,
 ) => Promise<void>;
 
-export const createQueueWorker = async <TPayload>(
+export const queueWorkerCreate = async <TPayload>(
 	name: string,
 	channel: Channel,
 	handler: TJobHandler<TPayload>,

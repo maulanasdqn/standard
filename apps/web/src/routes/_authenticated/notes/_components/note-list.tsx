@@ -6,14 +6,14 @@ import type { TNote } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
 import type { ReactElement } from "react";
 import { match } from "ts-pattern";
-import { useDeleteNote } from "#/routes/_authenticated/notes/_hooks/use-notes.ts";
+import { useNoteDelete } from "#/routes/_authenticated/notes/_hooks/use-notes.ts";
 
 type TNoteListProps = {
 	notes: readonly TNote[];
 };
 
 export const NoteList = ({ notes }: TNoteListProps): ReactElement => {
-	const deleteNote = useDeleteNote();
+	const noteDelete = useNoteDelete();
 
 	return match(A.isEmpty(notes))
 		.with(true, () => <p className="text-sm text-neutral-500">No notes yet.</p>)
@@ -35,7 +35,7 @@ export const NoteList = ({ notes }: TNoteListProps): ReactElement => {
 							<Button
 								variant="ghost"
 								size="sm"
-								onClick={() => deleteNote.mutate({ id: note.id })}
+								onClick={() => noteDelete.mutate({ id: note.id })}
 							>
 								Delete
 							</Button>

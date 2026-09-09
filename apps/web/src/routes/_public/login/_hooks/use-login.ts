@@ -5,7 +5,7 @@ import type { FormEvent } from "react";
 import { useState } from "react";
 import { match, P } from "ts-pattern";
 import { authClient } from "#/libs/auth/client.ts";
-import { refreshSession } from "#/libs/auth/session.ts";
+import { sessionRefresh } from "#/libs/auth/session.ts";
 
 const DEFAULT_VALUES: TLoginInput = { email: "", password: "" };
 
@@ -22,7 +22,7 @@ export const useLoginForm = () => {
 
 			await match(signInError)
 				.with(P.nullish, async () => {
-					await refreshSession();
+					await sessionRefresh();
 					void navigate({ to: "/notes" });
 				})
 				.otherwise(async (found) => {

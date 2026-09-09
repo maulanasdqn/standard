@@ -1,6 +1,6 @@
 import { Effect, Layer } from "effect";
 import { describe, expect, it, vi } from "vitest";
-import { createNote } from "#/application/note/create-note.ts";
+import { noteCreate } from "#/application/note/note-create.ts";
 import type { INoteRow } from "#/domain/note/note.ts";
 import { ActivityRepo } from "#/infrastructure/db/repositories/activity-repository.ts";
 import { NoteRepo } from "#/infrastructure/db/repositories/note-repository.ts";
@@ -16,7 +16,7 @@ const row: INoteRow = {
 	updatedAt: new Date("2026-01-01T00:00:00Z"),
 };
 
-describe("createNote", () => {
+describe("noteCreate", () => {
 	it("creates a note and logs the activity", async (): Promise<void> => {
 		const create = vi.fn().mockReturnValue(Effect.succeed(row));
 		const insert = vi.fn().mockReturnValue(Effect.succeed(undefined));
@@ -36,7 +36,7 @@ describe("createNote", () => {
 		);
 
 		const result = await Effect.runPromise(
-			createNote({ title: "Title", body: "Body" }, AUTHOR_ID).pipe(
+			noteCreate({ title: "Title", body: "Body" }, AUTHOR_ID).pipe(
 				Effect.provide(testLayer),
 			),
 		);

@@ -11,8 +11,8 @@ export const isRole = (value: string): value is TRole =>
 		.with(P.union(ROLE.ADMIN, ROLE.MEMBER, ROLE.VIEWER), () => true)
 		.otherwise(() => false);
 
-export const resolveRole = (value: string): TRole =>
+export const roleResolve = (value: string): TRole =>
 	isRole(value) ? value : ROLE.VIEWER;
 
-export const resolvePermissions = (role: string): readonly TPermission[] =>
-	permissionsForRole(resolveRole(role));
+export const permissionsResolve = (role: string): readonly TPermission[] =>
+	permissionsForRole(roleResolve(role));

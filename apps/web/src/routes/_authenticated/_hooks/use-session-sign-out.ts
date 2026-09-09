@@ -1,13 +1,13 @@
 import { useNavigate } from "@tanstack/react-router";
 import { authClient } from "#/libs/auth/client.ts";
-import { clearSession } from "#/libs/auth/session-store.ts";
+import { sessionClear } from "#/libs/auth/session-store.ts";
 
-export const useSignOut = (): (() => Promise<void>) => {
+export const useSessionSignOut = (): (() => Promise<void>) => {
 	const navigate = useNavigate();
 
 	return async (): Promise<void> => {
 		await authClient.signOut();
-		clearSession();
+		sessionClear();
 		void navigate({ to: "/login" });
 	};
 };

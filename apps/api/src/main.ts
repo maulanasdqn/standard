@@ -9,18 +9,18 @@ import { runtime } from "#/bootstrap/compose.ts";
 import { AuthService } from "#/infrastructure/auth/auth-service.ts";
 import { env } from "#/infrastructure/config/env.ts";
 import { logger } from "#/infrastructure/observability/logger.ts";
-import { mountAuth } from "#/presentation/http/mount-auth.ts";
-import { mountHealth } from "#/presentation/http/mount-health.ts";
-import { mountOrpc } from "#/presentation/http/mount-orpc.ts";
-import { mountWebDist } from "#/presentation/http/mount-web-dist.ts";
+import { authMount } from "#/presentation/http/mount-auth.ts";
+import { healthMount } from "#/presentation/http/mount-health.ts";
+import { orpcMount } from "#/presentation/http/mount-orpc.ts";
+import { webDistMount } from "#/presentation/http/mount-web-dist.ts";
 import type { ORPCContext } from "#/presentation/orpc/context.ts";
-import { buildRouter } from "#/presentation/routers/index.ts";
+import { routerBuild } from "#/presentation/routers/index.ts";
 
 const { auth } = await runtime.runPromise(
 	AuthService.use((service) => Effect.succeed(service)),
 );
 
-const router = buildRouter();
+const router = routerBuild();
 
 const buildContext = async (headers: Headers): Promise<ORPCContext> => {
 	const session = await runtime.runPromise(
@@ -65,10 +65,10 @@ app.use(
 	}),
 );
 
-mountHealth(app);
-mountAuth(app, auth);
-mountOrpc({ app, router, logger, buildContext });
-mountWebDist(app, env.WEB_DIST_PATH);
+healthMount(app);
+authMount(app, auth);
+orpcMount({ app, router, logger, buildContext });
+webDistMount(app, env.WEB_DIST_PATH);
 
 serve({ fetch: app.fetch, port: env.PORT }, (info): void => {
 	logger.info({ port: info.port }, "api listening");

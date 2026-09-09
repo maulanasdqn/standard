@@ -5,7 +5,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Toaster } from "sonner";
 import { match, P } from "ts-pattern";
-import { refreshSession } from "#/libs/auth/session.ts";
+import { sessionRefresh } from "#/libs/auth/session.ts";
 import { sessionStore } from "#/libs/auth/session-store.ts";
 import { queryClient } from "#/libs/tanstack-query/index.ts";
 import { routeTree } from "./routeTree.gen.ts";
@@ -37,7 +37,7 @@ sessionStore.subscribe(() => {
 });
 
 const bootstrap = async (): Promise<void> => {
-	await refreshSession();
+	await sessionRefresh();
 
 	const rootElement = document.getElementById("root");
 

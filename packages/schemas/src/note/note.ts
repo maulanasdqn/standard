@@ -11,26 +11,26 @@ export const noteSchema = z.object({
 });
 export type TNote = z.infer<typeof noteSchema>;
 
-export const createNoteInputSchema = z.object({
+export const noteCreateInputSchema = z.object({
 	title: z.string().min(1).max(200),
 	body: z.string().max(10_000).default(""),
 });
-export type TCreateNoteInput = z.infer<typeof createNoteInputSchema>;
+export type TNoteCreateInput = z.infer<typeof noteCreateInputSchema>;
 
-export const updateNoteInputSchema = z.object({
+export const noteUpdateInputSchema = z.object({
 	id: z.uuid(),
 	title: z.string().min(1).max(200).optional(),
 	body: z.string().max(10_000).optional(),
 });
-export type TUpdateNoteInput = z.infer<typeof updateNoteInputSchema>;
+export type TNoteUpdateInput = z.infer<typeof noteUpdateInputSchema>;
 
 export const noteIdInputSchema = z.object({ id: z.uuid() });
 export type TNoteIdInput = z.infer<typeof noteIdInputSchema>;
 
-export const listNotesInputSchema = paginationSchema.extend({
+export const noteListInputSchema = paginationSchema.extend({
 	search: z.string().optional(),
 });
-export type TListNotesInput = z.infer<typeof listNotesInputSchema>;
+export type TNoteListInput = z.infer<typeof noteListInputSchema>;
 
 export const noteListSchema = paginated(noteSchema);
 export type TNoteList = z.infer<typeof noteListSchema>;

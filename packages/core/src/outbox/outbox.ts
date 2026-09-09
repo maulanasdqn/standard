@@ -17,7 +17,7 @@ export type TOutboxRepo = {
 
 export type TOutboxHandler = (event: TOutboxEvent) => Promise<void>;
 
-export const drainOutbox = async (
+export const outboxDrain = async (
 	repo: TOutboxRepo,
 	handlers: Record<string, TOutboxHandler>,
 	batchSize = 20,

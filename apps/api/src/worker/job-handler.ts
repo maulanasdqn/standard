@@ -5,7 +5,7 @@ export type TExampleJobPayload = {
 	noteId: string;
 };
 
-export const processExampleJob: TJobHandler<TExampleJobPayload> = async (
+export const exampleJobProcess: TJobHandler<TExampleJobPayload> = async (
 	payload,
 ): Promise<void> => {
 	logger.info({ noteId: payload.noteId }, "processing job");
