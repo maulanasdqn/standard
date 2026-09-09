@@ -5,8 +5,8 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Toaster } from "sonner";
 import { match, P } from "ts-pattern";
-import { syncPermissions } from "#/libs/auth/permissions.ts";
-import { fetchMe } from "#/libs/auth/session.ts";
+import { refreshSession } from "#/libs/auth/session.ts";
+import { sessionStore } from "#/libs/auth/session-store.ts";
 import { queryClient } from "#/libs/tanstack-query/index.ts";
 import { routeTree } from "./routeTree.gen.ts";
 import "./styles.css";
@@ -23,9 +23,21 @@ declare module "@tanstack/react-router" {
 	}
 }
 
+sessionStore.subscribe(() => {
+	const session = sessionStore.state;
+	router.update({
+		...router.options,
+		context: {
+			queryClient,
+			session,
+			permissions: (session?.permissions ?? []) as TPermission[],
+		},
+	});
+	void router.invalidate();
+});
+
 const bootstrap = async (): Promise<void> => {
-	const me = await fetchMe();
-	syncPermissions(me);
+	await refreshSession();
 
 	const rootElement = document.getElementById("root");
 
@@ -37,14 +49,7 @@ const bootstrap = async (): Promise<void> => {
 			createRoot(root).render(
 				<StrictMode>
 					<QueryClientProvider client={queryClient}>
-						<RouterProvider
-							router={router}
-							context={{
-								queryClient,
-								session: me,
-								permissions: (me?.permissions ?? []) as TPermission[],
-							}}
-						/>
+						<RouterProvider router={router} />
 						<Toaster />
 					</QueryClientProvider>
 				</StrictMode>,

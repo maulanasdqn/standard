@@ -2,10 +2,12 @@ import { Button } from "@app/components/ui/button";
 import { A } from "@mobily/ts-belt";
 import { Link } from "@tanstack/react-router";
 import type { ReactElement } from "react";
+import { useSession } from "#/libs/auth/use-session.ts";
 import { NAV_ITEMS } from "#/routes/_authenticated/_constants/nav.ts";
 import { useSignOut } from "#/routes/_authenticated/_hooks/use-sign-out.ts";
 
 export const AppSidebar = (): ReactElement => {
+	const session = useSession();
 	const signOut = useSignOut();
 
 	return (
@@ -21,9 +23,16 @@ export const AppSidebar = (): ReactElement => {
 					</Link>
 				))}
 			</nav>
-			<Button variant="outline" onClick={() => void signOut()}>
-				Sign out
-			</Button>
+			<div className="flex flex-col gap-2">
+				{session ? (
+					<p className="truncate px-1 text-xs text-neutral-500">
+						{session.user.email}
+					</p>
+				) : null}
+				<Button variant="outline" onClick={() => void signOut()}>
+					Sign out
+				</Button>
+			</div>
 		</aside>
 	);
 };

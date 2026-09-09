@@ -66,6 +66,10 @@ routes/_authenticated/notes/
 
 URL search params are the source of truth for list state (`validateSearch`); permission checks live in `beforeLoad: checkRoutePermissions({ permissions: [...] })` from `@app/components/guard/route-guard`.
 
+### Client state — TanStack Store
+
+`sessionStore` (`src/libs/auth/session-store.ts`) is the single source of truth for the signed-in session — set via `setSession`/`refreshSession`, read via the `useSession()` hook. `permissionsStore` (`@app/components/guard/permissions-store`) stays in sync as a side effect of `setSession`, so `Guard`, `checkRoutePermissions`, and any `useSession()` consumer update together. `main.tsx` subscribes the store to the router (`router.update` + `router.invalidate`) so login/sign-out re-run route guards reactively — no full-page reloads.
+
 ## Getting started
 
 Requires [moon](https://moonrepo.dev/docs/install) and [proto](https://moonrepo.dev/proto) (or Node 24.16.0 / pnpm 11.6.0 installed directly) — not yet installed in this environment; `.prototools` pins the versions.

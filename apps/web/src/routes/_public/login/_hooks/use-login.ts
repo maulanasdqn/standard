@@ -2,6 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { match, P } from "ts-pattern";
 import { authClient } from "#/libs/auth/client.ts";
+import { refreshSession } from "#/libs/auth/session.ts";
 
 export type TUseLogin = {
 	login: (email: string, password: string) => Promise<void>;
@@ -23,12 +24,12 @@ export const useLogin = (): TUseLogin => {
 		});
 		setIsSubmitting(false);
 
-		match(signInError)
-			.with(P.nullish, () => {
-				window.location.href = "/notes";
+		await match(signInError)
+			.with(P.nullish, async () => {
+				await refreshSession();
 				void navigate({ to: "/notes" });
 			})
-			.otherwise((found) => {
+			.otherwise(async (found) => {
 				setError(found.message ?? "That email or password is incorrect.");
 			});
 	};
