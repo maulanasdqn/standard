@@ -20,6 +20,7 @@ export const authCreate = ({ db, activityRepo }: TCreateAuthOptions) =>
 		secret: env.BETTER_AUTH_SECRET,
 		trustedOrigins: [env.WEB_ORIGIN],
 		database: drizzleAdapter(db, { provider: "pg" }),
+		advanced: { database: { generateId: (): string => crypto.randomUUID() } },
 		emailAndPassword: { enabled: true },
 		user: {
 			additionalFields: {

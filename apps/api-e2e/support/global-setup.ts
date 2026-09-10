@@ -1,5 +1,6 @@
 import { spawn, type ChildProcess } from "node:child_process";
 import { execSync } from "node:child_process";
+import { match, P } from "ts-pattern";
 
 const E2E_PORT = 3107;
 const BASE_DATABASE_URL = process.env.DATABASE_URL ?? "postgres://app:app@localhost:5432/app";
@@ -59,11 +60,18 @@ export const setup = async (): Promise<void> => {
 		cwd: new URL("../../..", import.meta.url).pathname,
 		env,
 		stdio: "inherit",
+		detached: true,
 	});
 
 	await waitForHealth();
 };
 
 export const teardown = (): void => {
-	apiProcess?.kill();
+	match(apiProcess?.pid)
+		.with(P.nullish, () => undefined)
+		.otherwise((pid) => {
+			try {
+				process.kill(-pid);
+			} catch {}
+		});
 };
