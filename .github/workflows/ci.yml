@@ -36,6 +36,74 @@ jobs:
 
       - run: moon ci --color
 
+  e2e:
+    name: E2E (api + web)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: app
+          POSTGRES_DB: app
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U app -d app"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      rabbitmq:
+        image: rabbitmq:4-alpine
+        env:
+          RABBITMQ_DEFAULT_USER: app
+          RABBITMQ_DEFAULT_PASS: app
+        ports:
+          - 5672:5672
+        options: >-
+          --health-cmd "rabbitmq-diagnostics -q ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgres://app:app@localhost:5432/app
+      REDIS_URL: redis://localhost:6379
+      RABBITMQ_URL: amqp://app:app@localhost:5672
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.6.0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Provide apps/api/.env for the seed script
+        run: cp apps/api/.env.example apps/api/.env
+
+      - name: API e2e
+        run: pnpm --filter @app/api-e2e e2e
+
+      - name: Install Playwright Chromium
+        run: pnpm --filter @app/web-e2e exec playwright install --with-deps chromium
+
+      - name: Web e2e
+        run: pnpm --filter @app/web-e2e e2e
+
   drizzle-drift:
     name: Drizzle schema drift check
     runs-on: ubuntu-latest
