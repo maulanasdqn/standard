@@ -9,6 +9,10 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
+		"@app/activity": "workspace:*",
+		"@app/messages": "workspace:*",
+		"@app/permissions": "workspace:*",
+		"@app/schemas": "workspace:*",
 		"@playwright/test": "^1.49.0",
 		"typescript": "^5.9.3"
 	},
