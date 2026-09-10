@@ -1,5 +1,6 @@
-import { canAll, ROLE, type TPermission, type TRole } from "@app/permissions";
-import { A, D } from "@mobily/ts-belt";
+import { AUTH_MESSAGE } from "@app/messages";
+import { canAll, type TPermission } from "@app/permissions";
+import { D } from "@mobily/ts-belt";
 import { ORPCError, os } from "@orpc/server";
 import { match, P } from "ts-pattern";
 import type { ORPCContext } from "#/presentation/orpc/context.ts";
@@ -20,36 +21,17 @@ export const protectedProcedure = publicProcedure.use(
 		match(context.session)
 			.with(P.nullish, () => {
 				throw new ORPCError("UNAUTHORIZED", {
-					message: "Please sign in to continue.",
+					message: AUTH_MESSAGE.UNAUTHORIZED,
 				});
 			})
 			.otherwise((session) => next({ context: D.merge(context, { session }) })),
 );
 
-export const roleRequire = (...roles: TRole[]) =>
-	protectedProcedure.use(async ({ context, next }) => {
-		const allowed =
-			context.session != null &&
-			A.some(roles, (role) => role === context.session?.user.role);
-
-		return match(allowed)
-			.with(false, () => {
-				throw new ORPCError("FORBIDDEN", {
-					message: "You don't have permission to do that.",
-				});
-			})
-			.otherwise(() => next());
-	});
-
 export const permissionRequire = (...required: TPermission[]) =>
 	protectedProcedure.use(async ({ context, next }) =>
 		match(canAll(context.permissions, required))
 			.with(false, () => {
-				throw new ORPCError("FORBIDDEN", {
-					message: "You don't have permission to do that.",
-				});
+				throw new ORPCError("FORBIDDEN", { message: AUTH_MESSAGE.FORBIDDEN });
 			})
 			.otherwise(() => next()),
 	);
-
-export const adminProcedure = roleRequire(ROLE.ADMIN);

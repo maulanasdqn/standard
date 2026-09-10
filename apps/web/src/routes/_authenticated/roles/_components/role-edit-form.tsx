@@ -50,7 +50,7 @@ export const RoleEditForm = ({ role }: TRoleEditFormProps): ReactElement => {
 						<Label htmlFor={field.name}>Description</Label>
 						<Textarea
 							id={field.name}
-							value={field.state.value}
+							value={field.state.value ?? ""}
 							disabled={isFixed}
 							onBlur={field.handleBlur}
 							onChange={(event) => field.handleChange(event.target.value)}

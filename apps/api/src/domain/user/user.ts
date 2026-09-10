@@ -5,6 +5,7 @@ import type {
 } from "@app/schemas";
 import type { Effect } from "effect";
 import type { EAuth, EDatabase } from "#/application/shared/errors.ts";
+import type { TRowPage } from "#/domain/shared/pagination.ts";
 
 export type TUserRow = {
 	id: string;
@@ -20,9 +21,7 @@ export type TUserRow = {
 export type TRoleMemberCounts = Readonly<Record<string, number>>;
 
 export type TUserRepo = {
-	list: (
-		input: TUserListInput,
-	) => Effect.Effect<{ items: TUserRow[]; total: number }, EDatabase>;
+	list: (input: TUserListInput) => Effect.Effect<TRowPage<TUserRow>, EDatabase>;
 	findById: (id: string) => Effect.Effect<TUserRow | null, EDatabase>;
 	findByEmail: (email: string) => Effect.Effect<TUserRow | null, EDatabase>;
 	create: (input: TUserCreateInput) => Effect.Effect<TUserRow, EAuth>;

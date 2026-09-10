@@ -1,14 +1,14 @@
 import { checkRoutePermissions } from "@app/components/guard/route-guard";
 import { PERMISSION } from "@app/permissions";
+import { noteListInputSchema } from "@app/schemas";
 import { createFileRoute } from "@tanstack/react-router";
 import type { ReactElement } from "react";
 import { NoteCreateForm } from "#/routes/_authenticated/notes/_components/note-create-form.tsx";
 import { NoteList } from "#/routes/_authenticated/notes/_components/note-list.tsx";
-import { notesSearchSchema } from "#/routes/_authenticated/notes/_constants/search.ts";
 import { useNoteList } from "#/routes/_authenticated/notes/_hooks/use-notes.ts";
 
 export const Route = createFileRoute("/_authenticated/notes/")({
-	validateSearch: notesSearchSchema,
+	validateSearch: noteListInputSchema,
 	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.NOTE_READ] }),
 	component: NotesPage,
 });

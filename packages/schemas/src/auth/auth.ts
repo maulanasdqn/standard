@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { permissionSchema } from "../permission/permission.ts";
 
 export const sessionUserSchema = z.object({
 	id: z.uuid(),
@@ -10,7 +11,7 @@ export type TSessionUser = z.infer<typeof sessionUserSchema>;
 
 export const meSchema = z.object({
 	user: sessionUserSchema,
-	permissions: z.array(z.string()),
+	permissions: z.array(permissionSchema).readonly(),
 });
 export type TMe = z.infer<typeof meSchema>;
 

@@ -29,7 +29,7 @@ export type TRoleCreateInput = z.infer<typeof roleCreateInputSchema>;
 export const roleUpdateInputSchema = z.object({
 	key: z.string().min(1),
 	label: z.string().min(1).max(100).optional(),
-	description: z.string().max(500).optional(),
+	description: z.string().max(500).nullable().optional(),
 	permissions: z.array(permissionSchema).optional(),
 });
 export type TRoleUpdateInput = z.infer<typeof roleUpdateInputSchema>;

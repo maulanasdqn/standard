@@ -3,6 +3,7 @@ import { D } from "@mobily/ts-belt";
 import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
 import type { FormEvent } from "react";
+import { match } from "ts-pattern";
 import type { z } from "zod";
 import { useRoleUpdate } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
 
@@ -24,7 +25,11 @@ export const useRoleEditForm = (role: TRoleDto) => {
 		defaultValues,
 		validators: { onChange: roleEditFormSchema },
 		onSubmit: ({ value }) => {
-			roleUpdate.mutate(D.merge(value, { key: role.key }), {
+			const description = match(value.description)
+				.with("", () => null)
+				.otherwise((text) => text);
+
+			roleUpdate.mutate(D.merge(value, { key: role.key, description }), {
 				onSuccess: () => void navigate({ to: "/roles" }),
 			});
 		},

@@ -1,4 +1,3 @@
-import type { TPermission } from "@app/permissions";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
@@ -30,7 +29,7 @@ sessionStore.subscribe(() => {
 		context: {
 			queryClient,
 			session,
-			permissions: (session?.permissions ?? []) as TPermission[],
+			permissions: session?.permissions ?? [],
 		},
 	});
 	void router.invalidate();

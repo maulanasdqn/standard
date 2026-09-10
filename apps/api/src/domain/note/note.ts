@@ -5,6 +5,7 @@ import type {
 } from "@app/schemas";
 import type { Effect } from "effect";
 import type { EDatabase } from "#/application/shared/errors.ts";
+import type { TRowPage } from "#/domain/shared/pagination.ts";
 
 export type TNoteRow = {
 	id: string;
@@ -16,9 +17,7 @@ export type TNoteRow = {
 };
 
 export type TNoteRepo = {
-	list: (
-		input: TNoteListInput,
-	) => Effect.Effect<{ items: TNoteRow[]; total: number }, EDatabase>;
+	list: (input: TNoteListInput) => Effect.Effect<TRowPage<TNoteRow>, EDatabase>;
 	findById: (id: string) => Effect.Effect<TNoteRow | null, EDatabase>;
 	create: (
 		input: TNoteCreateInput,
