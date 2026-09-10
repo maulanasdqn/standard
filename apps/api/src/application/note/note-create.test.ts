@@ -1,7 +1,7 @@
 import { Effect, Layer } from "effect";
 import { describe, expect, it, vi } from "vitest";
 import { noteCreate } from "#/application/note/note-create.ts";
-import { ACTIVITY_ACTION } from "#/application/shared/activity.ts";
+import { ACTIVITY_ACTION } from "@app/activity";
 import type { TNoteRow } from "#/domain/note/note.ts";
 import { ActivityRepo } from "#/infrastructure/db/repositories/activity-repository.ts";
 import { NoteRepo } from "#/infrastructure/db/repositories/note-repository.ts";
@@ -33,7 +33,7 @@ describe("noteCreate", () => {
 					remove: vi.fn(),
 				}),
 			),
-			Layer.succeed(ActivityRepo, ActivityRepo.of({ insert })),
+			Layer.succeed(ActivityRepo, ActivityRepo.of({ insert, list: vi.fn() })),
 		);
 
 		const result = await Effect.runPromise(

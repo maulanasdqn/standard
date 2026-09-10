@@ -3,10 +3,7 @@ import { isRole } from "@app/permissions";
 import type { TRoleKeyInput } from "@app/schemas";
 import { D } from "@mobily/ts-belt";
 import { Effect } from "effect";
-import {
-	ACTIVITY_ACTION,
-	ACTIVITY_ENTITY_TYPE,
-} from "#/application/shared/activity.ts";
+import { ACTIVITY_ACTION, ACTIVITY_ENTITY_TYPE } from "@app/activity";
 import {
 	EBadRequest,
 	EConflict,

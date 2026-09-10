@@ -6,6 +6,7 @@ export const PERMISSION_LABEL: Record<TPermission, string> = {
 	[PERMISSION.NOTE_WRITE]: "Create & edit notes",
 	[PERMISSION.NOTE_DELETE]: "Delete notes",
 	[PERMISSION.USER_MANAGE]: "Manage users",
+	[PERMISSION.ACTIVITY_READ]: "View the activity log",
 };
 
 export const ROLE_LABEL: Record<TRole, string> = {

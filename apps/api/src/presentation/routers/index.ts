@@ -1,3 +1,4 @@
+import { activityRouterBuild } from "#/presentation/routers/activity.ts";
 import { healthRouterBuild } from "#/presentation/routers/health.ts";
 import { meRouterBuild } from "#/presentation/routers/me.ts";
 import { noteRouterBuild } from "#/presentation/routers/note.ts";
@@ -12,6 +13,7 @@ export const routerBuild = () => ({
 	user: userRouterBuild(),
 	role: roleRouterBuild(),
 	permission: permissionRouterBuild(),
+	activity: activityRouterBuild(),
 });
 
 export type TAppRouter = ReturnType<typeof routerBuild>;

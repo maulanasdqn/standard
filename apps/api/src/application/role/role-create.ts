@@ -3,10 +3,7 @@ import type { TRoleCreateInput, TRoleDto } from "@app/schemas";
 import { Effect } from "effect";
 import { roleExists } from "#/application/role/role-ensure.ts";
 import { toRoleDto } from "#/application/role/to-role-dto.ts";
-import {
-	ACTIVITY_ACTION,
-	ACTIVITY_ENTITY_TYPE,
-} from "#/application/shared/activity.ts";
+import { ACTIVITY_ACTION, ACTIVITY_ENTITY_TYPE } from "@app/activity";
 import { EConflict, type EDatabase } from "#/application/shared/errors.ts";
 import { ActivityRepo } from "#/infrastructure/db/repositories/activity-repository.ts";
 import { CustomRoleRepo } from "#/infrastructure/db/repositories/custom-role-repository.ts";

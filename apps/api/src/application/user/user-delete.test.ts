@@ -23,7 +23,10 @@ describe("userDelete", () => {
 					countByRole: vi.fn(),
 				}),
 			),
-			Layer.succeed(ActivityRepo, ActivityRepo.of({ insert: vi.fn() })),
+			Layer.succeed(
+				ActivityRepo,
+				ActivityRepo.of({ insert: vi.fn(), list: vi.fn() }),
+			),
 		);
 
 		const error = await Effect.runPromise(

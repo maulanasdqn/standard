@@ -15,6 +15,13 @@
       "when": 1789026339207,
       "tag": "0001_overconfident_wilson_fisk",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789031030371,
+      "tag": "0002_naive_magma",
+      "breakpoints": true
     }
   ]
 }

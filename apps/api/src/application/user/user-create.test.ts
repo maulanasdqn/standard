@@ -2,7 +2,7 @@ import { ROLE } from "@app/permissions";
 import type { TUserCreateInput } from "@app/schemas";
 import { Effect, Layer } from "effect";
 import { describe, expect, it, type Mock, vi } from "vitest";
-import { ACTIVITY_ACTION } from "#/application/shared/activity.ts";
+import { ACTIVITY_ACTION } from "@app/activity";
 import { EConflict } from "#/application/shared/errors.ts";
 import { userCreate } from "#/application/user/user-create.ts";
 import type { TUserRow } from "#/domain/user/user.ts";
@@ -58,7 +58,7 @@ const layerBuild = (
 				remove: vi.fn(),
 			}),
 		),
-		Layer.succeed(ActivityRepo, ActivityRepo.of({ insert })),
+		Layer.succeed(ActivityRepo, ActivityRepo.of({ insert, list: vi.fn() })),
 	);
 
 describe("userCreate", () => {

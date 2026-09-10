@@ -3,10 +3,7 @@ import { isRole } from "@app/permissions";
 import type { TRoleDto, TRoleUpdateInput } from "@app/schemas";
 import { Effect } from "effect";
 import { toRoleDto } from "#/application/role/to-role-dto.ts";
-import {
-	ACTIVITY_ACTION,
-	ACTIVITY_ENTITY_TYPE,
-} from "#/application/shared/activity.ts";
+import { ACTIVITY_ACTION, ACTIVITY_ENTITY_TYPE } from "@app/activity";
 import {
 	EBadRequest,
 	type EDatabase,

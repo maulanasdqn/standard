@@ -37,7 +37,10 @@ const layerBuild = (
 				remove,
 			}),
 		),
-		Layer.succeed(ActivityRepo, ActivityRepo.of({ insert: vi.fn() })),
+		Layer.succeed(
+			ActivityRepo,
+			ActivityRepo.of({ insert: vi.fn(), list: vi.fn() }),
+		),
 	);
 
 describe("roleDelete", () => {

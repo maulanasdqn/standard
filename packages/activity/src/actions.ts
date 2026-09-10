@@ -5,6 +5,9 @@ export const ACTIVITY_ENTITY_TYPE = {
 	SESSION: "session",
 } as const;
 
+export type TActivityEntityType =
+	(typeof ACTIVITY_ENTITY_TYPE)[keyof typeof ACTIVITY_ENTITY_TYPE];
+
 export const ACTIVITY_ACTION = {
 	NOTE_CREATE: "note.create",
 	NOTE_UPDATE: "note.update",
@@ -17,3 +20,6 @@ export const ACTIVITY_ACTION = {
 	ROLE_DELETE: "role.delete",
 	SESSION_CREATE: "session.create",
 } as const;
+
+export type TActivityAction =
+	(typeof ACTIVITY_ACTION)[keyof typeof ACTIVITY_ACTION];

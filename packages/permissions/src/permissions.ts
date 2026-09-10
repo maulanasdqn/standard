@@ -5,6 +5,7 @@ export const PERMISSION = {
 	NOTE_WRITE: "note:write",
 	NOTE_DELETE: "note:delete",
 	USER_MANAGE: "user:manage",
+	ACTIVITY_READ: "activity:read",
 } as const;
 
 export type TPermission = (typeof PERMISSION)[keyof typeof PERMISSION];

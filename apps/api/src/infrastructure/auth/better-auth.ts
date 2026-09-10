@@ -2,10 +2,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import type { TActivityRepo } from "@app/activity";
 import { ROLE } from "@app/permissions";
-import {
-	ACTIVITY_ACTION,
-	ACTIVITY_ENTITY_TYPE,
-} from "#/application/shared/activity.ts";
+import { ACTIVITY_ACTION, ACTIVITY_ENTITY_TYPE } from "@app/activity";
 import type { TDb } from "#/infrastructure/db/client.ts";
 import { env } from "#/infrastructure/config/env.ts";
 
