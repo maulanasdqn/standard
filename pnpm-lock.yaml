@@ -157,6 +157,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@app/activity':
+        specifier: workspace:*
+        version: link:../../packages/activity
       '@app/api':
         specifier: workspace:*
         version: link:../api

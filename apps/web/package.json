@@ -10,6 +10,7 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
+		"@app/activity": "workspace:*",
 		"@app/api": "workspace:*",
 		"@app/components": "workspace:*",
 		"@app/format": "workspace:*",

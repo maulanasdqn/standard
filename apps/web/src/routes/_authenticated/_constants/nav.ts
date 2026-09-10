@@ -9,6 +9,11 @@ export const NAV_ITEMS = [
 		label: "Permissions",
 		permissions: [PERMISSION.USER_MANAGE],
 	},
+	{
+		to: "/activity",
+		label: "Activity",
+		permissions: [PERMISSION.ACTIVITY_READ],
+	},
 ] as const;
 
 export type TNavItem = (typeof NAV_ITEMS)[number];

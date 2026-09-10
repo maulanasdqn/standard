@@ -81,6 +81,13 @@ export const useUserSearch = (): TUserSearch => {
 	};
 };
 
+export const useUserPageChange = (): ((page: number) => void) => {
+	const navigate = listRouteApi.useNavigate();
+	return (page: number): void => {
+		void navigate({ search: (prev) => D.merge(prev, { page }) });
+	};
+};
+
 export const useIsSelf = (): ((id: string) => boolean) => {
 	const session = useSession();
 	return (id: string): boolean => session?.user.id === id;
