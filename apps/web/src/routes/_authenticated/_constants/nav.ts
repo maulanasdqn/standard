@@ -14,6 +14,7 @@ export const NAV_ITEMS = [
 		label: "Activity",
 		permissions: [PERMISSION.ACTIVITY_READ],
 	},
+	{ to: "/account", label: "Account", permissions: [] },
 ] as const;
 
 export type TNavItem = (typeof NAV_ITEMS)[number];

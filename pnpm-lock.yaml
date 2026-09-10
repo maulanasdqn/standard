@@ -169,6 +169,9 @@ importers:
       '@app/format':
         specifier: workspace:*
         version: link:../../packages/format
+      '@app/messages':
+        specifier: workspace:*
+        version: link:../../packages/messages
       '@app/permissions':
         specifier: workspace:*
         version: link:../../packages/permissions

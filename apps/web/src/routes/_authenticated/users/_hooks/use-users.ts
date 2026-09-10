@@ -1,3 +1,4 @@
+import { USER_MESSAGE } from "@app/messages";
 import { D } from "@mobily/ts-belt";
 import {
 	type QueryClient,
@@ -8,6 +9,7 @@ import {
 	useQueryClient,
 } from "@tanstack/react-query";
 import { getRouteApi } from "@tanstack/react-router";
+import { toast } from "sonner";
 import { match } from "ts-pattern";
 import { useSession } from "#/libs/auth/use-session.ts";
 import { orpc } from "#/libs/orpc/client.ts";
@@ -122,6 +124,18 @@ export const useUserUpdate = (): UseMutationResult<
 		}),
 	);
 };
+
+export const useUserPasswordReset = (): UseMutationResult<
+	TUserOut["resetPassword"],
+	TUserErr["resetPassword"],
+	TUserIn["resetPassword"]
+> =>
+	useMutation(
+		orpc.user.resetPassword.mutationOptions({
+			onSuccess: () => toast.success(USER_MESSAGE.PASSWORD_RESET),
+			onError: toastError,
+		}),
+	);
 
 export const useUserDelete = (): UseMutationResult<
 	TUserOut["remove"],
