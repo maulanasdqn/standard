@@ -17,11 +17,11 @@ export const queueConnectionCreate = async (
 	return { model, channel };
 };
 
-export type IQueueService = { readonly channel: Channel };
+export type TQueueService = { readonly channel: Channel };
 
 export class QueueService extends Context.Service<
 	QueueService,
-	IQueueService
+	TQueueService
 >()(SERVICE_TAG.QUEUE) {
 	static readonly layer = Layer.effect(
 		QueueService,

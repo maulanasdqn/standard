@@ -11,13 +11,13 @@ import { ActivityRepo } from "#/infrastructure/db/repositories/activity-reposito
 import { NoteRepo } from "#/infrastructure/db/repositories/note-repository.ts";
 
 export const noteUpdate = Effect.fn("noteUpdate")(function* (
-	{ id, ...patch }: TNoteUpdateInput,
+	input: TNoteUpdateInput,
 	actorId: string,
 ): Effect.fn.Return<TNote, ENotFound | EDatabase, NoteRepo | ActivityRepo> {
 	const noteRepo = yield* NoteRepo;
 	const activityRepo = yield* ActivityRepo;
 
-	const updated = yield* noteRepo.update(id, patch);
+	const updated = yield* noteRepo.update(input);
 
 	if (updated === null) {
 		return yield* new ENotFound({ message: NOTE_MESSAGE.NOT_FOUND });

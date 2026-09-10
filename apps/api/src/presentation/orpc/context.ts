@@ -1,8 +1,8 @@
 import type { TPermission } from "@app/permissions";
-import type { ISession } from "#/domain/session/session.ts";
+import type { TSession } from "#/domain/session/session.ts";
 
 export type ORPCContext = {
 	headers: Headers;
-	session: ISession | null;
+	session: TSession | null;
 	permissions: readonly TPermission[];
 };

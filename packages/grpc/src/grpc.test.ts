@@ -1,8 +1,8 @@
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
 import {
-	type IGrpcClient,
-	type IGrpcServer,
+	type TGrpcClient,
+	type TGrpcServer,
 	grpcClientCreate,
 	grpcServerCreate,
 } from "./grpc.ts";
@@ -12,8 +12,8 @@ const PROTO_PATH = fileURLToPath(new URL("./note.proto", import.meta.url));
 type TNote = { id: string; title: string; content: string };
 
 describe("grpcServerCreate + grpcClientCreate", () => {
-	let server: IGrpcServer | undefined;
-	let client: IGrpcClient | undefined;
+	let server: TGrpcServer | undefined;
+	let client: TGrpcClient | undefined;
 
 	afterEach(async () => {
 		client?.close();

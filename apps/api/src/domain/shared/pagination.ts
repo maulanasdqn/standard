@@ -1,7 +1,4 @@
-export type IPageInput = {
-	page: number;
-	pageSize: number;
-};
+import type { TPagination } from "@app/schemas";
 
-export const offsetFor = ({ page, pageSize }: IPageInput): number =>
+export const offsetFor = ({ page, pageSize }: TPagination): number =>
 	(page - 1) * pageSize;

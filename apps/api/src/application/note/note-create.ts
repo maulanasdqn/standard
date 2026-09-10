@@ -1,5 +1,4 @@
 import type { TNoteCreateInput, TNote } from "@app/schemas";
-import { D } from "@mobily/ts-belt";
 import { Effect } from "effect";
 import { toNoteDto } from "#/application/note/to-note-dto.ts";
 import {
@@ -17,7 +16,7 @@ export const noteCreate = Effect.fn("noteCreate")(function* (
 	const noteRepo = yield* NoteRepo;
 	const activityRepo = yield* ActivityRepo;
 
-	const row = yield* noteRepo.create(D.merge(input, { authorId }));
+	const row = yield* noteRepo.create(input, authorId);
 	yield* activityRepo.insert({
 		actorId: authorId,
 		action: ACTIVITY_ACTION.NOTE_CREATE,

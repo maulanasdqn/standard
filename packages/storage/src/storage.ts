@@ -9,7 +9,7 @@ export type TStorageOptions = {
 	region?: string;
 };
 
-export type IStorage = {
+export type TStorage = {
 	put: (
 		key: string,
 		body: Uint8Array | string,
@@ -23,7 +23,7 @@ export type IStorage = {
 const objectUrl = (options: TStorageOptions, key: string): string =>
 	`${options.endpoint}/${options.bucket}/${key}`;
 
-export const storageCreate = (options: TStorageOptions): IStorage => {
+export const storageCreate = (options: TStorageOptions): TStorage => {
 	const client = new AwsClient({
 		accessKeyId: options.accessKeyId,
 		secretAccessKey: options.secretAccessKey,
@@ -31,7 +31,7 @@ export const storageCreate = (options: TStorageOptions): IStorage => {
 		service: "s3",
 	});
 
-	const put: IStorage["put"] = async (key, body, contentType) => {
+	const put: TStorage["put"] = async (key, body, contentType) => {
 		const response = await client.fetch(objectUrl(options, key), {
 			method: "PUT",
 			body,
@@ -45,7 +45,7 @@ export const storageCreate = (options: TStorageOptions): IStorage => {
 			.otherwise(() => undefined);
 	};
 
-	const get: IStorage["get"] = async (key) => {
+	const get: TStorage["get"] = async (key) => {
 		const response = await client.fetch(objectUrl(options, key));
 
 		return match(response.status)
@@ -53,11 +53,11 @@ export const storageCreate = (options: TStorageOptions): IStorage => {
 			.otherwise(async () => new Uint8Array(await response.arrayBuffer()));
 	};
 
-	const remove: IStorage["remove"] = async (key) => {
+	const remove: TStorage["remove"] = async (key) => {
 		await client.fetch(objectUrl(options, key), { method: "DELETE" });
 	};
 
-	const urlGet: IStorage["urlGet"] = async (key, expiresInSeconds = 3600) => {
+	const urlGet: TStorage["urlGet"] = async (key, expiresInSeconds = 3600) => {
 		const url = new URL(objectUrl(options, key));
 		url.searchParams.set("X-Amz-Expires", String(expiresInSeconds));
 		const signedRequest = await client.sign(url.toString(), {

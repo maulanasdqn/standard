@@ -3,9 +3,9 @@ import { env } from "#/infrastructure/config/env.ts";
 import { dbCreate, type TDb } from "#/infrastructure/db/client.ts";
 import { SERVICE_TAG } from "#/infrastructure/service-tags.ts";
 
-export type IDbService = { readonly db: TDb };
+export type TDbService = { readonly db: TDb };
 
-export class DbService extends Context.Service<DbService, IDbService>()(
+export class DbService extends Context.Service<DbService, TDbService>()(
 	SERVICE_TAG.DB,
 ) {
 	static readonly layer = Layer.effect(

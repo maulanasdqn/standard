@@ -18,13 +18,13 @@ export const activityRepositoryCreate = (db: TDb): TActivityRepo => ({
 	},
 });
 
-export type IActivityRepo = {
+export type TActivityRepoShape = {
 	insert: (entry: TActivityEntry) => Effect.Effect<void, EDatabase>;
 };
 
 export class ActivityRepo extends Context.Service<
 	ActivityRepo,
-	IActivityRepo
+	TActivityRepoShape
 >()(SERVICE_TAG.ACTIVITY_REPO) {
 	static readonly layer = Layer.effect(
 		ActivityRepo,
@@ -32,7 +32,7 @@ export class ActivityRepo extends Context.Service<
 			const { db } = yield* DbService;
 			const repo = activityRepositoryCreate(db);
 
-			const insert: IActivityRepo["insert"] = (entry: TActivityEntry) =>
+			const insert: TActivityRepoShape["insert"] = (entry: TActivityEntry) =>
 				Effect.tryPromise({
 					try: () => repo.insert(entry),
 					catch: (cause) => new EDatabase({ cause }),

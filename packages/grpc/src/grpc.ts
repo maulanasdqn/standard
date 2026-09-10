@@ -40,7 +40,7 @@ export type TGrpcServerOptions = {
 	host?: string;
 };
 
-export type IGrpcServer = {
+export type TGrpcServer = {
 	port: number;
 	close: () => Promise<void>;
 };
@@ -57,7 +57,7 @@ const handlerWrap = (
 
 export const grpcServerCreate = async (
 	options: TGrpcServerOptions,
-): Promise<IGrpcServer> => {
+): Promise<TGrpcServer> => {
 	const packageDefinition = await protoLoader.load(
 		options.protoPath,
 		LOAD_OPTIONS,
@@ -108,7 +108,7 @@ export type TGrpcClientOptions = {
 	address: string;
 };
 
-export type IGrpcClient = {
+export type TGrpcClient = {
 	call: <TRequest, TResponse>(
 		method: string,
 		request: TRequest,
@@ -118,7 +118,7 @@ export type IGrpcClient = {
 
 export const grpcClientCreate = async (
 	options: TGrpcClientOptions,
-): Promise<IGrpcClient> => {
+): Promise<TGrpcClient> => {
 	const packageDefinition = await protoLoader.load(
 		options.protoPath,
 		LOAD_OPTIONS,

@@ -1,13 +1,13 @@
 import type { TPermission, TRole } from "@app/permissions";
 
-export type ISessionUser = {
+export type TSessionUser = {
 	id: string;
 	email: string;
 	name: string;
 	role: TRole;
 };
 
-export type ISession = {
-	user: ISessionUser;
+export type TSession = {
+	user: TSessionUser;
 	permissions: readonly TPermission[];
 };

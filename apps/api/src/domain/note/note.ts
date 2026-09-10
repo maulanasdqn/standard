@@ -1,7 +1,12 @@
+import type {
+	TNoteCreateInput,
+	TNoteListInput,
+	TNoteUpdateInput,
+} from "@app/schemas";
 import type { Effect } from "effect";
 import type { EDatabase } from "#/application/shared/errors.ts";
 
-export type INoteRow = {
+export type TNoteRow = {
 	id: string;
 	title: string;
 	body: string;
@@ -10,25 +15,17 @@ export type INoteRow = {
 	updatedAt: Date;
 };
 
-export type INoteQuery = {
-	page: number;
-	pageSize: number;
-	search?: string;
-};
-
-export type INoteRepo = {
+export type TNoteRepo = {
 	list: (
-		query: INoteQuery,
-	) => Effect.Effect<{ items: INoteRow[]; total: number }, EDatabase>;
-	findById: (id: string) => Effect.Effect<INoteRow | null, EDatabase>;
-	create: (input: {
-		title: string;
-		body: string;
-		authorId: string;
-	}) => Effect.Effect<INoteRow, EDatabase>;
+		input: TNoteListInput,
+	) => Effect.Effect<{ items: TNoteRow[]; total: number }, EDatabase>;
+	findById: (id: string) => Effect.Effect<TNoteRow | null, EDatabase>;
+	create: (
+		input: TNoteCreateInput,
+		authorId: string,
+	) => Effect.Effect<TNoteRow, EDatabase>;
 	update: (
-		id: string,
-		input: { title?: string; body?: string },
-	) => Effect.Effect<INoteRow | null, EDatabase>;
+		input: TNoteUpdateInput,
+	) => Effect.Effect<TNoteRow | null, EDatabase>;
 	remove: (id: string) => Effect.Effect<boolean, EDatabase>;
 };

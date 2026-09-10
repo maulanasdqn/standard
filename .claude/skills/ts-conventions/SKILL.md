@@ -33,11 +33,20 @@ Code has to read clearly enough that a comment adds nothing. Rename the variable
 
 ## Naming prefixes
 
-- `T` for type aliases — `TNote`, `TCreateNoteInput`, `TQueueConnection`.
-- `I` for interfaces — `INoteRepo`, `ISession`, `IDbService` (the plain shape behind a `Context.Service`, see below).
+- `T` for anything declared with `type` — `TNote`, `TCreateNoteInput`, `TNoteRepo`, `TSession`, `TDbService` (the plain shape behind a `Context.Service`, see below). An object-shaped `type` alias is still a `type`, so it gets `T`, never `I`.
+- `I` only for a literal `interface` declaration — rare here; the one legitimate case is declaration-merging into a third-party module (`interface Register` for TanStack Router).
 - `E` for enums, and for `Schema.TaggedError` classes — `EStatus`, `ERole`, `ENotFound`, `EDatabase`.
 
 Every type alias, interface, enum, and tagged error carries its prefix. No exceptions, no unprefixed `Note`/`Status`/`Repo`/`NotFound` names.
+
+## No inline object types on inputs
+
+A parameter is never typed with an object literal (`input: { title: string; body: string }`). Input shapes come from the zod schemas in `@app/schemas` — `TNoteCreateInput`, `TNoteUpdateInput`, `TNoteListInput`, `TPagination` — and a repo/port signature takes exactly that inferred type. Don't hand-write a domain twin of a schema type (`TNoteQuery` duplicating `TNoteListInput`); import the schema type. Values that aren't part of the wire input (an actor id from the session) travel as a separate parameter, not merged into a new object type.
+
+```ts
+create: (input: TNoteCreateInput, authorId: string) => Effect.Effect<TNoteRow, EDatabase>;
+update: (input: TNoteUpdateInput) => Effect.Effect<TNoteRow | null, EDatabase>;
+```
 
 Never inline a raw string where a shared constant already names that value — a role, a permission, a `Context.Service` tag id, an env key. Reference `ROLE.ADMIN`, `SERVICE_TAG.DB`, etc., not `"admin"`/`"app/DbService"` repeated at each call site.
 
@@ -71,7 +80,7 @@ This is what forcing ts-pattern here would fight: Effect's own style guide (ship
 `apps/api`'s domain/application/infrastructure layers are built on [Effect](https://effect.website) (`effect@rc`, v4) — not because it's trendy, but because it's the DI, error-typing, and composition mechanism for that layer. Read the actual guidance shipped with the installed package (`node_modules/effect/AGENTS.md` and `ai-docs/`) before writing Effect code — it reflects the exact installed API, not general Effect knowledge, which drifts fast across major versions.
 
 - **Errors** are `Schema.TaggedError` classes, not thrown exceptions — `application/shared/errors.ts` (`ENotFound`, `EForbidden`, `EDatabase`, ...). A use case fails with `return yield* new EError({...})`, never `throw`.
-- **Services** are `Context.Service` classes — `class NoteRepo extends Context.Service<NoteRepo, INoteRepo>()(SERVICE_TAG.NOTE_REPO) { static readonly layer = Layer.effect(...) }`. This is Effect v4's *only* way to declare a DI key (the older `Context.Tag`/`GenericTag` split doesn't exist in v4 — verified against the installed package, not assumed) — the class **is** the runtime lookup token, so it can't be avoided. What can, and must, stay functional: the service's shape is always a separately named `type IXxx = {...}` (an ordinary I-prefixed interface, not inlined into the class), and the tag id string always comes from the shared `SERVICE_TAG` constant, never a literal.
+- **Services** are `Context.Service` classes — `class NoteRepo extends Context.Service<NoteRepo, TNoteRepo>()(SERVICE_TAG.NOTE_REPO) { static readonly layer = Layer.effect(...) }`. This is Effect v4's *only* way to declare a DI key (the older `Context.Tag`/`GenericTag` split doesn't exist in v4 — verified against the installed package, not assumed) — the class **is** the runtime lookup token, so it can't be avoided. What can, and must, stay functional: the service's shape is always a separately named `type TXxx = {...}` (an ordinary T-prefixed type alias, not inlined into the class; suffix `Shape` when a same-named `T` type already exists, as in `TAuthServiceShape`/`TActivityRepoShape`), and the tag id string always comes from the shared `SERVICE_TAG` constant, never a literal.
 - **Use cases** are `Effect.fn("name")(function* (input) {...})` programs that pull dependencies with `yield* SomeService` — never a hand-rolled `makeXxx(deps) => (input) => ...` DI pattern; Effect's own context resolution replaces that entirely.
 - **The oRPC boundary** (`presentation/orpc/run-effect.ts`) is the only place an Effect program is run and crosses back into Promise-land — it catches every expected tagged error into a plain value *before* `runPromise` (so only real defects can reject the promise), then maps by `_tag` to an `ORPCError`.
 - Third-party Promise-based APIs that aren't Effect-aware (better-auth's `databaseHooks`, a callback-based queue consumer) are left as plain async functions at that exact seam — wrap them in `Effect.tryPromise` on the Effect side rather than forcing the whole third-party surface through Effect.

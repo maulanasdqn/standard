@@ -3,7 +3,7 @@ import { count, eq, ilike, type SQL } from "drizzle-orm";
 import { Context, Effect, Layer } from "effect";
 import { match, P } from "ts-pattern";
 import { EDatabase } from "#/application/shared/errors.ts";
-import type { INoteQuery, INoteRepo, INoteRow } from "#/domain/note/note.ts";
+import type { TNoteRepo, TNoteRow } from "#/domain/note/note.ts";
 import { offsetFor } from "#/domain/shared/pagination.ts";
 import { DbService } from "#/infrastructure/db/db-service.ts";
 import { note } from "#/infrastructure/db/schema/note.ts";
@@ -14,7 +14,7 @@ const searchWhere = (search: string | undefined): SQL | undefined =>
 		.with(P.nonNullable, (value) => ilike(note.title, `%${value}%`))
 		.otherwise(() => undefined);
 
-export class NoteRepo extends Context.Service<NoteRepo, INoteRepo>()(
+export class NoteRepo extends Context.Service<NoteRepo, TNoteRepo>()(
 	SERVICE_TAG.NOTE_REPO,
 ) {
 	static readonly layer = Layer.effect(
@@ -22,11 +22,7 @@ export class NoteRepo extends Context.Service<NoteRepo, INoteRepo>()(
 		Effect.gen(function* () {
 			const { db } = yield* DbService;
 
-			const list: INoteRepo["list"] = ({
-				page,
-				pageSize,
-				search,
-			}: INoteQuery) => {
+			const list: TNoteRepo["list"] = ({ page, pageSize, search }) => {
 				const where = searchWhere(search);
 
 				return Effect.tryPromise({
@@ -47,7 +43,7 @@ export class NoteRepo extends Context.Service<NoteRepo, INoteRepo>()(
 				});
 			};
 
-			const findById: INoteRepo["findById"] = (id: string) =>
+			const findById: TNoteRepo["findById"] = (id: string) =>
 				Effect.tryPromise({
 					try: async () => {
 						const [row] = await db
@@ -60,24 +56,24 @@ export class NoteRepo extends Context.Service<NoteRepo, INoteRepo>()(
 					catch: (cause) => new EDatabase({ cause }),
 				});
 
-			const create: INoteRepo["create"] = ({ title, body, authorId }) =>
+			const create: TNoteRepo["create"] = ({ title, body }, authorId) =>
 				Effect.tryPromise({
 					try: async () => {
 						const [row] = await db
 							.insert(note)
 							.values({ title, body, authorId })
 							.returning();
-						return row as INoteRow;
+						return row as TNoteRow;
 					},
 					catch: (cause) => new EDatabase({ cause }),
 				});
 
-			const update: INoteRepo["update"] = (id, input) =>
+			const update: TNoteRepo["update"] = ({ id, ...patch }) =>
 				Effect.tryPromise({
 					try: async () => {
 						const [row] = await db
 							.update(note)
-							.set(D.merge(input, { updatedAt: new Date() }))
+							.set(D.merge(patch, { updatedAt: new Date() }))
 							.where(eq(note.id, id))
 							.returning();
 						return row ?? null;
@@ -85,7 +81,7 @@ export class NoteRepo extends Context.Service<NoteRepo, INoteRepo>()(
 					catch: (cause) => new EDatabase({ cause }),
 				});
 
-			const remove: INoteRepo["remove"] = (id: string) =>
+			const remove: TNoteRepo["remove"] = (id: string) =>
 				Effect.tryPromise({
 					try: async () => {
 						const result = await db

@@ -2,13 +2,13 @@ import { Effect, Layer } from "effect";
 import { describe, expect, it, vi } from "vitest";
 import { noteCreate } from "#/application/note/note-create.ts";
 import { ACTIVITY_ACTION } from "#/application/shared/activity.ts";
-import type { INoteRow } from "#/domain/note/note.ts";
+import type { TNoteRow } from "#/domain/note/note.ts";
 import { ActivityRepo } from "#/infrastructure/db/repositories/activity-repository.ts";
 import { NoteRepo } from "#/infrastructure/db/repositories/note-repository.ts";
 
 const AUTHOR_ID = "22222222-2222-4222-8222-222222222222";
 
-const row: INoteRow = {
+const row: TNoteRow = {
 	id: "11111111-1111-4111-8111-111111111111",
 	title: "Title",
 	body: "Body",
@@ -43,11 +43,10 @@ describe("noteCreate", () => {
 		);
 
 		expect(result.id).toBe(row.id);
-		expect(create).toHaveBeenCalledWith({
-			title: "Title",
-			body: "Body",
-			authorId: AUTHOR_ID,
-		});
+		expect(create).toHaveBeenCalledWith(
+			{ title: "Title", body: "Body" },
+			AUTHOR_ID,
+		);
 		expect(insert).toHaveBeenCalledWith(
 			expect.objectContaining({
 				action: ACTIVITY_ACTION.NOTE_CREATE,
