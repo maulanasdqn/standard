@@ -8,3 +8,6 @@ pre-push:
     - name: lint check
       run: npx @biomejs/biome lint .
       glob: "*.{js,ts,jsx,tsx}"
+
+    - name: typecheck + unit tests
+      run: moon run :build :typecheck :test
