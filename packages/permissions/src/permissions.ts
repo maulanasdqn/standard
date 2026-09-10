@@ -1,4 +1,4 @@
-import { D } from "@mobily/ts-belt";
+import { A, D } from "@mobily/ts-belt";
 
 export const PERMISSION = {
 	NOTE_READ: "note:read",
@@ -10,3 +10,6 @@ export const PERMISSION = {
 export type TPermission = (typeof PERMISSION)[keyof typeof PERMISSION];
 
 export const ALL_PERMISSIONS: readonly TPermission[] = D.values(PERMISSION);
+
+export const isPermission = (value: string): value is TPermission =>
+	A.some(ALL_PERMISSIONS, (permission) => permission === value);

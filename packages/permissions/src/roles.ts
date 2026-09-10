@@ -1,4 +1,4 @@
-import { D } from "@mobily/ts-belt";
+import { A, D } from "@mobily/ts-belt";
 import {
 	ALL_PERMISSIONS,
 	PERMISSION,
@@ -12,6 +12,9 @@ export const ROLE = {
 } as const;
 
 export type TRole = (typeof ROLE)[keyof typeof ROLE];
+
+export const isRole = (value: string): value is TRole =>
+	A.some(D.values(ROLE), (role) => role === value);
 
 export const ROLE_PERMISSIONS: Record<TRole, readonly TPermission[]> = {
 	[ROLE.ADMIN]: ALL_PERMISSIONS,

@@ -1,11 +1,10 @@
-import { ROLE } from "@app/permissions";
 import { z } from "zod";
 
 export const sessionUserSchema = z.object({
 	id: z.uuid(),
 	email: z.email(),
 	name: z.string(),
-	role: z.enum([ROLE.ADMIN, ROLE.MEMBER, ROLE.VIEWER]),
+	role: z.string().min(1),
 });
 export type TSessionUser = z.infer<typeof sessionUserSchema>;
 

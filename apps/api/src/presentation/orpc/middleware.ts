@@ -29,7 +29,8 @@ export const protectedProcedure = publicProcedure.use(
 export const roleRequire = (...roles: TRole[]) =>
 	protectedProcedure.use(async ({ context, next }) => {
 		const allowed =
-			context.session != null && A.includes(roles, context.session.user.role);
+			context.session != null &&
+			A.some(roles, (role) => role === context.session?.user.role);
 
 		return match(allowed)
 			.with(false, () => {

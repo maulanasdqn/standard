@@ -12,7 +12,7 @@ Distilled from a larger production monorepo — same layering and conventions, s
 | API | Hono host, business logic in [oRPC](https://orpc.unnoq.com) procedures — served as typed RPC **and** plain REST + OpenAPI from the same router |
 | Business logic | [Effect](https://effect.website) (`effect@rc`, v4) — use cases as `Effect.fn` programs, dependencies as `Context.Service` + `Layer`, errors as `Schema.TaggedError` |
 | DB | Drizzle ORM + Postgres |
-| Auth | [better-auth](https://better-auth.com), role stored on `user.role` |
+| Auth | [better-auth](https://better-auth.com); one role per user on `user.role` — fixed roles in code, custom roles in the `custom_role` table (see [Access control](#access-control--users-roles-permissions)) |
 | Jobs | RabbitMQ (queue) + Redis (cache), separate worker entrypoint |
 | Web | React 19, TanStack Router (SPA, file-based) + Query + Form + Table + Store, Vite, Tailwind v4 |
 | Lint/format | [Biome](https://biomejs.dev) |
@@ -29,7 +29,7 @@ apps/
   web-e2e/      Playwright against the built web app + a real API
 packages/
   schemas/      Zod source of truth shared by api + web
-  permissions/  PERMISSION constants, role→permission map, canAll/canAny
+  permissions/  PERMISSION catalog, fixed ROLE_PERMISSIONS map, isRole/isPermission, canAll/canAny, labels
   activity/     activity log
   queue/        RabbitMQ queue helper
   storage/      S3-compatible object storage (aws4fetch)
@@ -59,11 +59,21 @@ main.ts          the only file at src/ root — the HTTP entrypoint
 
 ### Effect: services, errors, and the oRPC bridge
 
-- **Errors** (`application/shared/errors.ts`) are `Schema.TaggedError` classes (`ENotFound`, `EForbidden`, `EUnauthorized`, `EDatabase`, `EAuth`, `EQueue`) — a use case fails by `return yield* new ENotFound({ message })`, never by throwing.
+- **Errors** (`application/shared/errors.ts`) are `Schema.TaggedError` classes (`ENotFound`, `EForbidden`, `EUnauthorized`, `EConflict`, `EBadRequest`, `EDatabase`, `EAuth`, `EQueue`) — a use case fails by `return yield* new ENotFound({ message })`, never by throwing.
 - **Services** are `Context.Service` classes that carry their own `static readonly layer` — e.g. `NoteRepo` (`infrastructure/db/repositories/note-repository.ts`) wraps Drizzle calls in `Effect.tryPromise`, mapping failures to `EDatabase`. A service that needs another service builds its layer with `.pipe(Layer.provide(OtherService.layer))`.
 - **`bootstrap/compose.ts`** merges every service layer into one `AppLayer` and builds a single `ManagedRuntime` (with a shared `memoMap`, so a service used by two other layers — e.g. `DbService` under both `NoteRepo` and `AuthService` — is only constructed once).
 - **`presentation/orpc/run-effect.ts`** is the only place Effect programs cross into oRPC's Promise world: it runs an effect on the shared runtime, catches every `TDomainError` into a plain success value first (never lets `runPromise` reject on an *expected* failure — only real defects propagate), then maps the caught error to an `ORPCError` by `_tag`.
 - Third-party Promise-based APIs that aren't Effect-aware (better-auth's `databaseHooks`, `@app/activity`'s `TActivityRepo`, `@app/queue`'s `TJobHandler`) are left as plain async functions at that seam — a Context.Service wraps them in `Effect.tryPromise` for the Effect side, rather than forcing the whole third-party surface through Effect.
+
+### Access control — users, roles, permissions
+
+Permissions are a **code catalog**: `PERMISSION` in `@app/permissions` (`resource:action` strings) gates code paths through `permissionRequire(...)` on the API and `checkRoutePermissions` / `<Guard>` on the web, so permissions can't be created at runtime — only assigned. Roles are hybrid:
+
+- **Fixed roles** (`admin`, `member`, `viewer`) live in code — `ROLE_PERMISSIONS` in `packages/permissions/src/roles.ts` is their source of truth. They can be assigned to users but not edited or deleted through the API.
+- **Custom roles** live in the `custom_role` table (`key`, `label`, `description`, `permissions` as a JSONB array of catalog keys) and are fully CRUD-able.
+- A user has exactly one role: `user.role` holds either a fixed key or a custom key. `application/shared/permissions-resolve.ts` turns it into the session's permission list on every request — fixed roles from the code map, custom roles from the table — so editing a custom role takes effect on the assignee's next request.
+
+The admin area — `/users`, `/roles`, `/permissions` on the web; `user.*`, `role.*`, `permission.list` over RPC; `/api/users`, `/api/roles`, `/api/permissions` over REST — is gated by `PERMISSION.USER_MANAGE`. Invariants enforced in the use cases: you can't change your own role or delete your own account (`EForbidden`); a fixed role can't be modified or deleted (`EBadRequest`); a role that still has members can't be deleted, and emails and role keys must be unique (`EConflict`). Users are created through better-auth's internal adapter (`UserRepo.create`), so ids, password hashing and `databaseHooks` behave exactly as they do for sign-up.
 
 ### Web route colocation
 
@@ -98,7 +108,7 @@ moon run api:dev                    # api on :3001
 moon run web:dev                    # spa on :5173
 ```
 
-Seeded login: `admin@app.test` / `admin-password-123`.
+Seeded logins: `admin@app.test` / `admin-password-123` (admin), `member@app.test` / `member-password-123` (member), `viewer@app.test` / `viewer-password-123` (viewer).
 
 ## Adding a feature end-to-end
 
@@ -110,7 +120,7 @@ Using the `note` resource as the template:
 4. **Application** — add one `Effect.fn("name")(function* (input) {...})` use case per operation under `apps/api/src/application/<feature>/`, pulling its dependencies with `yield* SomeRepo`
 5. **Wire it into `bootstrap/compose.ts`** — add the new repo's `.layer` to `AppLayer`
 6. **Presentation** — add oRPC procedures in `apps/api/src/presentation/routers/<feature>.ts` calling `effectRun(useCase(input))`, gated with `permissionRequire(...)`; register in `routers/index.ts`
-7. **Permissions** — add any new `PERMISSION.*` constants and extend `ROLE_PERMISSIONS` in `packages/permissions`
+7. **Permissions** — add any new `PERMISSION.*` constants (and their `PERMISSION_LABEL`) and extend `ROLE_PERMISSIONS` for the fixed roles in `packages/permissions`; custom roles pick new permissions up from the catalog automatically
 8. **Web** — add the route under `apps/web/src/routes/_authenticated/<feature>/` with colocated `_components`/`_hooks`, calling the feature through `orpc.<feature>.*` from `src/libs/orpc/client.ts`
 
 ## Commands

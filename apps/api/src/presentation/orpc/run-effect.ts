@@ -23,6 +23,16 @@ const toORPCError = (error: TDomainError): ORPCError<string, undefined> =>
 				new ORPCError("UNAUTHORIZED", { message: e.message }),
 		)
 		.with(
+			{ _tag: ERROR_TAG.CONFLICT },
+			(e): ORPCError<string, undefined> =>
+				new ORPCError("CONFLICT", { message: e.message }),
+		)
+		.with(
+			{ _tag: ERROR_TAG.BAD_REQUEST },
+			(e): ORPCError<string, undefined> =>
+				new ORPCError("BAD_REQUEST", { message: e.message }),
+		)
+		.with(
 			{ _tag: ERROR_TAG.DATABASE },
 			(): ORPCError<string, undefined> =>
 				new ORPCError("INTERNAL_SERVER_ERROR", { message: "Database error" }),

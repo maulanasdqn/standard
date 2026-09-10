@@ -3,17 +3,18 @@ import { A } from "@mobily/ts-belt";
 import { Link } from "@tanstack/react-router";
 import type { ReactElement } from "react";
 import { useSession } from "#/libs/auth/use-session.ts";
-import { NAV_ITEMS } from "#/routes/_authenticated/_constants/nav.ts";
 import { useSessionSignOut } from "#/routes/_authenticated/_hooks/use-session-sign-out.ts";
+import { useVisibleNav } from "#/routes/_authenticated/_hooks/use-visible-nav.ts";
 
 export const AppSidebar = (): ReactElement => {
 	const session = useSession();
 	const signOut = useSessionSignOut();
+	const navItems = useVisibleNav();
 
 	return (
 		<aside className="flex w-56 flex-col justify-between border-r border-neutral-200 p-4">
 			<nav className="flex flex-col gap-1">
-				{A.map(NAV_ITEMS, (item) => (
+				{A.map(navItems, (item) => (
 					<Link
 						key={item.to}
 						to={item.to}
