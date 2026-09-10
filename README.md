@@ -130,4 +130,4 @@ cd apps/web-e2e && pnpm e2e:local
 
 ## CI
 
-`.github/workflows/ci.yml` runs `moon ci` (affected projects only) on every PR and push to `main`, plus a **drizzle drift** job that regenerates migrations and fails the build if the committed SQL is out of date with the schema.
+`.github/workflows/ci.yml` runs `moon ci` (affected projects only) on every PR and push to `trunk`, plus a **drizzle drift** job that regenerates migrations and fails the build if the committed SQL is out of date with the schema.
