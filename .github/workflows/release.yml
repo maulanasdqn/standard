@@ -13,6 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Verify the tag matches package.json
         run: |
@@ -50,7 +53,28 @@ jobs:
           echo "::error::CI did not finish on ${GITHUB_SHA} within 20 minutes"
           exit 1
 
+      - name: Build release notes from conventional commits
+        run: |
+          PREV="$(git describe --tags --abbrev=0 "${GITHUB_REF_NAME}^" 2>/dev/null || true)"
+          RANGE="${PREV:+${PREV}..}${GITHUB_REF_NAME}"
+          {
+            for section in "feat:Features" "fix:Fixes" "refactor:Refactoring" "ci:CI" "docs:Docs" "test:Tests" "chore:Chores"; do
+              prefix="${section%%:*}"
+              title="${section#*:}"
+              lines="$(git log --no-merges --format='- %s (%h)' "$RANGE" \
+                | grep -E "^- ${prefix}(\([^)]*\))?!?: " \
+                | sed -E "s/^- ${prefix}\(([^)]*)\)!?: /- \1: /; s/^- ${prefix}!?: /- /")"
+              if [ -n "$lines" ]; then
+                printf '## %s\n\n%s\n\n' "$title" "$lines"
+              fi
+            done
+            if [ -n "$PREV" ]; then
+              printf 'Full changelog: https://github.com/%s/compare/%s...%s\n' "$GITHUB_REPOSITORY" "$PREV" "$GITHUB_REF_NAME"
+            fi
+          } > release-notes.md
+          cat release-notes.md
+
       - name: Publish
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" --title "Standard $GITHUB_REF_NAME" --generate-notes --latest
+        run: gh release create "$GITHUB_REF_NAME" --title "Standard $GITHUB_REF_NAME" --notes-file release-notes.md --latest
