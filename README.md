@@ -131,13 +131,19 @@ moon run api:db-generate                     # drizzle-kit generate
 moon run api:worker                          # run the RabbitMQ worker locally
 ```
 
-The e2e suites (`api-e2e`, `web-e2e`) are **not** run in CI (`runInCI: false`) — they spin up a real API against a throwaway Postgres database and are meant as a local pre-PR gate:
+The e2e suites (`api-e2e`, `web-e2e`) spin up a real API against a throwaway Postgres database (`app_e2e` / `app_web_e2e`, derived from `DATABASE_URL`). Their moon tasks are `runInCI: false` only because they need running services, so `moon ci` skips them — CI runs them in a dedicated job instead (see below). Locally, with the dev services up:
 
 ```sh
 cd apps/api-e2e && pnpm e2e:local
 cd apps/web-e2e && pnpm e2e:local
 ```
 
-## CI
+## Workflow — trunk-based development
 
-`.github/workflows/ci.yml` runs `moon ci` (affected projects only) on every PR and push to `trunk`, plus a **drizzle drift** job that regenerates migrations and fails the build if the committed SQL is out of date with the schema.
+One long-lived branch, `trunk`, that is releasable on every commit.
+
+- **Integrate small and often.** Land a feature as a series of independently shippable commits (schemas → API → web), keeping unfinished surface unreachable (no route/nav entry yet) rather than holding the work back on a branch.
+- **Pre-push hook** (`lefthook.yml`) runs biome format + lint and `moon run :build :typecheck :test` — moon's task cache makes unchanged projects free, so the hook only pays for what you touched.
+- **CI on every push and PR** (`.github/workflows/ci.yml`): `moon ci` (check/lint/build/test on affected projects), the **e2e job** (API + Playwright suites against Postgres/Redis/RabbitMQ service containers), and the **drizzle drift** job (regenerates migrations and fails if the committed SQL is out of date with the schema).
+- **Branch protection on `trunk`**: all three CI checks required and up to date, linear history (no merge commits), no force-pushes or deletion. Repository admins may push directly (the hook + CI are the gate); everyone else opens a short-lived branch and a PR, merged the same day once green.
+- **Releases** are annotated tags cut from `trunk` (`vX.Y.Z`, all `package.json` versions bumped in the same commit) with a GitHub release — no release branches.
