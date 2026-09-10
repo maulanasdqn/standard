@@ -24,6 +24,7 @@ const layerBuild = (
 				create: vi.fn(),
 				update: vi.fn(),
 				remove: vi.fn(),
+				resetPassword: vi.fn(),
 				countByRole: vi.fn().mockReturnValue(Effect.succeed(counts)),
 			}),
 		),

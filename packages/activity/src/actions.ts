@@ -15,6 +15,7 @@ export const ACTIVITY_ACTION = {
 	USER_CREATE: "user.create",
 	USER_UPDATE: "user.update",
 	USER_DELETE: "user.delete",
+	USER_PASSWORD_RESET: "user.password_reset",
 	ROLE_CREATE: "role.create",
 	ROLE_UPDATE: "role.update",
 	ROLE_DELETE: "role.delete",

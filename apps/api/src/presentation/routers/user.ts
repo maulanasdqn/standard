@@ -4,6 +4,7 @@ import {
 	userIdInputSchema,
 	userListInputSchema,
 	userListSchema,
+	userPasswordResetInputSchema,
 	userSchema,
 	userUpdateInputSchema,
 } from "@app/schemas";
@@ -12,6 +13,7 @@ import { userCreate } from "#/application/user/user-create.ts";
 import { userDelete } from "#/application/user/user-delete.ts";
 import { userGet } from "#/application/user/user-get.ts";
 import { userList } from "#/application/user/user-list.ts";
+import { userPasswordReset } from "#/application/user/user-password-reset.ts";
 import { userUpdate } from "#/application/user/user-update.ts";
 import { permissionRequire } from "#/presentation/orpc/middleware.ts";
 import { effectRun } from "#/presentation/orpc/run-effect.ts";
@@ -51,5 +53,13 @@ export const userRouterBuild = () => ({
 		.output(z.object({ id: z.uuid() }))
 		.handler(({ input, context }) =>
 			effectRun(userDelete(input, context.session!.user.id)),
+		),
+
+	resetPassword: permissionRequire(PERMISSION.USER_MANAGE)
+		.route({ method: "POST", path: "/users/{id}/password" })
+		.input(userPasswordResetInputSchema)
+		.output(z.object({ id: z.uuid() }))
+		.handler(({ input, context }) =>
+			effectRun(userPasswordReset(input, context.session!.user.id)),
 		),
 });

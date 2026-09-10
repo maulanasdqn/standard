@@ -31,6 +31,14 @@ export type TUserUpdateInput = z.infer<typeof userUpdateInputSchema>;
 export const userIdInputSchema = z.object({ id: z.uuid() });
 export type TUserIdInput = z.infer<typeof userIdInputSchema>;
 
+export const userPasswordResetInputSchema = z.object({
+	id: z.uuid(),
+	password: z.string().min(8).max(128),
+});
+export type TUserPasswordResetInput = z.infer<
+	typeof userPasswordResetInputSchema
+>;
+
 export const userListInputSchema = paginationSchema.extend({
 	search: z.string().optional(),
 	role: z.string().optional(),

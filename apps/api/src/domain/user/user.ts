@@ -1,6 +1,7 @@
 import type {
 	TUserCreateInput,
 	TUserListInput,
+	TUserPasswordResetInput,
 	TUserUpdateInput,
 } from "@app/schemas";
 import type { Effect } from "effect";
@@ -29,5 +30,6 @@ export type TUserRepo = {
 		input: TUserUpdateInput,
 	) => Effect.Effect<TUserRow | null, EDatabase>;
 	remove: (id: string) => Effect.Effect<boolean, EDatabase>;
+	resetPassword: (input: TUserPasswordResetInput) => Effect.Effect<void, EAuth>;
 	countByRole: () => Effect.Effect<TRoleMemberCounts, EDatabase>;
 };

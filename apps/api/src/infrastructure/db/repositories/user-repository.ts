@@ -7,7 +7,7 @@ import { offsetFor } from "#/domain/shared/pagination.ts";
 import type { TUserRepo, TUserRow } from "#/domain/user/user.ts";
 import { AuthService } from "#/infrastructure/auth/auth-service.ts";
 import { DbService } from "#/infrastructure/db/db-service.ts";
-import { user } from "#/infrastructure/db/schema/auth.ts";
+import { session, user } from "#/infrastructure/db/schema/auth.ts";
 import { SERVICE_TAG } from "#/infrastructure/service-tags.ts";
 
 const CREDENTIAL_PROVIDER_ID = "credential";
@@ -131,6 +131,17 @@ export class UserRepo extends Context.Service<UserRepo, TUserRepo>()(
 					catch: (cause) => new EDatabase({ cause }),
 				});
 
+			const resetPassword: TUserRepo["resetPassword"] = ({ id, password }) =>
+				Effect.tryPromise({
+					try: async () => {
+						const ctx = await auth.$context;
+						const hashed = await ctx.password.hash(password);
+						await ctx.internalAdapter.updatePassword(id, hashed);
+						await db.delete(session).where(eq(session.userId, id));
+					},
+					catch: (cause) => new EAuth({ cause }),
+				});
+
 			const countByRole: TUserRepo["countByRole"] = () =>
 				Effect.tryPromise({
 					try: async () => {
@@ -152,6 +163,7 @@ export class UserRepo extends Context.Service<UserRepo, TUserRepo>()(
 				create,
 				update,
 				remove,
+				resetPassword,
 				countByRole,
 			});
 		}),

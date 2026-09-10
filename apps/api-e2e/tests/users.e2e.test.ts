@@ -66,6 +66,49 @@ describe("users REST endpoints", () => {
 		expect(deleteResponse.status).toBe(200);
 	});
 
+	it("lets the admin reset another user's password", async (): Promise<void> => {
+		const target: TUserCreateInput = {
+			name: "E2E Reset",
+			email: "e2e-reset@app.test",
+			password: "old-password-123",
+			role: ROLE.VIEWER,
+		};
+		const created = await apiJson<TUser>({
+			path: "/users",
+			cookie: adminCookie,
+			method: "POST",
+			body: target,
+		});
+
+		const reset = await apiFetch({
+			path: `/users/${created.id}/password`,
+			cookie: adminCookie,
+			method: "POST",
+			body: { password: "new-password-456" },
+		});
+		expect(reset.status).toBe(200);
+
+		const oldCookie = await signIn({
+			email: target.email,
+			password: target.password,
+		});
+		expect(oldCookie).toBe("");
+
+		const newCookie = await signIn({
+			email: target.email,
+			password: "new-password-456",
+		});
+		const me = await apiJson<TMe>({ path: "/me", cookie: newCookie });
+		expect(me.user.id).toBe(created.id);
+
+		const cleanup = await apiFetch({
+			path: `/users/${created.id}`,
+			cookie: adminCookie,
+			method: "DELETE",
+		});
+		expect(cleanup.status).toBe(200);
+	});
+
 	it("refuses to let the admin delete their own account", async (): Promise<void> => {
 		const response = await apiFetch({
 			path: `/users/${adminId}`,

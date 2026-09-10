@@ -20,6 +20,7 @@ describe("userDelete", () => {
 					create: vi.fn(),
 					update: vi.fn(),
 					remove,
+					resetPassword: vi.fn(),
 					countByRole: vi.fn(),
 				}),
 			),

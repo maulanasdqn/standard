@@ -45,6 +45,7 @@ const layerBuild = (
 				create,
 				update: vi.fn(),
 				remove: vi.fn(),
+				resetPassword: vi.fn(),
 				countByRole: vi.fn(),
 			}),
 		),
