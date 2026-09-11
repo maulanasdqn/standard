@@ -4,10 +4,10 @@ import { permissionSchema } from "../permission/permission.ts";
 // Better Auth generated 32-character IDs before the application switched to
 // UUID generation. Keep existing users' sessions usable while new records use
 // UUIDs.
-export const authUserIdSchema = z.union([z.uuid(), z.string().length(32)]);
+export const userIdSchema = z.union([z.uuid(), z.string().length(32)]);
 
 export const sessionUserSchema = z.object({
-	id: authUserIdSchema,
+	id: userIdSchema,
 	email: z.email(),
 	name: z.string(),
 	role: z.string().min(1),
