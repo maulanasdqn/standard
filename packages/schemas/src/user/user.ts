@@ -1,8 +1,9 @@
 import { z } from "zod";
+import { authUserIdSchema } from "../auth/auth.ts";
 import { paginated, paginationSchema } from "../shared/pagination.ts";
 
 export const userSchema = z.object({
-	id: z.uuid(),
+	id: authUserIdSchema,
 	name: z.string(),
 	email: z.email(),
 	emailVerified: z.boolean(),
@@ -22,17 +23,17 @@ export const userCreateInputSchema = z.object({
 export type TUserCreateInput = z.infer<typeof userCreateInputSchema>;
 
 export const userUpdateInputSchema = z.object({
-	id: z.uuid(),
+	id: authUserIdSchema,
 	name: z.string().min(1).max(100).optional(),
 	role: z.string().min(1).optional(),
 });
 export type TUserUpdateInput = z.infer<typeof userUpdateInputSchema>;
 
-export const userIdInputSchema = z.object({ id: z.uuid() });
+export const userIdInputSchema = z.object({ id: authUserIdSchema });
 export type TUserIdInput = z.infer<typeof userIdInputSchema>;
 
 export const userPasswordResetInputSchema = z.object({
-	id: z.uuid(),
+	id: authUserIdSchema,
 	password: z.string().min(8).max(128),
 });
 export type TUserPasswordResetInput = z.infer<

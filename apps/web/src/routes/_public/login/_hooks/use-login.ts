@@ -22,8 +22,14 @@ export const useLoginForm = () => {
 
 			await match(signInError)
 				.with(P.nullish, async () => {
-					await sessionRefresh();
-					void navigate({ to: "/notes" });
+					const session = await sessionRefresh();
+					if (!session) {
+						setServerError(
+							"Sign-in succeeded, but the session could not be verified. Please try again.",
+						);
+						return;
+					}
+					await navigate({ to: "/notes" });
 				})
 				.otherwise(async (found) => {
 					setServerError(

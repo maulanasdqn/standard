@@ -14,7 +14,7 @@ describe("AccountSummary", () => {
 		sessionSet({
 			user: {
 				id: "11111111-1111-4111-8111-111111111111",
-				email: "ada@app.test",
+				email: "ada@test.app",
 				name: "Ada",
 				role: ROLE.ADMIN,
 			},
@@ -24,7 +24,7 @@ describe("AccountSummary", () => {
 		render(<AccountSummary />);
 
 		expect(screen.getByText("Ada")).toBeInTheDocument();
-		expect(screen.getByText("ada@app.test")).toBeInTheDocument();
+		expect(screen.getByText("ada@test.app")).toBeInTheDocument();
 		expect(screen.getByText("Admin")).toBeInTheDocument();
 	});
 

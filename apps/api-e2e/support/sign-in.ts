@@ -2,9 +2,9 @@ import type { TLoginInput } from "@app/schemas";
 import { BASE_URL } from "./client.ts";
 
 export const SEED_CREDENTIALS = {
-	admin: { email: "admin@app.test", password: "admin-password-123" },
-	member: { email: "member@app.test", password: "member-password-123" },
-	viewer: { email: "viewer@app.test", password: "viewer-password-123" },
+	admin: { email: "admin@test.app", password: "Password123" },
+	member: { email: "member@test.app", password: "Password123" },
+	viewer: { email: "viewer@test.app", password: "Password123" },
 } as const satisfies Record<string, TLoginInput>;
 
 export const signIn = async ({

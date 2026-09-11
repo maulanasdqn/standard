@@ -30,8 +30,8 @@ const RENAMED_LABEL = "Reviewer Plus";
 
 const REVIEWER: TUserCreateInput = {
 	name: "E2E Reviewer",
-	email: "e2e-reviewer@app.test",
-	password: "reviewer-password-123",
+	email: "e2e-reviewer@test.app",
+	password: "rePassword123",
 	role: NEW_ROLE.key,
 };
 
