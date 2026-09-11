@@ -5,9 +5,9 @@ language: 'typescript'
 
 fileGroups:
   sources:
-    - 'ui/**/*'
-    - 'guard/**/*'
-    - 'lib/**/*'
+    - 'src/ui/**/*'
+    - 'src/guard/**/*'
+    - 'src/lib/**/*'
 
 tasks:
   build:

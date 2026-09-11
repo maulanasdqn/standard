@@ -17,7 +17,7 @@ export type TStorage = {
 	) => Promise<void>;
 	get: (key: string) => Promise<Uint8Array | null>;
 	remove: (key: string) => Promise<void>;
-	urlGet: (key: string, expiresInSeconds?: number) => Promise<string>;
+	getUrl: (key: string, expiresInSeconds?: number) => Promise<string>;
 };
 
 const objectUrl = (options: TStorageOptions, key: string): string =>
@@ -57,7 +57,7 @@ export const storageCreate = (options: TStorageOptions): TStorage => {
 		await client.fetch(objectUrl(options, key), { method: "DELETE" });
 	};
 
-	const urlGet: TStorage["urlGet"] = async (key, expiresInSeconds = 3600) => {
+	const getUrl: TStorage["getUrl"] = async (key, expiresInSeconds = 3600) => {
 		const url = new URL(objectUrl(options, key));
 		url.searchParams.set("X-Amz-Expires", String(expiresInSeconds));
 		const signedRequest = await client.sign(url.toString(), {
@@ -66,5 +66,5 @@ export const storageCreate = (options: TStorageOptions): TStorage => {
 		return signedRequest.url;
 	};
 
-	return { put, get, remove, urlGet };
+	return { put, get, remove, getUrl };
 };

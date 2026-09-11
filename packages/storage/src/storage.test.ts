@@ -4,7 +4,7 @@ import { match, P } from "ts-pattern";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { storageCreate } from "./storage.ts";
 
-describe("storageCreate.urlGet", () => {
+describe("storageCreate.getUrl", () => {
 	it("signs a presigned GET url with the requested expiry", async (): Promise<void> => {
 		const storage = storageCreate({
 			accessKeyId: "test-access-key",
@@ -13,7 +13,7 @@ describe("storageCreate.urlGet", () => {
 			endpoint: "https://storage.example.com",
 		});
 
-		const url = await storage.urlGet("notes/welcome.txt", 120);
+		const url = await storage.getUrl("notes/welcome.txt", 120);
 
 		expect(url).toContain("test-bucket/notes/welcome.txt");
 		expect(url).toContain("X-Amz-Expires=120");

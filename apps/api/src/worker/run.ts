@@ -1,6 +1,6 @@
 import "#/bootstrap/polyfill.ts";
 
-import { queueWorkerCreate } from "@app/queue";
+import { jobWorkerCreate } from "@app/queue";
 import { Effect } from "effect";
 import { runtime } from "#/bootstrap/compose.ts";
 import { env } from "#/infrastructure/config/env.ts";
@@ -15,7 +15,7 @@ const { channel } = await runtime.runPromise(
 	QueueService.use((service) => Effect.succeed(service)),
 );
 
-await queueWorkerCreate<TExampleJobPayload>(
+await jobWorkerCreate<TExampleJobPayload>(
 	"example",
 	channel,
 	exampleJobProcess,
