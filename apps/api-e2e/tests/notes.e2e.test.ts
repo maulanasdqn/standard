@@ -9,8 +9,8 @@ beforeAll(async (): Promise<void> => {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify({
-			email: "admin@app.test",
-			password: "admin-password-123",
+			email: "admin@test.app",
+			password: "Password123",
 		}),
 	});
 	cookie = signInResponse.headers.get("set-cookie") ?? "";

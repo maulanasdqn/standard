@@ -13,22 +13,22 @@ import { logger } from "#/infrastructure/observability/logger.ts";
 
 const ADMIN_USER: TUserCreateInput = {
 	name: "Admin",
-	email: "admin@app.test",
-	password: "admin-password-123",
+	email: "admin@test.app",
+	password: "Password123",
 	role: ROLE.ADMIN,
 };
 
 const EXTRA_USERS: readonly TUserCreateInput[] = [
 	{
 		name: "Member",
-		email: "member@app.test",
-		password: "member-password-123",
+		email: "member@test.app",
+		password: "Password123",
 		role: ROLE.MEMBER,
 	},
 	{
 		name: "Viewer",
-		email: "viewer@app.test",
-		password: "viewer-password-123",
+		email: "viewer@test.app",
+		password: "Password123",
 		role: ROLE.VIEWER,
 	},
 ];
@@ -73,7 +73,7 @@ const seed = Effect.gen(function* () {
 	yield* Effect.promise(() =>
 		db.insert(note).values({
 			title: "Welcome",
-			body: "This is a seeded note. Sign in as admin@app.test to see it.",
+			body: "This is a seeded note. Sign in as admin@test.app to see it.",
 			authorId: adminId,
 		}),
 	);

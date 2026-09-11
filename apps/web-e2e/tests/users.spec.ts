@@ -15,7 +15,7 @@ import { rowWithCell } from "../support/table.ts";
 
 const NEW_USER: TUserCreateInput = {
 	name: "E2E User",
-	email: "e2e-user@app.test",
+	email: "e2e-user@test.app",
 	password: "e2e-password-123",
 	role: ROLE_KEY.MEMBER,
 };

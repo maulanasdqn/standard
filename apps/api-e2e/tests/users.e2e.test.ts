@@ -7,7 +7,7 @@ import { SEED_CREDENTIALS, signIn } from "../support/sign-in.ts";
 
 const NEW_USER: TUserCreateInput = {
 	name: "E2E User",
-	email: "e2e-user@app.test",
+	email: "e2e-user@test.app",
 	password: "e2e-password-123",
 	role: ROLE.MEMBER,
 };
@@ -69,7 +69,7 @@ describe("users REST endpoints", () => {
 	it("lets the admin reset another user's password", async (): Promise<void> => {
 		const target: TUserCreateInput = {
 			name: "E2E Reset",
-			email: "e2e-reset@app.test",
+			email: "e2e-reset@test.app",
 			password: "old-password-123",
 			role: ROLE.VIEWER,
 		};
@@ -123,7 +123,7 @@ describe("users REST endpoints", () => {
 			path: "/users",
 			cookie: adminCookie,
 			method: "POST",
-			body: { ...NEW_USER, email: "ghost@app.test", role: "ghost" },
+			body: { ...NEW_USER, email: "ghost@test.app", role: "ghost" },
 		});
 		expect(unknownRole.status).toBe(400);
 

@@ -112,7 +112,7 @@ moon run api:dev                    # api on :3001
 moon run web:dev                    # spa on :5173
 ```
 
-Seeded logins: `admin@app.test` / `admin-password-123` (admin), `member@app.test` / `member-password-123` (member), `viewer@app.test` / `viewer-password-123` (viewer).
+Seeded logins: `admin@test.app` / `Password123` (admin), `member@test.app` / `Password123` (member), `viewer@test.app` / `Password123` (viewer).
 
 ## Adding a feature end-to-end
 
