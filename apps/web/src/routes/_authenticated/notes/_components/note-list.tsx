@@ -16,9 +16,7 @@ export const NoteList: FC<TNoteListProps> = (props): ReactElement => {
 	const noteDelete = useNoteDelete();
 
 	return match(A.isEmpty(props.notes))
-		.with(true, () => (
-			<p className="text-sm text-neutral-500">No notes yet.</p>
-		))
+		.with(true, () => <p className="text-sm text-neutral-500">No notes yet.</p>)
 		.otherwise(() => (
 			<ul className="flex flex-col divide-y divide-neutral-200 border border-neutral-200">
 				{A.map(props.notes, (note) => (

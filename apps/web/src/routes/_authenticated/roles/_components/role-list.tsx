@@ -25,9 +25,7 @@ export const RoleList: FC<TRoleListProps> = (props): ReactElement => {
 	const roleDelete = useRoleDelete();
 
 	return match(A.isEmpty(props.roles))
-		.with(true, () => (
-			<p className="text-sm text-neutral-500">No roles yet.</p>
-		))
+		.with(true, () => <p className="text-sm text-neutral-500">No roles yet.</p>)
 		.otherwise(() => (
 			<Table>
 				<TableHeader>

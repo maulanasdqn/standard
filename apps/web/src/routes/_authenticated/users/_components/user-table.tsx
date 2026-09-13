@@ -32,9 +32,7 @@ export const UserTable: FC<TUserTableProps> = (props): ReactElement => {
 	const isSelf = useIsSelf();
 
 	return match(A.isEmpty(props.users))
-		.with(true, () => (
-			<p className="text-sm text-neutral-500">No users yet.</p>
-		))
+		.with(true, () => <p className="text-sm text-neutral-500">No users yet.</p>)
 		.otherwise(() => (
 			<Table>
 				<TableHeader>
