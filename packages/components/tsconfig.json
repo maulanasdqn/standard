@@ -1,8 +1,12 @@
 {
 	"extends": "../../tsconfig.base.json",
-	"include": ["src/ui/**/*.tsx", "src/guard/**/*.ts", "src/guard/**/*.tsx", "src/lib/**/*.ts"],
+	"include": ["src/**/*.ts", "src/**/*.tsx"],
 	"compilerOptions": {
 		"jsx": "react-jsx",
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["./src/*"]
+		},
 		"lib": ["ES2022", "DOM", "DOM.Iterable"]
 	}
 }
