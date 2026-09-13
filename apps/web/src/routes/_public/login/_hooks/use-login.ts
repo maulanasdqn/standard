@@ -15,7 +15,11 @@ export const useLoginForm = () => {
 
 	const form = useForm({
 		defaultValues: DEFAULT_VALUES,
-		validators: { onChange: loginInputSchema },
+		validators: {
+			onChange: loginInputSchema,
+			onBlur: loginInputSchema,
+			onSubmit: loginInputSchema,
+		},
 		onSubmit: async ({ value }) => {
 			setServerError(null);
 			const { error: signInError } = await authClient.signIn.email(value);

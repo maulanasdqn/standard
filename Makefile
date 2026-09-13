@@ -1,38 +1,31 @@
-.PHONY: setup services services-stop services-logs env install check lint format test build
-
-setup: services env install
-	@echo "Done. Services:"
-	@docker compose -f docker-compose.dev.yml ps --format "table {{.Name}}\t{{.Status}}\t{{.Ports}}"
+.PHONY: services services-stop db-migrate db-seed db-studio api web worker dev up
 
 services:
-	docker compose -f docker-compose.dev.yml up -d --wait
+	docker compose -f docker-compose.dev.yml up -d
 
 services-stop:
 	docker compose -f docker-compose.dev.yml down
 
-services-logs:
-	docker compose -f docker-compose.dev.yml logs -f
+db-migrate:
+	cd apps/api && pnpm migrate
 
-env:
-	@if [ -f "apps/api/.env.example" ] && [ ! -f "apps/api/.env" ]; then \
-		cp apps/api/.env.example apps/api/.env; \
-		echo "Created apps/api/.env from template"; \
-	fi
+db-seed:
+	cd apps/api && pnpm db:seed
 
-install:
-	pnpm install
+db-studio:
+	cd apps/api && pnpm db:studio
 
-check:
-	moon run :check
+api:
+	cd apps/api && pnpm dev
 
-lint:
-	moon run :lint
+web:
+	cd apps/web && pnpm dev
 
-format:
-	moon run :format
+worker:
+	cd apps/api && pnpm worker
 
-test:
-	moon run :test
+dev: services
+	@echo "Services up. Run 'make api' and 'make web' in separate terminals."
 
-build:
-	moon run :build
+up: services
+	cd apps/api && pnpm dev & cd apps/web && pnpm dev & wait
