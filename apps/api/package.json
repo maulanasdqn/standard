@@ -30,6 +30,7 @@
 		"@app/permissions": "workspace:*",
 		"@app/queue": "workspace:*",
 		"@app/schemas": "workspace:*",
+		"@app/version": "workspace:*",
 		"@hono/node-server": "^1.19.11",
 		"@mobily/ts-belt": "^3.13.1",
 		"@orpc/json-schema": "^1.13.6",

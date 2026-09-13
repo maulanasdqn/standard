@@ -6,7 +6,7 @@ import {
 	ErrorComponent,
 	Outlet,
 } from "@tanstack/react-router";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 
 type TRouterContext = {
 	queryClient: QueryClient;
@@ -14,7 +14,7 @@ type TRouterContext = {
 	permissions: readonly TPermission[];
 };
 
-const NotFound = (): ReactElement => (
+const NotFound: FC = (): ReactElement => (
 	<div className="flex h-screen items-center justify-center text-sm text-neutral-500">
 		Page not found.
 	</div>

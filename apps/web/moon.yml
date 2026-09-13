@@ -23,6 +23,7 @@ tasks:
       - 'vite.config.ts'
       - 'tsconfig.json'
       - 'package.json'
+      - '/package.json'
     outputs:
       - 'dist'
 
@@ -38,3 +39,4 @@ tasks:
       - 'src/**/*'
       - 'tsconfig.json'
       - 'package.json'
+      - '/package.json'

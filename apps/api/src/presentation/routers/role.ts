@@ -14,21 +14,23 @@ import { roleList } from "#/application/role/role-list.ts";
 import { roleUpdate } from "#/application/role/role-update.ts";
 import { permissionRequire } from "#/presentation/orpc/middleware.ts";
 import { effectRun } from "#/presentation/orpc/run-effect.ts";
+import { HTTP_METHOD } from "#/presentation/http-methods.ts";
+import { ROUTE_PATH } from "#/presentation/route-paths.ts";
 
 export const roleRouterBuild = () => ({
 	list: permissionRequire(PERMISSION.USER_MANAGE)
-		.route({ method: "GET", path: "/roles" })
+		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.ROLES })
 		.output(roleListSchema)
 		.handler(() => effectRun(roleList())),
 
 	get: permissionRequire(PERMISSION.USER_MANAGE)
-		.route({ method: "GET", path: "/roles/{key}" })
+		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.ROLE })
 		.input(roleKeyInputSchema)
 		.output(roleSchema)
 		.handler(({ input }) => effectRun(roleGet(input))),
 
 	create: permissionRequire(PERMISSION.USER_MANAGE)
-		.route({ method: "POST", path: "/roles" })
+		.route({ method: HTTP_METHOD.POST, path: ROUTE_PATH.ROLES })
 		.input(roleCreateInputSchema)
 		.output(roleSchema)
 		.handler(({ input, context }) =>
@@ -36,7 +38,7 @@ export const roleRouterBuild = () => ({
 		),
 
 	update: permissionRequire(PERMISSION.USER_MANAGE)
-		.route({ method: "PATCH", path: "/roles/{key}" })
+		.route({ method: HTTP_METHOD.PATCH, path: ROUTE_PATH.ROLE })
 		.input(roleUpdateInputSchema)
 		.output(roleSchema)
 		.handler(({ input, context }) =>
@@ -44,7 +46,7 @@ export const roleRouterBuild = () => ({
 		),
 
 	remove: permissionRequire(PERMISSION.USER_MANAGE)
-		.route({ method: "DELETE", path: "/roles/{key}" })
+		.route({ method: HTTP_METHOD.DELETE, path: ROUTE_PATH.ROLE })
 		.input(roleKeyInputSchema)
 		.output(z.object({ key: z.string() }))
 		.handler(({ input, context }) =>

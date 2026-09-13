@@ -1,12 +1,12 @@
 import { Button } from "@app/components/ui/button";
 import { A } from "@mobily/ts-belt";
 import { Link } from "@tanstack/react-router";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import { useSession } from "#/libs/auth/use-session.ts";
 import { useSessionSignOut } from "#/routes/_authenticated/_hooks/use-session-sign-out.ts";
 import { useVisibleNav } from "#/routes/_authenticated/_hooks/use-visible-nav.ts";
 
-export const AppSidebar = (): ReactElement => {
+export const AppSidebar: FC = (): ReactElement => {
 	const session = useSession();
 	const signOut = useSessionSignOut();
 	const navItems = useVisibleNav();

@@ -6,7 +6,7 @@ import { Select } from "@app/components/ui/select";
 import type { TUser } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
 import { Link } from "@tanstack/react-router";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import type { TRoleOption } from "#/routes/_authenticated/users/_hooks/use-role-options.ts";
 import { useUserEditForm } from "#/routes/_authenticated/users/_hooks/use-user-edit-form.ts";
 
@@ -15,18 +15,15 @@ type TUserEditFormProps = {
 	roleOptions: readonly TRoleOption[];
 };
 
-export const UserEditForm = ({
-	user,
-	roleOptions,
-}: TUserEditFormProps): ReactElement => {
-	const { form, onSubmit, isPending, isSelf } = useUserEditForm(user);
+export const UserEditForm: FC<TUserEditFormProps> = (props): ReactElement => {
+	const { form, onSubmit, isPending, isSelf } = useUserEditForm(props.user);
 
 	return (
 		<form
 			onSubmit={onSubmit}
 			className="flex max-w-md flex-col gap-4 border border-neutral-200 p-4"
 		>
-			<p className="text-sm text-neutral-500">{user.email}</p>
+			<p className="text-sm text-neutral-500">{props.user.email}</p>
 			<form.Field name="name">
 				{(field) => (
 					<div className="flex flex-col gap-1">
@@ -52,7 +49,7 @@ export const UserEditForm = ({
 							onBlur={field.handleBlur}
 							onChange={(event) => field.handleChange(event.target.value)}
 						>
-							{A.map(roleOptions, (option) => (
+							{A.map(props.roleOptions, (option) => (
 								<option key={option.value} value={option.value}>
 									{option.label}
 								</option>

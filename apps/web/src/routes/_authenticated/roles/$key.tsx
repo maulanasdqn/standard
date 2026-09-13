@@ -1,17 +1,12 @@
 import { checkRoutePermissions } from "@app/components/guard/route-guard";
 import { PERMISSION } from "@app/permissions";
 import { createFileRoute } from "@tanstack/react-router";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import { match, P } from "ts-pattern";
 import { RoleEditForm } from "#/routes/_authenticated/roles/_components/role-edit-form.tsx";
 import { useRoleGet } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
 
-export const Route = createFileRoute("/_authenticated/roles/$key")({
-	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
-	component: RoleEditPage,
-});
-
-function RoleEditPage(): ReactElement {
+const RoleEditPage: FC = (): ReactElement => {
 	const { data, isLoading } = useRoleGet();
 
 	return (
@@ -29,4 +24,9 @@ function RoleEditPage(): ReactElement {
 				))}
 		</div>
 	);
-}
+};
+
+export const Route = createFileRoute("/_authenticated/roles/$key")({
+	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
+	component: RoleEditPage,
+});
