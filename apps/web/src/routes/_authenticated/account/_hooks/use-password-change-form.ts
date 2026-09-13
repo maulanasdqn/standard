@@ -1,12 +1,13 @@
 import { AUTH_MESSAGE } from "@app/messages";
 import { passwordChangeInputSchema } from "@app/schemas";
 import { useForm } from "@tanstack/react-form";
+import { useStore } from "@tanstack/react-store";
 import type { FormEvent } from "react";
-import { useState } from "react";
 import { toast } from "sonner";
 import { match, P } from "ts-pattern";
 import { z } from "zod";
 import { authClient } from "#/libs/auth/client.ts";
+import { passwordChangeError } from "#/routes/_authenticated/account/_stores/password-change-error-store.ts";
 
 const passwordChangeFormSchema = passwordChangeInputSchema
 	.extend({ confirmPassword: z.string() })
@@ -24,13 +25,13 @@ const DEFAULT_VALUES: TPasswordChangeFormValues = {
 };
 
 export const usePasswordChangeForm = () => {
-	const [serverError, setServerError] = useState<string | null>(null);
+	const serverError = useStore(passwordChangeError.store, (state) => state);
 
 	const form = useForm({
 		defaultValues: DEFAULT_VALUES,
 		validators: { onChange: passwordChangeFormSchema },
 		onSubmit: async ({ value, formApi }) => {
-			setServerError(null);
+			passwordChangeError.clear();
 			const { error } = await authClient.changePassword({
 				currentPassword: value.currentPassword,
 				newPassword: value.newPassword,
@@ -43,7 +44,9 @@ export const usePasswordChangeForm = () => {
 					formApi.reset();
 				})
 				.otherwise((found) => {
-					setServerError(found.message ?? AUTH_MESSAGE.PASSWORD_CHANGE_FAILED);
+					passwordChangeError.set(
+						found.message ?? AUTH_MESSAGE.PASSWORD_CHANGE_FAILED,
+					);
 				});
 		},
 	});

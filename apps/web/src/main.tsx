@@ -4,6 +4,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Toaster } from "sonner";
 import { match, P } from "ts-pattern";
+import { SESSION_REACH } from "#/libs/auth/session-reach.ts";
 import { sessionRefresh } from "#/libs/auth/session.ts";
 import { sessionStore } from "#/libs/auth/session-store.ts";
 import { queryClient } from "#/libs/tanstack-query/index.ts";
@@ -12,7 +13,12 @@ import "./styles.css";
 
 const router = createRouter({
 	routeTree,
-	context: { queryClient, session: null, permissions: [] },
+	context: {
+		queryClient,
+		reach: SESSION_REACH.UNREACHABLE,
+		session: null,
+		permissions: [],
+	},
 	defaultPreload: "intent",
 });
 
@@ -23,11 +29,12 @@ declare module "@tanstack/react-router" {
 }
 
 sessionStore.subscribe(() => {
-	const session = sessionStore.state;
+	const { reach, session } = sessionStore.state;
 	router.update({
 		...router.options,
 		context: {
 			queryClient,
+			reach,
 			session,
 			permissions: session?.permissions ?? [],
 		},
