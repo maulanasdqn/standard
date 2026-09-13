@@ -60,18 +60,9 @@ export const LoginForm = (): ReactElement => {
 					)}
 				</form.Field>
 				<FieldError errors={serverError ? [{ message: serverError }] : []} />
-				<form.Subscribe
-					selector={(state) => ({
-						isSubmitting: state.isSubmitting,
-						canSubmit: state.canSubmit,
-					})}
-				>
-					{({ isSubmitting, canSubmit }) => (
-						<Button
-							type="submit"
-							className="w-full"
-							disabled={!canSubmit || isSubmitting}
-						>
+				<form.Subscribe selector={(state) => state.isSubmitting}>
+					{(isSubmitting) => (
+						<Button type="submit" className="w-full" disabled={isSubmitting}>
 							{isSubmitting && <Loader2 className="animate-spin" />}
 							{isSubmitting ? "Signing in…" : "Login"}
 						</Button>
