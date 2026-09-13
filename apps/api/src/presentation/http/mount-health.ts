@@ -1,12 +1,13 @@
 import { HEALTH_STATUS } from "@app/schemas";
+import { ROUTE_PATH } from "#/presentation/route-paths.ts";
 import { APP_VERSION } from "@app/version";
 import type { Hono } from "hono";
 
 export const healthMount = (app: Hono): void => {
-	app.get("/healthz", (context) =>
+	app.get(ROUTE_PATH.HEALTHZ, (context) =>
 		context.json({ status: HEALTH_STATUS.OK, version: APP_VERSION }),
 	);
-	app.get("/ready", (context) =>
+	app.get(ROUTE_PATH.READY, (context) =>
 		context.json({ status: HEALTH_STATUS.READY, version: APP_VERSION }),
 	);
 };

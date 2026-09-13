@@ -17,22 +17,24 @@ import { userPasswordReset } from "#/application/user/user-password-reset.ts";
 import { userUpdate } from "#/application/user/user-update.ts";
 import { permissionRequire } from "#/presentation/orpc/middleware.ts";
 import { effectRun } from "#/presentation/orpc/run-effect.ts";
+import { HTTP_METHOD } from "#/presentation/http-methods.ts";
+import { ROUTE_PATH } from "#/presentation/route-paths.ts";
 
 export const userRouterBuild = () => ({
 	list: permissionRequire(PERMISSION.USER_MANAGE)
-		.route({ method: "GET", path: "/users" })
+		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.USERS })
 		.input(userListInputSchema)
 		.output(userListSchema)
 		.handler(({ input }) => effectRun(userList(input))),
 
 	get: permissionRequire(PERMISSION.USER_MANAGE)
-		.route({ method: "GET", path: "/users/{id}" })
+		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.USER })
 		.input(userIdInputSchema)
 		.output(userSchema)
 		.handler(({ input }) => effectRun(userGet(input))),
 
 	create: permissionRequire(PERMISSION.USER_MANAGE)
-		.route({ method: "POST", path: "/users" })
+		.route({ method: HTTP_METHOD.POST, path: ROUTE_PATH.USERS })
 		.input(userCreateInputSchema)
 		.output(userSchema)
 		.handler(({ input, context }) =>
@@ -40,7 +42,7 @@ export const userRouterBuild = () => ({
 		),
 
 	update: permissionRequire(PERMISSION.USER_MANAGE)
-		.route({ method: "PATCH", path: "/users/{id}" })
+		.route({ method: HTTP_METHOD.PATCH, path: ROUTE_PATH.USER })
 		.input(userUpdateInputSchema)
 		.output(userSchema)
 		.handler(({ input, context }) =>
@@ -48,7 +50,7 @@ export const userRouterBuild = () => ({
 		),
 
 	remove: permissionRequire(PERMISSION.USER_MANAGE)
-		.route({ method: "DELETE", path: "/users/{id}" })
+		.route({ method: HTTP_METHOD.DELETE, path: ROUTE_PATH.USER })
 		.input(userIdInputSchema)
 		.output(z.object({ id: z.uuid() }))
 		.handler(({ input, context }) =>
@@ -56,7 +58,7 @@ export const userRouterBuild = () => ({
 		),
 
 	resetPassword: permissionRequire(PERMISSION.USER_MANAGE)
-		.route({ method: "POST", path: "/users/{id}/password" })
+		.route({ method: HTTP_METHOD.POST, path: ROUTE_PATH.USER_PASSWORD })
 		.input(userPasswordResetInputSchema)
 		.output(z.object({ id: z.uuid() }))
 		.handler(({ input, context }) =>
