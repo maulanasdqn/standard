@@ -4,9 +4,9 @@ import { Effect } from "effect";
 import { roleExists } from "#/application/role/role-ensure.ts";
 import { toRoleDto } from "#/application/role/to-role-dto.ts";
 import { ACTIVITY_ACTION, ACTIVITY_ENTITY_TYPE } from "@app/activity";
-import { EConflict, type EDatabase } from "#/application/shared/errors.ts";
-import { ActivityRepo } from "#/infrastructure/db/repositories/activity-repository.ts";
-import { CustomRoleRepo } from "#/infrastructure/db/repositories/custom-role-repository.ts";
+import { EConflict, type EDatabase } from "#/domain/shared/errors.ts";
+import { ActivityRepo } from "#/domain/activity/activity.ts";
+import { CustomRoleRepo } from "#/domain/role/custom-role.ts";
 
 export const roleCreate = Effect.fn("roleCreate")(function* (
 	input: TRoleCreateInput,

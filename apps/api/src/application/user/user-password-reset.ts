@@ -7,9 +7,9 @@ import {
 	type EDatabase,
 	EForbidden,
 	ENotFound,
-} from "#/application/shared/errors.ts";
-import { ActivityRepo } from "#/infrastructure/db/repositories/activity-repository.ts";
-import { UserRepo } from "#/infrastructure/db/repositories/user-repository.ts";
+} from "#/domain/shared/errors.ts";
+import { ActivityRepo } from "#/domain/activity/activity.ts";
+import { UserRepo } from "#/domain/user/user.ts";
 
 export const userPasswordReset = Effect.fn("userPasswordReset")(function* (
 	input: TUserPasswordResetInput,

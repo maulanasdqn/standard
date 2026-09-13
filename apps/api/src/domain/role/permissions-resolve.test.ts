@@ -1,9 +1,9 @@
 import { ALL_PERMISSIONS, canAll, PERMISSION, ROLE } from "@app/permissions";
 import { Effect, Layer } from "effect";
 import { describe, expect, it, type Mock, vi } from "vitest";
-import { permissionsResolve } from "#/application/shared/permissions-resolve.ts";
+import { permissionsResolve } from "#/domain/role/permissions-resolve.ts";
 import type { TCustomRoleRow } from "#/domain/role/custom-role.ts";
-import { CustomRoleRepo } from "#/infrastructure/db/repositories/custom-role-repository.ts";
+import { CustomRoleRepo } from "#/domain/role/custom-role.ts";
 
 const customRow: TCustomRoleRow = {
 	id: "11111111-1111-4111-8111-111111111111",

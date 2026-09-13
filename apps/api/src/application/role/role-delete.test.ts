@@ -2,11 +2,11 @@ import { ROLE } from "@app/permissions";
 import { Effect, Layer } from "effect";
 import { describe, expect, it, type Mock, vi } from "vitest";
 import { roleDelete } from "#/application/role/role-delete.ts";
-import { EBadRequest, EConflict } from "#/application/shared/errors.ts";
+import { EBadRequest, EConflict } from "#/domain/shared/errors.ts";
 import type { TRoleMemberCounts } from "#/domain/user/user.ts";
-import { ActivityRepo } from "#/infrastructure/db/repositories/activity-repository.ts";
-import { CustomRoleRepo } from "#/infrastructure/db/repositories/custom-role-repository.ts";
-import { UserRepo } from "#/infrastructure/db/repositories/user-repository.ts";
+import { ActivityRepo } from "#/domain/activity/activity.ts";
+import { CustomRoleRepo } from "#/domain/role/custom-role.ts";
+import { UserRepo } from "#/domain/user/user.ts";
 
 const ACTOR_ID = "22222222-2222-4222-8222-222222222222";
 

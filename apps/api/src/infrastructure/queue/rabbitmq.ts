@@ -1,6 +1,6 @@
 import { connect, type Channel, type ChannelModel } from "amqplib";
 import { Context, Effect, Layer } from "effect";
-import { EQueue } from "#/application/shared/errors.ts";
+import { EQueue } from "#/domain/shared/errors.ts";
 import { env } from "#/infrastructure/config/env.ts";
 import { SERVICE_TAG } from "#/infrastructure/service-tags.ts";
 

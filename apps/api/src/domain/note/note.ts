@@ -3,9 +3,10 @@ import type {
 	TNoteListInput,
 	TNoteUpdateInput,
 } from "@app/schemas";
-import type { Effect } from "effect";
-import type { EDatabase } from "#/application/shared/errors.ts";
+import { Context, type Effect } from "effect";
+import type { EDatabase } from "#/domain/shared/errors.ts";
 import type { TRowPage } from "#/domain/shared/pagination.ts";
+import { REPO_TAG } from "#/domain/shared/service-tags.ts";
 
 export type TNoteRow = {
 	id: string;
@@ -28,3 +29,7 @@ export type TNoteRepo = {
 	) => Effect.Effect<TNoteRow | null, EDatabase>;
 	remove: (id: string) => Effect.Effect<boolean, EDatabase>;
 };
+
+export class NoteRepo extends Context.Service<NoteRepo, TNoteRepo>()(
+	REPO_TAG.NOTE,
+) {}
