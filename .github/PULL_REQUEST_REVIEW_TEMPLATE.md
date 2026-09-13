@@ -25,7 +25,7 @@ Covers correctness (logic errors, edge cases, nullish paths, error handling, rac
 
 <!-- Checked against .claude/skills/ts-conventions/SKILL.md -->
 
-Covers the project conventions — files ≤ 200 lines with one responsibility, `T`/`I`/`E` naming prefixes, ts-pattern for conditionals and ts-belt for arrays/objects, explicit return types, no comments, logic in hooks/use-cases rather than JSX, and API layering (domain / application / infrastructure / presentation) — plus duplication, dead code, and naming.
+Covers the project conventions — no plain strings (user-facing copy in `@app/messages`, domain keys in a shared const object, referenced at every call site including `.with(...)` arms and `z.literal(...)`), arrow functions only (the `function` keyword is for generators alone), files ≤ 200 lines with one responsibility, `T`/`I`/`E` naming prefixes, ts-pattern for conditionals and ts-belt for arrays/objects, explicit return types, no comments, logic in hooks/use-cases rather than JSX, and API layering (domain / application / infrastructure / presentation) — plus duplication, dead code, and naming.
 
 | Severity | File | Finding | Suggested fix |
 |----------|------|---------|---------------|

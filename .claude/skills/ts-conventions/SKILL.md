@@ -1,11 +1,69 @@
 ---
 name: ts-conventions
-description: Apply this project's TypeScript conventions when writing or editing any .ts/.tsx file — file size limit, logic/UI separation, T/I/E naming prefixes, ts-pattern for conditionals, ts-belt for arrays/objects, Effect for apps/api business logic, and explicit return types everywhere.
+description: Apply this project's TypeScript conventions — load this BEFORE writing or editing any .ts/.tsx file in this repo, including a one-line change, and re-check it before calling the work done. Covers arrow functions only (no `function` keyword except generators), no plain strings (user-facing copy in @app/messages, domain keys in shared const objects), 200-line file limit, logic/UI separation, T/I/E naming prefixes, ts-pattern for conditionals, ts-belt for arrays/objects, Effect for apps/api business logic, and explicit return types everywhere.
 ---
 
 # TypeScript conventions
 
 Non-negotiable rules for every `.ts`/`.tsx` file written or edited in this project.
+
+Read the whole file before writing code, and run through it again before calling the work done — the rule most often missed on the second pass is **no plain strings**, immediately below.
+
+## Arrow functions only
+
+Every function is an arrow function assigned to a `const`. The `function` keyword is not used — not for React components, not for route pages, not for default-exported helpers.
+
+```ts
+const HealthPage = (): ReactElement => { ... };
+
+const globalSetup = async (): Promise<void> => { ... };
+export default globalSetup;
+```
+
+**The one exception is generators**, and it is a language limit rather than a style choice: an arrow function cannot be a generator. Effect's idioms therefore keep the keyword, and converting them is an error:
+
+```ts
+export const noteCreate = Effect.fn("noteCreate")(function* (input) { ... });
+const program = Effect.gen(function* () { ... });
+```
+
+The shadcn/ui primitives in `packages/components/src/ui/` follow this rule too, so they differ from what `shadcn add` emits upstream — convert any newly added component by hand before committing it.
+
+## No plain strings
+
+Every string that carries meaning is named by a shared constant and referenced from there. A literal typed directly into a file is a bug waiting for the day someone changes it in three places out of four.
+
+Two categories, two homes:
+
+**User-facing copy** — labels, status text, error messages, empty states, button text — lives in `@app/messages`, one `SCREAMING_SNAKE` const object per feature in `packages/messages/src/<feature>/message.ts`, declared `as const` and re-exported from the package index.
+
+```ts
+export const HEALTH_MESSAGE = {
+	STATUS: "Status",
+	STATUS_OK: "Ok",
+} as const;
+```
+
+Components and hooks import the constant. They never contain the sentence itself.
+
+**Domain keys and enum-like values** — statuses, role keys, permissions, `Context.Service` tag ids, env keys, queue names — live in a shared const object near their domain, with the union type derived from it:
+
+```ts
+export const HEALTH_STATUS = { OK: "ok", READY: "ready" } as const;
+export type THealthStatus = (typeof HEALTH_STATUS)[keyof typeof HEALTH_STATUS];
+```
+
+Reference the constant at **every** call site, including the places that look too small to matter and are exactly where literals survive:
+
+```ts
+z.literal(HEALTH_STATUS.OK)                          // not z.literal("ok")
+match(status).with(HEALTH_STATUS.OK, () => ...)      // not .with("ok", ...)
+{ status: HEALTH_STATUS.OK }                         // not { status: "ok" as const }
+```
+
+That last set matters because TypeScript does not protect you here: rename the value and a stale `.with("ok", ...)` arm still compiles, silently never matching.
+
+**Exempt:** Tailwind class strings inside `className`, and route paths handled by the router's own typed API. Those are styling and framework syntax, not named values — constant-ising them makes the code worse.
 
 ## File size
 

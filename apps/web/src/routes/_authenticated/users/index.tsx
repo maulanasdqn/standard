@@ -13,13 +13,7 @@ import {
 	useUserPageChange,
 } from "#/routes/_authenticated/users/_hooks/use-users.ts";
 
-export const Route = createFileRoute("/_authenticated/users/")({
-	validateSearch: userListInputSchema,
-	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
-	component: UsersPage,
-});
-
-function UsersPage(): ReactElement {
+const UsersPage = (): ReactElement => {
 	const { data, isLoading } = useUserList();
 	const goToPage = useUserPageChange();
 	const roleOptions = useRoleOptions();
@@ -39,4 +33,10 @@ function UsersPage(): ReactElement {
 			) : null}
 		</div>
 	);
-}
+};
+
+export const Route = createFileRoute("/_authenticated/users/")({
+	validateSearch: userListInputSchema,
+	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
+	component: UsersPage,
+});

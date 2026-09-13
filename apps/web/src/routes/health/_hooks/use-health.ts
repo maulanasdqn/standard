@@ -1,12 +1,15 @@
 import { APP_VERSION } from "@app/version";
+import { HEALTH_STATUS } from "@app/schemas";
 import { useQuery } from "@tanstack/react-query";
 import { match } from "ts-pattern";
 import { orpc } from "#/libs/orpc/client.ts";
-
-export type THealthStatus = "checking" | "ok" | "degraded";
+import {
+	HEALTH_VIEW_STATUS,
+	type THealthViewStatus,
+} from "#/routes/health/_constants/status.ts";
 
 export type THealthState = {
-	status: THealthStatus;
+	status: THealthViewStatus;
 	webVersion: string;
 	apiVersion: string | null;
 };
@@ -17,9 +20,15 @@ export const useHealth = (): THealthState => {
 	);
 
 	const status = match(query)
-		.with({ isPending: true }, (): THealthStatus => "checking")
-		.with({ data: { status: "ok" } }, (): THealthStatus => "ok")
-		.otherwise((): THealthStatus => "degraded");
+		.with(
+			{ isPending: true },
+			(): THealthViewStatus => HEALTH_VIEW_STATUS.CHECKING,
+		)
+		.with(
+			{ data: { status: HEALTH_STATUS.OK } },
+			(): THealthViewStatus => HEALTH_VIEW_STATUS.OK,
+		)
+		.otherwise((): THealthViewStatus => HEALTH_VIEW_STATUS.DEGRADED);
 
 	return {
 		status,

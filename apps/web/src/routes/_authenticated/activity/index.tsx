@@ -11,15 +11,7 @@ import {
 	useActivityPageChange,
 } from "#/routes/_authenticated/activity/_hooks/use-activity.ts";
 
-export const Route = createFileRoute("/_authenticated/activity/")({
-	validateSearch: activityListInputSchema,
-	beforeLoad: checkRoutePermissions({
-		permissions: [PERMISSION.ACTIVITY_READ],
-	}),
-	component: ActivityPage,
-});
-
-function ActivityPage(): ReactElement {
+const ActivityPage = (): ReactElement => {
 	const { data, isLoading } = useActivityList();
 	const goToPage = useActivityPageChange();
 
@@ -41,4 +33,12 @@ function ActivityPage(): ReactElement {
 			) : null}
 		</div>
 	);
-}
+};
+
+export const Route = createFileRoute("/_authenticated/activity/")({
+	validateSearch: activityListInputSchema,
+	beforeLoad: checkRoutePermissions({
+		permissions: [PERMISSION.ACTIVITY_READ],
+	}),
+	component: ActivityPage,
+});

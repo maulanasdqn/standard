@@ -6,12 +6,7 @@ import { match, P } from "ts-pattern";
 import { RoleEditForm } from "#/routes/_authenticated/roles/_components/role-edit-form.tsx";
 import { useRoleGet } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
 
-export const Route = createFileRoute("/_authenticated/roles/$key")({
-	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
-	component: RoleEditPage,
-});
-
-function RoleEditPage(): ReactElement {
+const RoleEditPage = (): ReactElement => {
 	const { data, isLoading } = useRoleGet();
 
 	return (
@@ -29,4 +24,9 @@ function RoleEditPage(): ReactElement {
 				))}
 		</div>
 	);
-}
+};
+
+export const Route = createFileRoute("/_authenticated/roles/$key")({
+	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
+	component: RoleEditPage,
+});

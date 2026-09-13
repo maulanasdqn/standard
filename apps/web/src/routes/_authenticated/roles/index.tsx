@@ -6,12 +6,7 @@ import { RoleCreateForm } from "#/routes/_authenticated/roles/_components/role-c
 import { RoleList } from "#/routes/_authenticated/roles/_components/role-list.tsx";
 import { useRoleList } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
 
-export const Route = createFileRoute("/_authenticated/roles/")({
-	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
-	component: RolesPage,
-});
-
-function RolesPage(): ReactElement {
+const RolesPage = (): ReactElement => {
 	const { data, isLoading } = useRoleList();
 
 	return (
@@ -25,4 +20,9 @@ function RolesPage(): ReactElement {
 			)}
 		</div>
 	);
-}
+};
+
+export const Route = createFileRoute("/_authenticated/roles/")({
+	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
+	component: RolesPage,
+});

@@ -1,6 +1,6 @@
 import { match, P } from "ts-pattern";
 
-export default async function globalTeardown(): Promise<void> {
+const globalTeardown = async (): Promise<void> => {
 	const pid = process.env.__WEB_E2E_API_PID__;
 
 	match(pid)
@@ -10,4 +10,6 @@ export default async function globalTeardown(): Promise<void> {
 				process.kill(-Number(found));
 			} catch {}
 		});
-}
+};
+
+export default globalTeardown;

@@ -7,13 +7,7 @@ import { NoteCreateForm } from "#/routes/_authenticated/notes/_components/note-c
 import { NoteList } from "#/routes/_authenticated/notes/_components/note-list.tsx";
 import { useNoteList } from "#/routes/_authenticated/notes/_hooks/use-notes.ts";
 
-export const Route = createFileRoute("/_authenticated/notes/")({
-	validateSearch: noteListInputSchema,
-	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.NOTE_READ] }),
-	component: NotesPage,
-});
-
-function NotesPage(): ReactElement {
+const NotesPage = (): ReactElement => {
 	const { data, isLoading } = useNoteList();
 
 	return (
@@ -27,4 +21,10 @@ function NotesPage(): ReactElement {
 			)}
 		</div>
 	);
-}
+};
+
+export const Route = createFileRoute("/_authenticated/notes/")({
+	validateSearch: noteListInputSchema,
+	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.NOTE_READ] }),
+	component: NotesPage,
+});

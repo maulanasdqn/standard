@@ -11,12 +11,7 @@ import {
 	useUserGet,
 } from "#/routes/_authenticated/users/_hooks/use-users.ts";
 
-export const Route = createFileRoute("/_authenticated/users/$userId")({
-	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
-	component: UserEditPage,
-});
-
-function UserEditPage(): ReactElement {
+const UserEditPage = (): ReactElement => {
 	const { data, isLoading } = useUserGet();
 	const roleOptions = useRoleOptions();
 	const isSelf = useIsSelf();
@@ -39,4 +34,9 @@ function UserEditPage(): ReactElement {
 				))}
 		</div>
 	);
-}
+};
+
+export const Route = createFileRoute("/_authenticated/users/$userId")({
+	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
+	component: UserEditPage,
+});
