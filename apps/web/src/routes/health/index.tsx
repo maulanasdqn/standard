@@ -1,10 +1,10 @@
 import { HEALTH_MESSAGE } from "@app/messages";
 import { createFileRoute } from "@tanstack/react-router";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import { HealthPanel } from "#/routes/health/_components/health-panel.tsx";
 import { useHealth } from "#/routes/health/_hooks/use-health.ts";
 
-const HealthPage = (): ReactElement => {
+const HealthPage: FC = (): ReactElement => {
 	const health = useHealth();
 
 	return (

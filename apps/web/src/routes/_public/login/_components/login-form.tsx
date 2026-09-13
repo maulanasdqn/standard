@@ -3,10 +3,10 @@ import { FieldError, hasFieldError } from "@app/components/ui/field-error";
 import { Input } from "@app/components/ui/input";
 import { Label } from "@app/components/ui/label";
 import { Loader2 } from "lucide-react";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import { useLoginForm } from "#/routes/_public/login/_hooks/use-login.ts";
 
-export const LoginForm = (): ReactElement => {
+export const LoginForm: FC = (): ReactElement => {
 	const { form, serverError, onSubmit } = useLoginForm();
 
 	return (

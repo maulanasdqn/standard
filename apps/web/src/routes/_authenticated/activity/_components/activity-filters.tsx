@@ -2,13 +2,13 @@ import { ACTIVITY_ACTION, ACTIVITY_ENTITY_TYPE } from "@app/activity";
 import { Label } from "@app/components/ui/label";
 import { Select } from "@app/components/ui/select";
 import { A, D } from "@mobily/ts-belt";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import { useActivityFilters } from "#/routes/_authenticated/activity/_hooks/use-activity.ts";
 
 const ACTIONS = D.values(ACTIVITY_ACTION);
 const ENTITY_TYPES = D.values(ACTIVITY_ENTITY_TYPE);
 
-export const ActivityFilters = (): ReactElement => {
+export const ActivityFilters: FC = (): ReactElement => {
 	const { action, entityType, onActionChange, onEntityTypeChange } =
 		useActivityFilters();
 

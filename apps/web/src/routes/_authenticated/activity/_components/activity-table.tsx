@@ -9,7 +9,7 @@ import {
 import { formatDateTime, orDash } from "@app/format";
 import type { TActivity } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import { match, P } from "ts-pattern";
 
 type TActivityTableProps = {
@@ -21,8 +21,8 @@ const metadataLabel = (metadata: unknown): string =>
 		.with(P.nullish, () => "—")
 		.otherwise((value) => JSON.stringify(value));
 
-export const ActivityTable = ({ entries }: TActivityTableProps): ReactElement =>
-	match(A.isEmpty(entries))
+export const ActivityTable: FC<TActivityTableProps> = (props): ReactElement =>
+	match(A.isEmpty(props.entries))
 		.with(true, () => (
 			<p className="text-sm text-neutral-500">No activity yet.</p>
 		))
@@ -38,7 +38,7 @@ export const ActivityTable = ({ entries }: TActivityTableProps): ReactElement =>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{A.map(entries, (entry) => (
+					{A.map(props.entries, (entry) => (
 						<TableRow key={entry.id}>
 							<TableCell className="whitespace-nowrap text-neutral-500">
 								{formatDateTime(entry.createdAt)}

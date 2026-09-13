@@ -7,6 +7,7 @@ Full-stack TypeScript monorepo: moon + pnpm workspaces, Hono + oRPC + Effect (`a
 **Read `.claude/skills/ts-conventions/SKILL.md` first.** It is the full ruleset and it is non-negotiable. The rules that get broken most often, in short:
 
 - **No plain strings.** User-facing copy lives in `@app/messages` as a `SCREAMING_SNAKE` const object (`NOTE_MESSAGE`, `USER_MESSAGE`, …), never inline in JSX. Domain keys — statuses, roles, permissions, service tags, env keys — live in a shared const object (`PERMISSION`, `SERVICE_TAG`, `HEALTH_STATUS`, …) with the union type derived from it, and are referenced everywhere including `ts-pattern` `.with(...)` arms and `z.literal(...)`. Tailwind class strings in `className` are exempt: they are styling, not named values.
+- **Component signature.** Every React component is `const X: FC<TProps> = (props): ReactElement =>`, with props read as `props.x` and never destructured in the parameter list. Destructure in the body only for defaults or a rest element, naming the rest `rest`.
 - **Arrow functions only.** Every function is an arrow function assigned to a `const` — never the `function` keyword, including React and route components. The sole exception is generators, which cannot be arrows: `Effect.fn(...)(function* ...)` and `Effect.gen(function* ...)` keep the keyword.
 - **ts-pattern** for conditionals, **ts-belt** (`A`, `D`) for arrays and objects, never native `if`/`switch` chains or `Array.prototype`.
 - **Explicit return types** on every function, including one-liners.

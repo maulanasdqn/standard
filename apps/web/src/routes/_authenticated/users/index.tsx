@@ -2,7 +2,7 @@ import { checkRoutePermissions } from "@app/components/guard/route-guard";
 import { PERMISSION } from "@app/permissions";
 import { userListInputSchema } from "@app/schemas";
 import { createFileRoute } from "@tanstack/react-router";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import { ListPagination } from "#/routes/_authenticated/_components/list-pagination.tsx";
 import { UserCreateForm } from "#/routes/_authenticated/users/_components/user-create-form.tsx";
 import { UserSearch } from "#/routes/_authenticated/users/_components/user-search.tsx";
@@ -13,7 +13,7 @@ import {
 	useUserPageChange,
 } from "#/routes/_authenticated/users/_hooks/use-users.ts";
 
-const UsersPage = (): ReactElement => {
+const UsersPage: FC = (): ReactElement => {
 	const { data, isLoading } = useUserList();
 	const goToPage = useUserPageChange();
 	const roleOptions = useRoleOptions();

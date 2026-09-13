@@ -1,12 +1,10 @@
 import type * as React from "react";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import { cn } from "../lib/utils.ts";
 
-const Input = ({
-	className,
-	type,
-	...props
-}: React.ComponentProps<"input">): ReactElement => {
+const Input: FC<React.ComponentProps<"input">> = (props): ReactElement => {
+	const { className, type, ...rest } = props;
+
 	return (
 		<input
 			type={type}
@@ -17,7 +15,7 @@ const Input = ({
 				"aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40",
 				className,
 			)}
-			{...props}
+			{...rest}
 		/>
 	);
 };

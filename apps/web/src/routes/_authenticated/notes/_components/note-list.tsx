@@ -4,7 +4,7 @@ import { formatDateTime } from "@app/format";
 import { PERMISSION } from "@app/permissions";
 import type { TNote } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import { match } from "ts-pattern";
 import { useNoteDelete } from "#/routes/_authenticated/notes/_hooks/use-notes.ts";
 
@@ -12,14 +12,16 @@ type TNoteListProps = {
 	notes: readonly TNote[];
 };
 
-export const NoteList = ({ notes }: TNoteListProps): ReactElement => {
+export const NoteList: FC<TNoteListProps> = (props): ReactElement => {
 	const noteDelete = useNoteDelete();
 
-	return match(A.isEmpty(notes))
-		.with(true, () => <p className="text-sm text-neutral-500">No notes yet.</p>)
+	return match(A.isEmpty(props.notes))
+		.with(true, () => (
+			<p className="text-sm text-neutral-500">No notes yet.</p>
+		))
 		.otherwise(() => (
 			<ul className="flex flex-col divide-y divide-neutral-200 border border-neutral-200">
-				{A.map(notes, (note) => (
+				{A.map(props.notes, (note) => (
 					<li
 						key={note.id}
 						className="flex items-start justify-between gap-4 p-4"

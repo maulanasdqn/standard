@@ -10,20 +10,20 @@ import { ALL_PERMISSIONS, PERMISSION_LABEL } from "@app/permissions";
 import type { TRoleDto } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
 import { Check } from "lucide-react";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 
 type TPermissionMatrixProps = {
 	roles: readonly TRoleDto[];
 };
 
-export const PermissionMatrix = ({
-	roles,
-}: TPermissionMatrixProps): ReactElement => (
+export const PermissionMatrix: FC<TPermissionMatrixProps> = (
+	props,
+): ReactElement => (
 	<Table>
 		<TableHeader>
 			<TableRow>
 				<TableHead>Permission</TableHead>
-				{A.map(roles, (role) => (
+				{A.map(props.roles, (role) => (
 					<TableHead key={role.key} className="text-center">
 						{role.label}
 					</TableHead>
@@ -41,7 +41,7 @@ export const PermissionMatrix = ({
 							<code className="text-xs text-neutral-400">{permission}</code>
 						</span>
 					</TableCell>
-					{A.map(roles, (role) => (
+					{A.map(props.roles, (role) => (
 						<TableCell key={role.key} className="text-center">
 							{A.includes(role.permissions, permission) ? (
 								<Check className="mx-auto size-4" aria-label="Granted" />

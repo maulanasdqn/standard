@@ -12,7 +12,7 @@ import { orDash } from "@app/format";
 import type { TRoleDto } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
 import { Link } from "@tanstack/react-router";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import { match } from "ts-pattern";
 import { useRoleDelete } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
 import { roleDeletable } from "#/routes/_authenticated/roles/_utils/role-deletable.ts";
@@ -21,11 +21,13 @@ type TRoleListProps = {
 	roles: readonly TRoleDto[];
 };
 
-export const RoleList = ({ roles }: TRoleListProps): ReactElement => {
+export const RoleList: FC<TRoleListProps> = (props): ReactElement => {
 	const roleDelete = useRoleDelete();
 
-	return match(A.isEmpty(roles))
-		.with(true, () => <p className="text-sm text-neutral-500">No roles yet.</p>)
+	return match(A.isEmpty(props.roles))
+		.with(true, () => (
+			<p className="text-sm text-neutral-500">No roles yet.</p>
+		))
 		.otherwise(() => (
 			<Table>
 				<TableHeader>
@@ -39,7 +41,7 @@ export const RoleList = ({ roles }: TRoleListProps): ReactElement => {
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{A.map(roles, (role) => (
+					{A.map(props.roles, (role) => (
 						<TableRow key={role.key}>
 							<TableCell>
 								<span className="flex items-center gap-2 font-medium">

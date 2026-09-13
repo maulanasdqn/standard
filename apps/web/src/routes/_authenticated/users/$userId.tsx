@@ -1,7 +1,7 @@
 import { checkRoutePermissions } from "@app/components/guard/route-guard";
 import { PERMISSION } from "@app/permissions";
 import { createFileRoute } from "@tanstack/react-router";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import { match, P } from "ts-pattern";
 import { UserEditForm } from "#/routes/_authenticated/users/_components/user-edit-form.tsx";
 import { UserPasswordResetForm } from "#/routes/_authenticated/users/_components/user-password-reset-form.tsx";
@@ -11,7 +11,7 @@ import {
 	useUserGet,
 } from "#/routes/_authenticated/users/_hooks/use-users.ts";
 
-const UserEditPage = (): ReactElement => {
+const UserEditPage: FC = (): ReactElement => {
 	const { data, isLoading } = useUserGet();
 	const roleOptions = useRoleOptions();
 	const isSelf = useIsSelf();

@@ -1,5 +1,5 @@
 import { Button } from "@app/components/ui/button";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import {
 	hasNextPage,
 	hasPreviousPage,
@@ -12,29 +12,27 @@ type TListPaginationProps = {
 	onPageChange: (page: number) => void;
 };
 
-export const ListPagination = ({
-	pageInfo,
-	noun,
-	onPageChange,
-}: TListPaginationProps): ReactElement => (
+export const ListPagination: FC<TListPaginationProps> = (
+	props,
+): ReactElement => (
 	<div className="flex items-center justify-between text-sm text-neutral-600">
 		<span>
-			Page {pageInfo.page} · {pageInfo.total} {noun}
+			Page {props.pageInfo.page} · {props.pageInfo.total} {props.noun}
 		</span>
 		<div className="flex gap-2">
 			<Button
 				variant="outline"
 				size="sm"
-				disabled={!hasPreviousPage(pageInfo)}
-				onClick={() => onPageChange(pageInfo.page - 1)}
+				disabled={!hasPreviousPage(props.pageInfo)}
+				onClick={() => props.onPageChange(props.pageInfo.page - 1)}
 			>
 				Previous
 			</Button>
 			<Button
 				variant="outline"
 				size="sm"
-				disabled={!hasNextPage(pageInfo)}
-				onClick={() => onPageChange(pageInfo.page + 1)}
+				disabled={!hasNextPage(props.pageInfo)}
+				onClick={() => props.onPageChange(props.pageInfo.page + 1)}
 			>
 				Next
 			</Button>

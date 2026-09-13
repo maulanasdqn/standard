@@ -2,7 +2,7 @@ import { checkRoutePermissions } from "@app/components/guard/route-guard";
 import { PERMISSION } from "@app/permissions";
 import { activityListInputSchema } from "@app/schemas";
 import { createFileRoute } from "@tanstack/react-router";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import { ListPagination } from "#/routes/_authenticated/_components/list-pagination.tsx";
 import { ActivityFilters } from "#/routes/_authenticated/activity/_components/activity-filters.tsx";
 import { ActivityTable } from "#/routes/_authenticated/activity/_components/activity-table.tsx";
@@ -11,7 +11,7 @@ import {
 	useActivityPageChange,
 } from "#/routes/_authenticated/activity/_hooks/use-activity.ts";
 
-const ActivityPage = (): ReactElement => {
+const ActivityPage: FC = (): ReactElement => {
 	const { data, isLoading } = useActivityList();
 	const goToPage = useActivityPageChange();
 

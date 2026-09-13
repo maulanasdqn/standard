@@ -2,12 +2,12 @@ import { checkRoutePermissions } from "@app/components/guard/route-guard";
 import { PERMISSION } from "@app/permissions";
 import { noteListInputSchema } from "@app/schemas";
 import { createFileRoute } from "@tanstack/react-router";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import { NoteCreateForm } from "#/routes/_authenticated/notes/_components/note-create-form.tsx";
 import { NoteList } from "#/routes/_authenticated/notes/_components/note-list.tsx";
 import { useNoteList } from "#/routes/_authenticated/notes/_hooks/use-notes.ts";
 
-const NotesPage = (): ReactElement => {
+const NotesPage: FC = (): ReactElement => {
 	const { data, isLoading } = useNoteList();
 
 	return (

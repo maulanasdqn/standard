@@ -1,6 +1,6 @@
 ---
 name: ts-conventions
-description: Apply this project's TypeScript conventions — load this BEFORE writing or editing any .ts/.tsx file in this repo, including a one-line change, and re-check it before calling the work done. Covers arrow functions only (no `function` keyword except generators), no plain strings (user-facing copy in @app/messages, domain keys in shared const objects), 200-line file limit, logic/UI separation, T/I/E naming prefixes, ts-pattern for conditionals, ts-belt for arrays/objects, Effect for apps/api business logic, and explicit return types everywhere.
+description: Apply this project's TypeScript conventions — load this BEFORE writing or editing any .ts/.tsx file in this repo, including a one-line change, and re-check it before calling the work done. Covers the React component signature (`const X: FC<TProps> = (props): ReactElement =>`, props read as `props.x`), arrow functions only (no `function` keyword except generators), no plain strings (user-facing copy in @app/messages, domain keys in shared const objects), 200-line file limit, logic/UI separation, T/I/E naming prefixes, ts-pattern for conditionals, ts-belt for arrays/objects, Effect for apps/api business logic, and explicit return types everywhere.
 ---
 
 # TypeScript conventions
@@ -8,6 +8,40 @@ description: Apply this project's TypeScript conventions — load this BEFORE wr
 Non-negotiable rules for every `.ts`/`.tsx` file written or edited in this project.
 
 Read the whole file before writing code, and run through it again before calling the work done — the rule most often missed on the second pass is **no plain strings**, immediately below.
+
+## React component signature
+
+Every component is written exactly like this:
+
+```tsx
+const UsersPage: FC = (): ReactElement => { ... };
+
+export const UserTable: FC<TUserTableProps> = (props): ReactElement => {
+	return match(A.isEmpty(props.users)) ...
+};
+```
+
+Three parts, all required:
+
+1. The const carries `FC`, or `FC<TProps>` when the component takes props.
+2. The return type `ReactElement` is still written out, even though `FC` implies it.
+3. **Props are never destructured in the parameter list.** The parameter is a single `props`, and values are read as `props.users`.
+
+The one case that destructures is a props type with defaults or a rest element, where the destructuring moves to the first line of the body and the rest element is named `rest`, never `props`:
+
+```tsx
+export const Guard: FC<TGuardProps> = (props): ReactElement => {
+	const { permissions, mode = "all", fallback = null, children } = props;
+	...
+};
+
+const Card: FC<ComponentProps<"div">> = (props): ReactElement => {
+	const { className, ...rest } = props;
+	return <div className={cn("...", className)} {...rest} />;
+};
+```
+
+This applies to the shadcn/ui primitives in `packages/components/src/ui/` too, which arrive from upstream with destructured parameters and must be converted by hand.
 
 ## Arrow functions only
 

@@ -2,10 +2,10 @@ import { Button } from "@app/components/ui/button";
 import { FieldError } from "@app/components/ui/field-error";
 import { Input } from "@app/components/ui/input";
 import { Label } from "@app/components/ui/label";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import { usePasswordChangeForm } from "#/routes/_authenticated/account/_hooks/use-password-change-form.ts";
 
-export const PasswordChangeForm = (): ReactElement => {
+export const PasswordChangeForm: FC = (): ReactElement => {
 	const { form, serverError, onSubmit } = usePasswordChangeForm();
 
 	return (

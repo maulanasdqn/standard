@@ -1,10 +1,10 @@
 import { Button } from "@app/components/ui/button";
 import { FieldError } from "@app/components/ui/field-error";
 import { Input } from "@app/components/ui/input";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import { useNoteCreateForm } from "#/routes/_authenticated/notes/_hooks/use-note-create-form.ts";
 
-export const NoteCreateForm = (): ReactElement => {
+export const NoteCreateForm: FC = (): ReactElement => {
 	const { form, onSubmit } = useNoteCreateForm();
 
 	return (

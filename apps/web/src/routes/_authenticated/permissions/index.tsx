@@ -1,11 +1,11 @@
 import { checkRoutePermissions } from "@app/components/guard/route-guard";
 import { PERMISSION } from "@app/permissions";
 import { createFileRoute } from "@tanstack/react-router";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import { PermissionMatrix } from "#/routes/_authenticated/permissions/_components/permission-matrix.tsx";
 import { usePermissionMatrix } from "#/routes/_authenticated/permissions/_hooks/use-permission-matrix.ts";
 
-const PermissionsPage = (): ReactElement => {
+const PermissionsPage: FC = (): ReactElement => {
 	const { roles, isLoading } = usePermissionMatrix();
 
 	return (

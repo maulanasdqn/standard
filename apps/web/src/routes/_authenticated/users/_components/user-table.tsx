@@ -12,7 +12,7 @@ import { formatDateTime } from "@app/format";
 import type { TUser } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
 import { Link } from "@tanstack/react-router";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import { match } from "ts-pattern";
 import type { TRoleOption } from "#/routes/_authenticated/users/_hooks/use-role-options.ts";
 import {
@@ -26,16 +26,15 @@ type TUserTableProps = {
 	roleOptions: readonly TRoleOption[];
 };
 
-export const UserTable = ({
-	users,
-	roleOptions,
-}: TUserTableProps): ReactElement => {
+export const UserTable: FC<TUserTableProps> = (props): ReactElement => {
 	const userUpdate = useUserUpdate();
 	const userDelete = useUserDelete();
 	const isSelf = useIsSelf();
 
-	return match(A.isEmpty(users))
-		.with(true, () => <p className="text-sm text-neutral-500">No users yet.</p>)
+	return match(A.isEmpty(props.users))
+		.with(true, () => (
+			<p className="text-sm text-neutral-500">No users yet.</p>
+		))
 		.otherwise(() => (
 			<Table>
 				<TableHeader>
@@ -48,7 +47,7 @@ export const UserTable = ({
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{A.map(users, (user) => (
+					{A.map(props.users, (user) => (
 						<TableRow key={user.id}>
 							<TableCell className="font-medium">{user.name}</TableCell>
 							<TableCell className="text-neutral-600">{user.email}</TableCell>
@@ -62,7 +61,7 @@ export const UserTable = ({
 									}
 									className="w-40"
 								>
-									{A.map(roleOptions, (option) => (
+									{A.map(props.roleOptions, (option) => (
 										<option key={option.value} value={option.value}>
 											{option.label}
 										</option>

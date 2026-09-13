@@ -1,5 +1,5 @@
 import { HEALTH_MESSAGE } from "@app/messages";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import { match } from "ts-pattern";
 import {
 	HEALTH_VIEW_STATUS,
@@ -21,17 +21,15 @@ const statusClassName = (status: THealthViewStatus): string =>
 		.with(HEALTH_VIEW_STATUS.DEGRADED, () => "text-red-600")
 		.exhaustive();
 
-export const HealthPanel = ({
-	status,
-	webVersion,
-	apiVersion,
-}: THealthState): ReactElement => (
+export const HealthPanel: FC<THealthState> = (props): ReactElement => (
 	<dl className="grid grid-cols-[8rem_1fr] gap-2 text-sm">
 		<dt className="text-neutral-500">{HEALTH_MESSAGE.STATUS}</dt>
-		<dd className={statusClassName(status)}>{statusLabel(status)}</dd>
+		<dd className={statusClassName(props.status)}>
+			{statusLabel(props.status)}
+		</dd>
 		<dt className="text-neutral-500">{HEALTH_MESSAGE.WEB_VERSION}</dt>
-		<dd>{webVersion}</dd>
+		<dd>{props.webVersion}</dd>
 		<dt className="text-neutral-500">{HEALTH_MESSAGE.API_VERSION}</dt>
-		<dd>{apiVersion ?? HEALTH_MESSAGE.VERSION_UNKNOWN}</dd>
+		<dd>{props.apiVersion ?? HEALTH_MESSAGE.VERSION_UNKNOWN}</dd>
 	</dl>
 );

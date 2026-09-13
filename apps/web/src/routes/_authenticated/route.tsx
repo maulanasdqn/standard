@@ -1,9 +1,9 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import { match, P } from "ts-pattern";
 import { AppSidebar } from "#/routes/_authenticated/_components/app-sidebar.tsx";
 
-const AuthenticatedLayout = (): ReactElement => {
+const AuthenticatedLayout: FC = (): ReactElement => {
 	return (
 		<div className="flex h-screen">
 			<AppSidebar />

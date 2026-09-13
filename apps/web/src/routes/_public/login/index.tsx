@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { GalleryVerticalEnd } from "lucide-react";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import { LoginForm } from "#/routes/_public/login/_components/login-form.tsx";
 
-const LoginPage = (): ReactElement => {
+const LoginPage: FC = (): ReactElement => {
 	return (
 		<div className="grid min-h-svh lg:grid-cols-2">
 			<div className="flex flex-col gap-4 p-6 md:p-10">
