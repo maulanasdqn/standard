@@ -1,0 +1,45 @@
+## Type
+
+<!-- one: new feat | refactor | fix | chore -->
+
+- [ ] New feature / Refactor / Bug fix / Chore
+
+## Summary
+
+<!-- One short paragraph: what this PR does and why. Keep it concise — this is what appears in reports. -->
+
+## Changelog
+
+<!-- Human-readable, one verb-leading bullet per line. No implementation detail. For reporting. -->
+
+- Added ...
+- Refactored ...
+- Fixed ...
+
+## Migration / Env
+
+<!-- Schema, env vars, or infra changes required. Write "None" if not applicable. -->
+
+- [ ] Database migration / schema change
+- [ ] New or renamed env vars (document in `.env.example`)
+- [ ] Infra / config change
+- [ ] None
+
+Notes: ...
+
+## Breaking Changes / Feature Impact
+
+<!-- Behavior that changes for existing users/callers, or a new capability unlocked. Write "None" if not applicable. -->
+
+- None.
+
+## Verification
+
+- [ ] `tsc` passes
+- [ ] Lint passes
+- [ ] Tests pass
+- [ ] Prod build passes
+
+## Follow-up
+
+<!-- Anything intentionally out of scope. Write "None" if not applicable. -->
