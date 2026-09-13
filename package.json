@@ -14,7 +14,7 @@
 		"dev:services:stop": "docker compose -f docker-compose.dev.yml down"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.4.5",
+		"@biomejs/biome": "2.5.12",
 		"@types/node": "^24.0.0",
 		"lefthook": "^2.1.10",
 		"typescript": "^5.9.2"
