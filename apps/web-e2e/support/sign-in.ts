@@ -6,8 +6,8 @@ const submitLogin = async (
 	{ email, password }: TLoginInput,
 ): Promise<void> => {
 	await page.goto("/login");
-	await page.getByLabel("Email").fill(email);
-	await page.getByLabel("Password").fill(password);
+	await page.getByLabel("Email").pressSequentially(email);
+	await page.getByLabel("Password").pressSequentially(password);
 	await page.getByRole("button", { name: "Login" }).click();
 };
 

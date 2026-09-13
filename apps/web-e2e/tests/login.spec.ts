@@ -3,8 +3,8 @@ import { expect, test } from "@playwright/test";
 test("signs in and creates a note", async ({ page }): Promise<void> => {
 	await page.goto("/login");
 
-	await page.getByLabel("Email").fill("admin@test.app");
-	await page.getByLabel("Password").fill("Password123");
+	await page.getByLabel("Email").pressSequentially("admin@test.app");
+	await page.getByLabel("Password").pressSequentially("Password123");
 	await page.getByRole("button", { name: "Login" }).click();
 
 	await expect(page).toHaveURL(/\/notes/);
