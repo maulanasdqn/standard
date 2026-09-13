@@ -17,6 +17,7 @@
 		"@app/messages": "workspace:*",
 		"@app/permissions": "workspace:*",
 		"@app/schemas": "workspace:*",
+		"@app/version": "workspace:*",
 		"@mobily/ts-belt": "^3.13.1",
 		"@orpc/client": "^1.13.6",
 		"@orpc/tanstack-query": "^1.13.6",

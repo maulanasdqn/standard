@@ -44,6 +44,9 @@ importers:
       '@app/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
+      '@app/version':
+        specifier: workspace:*
+        version: link:../../packages/version
       '@hono/node-server':
         specifier: ^1.19.11
         version: 1.19.17(hono@4.13.7)
@@ -133,6 +136,9 @@ importers:
       '@app/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
+      '@app/version':
+        specifier: workspace:*
+        version: link:../../packages/version
       '@orpc/client':
         specifier: ^1.13.6
         version: 1.15.0
@@ -178,6 +184,9 @@ importers:
       '@app/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
+      '@app/version':
+        specifier: workspace:*
+        version: link:../../packages/version
       '@mobily/ts-belt':
         specifier: ^3.13.1
         version: 3.13.1
@@ -515,6 +524,15 @@ importers:
       ts-pattern:
         specifier: ^5.9.0
         version: 5.9.0
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^5.0.0
+        version: 5.0.0(@types/node@24.13.3)(@vitest/coverage-v8@5.0.0)(jsdom@28.1.0(@noble/hashes@2.4.0))(vite@7.3.6(@types/node@24.13.3)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.13))
+
+  packages/version:
     devDependencies:
       typescript:
         specifier: ^5.9.3

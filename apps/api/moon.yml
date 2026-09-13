@@ -35,6 +35,7 @@ tasks:
       - 'src/**/*'
       - 'tsconfig.json'
       - 'package.json'
+      - '/package.json'
 
   test:
     command: 'pnpm test'
@@ -42,6 +43,7 @@ tasks:
       - 'src/**/*'
       - 'tsconfig.json'
       - 'package.json'
+      - '/package.json'
 
   db-generate:
     command: 'pnpm db:generate'
