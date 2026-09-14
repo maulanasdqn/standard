@@ -8,12 +8,15 @@ import { A } from "@mobily/ts-belt";
 import { Effect } from "effect";
 import { match } from "ts-pattern";
 import type { EDatabase } from "#/domain/shared/errors.ts";
-import { CustomRoleRepo } from "#/domain/role/custom-role.ts";
+import {
+	CustomRoleRepo,
+	type TCustomRoleRepoId,
+} from "#/domain/role/custom-role.ts";
 
 type TPermissionsEffect = Effect.Effect<
 	readonly TPermission[],
 	EDatabase,
-	CustomRoleRepo
+	TCustomRoleRepoId
 >;
 
 export const permissionsResolve = (role: string): TPermissionsEffect =>

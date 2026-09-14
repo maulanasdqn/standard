@@ -2,7 +2,10 @@ import { ALL_PERMISSIONS, canAll, PERMISSION, ROLE } from "@app/permissions";
 import { Effect, Layer } from "effect";
 import { describe, expect, it, type Mock, vi } from "vitest";
 import { permissionsResolve } from "#/domain/role/permissions-resolve.ts";
-import type { TCustomRoleRow } from "#/domain/role/custom-role.ts";
+import type {
+	TCustomRoleRow,
+	TCustomRoleRepoId,
+} from "#/domain/role/custom-role.ts";
 import { CustomRoleRepo } from "#/domain/role/custom-role.ts";
 
 const customRow: TCustomRoleRow = {
@@ -16,7 +19,7 @@ const customRow: TCustomRoleRow = {
 	updatedAt: new Date("2026-01-01T00:00:00Z"),
 };
 
-const layerBuild = (findByKey: Mock): Layer.Layer<CustomRoleRepo> =>
+const layerBuild = (findByKey: Mock): Layer.Layer<TCustomRoleRepoId> =>
 	Layer.succeed(
 		CustomRoleRepo,
 		CustomRoleRepo.of({

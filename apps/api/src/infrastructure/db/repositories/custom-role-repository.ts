@@ -7,7 +7,7 @@ import {
 	type TCustomRoleRepo,
 	type TCustomRoleRow,
 } from "#/domain/role/custom-role.ts";
-import { DbService } from "#/infrastructure/db/db-service.ts";
+import { DbService, dbServiceLayer } from "#/infrastructure/db/db-service.ts";
 import { customRole } from "#/infrastructure/db/schema/custom-role.ts";
 import { user } from "#/infrastructure/db/schema/auth.ts";
 
@@ -104,4 +104,4 @@ export const customRoleRepoLayer = Layer.effect(
 			remove,
 		});
 	}),
-).pipe(Layer.provide(DbService.layer));
+).pipe(Layer.provide(dbServiceLayer));

@@ -3,11 +3,14 @@ import { A } from "@mobily/ts-belt";
 import { Effect } from "effect";
 import { toActivityDto } from "#/application/activity/to-activity-dto.ts";
 import type { EDatabase } from "#/domain/shared/errors.ts";
-import { ActivityRepo } from "#/domain/activity/activity.ts";
+import {
+	ActivityRepo,
+	type TActivityRepoId,
+} from "#/domain/activity/activity.ts";
 
 export const activityList = Effect.fn("activityList")(function* (
 	input: TActivityListInput,
-): Effect.fn.Return<TActivityList, EDatabase, ActivityRepo> {
+): Effect.fn.Return<TActivityList, EDatabase, TActivityRepoId> {
 	const activityRepo = yield* ActivityRepo;
 	const { items, total } = yield* activityRepo.list(input);
 	return {

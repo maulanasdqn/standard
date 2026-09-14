@@ -9,8 +9,14 @@ import {
 	type EDatabase,
 	ENotFound,
 } from "#/domain/shared/errors.ts";
-import { ActivityRepo } from "#/domain/activity/activity.ts";
-import { CustomRoleRepo } from "#/domain/role/custom-role.ts";
+import {
+	ActivityRepo,
+	type TActivityRepoId,
+} from "#/domain/activity/activity.ts";
+import {
+	CustomRoleRepo,
+	type TCustomRoleRepoId,
+} from "#/domain/role/custom-role.ts";
 
 export const roleUpdate = Effect.fn("roleUpdate")(function* (
 	input: TRoleUpdateInput,
@@ -18,7 +24,7 @@ export const roleUpdate = Effect.fn("roleUpdate")(function* (
 ): Effect.fn.Return<
 	TRoleDto,
 	ENotFound | EBadRequest | EDatabase,
-	CustomRoleRepo | ActivityRepo
+	TCustomRoleRepoId | TActivityRepoId
 > {
 	const customRoleRepo = yield* CustomRoleRepo;
 	const activityRepo = yield* ActivityRepo;

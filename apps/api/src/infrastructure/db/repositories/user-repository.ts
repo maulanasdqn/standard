@@ -5,8 +5,11 @@ import { match, P } from "ts-pattern";
 import { EAuth, EDatabase } from "#/domain/shared/errors.ts";
 import { offsetFor } from "#/domain/shared/pagination.ts";
 import { UserRepo, type TUserRepo, type TUserRow } from "#/domain/user/user.ts";
-import { AuthService } from "#/infrastructure/auth/auth-service.ts";
-import { DbService } from "#/infrastructure/db/db-service.ts";
+import {
+	AuthService,
+	authServiceLayer,
+} from "#/infrastructure/auth/auth-service.ts";
+import { DbService, dbServiceLayer } from "#/infrastructure/db/db-service.ts";
 import { session, user } from "#/infrastructure/db/schema/auth.ts";
 
 const CREDENTIAL_PROVIDER_ID = "credential";
@@ -148,4 +151,4 @@ export const userRepoLayer = Layer.effect(
 			resetPassword,
 		});
 	}),
-).pipe(Layer.provide(Layer.mergeAll(DbService.layer, AuthService.layer)));
+).pipe(Layer.provide(Layer.mergeAll(dbServiceLayer, authServiceLayer)));

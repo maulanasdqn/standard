@@ -7,8 +7,11 @@ import {
 	EForbidden,
 	ENotFound,
 } from "#/domain/shared/errors.ts";
-import { ActivityRepo } from "#/domain/activity/activity.ts";
-import { UserRepo } from "#/domain/user/user.ts";
+import {
+	ActivityRepo,
+	type TActivityRepoId,
+} from "#/domain/activity/activity.ts";
+import { UserRepo, type TUserRepoId } from "#/domain/user/user.ts";
 
 export const userDelete = Effect.fn("userDelete")(function* (
 	{ id }: TUserIdInput,
@@ -16,7 +19,7 @@ export const userDelete = Effect.fn("userDelete")(function* (
 ): Effect.fn.Return<
 	{ id: string },
 	ENotFound | EForbidden | EDatabase,
-	UserRepo | ActivityRepo
+	TUserRepoId | TActivityRepoId
 > {
 	const userRepo = yield* UserRepo;
 	const activityRepo = yield* ActivityRepo;

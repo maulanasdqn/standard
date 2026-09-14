@@ -5,7 +5,7 @@ import { match, P } from "ts-pattern";
 import { EDatabase } from "#/domain/shared/errors.ts";
 import { NoteRepo, type TNoteRepo, type TNoteRow } from "#/domain/note/note.ts";
 import { offsetFor } from "#/domain/shared/pagination.ts";
-import { DbService } from "#/infrastructure/db/db-service.ts";
+import { DbService, dbServiceLayer } from "#/infrastructure/db/db-service.ts";
 import { note } from "#/infrastructure/db/schema/note.ts";
 
 const searchWhere = (search: string | undefined): SQL | undefined =>
@@ -91,4 +91,4 @@ export const noteRepoLayer = Layer.effect(
 
 		return NoteRepo.of({ list, findById, create, update, remove });
 	}),
-).pipe(Layer.provide(DbService.layer));
+).pipe(Layer.provide(dbServiceLayer));

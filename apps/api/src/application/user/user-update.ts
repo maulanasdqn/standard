@@ -11,9 +11,12 @@ import {
 	ENotFound,
 } from "#/domain/shared/errors.ts";
 import { toUserDto } from "#/application/user/to-user-dto.ts";
-import { ActivityRepo } from "#/domain/activity/activity.ts";
-import type { CustomRoleRepo } from "#/domain/role/custom-role.ts";
-import { UserRepo } from "#/domain/user/user.ts";
+import {
+	ActivityRepo,
+	type TActivityRepoId,
+} from "#/domain/activity/activity.ts";
+import type { TCustomRoleRepoId } from "#/domain/role/custom-role.ts";
+import { UserRepo, type TUserRepoId } from "#/domain/user/user.ts";
 
 export const userUpdate = Effect.fn("userUpdate")(function* (
 	input: TUserUpdateInput,
@@ -21,7 +24,7 @@ export const userUpdate = Effect.fn("userUpdate")(function* (
 ): Effect.fn.Return<
 	TUser,
 	ENotFound | EForbidden | EBadRequest | EDatabase,
-	UserRepo | CustomRoleRepo | ActivityRepo
+	TUserRepoId | TCustomRoleRepoId | TActivityRepoId
 > {
 	const userRepo = yield* UserRepo;
 	const activityRepo = yield* ActivityRepo;

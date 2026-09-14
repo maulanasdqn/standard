@@ -7,6 +7,7 @@ import { Context, type Effect } from "effect";
 import type { TBaseRow } from "#/domain/shared/base-row.ts";
 import type { EDatabase } from "#/domain/shared/errors.ts";
 import type { TRowPage } from "#/domain/shared/pagination.ts";
+import type { TServiceId } from "#/domain/shared/service-id.ts";
 import { REPO_TAG } from "#/domain/shared/service-tags.ts";
 
 export type TNoteRow = TBaseRow & {
@@ -28,6 +29,6 @@ export type TNoteRepo = {
 	remove: (id: string) => Effect.Effect<boolean, EDatabase>;
 };
 
-export class NoteRepo extends Context.Service<NoteRepo, TNoteRepo>()(
-	REPO_TAG.NOTE,
-) {}
+export type TNoteRepoId = TServiceId<typeof REPO_TAG.NOTE>;
+
+export const NoteRepo = Context.Service<TNoteRepoId, TNoteRepo>(REPO_TAG.NOTE);

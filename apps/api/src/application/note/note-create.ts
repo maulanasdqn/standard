@@ -3,13 +3,16 @@ import { Effect } from "effect";
 import { toNoteDto } from "#/application/note/to-note-dto.ts";
 import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
 import type { EDatabase } from "#/domain/shared/errors.ts";
-import { ActivityRepo } from "#/domain/activity/activity.ts";
-import { NoteRepo } from "#/domain/note/note.ts";
+import {
+	ActivityRepo,
+	type TActivityRepoId,
+} from "#/domain/activity/activity.ts";
+import { NoteRepo, type TNoteRepoId } from "#/domain/note/note.ts";
 
 export const noteCreate = Effect.fn("noteCreate")(function* (
 	input: TNoteCreateInput,
 	authorId: string,
-): Effect.fn.Return<TNote, EDatabase, NoteRepo | ActivityRepo> {
+): Effect.fn.Return<TNote, EDatabase, TNoteRepoId | TActivityRepoId> {
 	const noteRepo = yield* NoteRepo;
 	const activityRepo = yield* ActivityRepo;
 

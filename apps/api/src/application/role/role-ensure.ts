@@ -3,9 +3,12 @@ import { isRole } from "@app/permissions";
 import { Effect } from "effect";
 import { match } from "ts-pattern";
 import { EBadRequest, type EDatabase } from "#/domain/shared/errors.ts";
-import { CustomRoleRepo } from "#/domain/role/custom-role.ts";
+import {
+	CustomRoleRepo,
+	type TCustomRoleRepoId,
+} from "#/domain/role/custom-role.ts";
 
-type TRoleExistsEffect = Effect.Effect<boolean, EDatabase, CustomRoleRepo>;
+type TRoleExistsEffect = Effect.Effect<boolean, EDatabase, TCustomRoleRepoId>;
 
 export const roleExists = (key: string): TRoleExistsEffect =>
 	match(key)
@@ -19,7 +22,7 @@ export const roleExists = (key: string): TRoleExistsEffect =>
 
 export const roleEnsure = Effect.fn("roleEnsure")(function* (
 	key: string,
-): Effect.fn.Return<void, EBadRequest | EDatabase, CustomRoleRepo> {
+): Effect.fn.Return<void, EBadRequest | EDatabase, TCustomRoleRepoId> {
 	const exists = yield* roleExists(key);
 
 	if (!exists) {

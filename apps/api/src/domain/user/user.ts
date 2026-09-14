@@ -8,6 +8,7 @@ import { Context, type Effect } from "effect";
 import type { TBaseRow } from "#/domain/shared/base-row.ts";
 import type { EAuth, EDatabase } from "#/domain/shared/errors.ts";
 import type { TRowPage } from "#/domain/shared/pagination.ts";
+import type { TServiceId } from "#/domain/shared/service-id.ts";
 import { REPO_TAG } from "#/domain/shared/service-tags.ts";
 
 export type TUserRow = TBaseRow & {
@@ -30,6 +31,6 @@ export type TUserRepo = {
 	resetPassword: (input: TUserPasswordResetInput) => Effect.Effect<void, EAuth>;
 };
 
-export class UserRepo extends Context.Service<UserRepo, TUserRepo>()(
-	REPO_TAG.USER,
-) {}
+export type TUserRepoId = TServiceId<typeof REPO_TAG.USER>;
+
+export const UserRepo = Context.Service<TUserRepoId, TUserRepo>(REPO_TAG.USER);

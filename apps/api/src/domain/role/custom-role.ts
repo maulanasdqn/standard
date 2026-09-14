@@ -3,6 +3,7 @@ import type { TRoleCreateInput, TRoleUpdateInput } from "@app/schemas";
 import { Context, type Effect } from "effect";
 import type { TBaseRow } from "#/domain/shared/base-row.ts";
 import type { EDatabase } from "#/domain/shared/errors.ts";
+import type { TServiceId } from "#/domain/shared/service-id.ts";
 import { REPO_TAG } from "#/domain/shared/service-tags.ts";
 
 export type TCustomRoleRow = TBaseRow & {
@@ -29,7 +30,9 @@ export type TCustomRoleRepo = {
 	remove: (key: string) => Effect.Effect<boolean, EDatabase>;
 };
 
-export class CustomRoleRepo extends Context.Service<
-	CustomRoleRepo,
+export type TCustomRoleRepoId = TServiceId<typeof REPO_TAG.CUSTOM_ROLE>;
+
+export const CustomRoleRepo = Context.Service<
+	TCustomRoleRepoId,
 	TCustomRoleRepo
->()(REPO_TAG.CUSTOM_ROLE) {}
+>(REPO_TAG.CUSTOM_ROLE);

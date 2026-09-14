@@ -4,12 +4,15 @@ import { A, D } from "@mobily/ts-belt";
 import { Effect } from "effect";
 import { fixedRoleDto, toRoleDto } from "#/application/role/to-role-dto.ts";
 import type { EDatabase } from "#/domain/shared/errors.ts";
-import { CustomRoleRepo } from "#/domain/role/custom-role.ts";
+import {
+	CustomRoleRepo,
+	type TCustomRoleRepoId,
+} from "#/domain/role/custom-role.ts";
 
 export const roleList = Effect.fn("roleList")(function* (): Effect.fn.Return<
 	TRoleList,
 	EDatabase,
-	CustomRoleRepo
+	TCustomRoleRepoId
 > {
 	const customRoleRepo = yield* CustomRoleRepo;
 

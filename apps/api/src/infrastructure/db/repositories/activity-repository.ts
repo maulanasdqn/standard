@@ -10,7 +10,7 @@ import {
 } from "#/domain/activity/activity.ts";
 import { offsetFor } from "#/domain/shared/pagination.ts";
 import type { TDb } from "#/infrastructure/db/client.ts";
-import { DbService } from "#/infrastructure/db/db-service.ts";
+import { DbService, dbServiceLayer } from "#/infrastructure/db/db-service.ts";
 import { activityLog } from "#/infrastructure/db/schema/activity.ts";
 import { user } from "#/infrastructure/db/schema/auth.ts";
 
@@ -89,4 +89,4 @@ export const activityRepoLayer = Layer.effect(
 
 		return ActivityRepo.of({ insert, list });
 	}),
-).pipe(Layer.provide(DbService.layer));
+).pipe(Layer.provide(dbServiceLayer));

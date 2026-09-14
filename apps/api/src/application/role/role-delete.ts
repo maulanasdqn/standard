@@ -10,8 +10,14 @@ import {
 	type EDatabase,
 	ENotFound,
 } from "#/domain/shared/errors.ts";
-import { ActivityRepo } from "#/domain/activity/activity.ts";
-import { CustomRoleRepo } from "#/domain/role/custom-role.ts";
+import {
+	ActivityRepo,
+	type TActivityRepoId,
+} from "#/domain/activity/activity.ts";
+import {
+	CustomRoleRepo,
+	type TCustomRoleRepoId,
+} from "#/domain/role/custom-role.ts";
 
 export const roleDelete = Effect.fn("roleDelete")(function* (
 	{ key }: TRoleKeyInput,
@@ -19,7 +25,7 @@ export const roleDelete = Effect.fn("roleDelete")(function* (
 ): Effect.fn.Return<
 	{ key: string },
 	ENotFound | EBadRequest | EConflict | EDatabase,
-	CustomRoleRepo | ActivityRepo
+	TCustomRoleRepoId | TActivityRepoId
 > {
 	const customRoleRepo = yield* CustomRoleRepo;
 	const activityRepo = yield* ActivityRepo;

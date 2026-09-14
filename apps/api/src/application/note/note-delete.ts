@@ -3,8 +3,11 @@ import type { TNoteIdInput } from "@app/schemas";
 import { Effect } from "effect";
 import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
 import { ENotFound, type EDatabase } from "#/domain/shared/errors.ts";
-import { ActivityRepo } from "#/domain/activity/activity.ts";
-import { NoteRepo } from "#/domain/note/note.ts";
+import {
+	ActivityRepo,
+	type TActivityRepoId,
+} from "#/domain/activity/activity.ts";
+import { NoteRepo, type TNoteRepoId } from "#/domain/note/note.ts";
 
 export const noteDelete = Effect.fn("noteDelete")(function* (
 	{ id }: TNoteIdInput,
@@ -12,7 +15,7 @@ export const noteDelete = Effect.fn("noteDelete")(function* (
 ): Effect.fn.Return<
 	{ id: string },
 	ENotFound | EDatabase,
-	NoteRepo | ActivityRepo
+	TNoteRepoId | TActivityRepoId
 > {
 	const noteRepo = yield* NoteRepo;
 	const activityRepo = yield* ActivityRepo;

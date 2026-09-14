@@ -5,8 +5,14 @@ import { roleExists } from "#/application/role/role-ensure.ts";
 import { toRoleDto } from "#/application/role/to-role-dto.ts";
 import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
 import { EConflict, type EDatabase } from "#/domain/shared/errors.ts";
-import { ActivityRepo } from "#/domain/activity/activity.ts";
-import { CustomRoleRepo } from "#/domain/role/custom-role.ts";
+import {
+	ActivityRepo,
+	type TActivityRepoId,
+} from "#/domain/activity/activity.ts";
+import {
+	CustomRoleRepo,
+	type TCustomRoleRepoId,
+} from "#/domain/role/custom-role.ts";
 
 export const roleCreate = Effect.fn("roleCreate")(function* (
 	input: TRoleCreateInput,
@@ -14,7 +20,7 @@ export const roleCreate = Effect.fn("roleCreate")(function* (
 ): Effect.fn.Return<
 	TRoleDto,
 	EConflict | EDatabase,
-	CustomRoleRepo | ActivityRepo
+	TCustomRoleRepoId | TActivityRepoId
 > {
 	const customRoleRepo = yield* CustomRoleRepo;
 	const activityRepo = yield* ActivityRepo;

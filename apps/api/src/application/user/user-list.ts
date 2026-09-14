@@ -3,11 +3,11 @@ import { A } from "@mobily/ts-belt";
 import { Effect } from "effect";
 import type { EDatabase } from "#/domain/shared/errors.ts";
 import { toUserDto } from "#/application/user/to-user-dto.ts";
-import { UserRepo } from "#/domain/user/user.ts";
+import { UserRepo, type TUserRepoId } from "#/domain/user/user.ts";
 
 export const userList = Effect.fn("userList")(function* (
 	input: TUserListInput,
-): Effect.fn.Return<TUserList, EDatabase, UserRepo> {
+): Effect.fn.Return<TUserList, EDatabase, TUserRepoId> {
 	const userRepo = yield* UserRepo;
 	const { items, total } = yield* userRepo.list(input);
 	return {

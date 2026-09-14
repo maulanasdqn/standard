@@ -5,13 +5,16 @@ import { Effect } from "effect";
 import { match } from "ts-pattern";
 import { fixedRoleDto, toRoleDto } from "#/application/role/to-role-dto.ts";
 import { type EDatabase, ENotFound } from "#/domain/shared/errors.ts";
-import type { TRoleMemberCounts } from "#/domain/role/custom-role.ts";
+import type {
+	TRoleMemberCounts,
+	TCustomRoleRepoId,
+} from "#/domain/role/custom-role.ts";
 import { CustomRoleRepo } from "#/domain/role/custom-role.ts";
 
 type TRoleFindEffect = Effect.Effect<
 	TRoleDto | null,
 	EDatabase,
-	CustomRoleRepo
+	TCustomRoleRepoId
 >;
 
 const roleFind = (key: string, counts: TRoleMemberCounts): TRoleFindEffect =>
@@ -32,7 +35,7 @@ export const roleGet = Effect.fn("roleGet")(function* ({
 }: TRoleKeyInput): Effect.fn.Return<
 	TRoleDto,
 	ENotFound | EDatabase,
-	CustomRoleRepo
+	TCustomRoleRepoId
 > {
 	const customRoleRepo = yield* CustomRoleRepo;
 	const counts = yield* customRoleRepo.memberCounts();

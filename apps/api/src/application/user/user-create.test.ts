@@ -5,9 +5,15 @@ import { describe, expect, it, type Mock, vi } from "vitest";
 import { ACTIVITY_ACTION } from "@app/activity";
 import { EConflict } from "#/domain/shared/errors.ts";
 import { userCreate } from "#/application/user/user-create.ts";
-import type { TUserRow } from "#/domain/user/user.ts";
-import { ActivityRepo } from "#/domain/activity/activity.ts";
-import { CustomRoleRepo } from "#/domain/role/custom-role.ts";
+import type { TUserRow, TUserRepoId } from "#/domain/user/user.ts";
+import {
+	ActivityRepo,
+	type TActivityRepoId,
+} from "#/domain/activity/activity.ts";
+import {
+	CustomRoleRepo,
+	type TCustomRoleRepoId,
+} from "#/domain/role/custom-role.ts";
 import { UserRepo } from "#/domain/user/user.ts";
 
 const ACTOR_ID = "22222222-2222-4222-8222-222222222222";
@@ -34,7 +40,7 @@ const layerBuild = (
 	findByEmail: Mock,
 	create: Mock,
 	insert: Mock,
-): Layer.Layer<UserRepo | CustomRoleRepo | ActivityRepo> =>
+): Layer.Layer<TUserRepoId | TCustomRoleRepoId | TActivityRepoId> =>
 	Layer.mergeAll(
 		Layer.succeed(
 			UserRepo,

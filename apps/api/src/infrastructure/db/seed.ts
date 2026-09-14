@@ -5,8 +5,14 @@ import { eq } from "drizzle-orm";
 import { Effect } from "effect";
 import { match, P } from "ts-pattern";
 import { runtime } from "#/bootstrap/compose.ts";
-import { AuthService } from "#/infrastructure/auth/auth-service.ts";
-import { DbService } from "#/infrastructure/db/db-service.ts";
+import {
+	AuthService,
+	type TAuthServiceId,
+} from "#/infrastructure/auth/auth-service.ts";
+import {
+	DbService,
+	type TDbServiceId,
+} from "#/infrastructure/db/db-service.ts";
 import { user } from "#/infrastructure/db/schema/auth.ts";
 import { note } from "#/infrastructure/db/schema/note.ts";
 import { logger } from "#/infrastructure/observability/logger.ts";
@@ -35,7 +41,7 @@ const EXTRA_USERS: readonly TUserCreateInput[] = [
 
 const userEnsure = (
 	seedUser: TUserCreateInput,
-): Effect.Effect<string, never, DbService | AuthService> =>
+): Effect.Effect<string, never, TDbServiceId | TAuthServiceId> =>
 	Effect.gen(function* () {
 		const { db } = yield* DbService;
 		const { auth } = yield* AuthService;

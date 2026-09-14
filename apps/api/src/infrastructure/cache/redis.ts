@@ -2,6 +2,7 @@ import { cacheCreate, type TCache, type TCacheClient } from "@app/cache";
 import { Context, Effect, Layer } from "effect";
 import { Redis } from "ioredis";
 import { env } from "#/infrastructure/config/env.ts";
+import type { TServiceId } from "#/domain/shared/service-id.ts";
 import { SERVICE_TAG } from "#/infrastructure/service-tags.ts";
 
 const COMMAND_TIMEOUT_MS = 1_000;
@@ -20,16 +21,17 @@ export type TCacheService = {
 	readonly cache: TCache;
 };
 
-export class CacheService extends Context.Service<
+export type TCacheServiceId = TServiceId<typeof SERVICE_TAG.CACHE>;
+
+export const CacheService = Context.Service<TCacheServiceId, TCacheService>(
+	SERVICE_TAG.CACHE,
+);
+
+export const cacheServiceLayer = Layer.effect(
 	CacheService,
-	TCacheService
->()(SERVICE_TAG.CACHE) {
-	static readonly layer = Layer.effect(
-		CacheService,
-		Effect.sync(() => {
-			const client = cacheClientCreate(env.REDIS_URL);
-			client.on("error", (): void => undefined);
-			return CacheService.of({ client, cache: cacheCreate(client) });
-		}),
-	);
-}
+	Effect.sync(() => {
+		const client = cacheClientCreate(env.REDIS_URL);
+		client.on("error", (): void => undefined);
+		return CacheService.of({ client, cache: cacheCreate(client) });
+	}),
+);

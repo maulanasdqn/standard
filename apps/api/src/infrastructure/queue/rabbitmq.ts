@@ -2,6 +2,7 @@ import { connect, type Channel, type ChannelModel } from "amqplib";
 import { Context, Effect, Layer } from "effect";
 import { EQueue } from "#/domain/shared/errors.ts";
 import { env } from "#/infrastructure/config/env.ts";
+import type { TServiceId } from "#/domain/shared/service-id.ts";
 import { SERVICE_TAG } from "#/infrastructure/service-tags.ts";
 
 export type TQueueConnection = {
@@ -19,18 +20,19 @@ export const queueConnectionCreate = async (
 
 export type TQueueService = { readonly channel: Channel };
 
-export class QueueService extends Context.Service<
+export type TQueueServiceId = TServiceId<typeof SERVICE_TAG.QUEUE>;
+
+export const QueueService = Context.Service<TQueueServiceId, TQueueService>(
+	SERVICE_TAG.QUEUE,
+);
+
+export const queueServiceLayer = Layer.effect(
 	QueueService,
-	TQueueService
->()(SERVICE_TAG.QUEUE) {
-	static readonly layer = Layer.effect(
-		QueueService,
-		Effect.gen(function* () {
-			const { channel } = yield* Effect.tryPromise({
-				try: () => queueConnectionCreate(env.RABBITMQ_URL),
-				catch: (cause) => new EQueue({ cause }),
-			});
-			return QueueService.of({ channel });
-		}),
-	);
-}
+	Effect.gen(function* () {
+		const { channel } = yield* Effect.tryPromise({
+			try: () => queueConnectionCreate(env.RABBITMQ_URL),
+			catch: (cause) => new EQueue({ cause }),
+		});
+		return QueueService.of({ channel });
+	}),
+);

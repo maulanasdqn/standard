@@ -3,8 +3,14 @@ import { Effect, Layer } from "effect";
 import { describe, expect, it, type Mock, vi } from "vitest";
 import { roleDelete } from "#/application/role/role-delete.ts";
 import { EBadRequest, EConflict } from "#/domain/shared/errors.ts";
-import type { TRoleMemberCounts } from "#/domain/role/custom-role.ts";
-import { ActivityRepo } from "#/domain/activity/activity.ts";
+import type {
+	TRoleMemberCounts,
+	TCustomRoleRepoId,
+} from "#/domain/role/custom-role.ts";
+import {
+	ActivityRepo,
+	type TActivityRepoId,
+} from "#/domain/activity/activity.ts";
 import { CustomRoleRepo } from "#/domain/role/custom-role.ts";
 
 const ACTOR_ID = "22222222-2222-4222-8222-222222222222";
@@ -12,7 +18,7 @@ const ACTOR_ID = "22222222-2222-4222-8222-222222222222";
 const layerBuild = (
 	remove: Mock,
 	counts: TRoleMemberCounts,
-): Layer.Layer<CustomRoleRepo | ActivityRepo> =>
+): Layer.Layer<TCustomRoleRepoId | TActivityRepoId> =>
 	Layer.mergeAll(
 		Layer.succeed(
 			CustomRoleRepo,
