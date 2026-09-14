@@ -3,8 +3,8 @@ import { describe, expect, it, vi } from "vitest";
 import { noteCreate } from "#/application/note/note-create.ts";
 import { ACTIVITY_ACTION } from "@app/activity";
 import type { TNoteRow } from "#/domain/note/note.ts";
-import { ActivityRepo } from "#/infrastructure/db/repositories/activity-repository.ts";
-import { NoteRepo } from "#/infrastructure/db/repositories/note-repository.ts";
+import { ActivityRepo } from "#/domain/activity/activity.ts";
+import { NoteRepo } from "#/domain/note/note.ts";
 
 const AUTHOR_ID = "22222222-2222-4222-8222-222222222222";
 

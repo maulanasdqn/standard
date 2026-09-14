@@ -1,9 +1,9 @@
 import { Effect, Layer } from "effect";
 import { describe, expect, it, type Mock, vi } from "vitest";
-import { EForbidden, ENotFound } from "#/application/shared/errors.ts";
+import { EForbidden, ENotFound } from "#/domain/shared/errors.ts";
 import { userPasswordReset } from "#/application/user/user-password-reset.ts";
-import { ActivityRepo } from "#/infrastructure/db/repositories/activity-repository.ts";
-import { UserRepo } from "#/infrastructure/db/repositories/user-repository.ts";
+import { ActivityRepo } from "#/domain/activity/activity.ts";
+import { UserRepo } from "#/domain/user/user.ts";
 
 const ACTOR_ID = "22222222-2222-4222-8222-222222222222";
 const TARGET_ID = "11111111-1111-4111-8111-111111111111";

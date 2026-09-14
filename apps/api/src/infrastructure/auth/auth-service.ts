@@ -1,14 +1,15 @@
 import { ROLE } from "@app/permissions";
 import { Context, Effect, Layer } from "effect";
 import { match, P } from "ts-pattern";
-import { EAuth, type EDatabase } from "#/application/shared/errors.ts";
-import { permissionsResolve } from "#/application/shared/permissions-resolve.ts";
+import { EAuth, type EDatabase } from "#/domain/shared/errors.ts";
+import { permissionsResolve } from "#/domain/role/permissions-resolve.ts";
 import type { TAuthService } from "#/domain/ports/auth-service.ts";
 import type { TSession, TSessionUser } from "#/domain/session/session.ts";
 import { authCreate, type TAuth } from "#/infrastructure/auth/better-auth.ts";
 import { DbService } from "#/infrastructure/db/db-service.ts";
+import { customRoleRepoLayer } from "#/infrastructure/db/repositories/custom-role-repository.ts";
 import { activityRepositoryCreate } from "#/infrastructure/db/repositories/activity-repository.ts";
-import { CustomRoleRepo } from "#/infrastructure/db/repositories/custom-role-repository.ts";
+import { CustomRoleRepo } from "#/domain/role/custom-role.ts";
 import { SERVICE_TAG } from "#/infrastructure/service-tags.ts";
 
 export type TAuthServiceShape = TAuthService & { readonly auth: TAuth };
@@ -69,5 +70,5 @@ export class AuthService extends Context.Service<
 
 			return AuthService.of({ auth, getSession });
 		}),
-	).pipe(Layer.provide(Layer.mergeAll(DbService.layer, CustomRoleRepo.layer)));
+	).pipe(Layer.provide(Layer.mergeAll(DbService.layer, customRoleRepoLayer)));
 }

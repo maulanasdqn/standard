@@ -4,9 +4,10 @@ import type {
 	TUserPasswordResetInput,
 	TUserUpdateInput,
 } from "@app/schemas";
-import type { Effect } from "effect";
-import type { EAuth, EDatabase } from "#/application/shared/errors.ts";
+import { Context, type Effect } from "effect";
+import type { EAuth, EDatabase } from "#/domain/shared/errors.ts";
 import type { TRowPage } from "#/domain/shared/pagination.ts";
+import { REPO_TAG } from "#/domain/shared/service-tags.ts";
 
 export type TUserRow = {
 	id: string;
@@ -33,3 +34,7 @@ export type TUserRepo = {
 	resetPassword: (input: TUserPasswordResetInput) => Effect.Effect<void, EAuth>;
 	countByRole: () => Effect.Effect<TRoleMemberCounts, EDatabase>;
 };
+
+export class UserRepo extends Context.Service<UserRepo, TUserRepo>()(
+	REPO_TAG.USER,
+) {}

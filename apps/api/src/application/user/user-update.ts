@@ -9,11 +9,11 @@ import {
 	type EDatabase,
 	EForbidden,
 	ENotFound,
-} from "#/application/shared/errors.ts";
+} from "#/domain/shared/errors.ts";
 import { toUserDto } from "#/application/user/to-user-dto.ts";
-import { ActivityRepo } from "#/infrastructure/db/repositories/activity-repository.ts";
-import type { CustomRoleRepo } from "#/infrastructure/db/repositories/custom-role-repository.ts";
-import { UserRepo } from "#/infrastructure/db/repositories/user-repository.ts";
+import { ActivityRepo } from "#/domain/activity/activity.ts";
+import type { CustomRoleRepo } from "#/domain/role/custom-role.ts";
+import { UserRepo } from "#/domain/user/user.ts";
 
 export const userUpdate = Effect.fn("userUpdate")(function* (
 	input: TUserUpdateInput,

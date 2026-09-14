@@ -4,10 +4,10 @@ import type { TRoleDto, TRoleKeyInput } from "@app/schemas";
 import { Effect } from "effect";
 import { match } from "ts-pattern";
 import { fixedRoleDto, toRoleDto } from "#/application/role/to-role-dto.ts";
-import { type EDatabase, ENotFound } from "#/application/shared/errors.ts";
+import { type EDatabase, ENotFound } from "#/domain/shared/errors.ts";
 import type { TRoleMemberCounts } from "#/domain/user/user.ts";
-import { CustomRoleRepo } from "#/infrastructure/db/repositories/custom-role-repository.ts";
-import { UserRepo } from "#/infrastructure/db/repositories/user-repository.ts";
+import { CustomRoleRepo } from "#/domain/role/custom-role.ts";
+import { UserRepo } from "#/domain/user/user.ts";
 
 type TRoleFindEffect = Effect.Effect<
 	TRoleDto | null,
