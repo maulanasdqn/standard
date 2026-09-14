@@ -1,5 +1,5 @@
-import { D } from "@mobily/ts-belt";
-import { eq } from "drizzle-orm";
+import { A, D } from "@mobily/ts-belt";
+import { count, eq } from "drizzle-orm";
 import { Effect, Layer } from "effect";
 import { EDatabase } from "#/domain/shared/errors.ts";
 import {
@@ -9,11 +9,26 @@ import {
 } from "#/domain/role/custom-role.ts";
 import { DbService } from "#/infrastructure/db/db-service.ts";
 import { customRole } from "#/infrastructure/db/schema/custom-role.ts";
+import { user } from "#/infrastructure/db/schema/auth.ts";
 
 export const customRoleRepoLayer = Layer.effect(
 	CustomRoleRepo,
 	Effect.gen(function* () {
 		const { db } = yield* DbService;
+
+		const memberCounts: TCustomRoleRepo["memberCounts"] = () =>
+			Effect.tryPromise({
+				try: async () => {
+					const rows = await db
+						.select({ role: user.role, value: count() })
+						.from(user)
+						.groupBy(user.role);
+					return D.fromPairs(
+						A.map(rows, (row) => [row.role, row.value] as const),
+					);
+				},
+				catch: (cause) => new EDatabase({ cause }),
+			});
 
 		const list: TCustomRoleRepo["list"] = () =>
 			Effect.tryPromise({
@@ -80,6 +95,13 @@ export const customRoleRepoLayer = Layer.effect(
 				catch: (cause) => new EDatabase({ cause }),
 			});
 
-		return CustomRoleRepo.of({ list, findByKey, create, update, remove });
+		return CustomRoleRepo.of({
+			memberCounts,
+			list,
+			findByKey,
+			create,
+			update,
+			remove,
+		});
 	}),
 ).pipe(Layer.provide(DbService.layer));

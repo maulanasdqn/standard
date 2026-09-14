@@ -23,7 +23,6 @@ const layerBuild = (
 				update: vi.fn(),
 				remove: vi.fn(),
 				resetPassword,
-				countByRole: vi.fn(),
 			}),
 		),
 		Layer.succeed(

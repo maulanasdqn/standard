@@ -1,4 +1,4 @@
-import { A, D } from "@mobily/ts-belt";
+import { D } from "@mobily/ts-belt";
 import { and, count, eq, ilike, or, type SQL } from "drizzle-orm";
 import { Effect, Layer } from "effect";
 import { match, P } from "ts-pattern";
@@ -138,20 +138,6 @@ export const userRepoLayer = Layer.effect(
 				catch: (cause) => new EAuth({ cause }),
 			});
 
-		const countByRole: TUserRepo["countByRole"] = () =>
-			Effect.tryPromise({
-				try: async () => {
-					const rows = await db
-						.select({ role: user.role, value: count() })
-						.from(user)
-						.groupBy(user.role);
-					return D.fromPairs(
-						A.map(rows, (row) => [row.role, row.value] as const),
-					);
-				},
-				catch: (cause) => new EDatabase({ cause }),
-			});
-
 		return UserRepo.of({
 			list,
 			findById,
@@ -160,7 +146,6 @@ export const userRepoLayer = Layer.effect(
 			update,
 			remove,
 			resetPassword,
-			countByRole,
 		});
 	}),
 ).pipe(Layer.provide(Layer.mergeAll(DbService.layer, AuthService.layer)));

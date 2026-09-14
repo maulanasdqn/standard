@@ -46,12 +46,12 @@ const layerBuild = (
 				update: vi.fn(),
 				remove: vi.fn(),
 				resetPassword: vi.fn(),
-				countByRole: vi.fn(),
 			}),
 		),
 		Layer.succeed(
 			CustomRoleRepo,
 			CustomRoleRepo.of({
+				memberCounts: vi.fn(),
 				list: vi.fn(),
 				findByKey: vi.fn(),
 				create: vi.fn(),

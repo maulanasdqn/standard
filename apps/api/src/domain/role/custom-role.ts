@@ -13,7 +13,10 @@ export type TCustomRoleRow = TBaseRow & {
 	createdBy: string | null;
 };
 
+export type TRoleMemberCounts = Readonly<Record<string, number>>;
+
 export type TCustomRoleRepo = {
+	memberCounts: () => Effect.Effect<TRoleMemberCounts, EDatabase>;
 	list: () => Effect.Effect<TCustomRoleRow[], EDatabase>;
 	findByKey: (key: string) => Effect.Effect<TCustomRoleRow | null, EDatabase>;
 	create: (

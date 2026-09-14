@@ -21,7 +21,6 @@ describe("userDelete", () => {
 					update: vi.fn(),
 					remove,
 					resetPassword: vi.fn(),
-					countByRole: vi.fn(),
 				}),
 			),
 			Layer.succeed(

@@ -5,19 +5,17 @@ import { Effect } from "effect";
 import { fixedRoleDto, toRoleDto } from "#/application/role/to-role-dto.ts";
 import type { EDatabase } from "#/domain/shared/errors.ts";
 import { CustomRoleRepo } from "#/domain/role/custom-role.ts";
-import { UserRepo } from "#/domain/user/user.ts";
 
 export const roleList = Effect.fn("roleList")(function* (): Effect.fn.Return<
 	TRoleList,
 	EDatabase,
-	CustomRoleRepo | UserRepo
+	CustomRoleRepo
 > {
 	const customRoleRepo = yield* CustomRoleRepo;
-	const userRepo = yield* UserRepo;
 
 	const [custom, counts] = yield* Effect.all([
 		customRoleRepo.list(),
-		userRepo.countByRole(),
+		customRoleRepo.memberCounts(),
 	]);
 
 	const fixed = A.map(D.values(ROLE), (key) => fixedRoleDto(key, counts));

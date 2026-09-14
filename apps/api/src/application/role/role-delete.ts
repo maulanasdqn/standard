@@ -12,7 +12,6 @@ import {
 } from "#/domain/shared/errors.ts";
 import { ActivityRepo } from "#/domain/activity/activity.ts";
 import { CustomRoleRepo } from "#/domain/role/custom-role.ts";
-import { UserRepo } from "#/domain/user/user.ts";
 
 export const roleDelete = Effect.fn("roleDelete")(function* (
 	{ key }: TRoleKeyInput,
@@ -20,17 +19,16 @@ export const roleDelete = Effect.fn("roleDelete")(function* (
 ): Effect.fn.Return<
 	{ key: string },
 	ENotFound | EBadRequest | EConflict | EDatabase,
-	CustomRoleRepo | UserRepo | ActivityRepo
+	CustomRoleRepo | ActivityRepo
 > {
 	const customRoleRepo = yield* CustomRoleRepo;
-	const userRepo = yield* UserRepo;
 	const activityRepo = yield* ActivityRepo;
 
 	if (isRole(key)) {
 		return yield* new EBadRequest({ message: ROLE_MESSAGE.FIXED });
 	}
 
-	const counts = yield* userRepo.countByRole();
+	const counts = yield* customRoleRepo.memberCounts();
 
 	if ((D.get(counts, key) ?? 0) > 0) {
 		return yield* new EConflict({ message: ROLE_MESSAGE.IN_USE });

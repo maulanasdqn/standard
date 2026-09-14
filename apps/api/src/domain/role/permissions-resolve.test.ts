@@ -20,6 +20,7 @@ const layerBuild = (findByKey: Mock): Layer.Layer<CustomRoleRepo> =>
 	Layer.succeed(
 		CustomRoleRepo,
 		CustomRoleRepo.of({
+			memberCounts: vi.fn(),
 			list: vi.fn(),
 			findByKey,
 			create: vi.fn(),

@@ -11,7 +11,6 @@ import {
 } from "#/domain/shared/errors.ts";
 import { ActivityRepo } from "#/domain/activity/activity.ts";
 import { CustomRoleRepo } from "#/domain/role/custom-role.ts";
-import { UserRepo } from "#/domain/user/user.ts";
 
 export const roleUpdate = Effect.fn("roleUpdate")(function* (
 	input: TRoleUpdateInput,
@@ -19,10 +18,9 @@ export const roleUpdate = Effect.fn("roleUpdate")(function* (
 ): Effect.fn.Return<
 	TRoleDto,
 	ENotFound | EBadRequest | EDatabase,
-	CustomRoleRepo | UserRepo | ActivityRepo
+	CustomRoleRepo | ActivityRepo
 > {
 	const customRoleRepo = yield* CustomRoleRepo;
-	const userRepo = yield* UserRepo;
 	const activityRepo = yield* ActivityRepo;
 
 	if (isRole(input.key)) {
@@ -42,6 +40,6 @@ export const roleUpdate = Effect.fn("roleUpdate")(function* (
 		resourceId: updated.key,
 	});
 
-	const counts = yield* userRepo.countByRole();
+	const counts = yield* customRoleRepo.memberCounts();
 	return toRoleDto(updated, counts);
 });

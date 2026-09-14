@@ -18,8 +18,6 @@ export type TUserRow = TBaseRow & {
 	role: string;
 };
 
-export type TRoleMemberCounts = Readonly<Record<string, number>>;
-
 export type TUserRepo = {
 	list: (input: TUserListInput) => Effect.Effect<TRowPage<TUserRow>, EDatabase>;
 	findById: (id: string) => Effect.Effect<TUserRow | null, EDatabase>;
@@ -30,7 +28,6 @@ export type TUserRepo = {
 	) => Effect.Effect<TUserRow | null, EDatabase>;
 	remove: (id: string) => Effect.Effect<boolean, EDatabase>;
 	resetPassword: (input: TUserPasswordResetInput) => Effect.Effect<void, EAuth>;
-	countByRole: () => Effect.Effect<TRoleMemberCounts, EDatabase>;
 };
 
 export class UserRepo extends Context.Service<UserRepo, TUserRepo>()(

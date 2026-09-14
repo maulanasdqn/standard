@@ -7,8 +7,10 @@ import {
 } from "@app/permissions";
 import { roleSchema, type TRoleDto } from "@app/schemas";
 import { A, D } from "@mobily/ts-belt";
-import type { TCustomRoleRow } from "#/domain/role/custom-role.ts";
-import type { TRoleMemberCounts } from "#/domain/user/user.ts";
+import type {
+	TCustomRoleRow,
+	TRoleMemberCounts,
+} from "#/domain/role/custom-role.ts";
 
 export const fixedRoleDto = (key: TRole, counts: TRoleMemberCounts): TRoleDto =>
 	roleSchema.parse({
