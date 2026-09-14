@@ -1,8 +1,8 @@
 import { Input } from "@app/components/ui/input";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import { useUserSearch } from "#/routes/_authenticated/users/_hooks/use-users.ts";
 
-export const UserSearch = (): ReactElement => {
+export const UserSearch: FC = (): ReactElement => {
 	const { value, onChange } = useUserSearch();
 
 	return (

@@ -1,154 +1,107 @@
 # Standard
 
-A single-app boilerplate: **moon + pnpm workspaces · Hono + oRPC (RPC and REST from one router) · Effect (business logic, DI, error handling) · Drizzle · better-auth · Redis + RabbitMQ · React 19 + TanStack Router (foldered file-based routes) + Vite + Tailwind v4 · Biome · Vitest · Playwright**.
-
-Distilled from a larger production monorepo — same layering and conventions, scoped to one app so it's a starting point rather than a template you have to strip down.
+Full-stack TypeScript boilerplate — moon + pnpm workspaces, Hono + oRPC, Drizzle, better-auth, React 19 + TanStack + Vite + Tailwind v4, Biome, Vitest, Playwright.
 
 ## Stack
 
 | Concern | Choice |
 |---|---|
-| Monorepo | [moon](https://moonrepo.dev) + pnpm workspaces |
-| API | Hono host, business logic in [oRPC](https://orpc.unnoq.com) procedures — served as typed RPC **and** plain REST + OpenAPI from the same router |
-| Business logic | [Effect](https://effect.website) (`effect@rc`, v4) — use cases as `Effect.fn` programs, dependencies as `Context.Service` + `Layer`, errors as `Schema.TaggedError` |
+| Monorepo | moon + pnpm workspaces |
+| API | Hono, oRPC (typed RPC + REST/OpenAPI from one router), Effect for business logic |
 | DB | Drizzle ORM + Postgres |
-| Auth | [better-auth](https://better-auth.com); one role per user on `user.role` — fixed roles in code, custom roles in the `custom_role` table (see [Access control](#access-control--users-roles-permissions)) |
-| Jobs | RabbitMQ (queue) + Redis (cache), separate worker entrypoint |
-| Web | React 19, TanStack Router (SPA, file-based) + Query + Form + Table + Store, Vite, Tailwind v4 |
-| Lint/format | [Biome](https://biomejs.dev) |
-| Tests | Vitest (unit/integration), Playwright (web e2e) |
-| Code style | [ts-pattern](https://github.com/gvergnaud/ts-pattern) for conditionals, [@mobily/ts-belt](https://github.com/mobily/ts-belt) for arrays/objects — see `.claude/skills/ts-conventions/SKILL.md` (inside `Effect.gen`/`Effect.fn` bodies, error-raising control flow uses Effect's own `if (...) { return yield* new EError({...}) }` idiom instead, per Effect's own style guide) |
+| Auth | better-auth, one role per user |
+| Jobs | RabbitMQ + Redis |
+| Web | React 19, TanStack (Router, Query, Form, Store), Vite, Tailwind v4, shadcn/ui |
+| Quality | Biome, Vitest, Playwright |
 
 ## Layout
 
 ```
 apps/
-  api/          Hono + oRPC + Drizzle — domain / application / infrastructure / presentation / worker
-  api-e2e/      Vitest against a real running API + throwaway Postgres db
+  api/          Hono + oRPC + Drizzle + Effect
+  api-e2e/      API integration tests
   web/          TanStack Router SPA
-  web-e2e/      Playwright against the built web app + a real API
+  web-e2e/      Playwright E2E
 packages/
-  schemas/      Zod source of truth shared by api + web
-  permissions/  PERMISSION catalog, fixed ROLE_PERMISSIONS map, isRole/isPermission, canAll/canAny, labels
+  schemas/      Zod schemas shared by api + web
+  components/   shadcn/ui primitives + guards + theme
+  permissions/  permission catalog + role maps
   activity/     activity log
-  queue/        RabbitMQ queue helper
-  storage/      S3-compatible object storage (aws4fetch)
-  grpc/         gRPC server/client (@grpc/grpc-js + proto-loader)
+  queue/        RabbitMQ helper
+  storage/      S3-compatible object storage
+  grpc/         gRPC server/client
   logger/       pino factory
   format/       date/money/string formatters
   messages/     user-facing message constants
-  migrations/   shared migrationsRun() used by apps/api/src/infrastructure/db/migrate.ts
-  components/   shadcn-style UI primitives + permission Guard + route-guard + theme.css
+  migrations/   shared migration runner
+  version/      APP_VERSION, re-exported from the root package.json
 ```
 
-Packages and the api export **raw TypeScript source** (e.g. `"exports": { ".": "./src/index.ts" }`; the api's public surface lives at `src/bootstrap/index.ts`) — no build step; `build` is just `tsc --noEmit`. Everything is wired through moon tasks; run `moon run <project>:<task>` or the root `pnpm <script>` (which fans out via `moon run :<task>`).
+## Getting Started
 
-### API layering
-
-```
-domain/          entities + port interfaces (Effect-returning: Effect<A, EDatabase>, etc.) — no framework imports
-application/     use cases as Effect.fn programs — depend on services via yield*, not manual DI
-infrastructure/  Context.Service classes + their Layer: db (Drizzle), auth (better-auth), cache (Redis), queue (RabbitMQ)
-presentation/    orpc/ (context, middleware, error-mapping, run-effect — the Effect↔Promise bridge), routers/, http/ (Hono mounts)
-worker/          RabbitMQ job handlers
-bootstrap/       compose.ts (AppLayer + ManagedRuntime), polyfill.ts, index.ts (public exports)
-main.ts          the only file at src/ root — the HTTP entrypoint
-```
-
-`presentation/http/mount-orpc.ts` mounts the **same** oRPC router twice: `RPCHandler` at `/rpc` for the typed client used by the web app, and `OpenAPIHandler` at `/api` for conventional REST — with a browsable OpenAPI reference at `/api`.
-
-### Effect: services, errors, and the oRPC bridge
-
-- **Errors** (`application/shared/errors.ts`) are `Schema.TaggedError` classes (`ENotFound`, `EForbidden`, `EUnauthorized`, `EConflict`, `EBadRequest`, `EDatabase`, `EAuth`, `EQueue`) — a use case fails by `return yield* new ENotFound({ message })`, never by throwing.
-- **Services** are `Context.Service` classes that carry their own `static readonly layer` — e.g. `NoteRepo` (`infrastructure/db/repositories/note-repository.ts`) wraps Drizzle calls in `Effect.tryPromise`, mapping failures to `EDatabase`. A service that needs another service builds its layer with `.pipe(Layer.provide(OtherService.layer))`.
-- **`bootstrap/compose.ts`** merges every service layer into one `AppLayer` and builds a single `ManagedRuntime` (with a shared `memoMap`, so a service used by two other layers — e.g. `DbService` under both `NoteRepo` and `AuthService` — is only constructed once).
-- **`presentation/orpc/run-effect.ts`** is the only place Effect programs cross into oRPC's Promise world: it runs an effect on the shared runtime, catches every `TDomainError` into a plain success value first (never lets `runPromise` reject on an *expected* failure — only real defects propagate), then maps the caught error to an `ORPCError` by `_tag`.
-- Third-party Promise-based APIs that aren't Effect-aware (better-auth's `databaseHooks`, `@app/activity`'s `TActivityRepo`, `@app/queue`'s `TJobHandler`) are left as plain async functions at that seam — a Context.Service wraps them in `Effect.tryPromise` for the Effect side, rather than forcing the whole third-party surface through Effect.
-
-### Access control — users, roles, permissions
-
-Permissions are a **code catalog**: `PERMISSION` in `@app/permissions` (`resource:action` strings) gates code paths through `permissionRequire(...)` on the API and `checkRoutePermissions` / `<Guard>` on the web, so permissions can't be created at runtime — only assigned. Roles are hybrid:
-
-- **Fixed roles** (`admin`, `member`, `viewer`) live in code — `ROLE_PERMISSIONS` in `packages/permissions/src/roles.ts` is their source of truth. They can be assigned to users but not edited or deleted through the API.
-- **Custom roles** live in the `custom_role` table (`key`, `label`, `description`, `permissions` as a JSONB array of catalog keys) and are fully CRUD-able.
-- A user has exactly one role: `user.role` holds either a fixed key or a custom key. `application/shared/permissions-resolve.ts` turns it into the session's permission list on every request — fixed roles from the code map, custom roles from the table — so editing a custom role takes effect on the assignee's next request.
-
-The admin area — `/users`, `/roles`, `/permissions` on the web; `user.*`, `role.*`, `permission.list` over RPC; `/api/users`, `/api/roles`, `/api/permissions` over REST — is gated by `PERMISSION.USER_MANAGE`. Invariants enforced in the use cases: you can't change your own role or delete your own account (`EForbidden`); a fixed role can't be modified or deleted (`EBadRequest`); a role that still has members can't be deleted, and emails and role keys must be unique (`EConflict`). Users are created through better-auth's internal adapter (`UserRepo.create`), so ids, password hashing and `databaseHooks` behave exactly as they do for sign-up.
-
-**Passwords.** A signed-in user changes their own password on `/account` (better-auth's `changePassword`, which revokes their other sessions). An admin resets someone else's from the user's edit page (`user.resetPassword` → `POST /api/users/{id}/password`): the new password is hashed by better-auth, every session of that user is revoked, and the action is logged. There is no email-based reset or invite flow yet — nothing sends mail — so the admin shares the temporary password out of band.
-
-**Activity log.** Every mutation writes an `activity_log` row (`ACTIVITY_ACTION` / `ACTIVITY_ENTITY_TYPE` in `@app/activity`); `/activity` (`ACTIVITY_READ`) lists them with the actor's email, filterable by action and entity type.
-
-### Web route colocation
-
-Routes live in `src/routes/`, generated by the TanStack Router plugin. Underscore-prefixed folders (`_components`, `_hooks`, `_constants`, `_utils`) are colocated code, excluded from route generation:
-
-```
-routes/_authenticated/notes/
-  index.tsx           the page
-  _components/        NoteList, NoteCreateForm
-  _hooks/              use-notes.ts (query/mutation hooks)
-  _constants/          search.ts (Zod search-param schema)
-```
-
-URL search params are the source of truth for list state (`validateSearch`); permission checks live in `beforeLoad: checkRoutePermissions({ permissions: [...] })` from `@app/components/guard/route-guard`.
-
-### Client state — TanStack Store
-
-`sessionStore` (`src/libs/auth/session-store.ts`) is the single source of truth for the signed-in session — set via `sessionSet`/`sessionRefresh`, read via the `useSession()` hook. `permissionsStore` (`@app/components/guard/permissions-store`) stays in sync as a side effect of `sessionSet`, so `Guard`, `checkRoutePermissions`, and any `useSession()` consumer update together. `main.tsx` subscribes the store to the router (`router.update` + `router.invalidate`) so login/sign-out re-run route guards reactively — no full-page reloads.
-
-### Forms — TanStack Form
-
-Every form (`login-form.tsx`, `note-create-form.tsx`) is built on `@tanstack/react-form`, validated by the same Zod schema used at the API boundary (`loginInputSchema`, `noteCreateInputSchema` from `@app/schemas`) — one schema, client and server. The form's logic lives in a colocated `_hooks/use-*-form.ts` (defaultValues, validators, `onSubmit`); the component only renders `form.Field`/`form.Subscribe`. Per-field errors render through the shared `FieldError` component (`@app/components/ui/field-error`).
-
-## Getting started
-
-Requires [moon](https://moonrepo.dev/docs/install) and [proto](https://moonrepo.dev/proto) (or Node 24.16.0 / pnpm 11.6.0 installed directly) — not yet installed in this environment; `.prototools` pins the versions.
+Requires [moon](https://moonrepo.dev/docs/install) + [proto](https://moonrepo.dev/proto), or Node 24 / pnpm 11 directly.
 
 ```sh
-make setup                          # docker services (postgres, redis, rabbitmq) + .env + pnpm install
-cd apps/api && pnpm db:migrate && pnpm db:seed
-moon run api:dev                    # api on :3001
-moon run web:dev                    # spa on :5173
+pnpm install
+make dev                              # start docker services (postgres, redis, rabbitmq)
+make db-migrate && make db-seed       # create tables and seed users
+make up                               # start api + web together
 ```
 
-Seeded logins: `admin@test.app` / `Password123` (admin), `member@test.app` / `Password123` (member), `viewer@test.app` / `Password123` (viewer).
+Or run them separately:
 
-## Adding a feature end-to-end
+```sh
+make api                              # api on :3001
+make web                              # web on :5173
+```
 
-Using the `note` resource as the template:
+Seed logins: `admin@test.app` / `Password123`, `member@test.app` / `Password123`, `viewer@test.app` / `Password123`.
 
-1. **Schema** — add input/output Zod schemas to `packages/schemas/src/<feature>/`
-2. **Domain** — add the row type + an Effect-returning repo port (`Effect.Effect<A, EDatabase>`) to `apps/api/src/domain/<feature>/`
-3. **Infrastructure** — add the Drizzle table to `apps/api/src/infrastructure/db/schema/`, then a `Context.Service` implementing the port under `db/repositories/` (wrap each Drizzle call in `Effect.tryPromise`, mapping failures to `EDatabase`); run `pnpm db:generate` to create the migration
-4. **Application** — add one `Effect.fn("name")(function* (input) {...})` use case per operation under `apps/api/src/application/<feature>/`, pulling its dependencies with `yield* SomeRepo`
-5. **Wire it into `bootstrap/compose.ts`** — add the new repo's `.layer` to `AppLayer`
-6. **Presentation** — add oRPC procedures in `apps/api/src/presentation/routers/<feature>.ts` calling `effectRun(useCase(input))`, gated with `permissionRequire(...)`; register in `routers/index.ts`
-7. **Permissions** — add any new `PERMISSION.*` constants (and their `PERMISSION_LABEL`) and extend `ROLE_PERMISSIONS` for the fixed roles in `packages/permissions`; custom roles pick new permissions up from the catalog automatically
-8. **Web** — add the route under `apps/web/src/routes/_authenticated/<feature>/` with colocated `_components`/`_hooks`, calling the feature through `orpc.<feature>.*` from `src/libs/orpc/client.ts`
+## Version and Health
+
+The root `package.json` version is the single source of truth for the workspace. `@app/version` re-exports it as `APP_VERSION` — a plain JSON import, no build step and no generated file — and both sides serve it:
+
+| Surface | Response |
+|---|---|
+| `health.check` over RPC, `GET /api/health` | `{ status: "ok", version }` |
+| `GET /healthz`, `GET /ready` | `{ status, version }` |
+| `/health` on the web (no auth) | its own version next to the API's |
+
+The shape is `healthSchema` in `@app/schemas`, so the web page is typed against what the API returns; the two versions differing means web and API are deployed out of step.
+
+**Every change bumps the root version** — patch for a fix, chore, or docs change; minor for a feature or behavior-changing refactor; major for a breaking change. Bump it in the same commit, so `/health` always names the build you are looking at. Only the root version matters; the workspace packages are private and unpublished.
 
 ## Commands
 
 ```sh
-make check | lint | format | test | build    # moon run :task across the workspace
-moon run api:db-generate                     # drizzle-kit generate
-moon run api:worker                          # run the RabbitMQ worker locally
+make services                         # start docker services
+make services-stop                    # stop docker services
+make db-migrate                       # run migrations
+make db-seed                          # seed database
+make db-studio                        # open drizzle studio
+make worker                           # run RabbitMQ worker
 ```
-
-The e2e suites (`api-e2e`, `web-e2e`) spin up a real API against a throwaway Postgres database (`app_e2e` / `app_web_e2e`, derived from `DATABASE_URL`). Their moon tasks are `runInCI: false` only because they need running services, so `moon ci` skips them — CI runs them in a dedicated job instead (see below). Locally, with the dev services up:
 
 ```sh
-cd apps/api-e2e && pnpm e2e:local
-cd apps/web-e2e && pnpm e2e:local
+moon run :check                       # typecheck all
+moon run :lint                        # lint all
+moon run :test                        # test all
+moon run :build                       # build all
+moon run api:db-generate              # generate drizzle migration
 ```
 
-## Workflow — trunk-based development
+## Releasing
 
-One long-lived branch, `trunk`, that is releasable on every commit.
+Trunk-based development on `trunk`. Pre-push hooks run lint, format, and tests via lefthook. CI runs on every push. Dependabot keeps deps current.
 
-- **Integrate small and often.** Land a feature as a series of independently shippable commits (schemas → API → web), keeping unfinished surface unreachable (no route/nav entry yet) rather than holding the work back on a branch.
-- **Pre-push hook** (`lefthook.yml`) runs biome format + lint and `moon run :build :typecheck :test` — moon's task cache makes unchanged projects free, so the hook only pays for what you touched.
-- **CI on every push and PR** (`.github/workflows/ci.yml`): `moon ci` (check/lint/build/test on affected projects), the **e2e job** (API + Playwright suites against Postgres/Redis/RabbitMQ service containers), and the **drizzle drift** job (regenerates migrations and fails if the committed SQL is out of date with the schema).
-- **Branch protection on `trunk`**: all three CI checks required and up to date, linear history (no merge commits), no force-pushes or deletion. Repository admins may push directly (the hook + CI are the gate); everyone else opens a short-lived branch and a PR, merged the same day once green.
-- **Releases** are annotated tags cut from `trunk` — no release branches. Bump every `package.json` (`pnpm -r exec npm version X.Y.Z --no-git-tag-version && npm version X.Y.Z --no-git-tag-version`), commit as `chore(release): vX.Y.Z`, push, then `git tag -a vX.Y.Z -m "Standard vX.Y.Z" && git push origin vX.Y.Z`. `.github/workflows/release.yml` verifies the tag matches the root version, waits for the three CI checks to be green on that commit, and publishes the GitHub release with notes built from the conventional-commit subjects since the previous tag (grouped into Features / Fixes / Refactoring / CI / Docs / Tests / Chores) — so commit subjects are the changelog; write them accordingly.
-- **Dependencies** are kept current by Dependabot (`.github/dependabot.yml`): weekly PRs for npm (minor + patch grouped) and GitHub Actions, gated by the same required checks.
+PRs use `.github/PULL_REQUEST_TEMPLATE.md` — fill every section in place, writing "None" rather than deleting one. Reviews use `.github/PULL_REQUEST_REVIEW_TEMPLATE.md` and always cover three sections: **Functional** (correctness, and whether every Changelog bullet is actually implemented), **Clean Code** (the conventions in `.claude/skills/ts-conventions/SKILL.md`, plus duplication and naming), and **Feature Suggestions** (non-blocking, each tagged `this-pr` or `follow-up`). Findings in the first two carry a P0–P3 severity from the template's legend.
+
+The root version is already current, so a release just rounds it to the release number:
+
+```sh
+npm version X.Y.Z --no-git-tag-version
+git add -A && git commit -m "chore(release): vX.Y.Z"
+git tag vX.Y.Z && git push origin trunk --follow-tags
+```
+
+The release workflow verifies CI is green, then publishes a GitHub release with notes from conventional commits.

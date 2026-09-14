@@ -1,5 +1,5 @@
 import type { TPermission } from "@app/permissions";
-import type { ReactElement, ReactNode } from "react";
+import type { FC, ReactElement, ReactNode } from "react";
 import { match } from "ts-pattern";
 import { usePermissions } from "./use-permissions.ts";
 
@@ -10,12 +10,9 @@ type TGuardProps = {
 	children: ReactNode;
 };
 
-export const Guard = ({
-	permissions,
-	mode = "all",
-	fallback = null,
-	children,
-}: TGuardProps): ReactElement => {
+export const Guard: FC<TGuardProps> = (props): ReactElement => {
+	const { permissions, mode = "all", fallback = null, children } = props;
+
 	const { canAll, canAny } = usePermissions();
 
 	const allowed = match(mode)

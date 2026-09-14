@@ -5,7 +5,7 @@ import { Label } from "@app/components/ui/label";
 import { Textarea } from "@app/components/ui/textarea";
 import type { TRoleDto } from "@app/schemas";
 import { Link } from "@tanstack/react-router";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import { PermissionChecklist } from "#/routes/_authenticated/roles/_components/permission-checklist.tsx";
 import { useRoleEditForm } from "#/routes/_authenticated/roles/_hooks/use-role-edit-form.ts";
 
@@ -13,8 +13,8 @@ type TRoleEditFormProps = {
 	role: TRoleDto;
 };
 
-export const RoleEditForm = ({ role }: TRoleEditFormProps): ReactElement => {
-	const { form, onSubmit, isPending, isFixed } = useRoleEditForm(role);
+export const RoleEditForm: FC<TRoleEditFormProps> = (props): ReactElement => {
+	const { form, onSubmit, isPending, isFixed } = useRoleEditForm(props.role);
 
 	return (
 		<form
@@ -22,7 +22,7 @@ export const RoleEditForm = ({ role }: TRoleEditFormProps): ReactElement => {
 			className="flex flex-col gap-4 border border-neutral-200 p-4"
 		>
 			<p className="text-sm text-neutral-500">
-				Key: <code>{role.key}</code> · {role.memberCount} members
+				Key: <code>{props.role.key}</code> · {props.role.memberCount} members
 			</p>
 			{isFixed ? (
 				<p className="border border-neutral-200 bg-neutral-50 p-3 text-sm text-neutral-600">

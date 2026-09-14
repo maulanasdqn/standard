@@ -4,7 +4,7 @@ import { Input } from "@app/components/ui/input";
 import { Label } from "@app/components/ui/label";
 import { Select } from "@app/components/ui/select";
 import { A } from "@mobily/ts-belt";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import type { TRoleOption } from "#/routes/_authenticated/users/_hooks/use-role-options.ts";
 import { useUserCreateForm } from "#/routes/_authenticated/users/_hooks/use-user-create-form.ts";
 
@@ -12,9 +12,9 @@ type TUserCreateFormProps = {
 	roleOptions: readonly TRoleOption[];
 };
 
-export const UserCreateForm = ({
-	roleOptions,
-}: TUserCreateFormProps): ReactElement => {
+export const UserCreateForm: FC<TUserCreateFormProps> = (
+	props,
+): ReactElement => {
 	const { form, onSubmit, isPending } = useUserCreateForm();
 
 	return (
@@ -76,7 +76,7 @@ export const UserCreateForm = ({
 							onBlur={field.handleBlur}
 							onChange={(event) => field.handleChange(event.target.value)}
 						>
-							{A.map(roleOptions, (option) => (
+							{A.map(props.roleOptions, (option) => (
 								<option key={option.value} value={option.value}>
 									{option.label}
 								</option>

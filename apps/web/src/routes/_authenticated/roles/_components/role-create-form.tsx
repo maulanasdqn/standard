@@ -3,11 +3,11 @@ import { FieldError } from "@app/components/ui/field-error";
 import { Input } from "@app/components/ui/input";
 import { Label } from "@app/components/ui/label";
 import { Textarea } from "@app/components/ui/textarea";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import { PermissionChecklist } from "#/routes/_authenticated/roles/_components/permission-checklist.tsx";
 import { useRoleCreateForm } from "#/routes/_authenticated/roles/_hooks/use-role-create-form.ts";
 
-export const RoleCreateForm = (): ReactElement => {
+export const RoleCreateForm: FC = (): ReactElement => {
 	const { form, onSubmit, isPending } = useRoleCreateForm();
 
 	return (

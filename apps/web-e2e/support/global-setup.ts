@@ -34,7 +34,7 @@ const waitForHealth = async (timeoutMs = 15_000): Promise<void> => {
 	throw new Error("API did not become healthy in time for web-e2e");
 };
 
-export default async function globalSetup(): Promise<void> {
+const globalSetup = async (): Promise<void> => {
 	const dbName = new URL(DATABASE_URL).pathname.slice(1);
 	const adminUrl = BASE_DATABASE_URL.replace(/\/[^/]+$/, "/postgres");
 
@@ -69,4 +69,6 @@ export default async function globalSetup(): Promise<void> {
 	await waitForHealth();
 
 	process.env.__WEB_E2E_API_PID__ = String(apiProcess.pid);
-}
+};
+
+export default globalSetup;

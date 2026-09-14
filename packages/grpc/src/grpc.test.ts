@@ -5,7 +5,7 @@ import {
 	type TGrpcServer,
 	grpcClientCreate,
 	grpcServerCreate,
-} from "./grpc.ts";
+} from "./index.ts";
 
 const PROTO_PATH = fileURLToPath(new URL("./note.proto", import.meta.url));
 

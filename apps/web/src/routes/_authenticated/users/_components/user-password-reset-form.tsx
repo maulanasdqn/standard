@@ -3,17 +3,17 @@ import { FieldError } from "@app/components/ui/field-error";
 import { Input } from "@app/components/ui/input";
 import { Label } from "@app/components/ui/label";
 import type { TUser } from "@app/schemas";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import { useUserPasswordResetForm } from "#/routes/_authenticated/users/_hooks/use-user-password-reset-form.ts";
 
 type TUserPasswordResetFormProps = {
 	user: TUser;
 };
 
-export const UserPasswordResetForm = ({
-	user,
-}: TUserPasswordResetFormProps): ReactElement => {
-	const { form, onSubmit, isPending } = useUserPasswordResetForm(user);
+export const UserPasswordResetForm: FC<TUserPasswordResetFormProps> = (
+	props,
+): ReactElement => {
+	const { form, onSubmit, isPending } = useUserPasswordResetForm(props.user);
 
 	return (
 		<form
@@ -23,8 +23,8 @@ export const UserPasswordResetForm = ({
 			<div className="flex flex-col gap-1">
 				<h2 className="font-medium">Reset password</h2>
 				<p className="text-sm text-neutral-500">
-					Sets a new password for {user.email} and signs them out everywhere.
-					Share it with them out of band.
+					Sets a new password for {props.user.email} and signs them out
+					everywhere. Share it with them out of band.
 				</p>
 			</div>
 			<form.Field name="password">

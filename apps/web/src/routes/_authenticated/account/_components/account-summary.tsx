@@ -1,9 +1,9 @@
 import { roleLabel } from "@app/permissions";
-import type { ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 import { match, P } from "ts-pattern";
 import { useSession } from "#/libs/auth/use-session.ts";
 
-export const AccountSummary = (): ReactElement =>
+export const AccountSummary: FC = (): ReactElement =>
 	match(useSession())
 		.with(P.nullish, () => (
 			<p className="text-sm text-neutral-500">Not signed in.</p>

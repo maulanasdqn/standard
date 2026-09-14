@@ -1,13 +1,12 @@
 import { z } from "zod";
+import { userIdSchema } from "../auth/auth.ts";
+import { baseSchema } from "../shared/base-schema.ts";
 import { paginated, paginationSchema } from "../shared/pagination.ts";
 
-export const noteSchema = z.object({
-	id: z.uuid(),
+export const noteSchema = baseSchema(z.uuid()).extend({
 	title: z.string().min(1).max(200),
 	body: z.string().max(10_000),
-	authorId: z.uuid(),
-	createdAt: z.iso.datetime(),
-	updatedAt: z.iso.datetime(),
+	authorId: userIdSchema,
 });
 export type TNote = z.infer<typeof noteSchema>;
 

@@ -19,7 +19,7 @@ export const formatDateTime = (value: string | Date): string =>
 		timeStyle: "short",
 	}).format(new Date(value));
 
-export const asPercent = (value: number): string =>
+export const formatPercent = (value: number): string =>
 	new Intl.NumberFormat("en-US", {
 		style: "percent",
 		maximumFractionDigits: 1,

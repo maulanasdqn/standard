@@ -1,16 +1,14 @@
 import { z } from "zod";
-import { authUserIdSchema } from "../auth/auth.ts";
+import { userIdSchema } from "../auth/auth.ts";
+import { baseSchema } from "../shared/base-schema.ts";
 import { paginated, paginationSchema } from "../shared/pagination.ts";
 
-export const userSchema = z.object({
-	id: authUserIdSchema,
+export const userSchema = baseSchema(userIdSchema).extend({
 	name: z.string(),
 	email: z.email(),
 	emailVerified: z.boolean(),
 	image: z.string().nullable(),
 	role: z.string().min(1),
-	createdAt: z.iso.datetime(),
-	updatedAt: z.iso.datetime(),
 });
 export type TUser = z.infer<typeof userSchema>;
 
@@ -23,17 +21,17 @@ export const userCreateInputSchema = z.object({
 export type TUserCreateInput = z.infer<typeof userCreateInputSchema>;
 
 export const userUpdateInputSchema = z.object({
-	id: authUserIdSchema,
+	id: userIdSchema,
 	name: z.string().min(1).max(100).optional(),
 	role: z.string().min(1).optional(),
 });
 export type TUserUpdateInput = z.infer<typeof userUpdateInputSchema>;
 
-export const userIdInputSchema = z.object({ id: authUserIdSchema });
+export const userIdInputSchema = z.object({ id: userIdSchema });
 export type TUserIdInput = z.infer<typeof userIdInputSchema>;
 
 export const userPasswordResetInputSchema = z.object({
-	id: authUserIdSchema,
+	id: userIdSchema,
 	password: z.string().min(8).max(128),
 });
 export type TUserPasswordResetInput = z.infer<

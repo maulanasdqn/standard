@@ -1,1 +1,2 @@
-export * from "./job-queue.ts";
+export * from "./job-publisher.ts";
+export * from "./job-worker.ts";
