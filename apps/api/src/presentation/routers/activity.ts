@@ -11,5 +11,7 @@ export const activityRouterBuild = () => ({
 		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.ACTIVITY })
 		.input(activityListInputSchema)
 		.output(activityListSchema)
-		.handler(({ input }) => effectRun(activityList(input))),
+		.handler(({ input, context }) =>
+			effectRun(context.runtime, activityList(input)),
+		),
 });

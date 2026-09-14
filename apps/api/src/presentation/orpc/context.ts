@@ -1,8 +1,10 @@
 import type { TPermission } from "@app/permissions";
+import type { TAppRuntime } from "#/bootstrap/compose.ts";
 import type { TSession } from "#/domain/session/session.ts";
 
-export type ORPCContext = {
+export type TORPCContext = {
 	headers: Headers;
 	session: TSession | null;
 	permissions: readonly TPermission[];
+	runtime: TAppRuntime;
 };

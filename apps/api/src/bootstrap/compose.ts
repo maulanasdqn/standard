@@ -29,6 +29,8 @@ export const appMemoMap = Layer.makeMemoMapUnsafe();
 
 export const runtime = ManagedRuntime.make(AppLayer, { memoMap: appMemoMap });
 
+export type TAppRuntime = typeof runtime;
+
 export type TAppRuntimeServices =
 	| DbService
 	| NoteRepo

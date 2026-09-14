@@ -25,20 +25,24 @@ export const userRouterBuild = () => ({
 		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.USERS })
 		.input(userListInputSchema)
 		.output(userListSchema)
-		.handler(({ input }) => effectRun(userList(input))),
+		.handler(({ input, context }) =>
+			effectRun(context.runtime, userList(input)),
+		),
 
 	get: permissionRequire(PERMISSION.USER_MANAGE)
 		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.USER })
 		.input(userIdInputSchema)
 		.output(userSchema)
-		.handler(({ input }) => effectRun(userGet(input))),
+		.handler(({ input, context }) =>
+			effectRun(context.runtime, userGet(input)),
+		),
 
 	create: permissionRequire(PERMISSION.USER_MANAGE)
 		.route({ method: HTTP_METHOD.POST, path: ROUTE_PATH.USERS })
 		.input(userCreateInputSchema)
 		.output(userSchema)
 		.handler(({ input, context }) =>
-			effectRun(userCreate(input, context.session!.user.id)),
+			effectRun(context.runtime, userCreate(input, context.session!.user.id)),
 		),
 
 	update: permissionRequire(PERMISSION.USER_MANAGE)
@@ -46,7 +50,7 @@ export const userRouterBuild = () => ({
 		.input(userUpdateInputSchema)
 		.output(userSchema)
 		.handler(({ input, context }) =>
-			effectRun(userUpdate(input, context.session!.user.id)),
+			effectRun(context.runtime, userUpdate(input, context.session!.user.id)),
 		),
 
 	remove: permissionRequire(PERMISSION.USER_MANAGE)
@@ -54,7 +58,7 @@ export const userRouterBuild = () => ({
 		.input(userIdInputSchema)
 		.output(z.object({ id: z.uuid() }))
 		.handler(({ input, context }) =>
-			effectRun(userDelete(input, context.session!.user.id)),
+			effectRun(context.runtime, userDelete(input, context.session!.user.id)),
 		),
 
 	resetPassword: permissionRequire(PERMISSION.USER_MANAGE)
@@ -62,6 +66,9 @@ export const userRouterBuild = () => ({
 		.input(userPasswordResetInputSchema)
 		.output(z.object({ id: z.uuid() }))
 		.handler(({ input, context }) =>
-			effectRun(userPasswordReset(input, context.session!.user.id)),
+			effectRun(
+				context.runtime,
+				userPasswordReset(input, context.session!.user.id),
+			),
 		),
 });

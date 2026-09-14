@@ -6,7 +6,7 @@ import { RPCHandler } from "@orpc/server/fetch";
 import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
 import type { Hono } from "hono";
 import { match, P } from "ts-pattern";
-import type { ORPCContext } from "#/presentation/orpc/context.ts";
+import type { TORPCContext } from "#/presentation/orpc/context.ts";
 import { APP_VERSION } from "@app/version";
 import { ROUTE_PREFIX } from "#/presentation/route-paths.ts";
 import type { TAppRouter } from "#/presentation/routers/index.ts";
@@ -19,7 +19,7 @@ type TDeps = {
 	app: Hono;
 	router: TAppRouter;
 	logger: TLogger;
-	buildContext: (headers: Headers) => Promise<ORPCContext>;
+	buildContext: (headers: Headers) => Promise<TORPCContext>;
 };
 
 export const orpcMount = ({

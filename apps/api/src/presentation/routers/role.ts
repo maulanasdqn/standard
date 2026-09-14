@@ -21,20 +21,22 @@ export const roleRouterBuild = () => ({
 	list: permissionRequire(PERMISSION.USER_MANAGE)
 		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.ROLES })
 		.output(roleListSchema)
-		.handler(() => effectRun(roleList())),
+		.handler(({ context }) => effectRun(context.runtime, roleList())),
 
 	get: permissionRequire(PERMISSION.USER_MANAGE)
 		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.ROLE })
 		.input(roleKeyInputSchema)
 		.output(roleSchema)
-		.handler(({ input }) => effectRun(roleGet(input))),
+		.handler(({ input, context }) =>
+			effectRun(context.runtime, roleGet(input)),
+		),
 
 	create: permissionRequire(PERMISSION.USER_MANAGE)
 		.route({ method: HTTP_METHOD.POST, path: ROUTE_PATH.ROLES })
 		.input(roleCreateInputSchema)
 		.output(roleSchema)
 		.handler(({ input, context }) =>
-			effectRun(roleCreate(input, context.session!.user.id)),
+			effectRun(context.runtime, roleCreate(input, context.session!.user.id)),
 		),
 
 	update: permissionRequire(PERMISSION.USER_MANAGE)
@@ -42,7 +44,7 @@ export const roleRouterBuild = () => ({
 		.input(roleUpdateInputSchema)
 		.output(roleSchema)
 		.handler(({ input, context }) =>
-			effectRun(roleUpdate(input, context.session!.user.id)),
+			effectRun(context.runtime, roleUpdate(input, context.session!.user.id)),
 		),
 
 	remove: permissionRequire(PERMISSION.USER_MANAGE)
@@ -50,6 +52,6 @@ export const roleRouterBuild = () => ({
 		.input(roleKeyInputSchema)
 		.output(z.object({ key: z.string() }))
 		.handler(({ input, context }) =>
-			effectRun(roleDelete(input, context.session!.user.id)),
+			effectRun(context.runtime, roleDelete(input, context.session!.user.id)),
 		),
 });

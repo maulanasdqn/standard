@@ -23,20 +23,24 @@ export const noteRouterBuild = () => ({
 		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.NOTES })
 		.input(noteListInputSchema)
 		.output(noteListSchema)
-		.handler(({ input }) => effectRun(noteList(input))),
+		.handler(({ input, context }) =>
+			effectRun(context.runtime, noteList(input)),
+		),
 
 	get: permissionRequire(PERMISSION.NOTE_READ)
 		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.NOTE })
 		.input(noteIdInputSchema)
 		.output(noteSchema)
-		.handler(({ input }) => effectRun(noteGet(input))),
+		.handler(({ input, context }) =>
+			effectRun(context.runtime, noteGet(input)),
+		),
 
 	create: permissionRequire(PERMISSION.NOTE_WRITE)
 		.route({ method: HTTP_METHOD.POST, path: ROUTE_PATH.NOTES })
 		.input(noteCreateInputSchema)
 		.output(noteSchema)
 		.handler(({ input, context }) =>
-			effectRun(noteCreate(input, context.session!.user.id)),
+			effectRun(context.runtime, noteCreate(input, context.session!.user.id)),
 		),
 
 	update: permissionRequire(PERMISSION.NOTE_WRITE)
@@ -44,7 +48,7 @@ export const noteRouterBuild = () => ({
 		.input(noteUpdateInputSchema)
 		.output(noteSchema)
 		.handler(({ input, context }) =>
-			effectRun(noteUpdate(input, context.session!.user.id)),
+			effectRun(context.runtime, noteUpdate(input, context.session!.user.id)),
 		),
 
 	remove: permissionRequire(PERMISSION.NOTE_DELETE)
@@ -52,6 +56,6 @@ export const noteRouterBuild = () => ({
 		.input(noteIdInputSchema)
 		.output(z.object({ id: z.uuid() }))
 		.handler(({ input, context }) =>
-			effectRun(noteDelete(input, context.session!.user.id)),
+			effectRun(context.runtime, noteDelete(input, context.session!.user.id)),
 		),
 });

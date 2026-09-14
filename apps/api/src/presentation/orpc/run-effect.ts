@@ -3,7 +3,7 @@ import { Effect } from "effect";
 import { match } from "ts-pattern";
 import { ERROR_TAG } from "#/domain/shared/error-tags.ts";
 import type { TDomainError } from "#/domain/shared/errors.ts";
-import { runtime, type TAppRuntimeServices } from "#/bootstrap/compose.ts";
+import type { TAppRuntime, TAppRuntimeServices } from "#/bootstrap/compose.ts";
 
 const toORPCError = (error: TDomainError): ORPCError<string, undefined> =>
 	match(error)
@@ -54,6 +54,7 @@ type TResult<A> =
 	| { readonly _tag: "failure"; readonly error: TDomainError };
 
 export const effectRun = async <A>(
+	runtime: TAppRuntime,
 	effect: Effect.Effect<A, TDomainError, TAppRuntimeServices>,
 ): Promise<A> => {
 	const result = await runtime.runPromise(

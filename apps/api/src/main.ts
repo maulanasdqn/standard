@@ -15,7 +15,7 @@ import { healthMount } from "#/presentation/http/mount-health.ts";
 import { orpcMount } from "#/presentation/http/mount-orpc.ts";
 import { rateLimitMount } from "#/presentation/http/mount-rate-limit.ts";
 import { webDistMount } from "#/presentation/http/mount-web-dist.ts";
-import type { ORPCContext } from "#/presentation/orpc/context.ts";
+import type { TORPCContext } from "#/presentation/orpc/context.ts";
 import { routerBuild } from "#/presentation/routers/index.ts";
 
 const { auth } = await runtime.runPromise(
@@ -28,7 +28,7 @@ const { client: cacheClient } = await runtime.runPromise(
 
 const router = routerBuild();
 
-const buildContext = async (headers: Headers): Promise<ORPCContext> => {
+const buildContext = async (headers: Headers): Promise<TORPCContext> => {
 	const session = await runtime.runPromise(
 		AuthService.use((service) => service.getSession(headers)).pipe(
 			Effect.catch(() => Effect.succeed(null)),
@@ -38,6 +38,7 @@ const buildContext = async (headers: Headers): Promise<ORPCContext> => {
 		headers,
 		session,
 		permissions: session?.permissions ?? [],
+		runtime,
 	};
 };
 

@@ -3,10 +3,10 @@ import { canAll, type TPermission } from "@app/permissions";
 import { D } from "@mobily/ts-belt";
 import { ORPCError, os } from "@orpc/server";
 import { match, P } from "ts-pattern";
-import type { ORPCContext } from "#/presentation/orpc/context.ts";
+import type { TORPCContext } from "#/presentation/orpc/context.ts";
 import { toORPCError } from "#/presentation/orpc/error-mapping.ts";
 
-const base = os.$context<ORPCContext>();
+const base = os.$context<TORPCContext>();
 
 export const publicProcedure = base.use(async ({ next }) => {
 	try {
