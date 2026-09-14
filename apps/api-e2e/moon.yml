@@ -16,8 +16,6 @@ fileGroups:
 tasks:
   e2e:
     command: 'pnpm e2e'
-    options:
-      runInCI: false
 
   typecheck:
     command: 'pnpm typecheck'

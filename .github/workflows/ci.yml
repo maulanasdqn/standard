@@ -34,7 +34,7 @@ jobs:
         with:
           auto-install: true
 
-      - run: moon ci --color
+      - run: moon ci :check :build :test --color
 
   e2e:
     name: E2E (api + web)
