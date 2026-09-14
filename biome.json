@@ -8,6 +8,7 @@
 	"files": {
 		"ignoreUnknown": false,
 		"includes": [
+			"**/apps/api/scripts/**/*",
 			"**/apps/*/src/**/*",
 			"**/apps/web/index.html",
 			"**/apps/web/vite.config.ts",
