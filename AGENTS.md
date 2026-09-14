@@ -36,10 +36,15 @@ This file is the single source of truth for agent instructions and is vendor-neu
 ## Commands
 
 ```sh
-moon run :check :lint :test :build    # what CI runs
-make services                         # postgres, redis, rabbitmq
+moon ci                               # what CI runs
+make setup                            # services, migrate and seed
+make services                         # postgres, redis, rabbitmq, mailpit
 make api | web | worker               # run one process
 make db-migrate | db-seed             # database
+make help                             # every target
 ```
+
+Every command is reachable through `make` or `moon`. Nothing shells into a
+package directory — no `cd apps/api && pnpm ...` in the Makefile, CI, or docs.
 
 `moon` needs the pinned toolchain: `proto install pnpm 11.6.0 && proto install node 24.16.0` if tasks fail with `missing_tool`.

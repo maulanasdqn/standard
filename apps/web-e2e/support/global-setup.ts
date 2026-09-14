@@ -44,8 +44,8 @@ const globalSetup = async (): Promise<void> => {
 		{ stdio: "ignore" },
 	);
 
-	execSync("pnpm --filter @app/api exec drizzle-kit migrate", {
-		cwd: new URL("../../api", import.meta.url).pathname,
+	execSync("pnpm --filter @app/api run migrate", {
+		cwd: new URL("../../..", import.meta.url).pathname,
 		env,
 		stdio: "inherit",
 	});

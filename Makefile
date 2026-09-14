@@ -1,31 +1,84 @@
-.PHONY: services services-stop db-migrate db-seed db-studio api web worker dev up
+COMPOSE := docker compose -f docker-compose.dev.yml
 
-services:
-	docker compose -f docker-compose.dev.yml up -d
+.PHONY: help install setup services services-stop services-logs dev up \
+	api web worker db-migrate db-seed db-generate db-push db-studio \
+	check lint format test build ci browsers e2e e2e-api e2e-web clean
 
-services-stop:
-	docker compose -f docker-compose.dev.yml down
+help: ## List the available targets
+	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-16s %s\n", $$1, $$2}'
 
-db-migrate:
-	cd apps/api && pnpm migrate
+install: ## Install workspace dependencies
+	pnpm install
 
-db-seed:
-	cd apps/api && pnpm db:seed
+setup: services db-migrate db-seed ## Start the services, migrate and seed
 
-db-studio:
-	cd apps/api && pnpm db:studio
+services: ## Start postgres, redis, rabbitmq and mailpit
+	$(COMPOSE) up -d
 
-api:
-	cd apps/api && pnpm dev
+services-stop: ## Stop the docker services
+	$(COMPOSE) down
 
-web:
-	cd apps/web && pnpm dev
+services-logs: ## Tail the docker service logs
+	$(COMPOSE) logs -f
 
-worker:
-	cd apps/api && pnpm worker
-
-dev: services
+dev: services ## Start the services, then print the next steps
 	@echo "Services up. Run 'make api' and 'make web' in separate terminals."
 
-up: services
-	cd apps/api && pnpm dev & cd apps/web && pnpm dev & wait
+up: services ## Start the services, the api and the web together
+	moon run api:dev web:dev
+
+api: ## Run the api on :3001
+	moon run api:dev
+
+web: ## Run the web on :5173
+	moon run web:dev
+
+worker: ## Run the RabbitMQ worker
+	moon run api:worker
+
+db-migrate: ## Apply pending migrations
+	moon run api:migrate
+
+db-seed: ## Seed the database
+	moon run api:db-seed
+
+db-generate: ## Generate a drizzle migration from the schema
+	moon run api:db-generate
+
+db-push: ## Push the schema straight to the database
+	moon run api:db-push
+
+db-studio: ## Open drizzle studio
+	moon run api:db-studio
+
+check: ## Biome check across the workspace
+	moon run :check
+
+lint: ## Biome lint across the workspace
+	moon run :lint
+
+format: ## Biome format --write across the workspace
+	moon run :format
+
+test: ## Unit tests across the workspace
+	moon run :test
+
+build: ## Typecheck and build across the workspace
+	moon run :build
+
+ci: ## Everything CI runs, on affected projects
+	moon ci
+
+browsers: ## Install the Playwright browsers
+	moon run web-e2e:install-browsers
+
+e2e-api: ## API end-to-end tests
+	moon run api-e2e:e2e
+
+e2e-web: ## Web end-to-end tests
+	moon run web-e2e:e2e
+
+e2e: e2e-api e2e-web ## All end-to-end tests
+
+clean: ## Clear the moon cache
+	moon clean

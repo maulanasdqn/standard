@@ -20,6 +20,12 @@ tasks:
     options:
       runInCI: false
 
+  install-browsers:
+    command: 'pnpm install-browsers'
+    options:
+      cache: false
+      runInCI: false
+
   typecheck:
     command: 'pnpm typecheck'
     inputs:
