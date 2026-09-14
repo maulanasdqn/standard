@@ -26,6 +26,7 @@
 		"@app/activity": "workspace:*",
 		"@app/cache": "workspace:*",
 		"@app/logger": "workspace:*",
+		"@app/mail": "workspace:*",
 		"@app/messages": "workspace:*",
 		"@app/migrations": "workspace:*",
 		"@app/permissions": "workspace:*",

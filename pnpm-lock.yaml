@@ -32,6 +32,9 @@ importers:
       '@app/logger':
         specifier: workspace:*
         version: link:../../packages/logger
+      '@app/mail':
+        specifier: workspace:*
+        version: link:../../packages/mail
       '@app/messages':
         specifier: workspace:*
         version: link:../../packages/messages
@@ -445,6 +448,25 @@ importers:
       ts-pattern:
         specifier: ^5.9.0
         version: 5.9.0
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^5.0.0
+        version: 5.0.0(@types/node@24.13.3)(@vitest/coverage-v8@5.0.0)(jsdom@28.1.0(@noble/hashes@2.4.0))(vite@7.3.6(@types/node@24.13.3)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.13))
+
+  packages/mail:
+    dependencies:
+      '@app/messages':
+        specifier: workspace:*
+        version: link:../messages
+      '@mobily/ts-belt':
+        specifier: ^3.13.1
+        version: 3.13.1
+      nodemailer:
+        specifier: ^10.0.9
+        version: 10.0.9
     devDependencies:
       typescript:
         specifier: ^5.9.3
@@ -3406,6 +3428,10 @@ packages:
   node-releases@2.0.54:
     resolution: {integrity: sha512-YHs7BmmcsdAI5Ozuf8JZo6PT0mv2GIWC9vMfvUC3dp65M8hn7Ux8CPL+2oBI7juNuj9d0ndhTcznq2ODBps9cQ==}
     engines: {node: '>=18'}
+
+  nodemailer@10.0.9:
+    resolution: {integrity: sha512-BF0qcyplCwp+jMk6HCjFykBz/YhhZSsxrARhOldLwFWH+8kGjQsd2WIMIZhqEuyXRoGFi0ONbDeWDMDoL8MhLw==}
+    engines: {node: '>=20.0.0'}
 
   obug@2.2.1:
     resolution: {integrity: sha512-XrsrhT5sybtKI6wakr2SPOlGZWWYbUXZ7a0jT8/QOeAPau+1X/bSegNe5YR75oJmEZQbKningirmGOEJCIk61Q==}
@@ -6543,6 +6569,8 @@ snapshots:
     optional: true
 
   node-releases@2.0.54: {}
+
+  nodemailer@10.0.9: {}
 
   obug@2.2.1: {}
 

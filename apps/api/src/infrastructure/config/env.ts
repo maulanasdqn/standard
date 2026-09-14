@@ -11,6 +11,8 @@ const envSchema = z.object({
 	RABBITMQ_URL: z.string().min(1),
 	RATE_LIMIT_WINDOW_SECONDS: z.coerce.number().int().default(60),
 	RATE_LIMIT_MAX: z.coerce.number().int().default(100),
+	SMTP_URL: z.string().min(1).default("smtp://localhost:1025"),
+	MAIL_FROM: z.string().min(1).default("Standard <no-reply@standard.test>"),
 	BETTER_AUTH_URL: z.url(),
 	BETTER_AUTH_SECRET: z.string().min(16),
 	WEB_DIST_PATH: z.string().optional(),
