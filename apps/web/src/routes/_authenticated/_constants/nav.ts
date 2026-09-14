@@ -1,20 +1,56 @@
-import { PERMISSION } from "@app/permissions";
+import { PERMISSION, type TPermission } from "@app/permissions";
+import type { LucideIcon } from "lucide-react";
+import {
+	Activity,
+	CircleUser,
+	KeyRound,
+	Shield,
+	StickyNote,
+	Users,
+} from "lucide-react";
 
-export const NAV_ITEMS = [
-	{ to: "/notes", label: "Notes", permissions: [PERMISSION.NOTE_READ] },
-	{ to: "/users", label: "Users", permissions: [PERMISSION.USER_MANAGE] },
-	{ to: "/roles", label: "Roles", permissions: [PERMISSION.USER_MANAGE] },
+export type TNavItem = {
+	to: string;
+	label: string;
+	permissions: readonly TPermission[];
+	icon: LucideIcon;
+};
+
+export const NAV_ITEMS: readonly TNavItem[] = [
+	{
+		to: "/notes",
+		label: "Notes",
+		permissions: [PERMISSION.NOTE_READ],
+		icon: StickyNote,
+	},
+	{
+		to: "/users",
+		label: "Users",
+		permissions: [PERMISSION.USER_MANAGE],
+		icon: Users,
+	},
+	{
+		to: "/roles",
+		label: "Roles",
+		permissions: [PERMISSION.USER_MANAGE],
+		icon: Shield,
+	},
 	{
 		to: "/permissions",
 		label: "Permissions",
 		permissions: [PERMISSION.USER_MANAGE],
+		icon: KeyRound,
 	},
 	{
 		to: "/activity",
 		label: "Activity",
 		permissions: [PERMISSION.ACTIVITY_READ],
+		icon: Activity,
 	},
-	{ to: "/account", label: "Account", permissions: [] },
-] as const;
-
-export type TNavItem = (typeof NAV_ITEMS)[number];
+	{
+		to: "/account",
+		label: "Account",
+		permissions: [],
+		icon: CircleUser,
+	},
+];

@@ -1,6 +1,25 @@
-import { Button } from "@app/components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@app/components/ui/dropdown-menu";
+import {
+	Sidebar,
+	SidebarContent,
+	SidebarFooter,
+	SidebarGroup,
+	SidebarGroupContent,
+	SidebarGroupLabel,
+	SidebarHeader,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
+	SidebarRail,
+} from "@app/components/ui/sidebar";
 import { A } from "@mobily/ts-belt";
-import { Link } from "@tanstack/react-router";
+import { Link, useMatchRoute } from "@tanstack/react-router";
+import { ChevronsUpDown, Command, LogOut } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useSession } from "#/libs/auth/use-session.ts";
 import { useSessionSignOut } from "#/routes/_authenticated/_hooks/use-session-sign-out.ts";
@@ -10,30 +29,80 @@ export const AppSidebar: FC = (): ReactElement => {
 	const session = useSession();
 	const signOut = useSessionSignOut();
 	const navItems = useVisibleNav();
+	const matchRoute = useMatchRoute();
 
 	return (
-		<aside className="flex w-56 flex-col justify-between border-r border-neutral-200 p-4">
-			<nav className="flex flex-col gap-1">
-				{A.map(navItems, (item) => (
-					<Link
-						key={item.to}
-						to={item.to}
-						className="rounded-none px-3 py-2 text-sm hover:bg-neutral-100 [&.active]:bg-neutral-100 [&.active]:font-medium"
-					>
-						{item.label}
-					</Link>
-				))}
-			</nav>
-			<div className="flex flex-col gap-2">
-				{session ? (
-					<p className="truncate px-1 text-xs text-neutral-500">
-						{session.user.email}
-					</p>
-				) : null}
-				<Button variant="outline" onClick={() => void signOut()}>
-					Sign out
-				</Button>
-			</div>
-		</aside>
+		<Sidebar collapsible="icon">
+			<SidebarHeader>
+				<SidebarMenu>
+					<SidebarMenuItem>
+						<SidebarMenuButton size="lg" asChild>
+							<Link to="/notes">
+								<div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+									<Command className="size-4" />
+								</div>
+								<div className="grid flex-1 text-left text-sm leading-tight">
+									<span className="truncate font-medium">Standard</span>
+								</div>
+							</Link>
+						</SidebarMenuButton>
+					</SidebarMenuItem>
+				</SidebarMenu>
+			</SidebarHeader>
+			<SidebarContent>
+				<SidebarGroup>
+					<SidebarGroupLabel>Navigation</SidebarGroupLabel>
+					<SidebarGroupContent>
+						<SidebarMenu>
+							{A.map(navItems, (item) => (
+								<SidebarMenuItem key={item.to}>
+									<SidebarMenuButton
+										asChild
+										tooltip={item.label}
+										isActive={!!matchRoute({ to: item.to, fuzzy: true })}
+									>
+										<Link to={item.to}>
+											<item.icon />
+											<span>{item.label}</span>
+										</Link>
+									</SidebarMenuButton>
+								</SidebarMenuItem>
+							))}
+						</SidebarMenu>
+					</SidebarGroupContent>
+				</SidebarGroup>
+			</SidebarContent>
+			<SidebarFooter>
+				<SidebarMenu>
+					<SidebarMenuItem>
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<SidebarMenuButton size="lg">
+									<div className="bg-sidebar-accent text-sidebar-accent-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+										<Command className="size-4" />
+									</div>
+									<div className="grid flex-1 text-left text-sm leading-tight">
+										<span className="truncate text-xs text-muted-foreground">
+											{session?.user.email}
+										</span>
+									</div>
+									<ChevronsUpDown className="ml-auto size-4" />
+								</SidebarMenuButton>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent
+								side="top"
+								className="w-(--radix-dropdown-menu-trigger-width)"
+							>
+								<DropdownMenuItem onClick={() => void signOut()}>
+									<LogOut />
+									Sign out
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
+					</SidebarMenuItem>
+				</SidebarMenu>
+			</SidebarFooter>
+			<SidebarRail />
+		</Sidebar>
 	);
 };
