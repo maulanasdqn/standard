@@ -1,5 +1,5 @@
 import type { TJobHandler } from "@app/queue";
-import { logger } from "#/infrastructure/observability/logger.ts";
+import { logger } from "#/platform/observability/logger.ts";
 
 export type TExampleJobPayload = {
 	noteId: string;

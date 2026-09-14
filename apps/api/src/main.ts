@@ -6,17 +6,17 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { requestId } from "hono/request-id";
 import { runtime } from "#/bootstrap/compose.ts";
-import { AuthService } from "#/infrastructure/auth/auth-service.ts";
-import { CacheService } from "#/infrastructure/cache/redis.ts";
-import { env } from "#/infrastructure/config/env.ts";
-import { logger } from "#/infrastructure/observability/logger.ts";
-import { authMount } from "#/presentation/http/mount-auth.ts";
-import { healthMount } from "#/presentation/http/mount-health.ts";
-import { orpcMount } from "#/presentation/http/mount-orpc.ts";
-import { rateLimitMount } from "#/presentation/http/mount-rate-limit.ts";
-import { webDistMount } from "#/presentation/http/mount-web-dist.ts";
-import type { TORPCContext } from "#/presentation/orpc/context.ts";
-import { routerBuild } from "#/presentation/routers/index.ts";
+import { AuthService } from "#/auth/infrastructure/auth-service.ts";
+import { CacheService } from "#/platform/cache/redis.ts";
+import { env } from "#/platform/config/env.ts";
+import { logger } from "#/platform/observability/logger.ts";
+import { authMount } from "#/auth/presentation/mount-auth.ts";
+import { healthMount } from "#/health/presentation/mount-health.ts";
+import { orpcMount } from "#/platform/http/mount-orpc.ts";
+import { rateLimitMount } from "#/platform/http/mount-rate-limit.ts";
+import { webDistMount } from "#/platform/http/mount-web-dist.ts";
+import type { TORPCContext } from "#/platform/orpc/context.ts";
+import { routerBuild } from "#/bootstrap/router.ts";
 
 const { auth } = await runtime.runPromise(
 	AuthService.use((service) => Effect.succeed(service)),
