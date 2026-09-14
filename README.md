@@ -100,7 +100,19 @@ moon ci                               # what CI runs
 
 ## Releasing
 
-Trunk-based development on `trunk`. Pre-push hooks run lint, format, and tests via lefthook. CI runs on every push. Dependabot keeps deps current.
+Trunk-based development on `trunk`. Branches are short-lived, branch off `trunk`, and squash-merge once CI is green. Pre-push hooks run biome and the typecheck plus unit tests via lefthook. Dependabot keeps deps current.
+
+`trunk` is protected and the rules apply to admins too:
+
+| Rule | Effect |
+|---|---|
+| Pull request required | No direct pushes to `trunk`; 0 approvals required, so you can merge your own once CI is green |
+| 3 required checks, strict | `Check, test, build (affected)`, `E2E (api + web)` and `Drizzle schema drift check` must pass, and the branch must be up to date with `trunk` |
+| Linear history, squash-only | Merge commits and rebase merges are disabled at the repo level |
+| Branch auto-deleted on merge | Keeps the branch list honest about what is in flight |
+| No force pushes or deletions | Applies to everyone, including admins |
+
+A branch that has fallen behind must be rebased on `trunk` and re-pushed; that is what keeps the history linear and every commit on `trunk` CI-green.
 
 PRs use `.github/PULL_REQUEST_TEMPLATE.md` — fill every section in place, writing "None" rather than deleting one. Reviews use `.github/PULL_REQUEST_REVIEW_TEMPLATE.md` and always cover three sections: **Functional** (correctness, and whether every Changelog bullet is actually implemented), **Clean Code** (the conventions in `.claude/skills/ts-conventions/SKILL.md`, plus duplication and naming), and **Feature Suggestions** (non-blocking, each tagged `this-pr` or `follow-up`). Findings in the first two carry a P0–P3 severity from the template's legend.
 
