@@ -2,7 +2,7 @@ import { NOTE_MESSAGE } from "@app/messages";
 import type { TNote, TNoteUpdateInput } from "@app/schemas";
 import { Effect } from "effect";
 import { toNoteDto } from "#/application/note/to-note-dto.ts";
-import { ACTIVITY_ACTION, ACTIVITY_ENTITY_TYPE } from "@app/activity";
+import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
 import { ENotFound, type EDatabase } from "#/domain/shared/errors.ts";
 import { ActivityRepo } from "#/domain/activity/activity.ts";
 import { NoteRepo } from "#/domain/note/note.ts";
@@ -23,8 +23,8 @@ export const noteUpdate = Effect.fn("noteUpdate")(function* (
 	yield* activityRepo.insert({
 		actorId,
 		action: ACTIVITY_ACTION.NOTE_UPDATE,
-		entityType: ACTIVITY_ENTITY_TYPE.NOTE,
-		entityId: updated.id,
+		resourceType: ACTIVITY_RESOURCE_TYPE.NOTE,
+		resourceId: updated.id,
 	});
 
 	return toNoteDto(updated);

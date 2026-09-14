@@ -19,8 +19,8 @@ export const activityRepositoryCreate = (db: TDb): TActivityRepo => ({
 		await db.insert(activityLog).values({
 			actorId: entry.actorId,
 			action: entry.action,
-			entityType: entry.entityType,
-			entityId: entry.entityId,
+			resourceType: entry.resourceType,
+			resourceId: entry.resourceId,
 			metadata: entry.metadata ?? null,
 		});
 	},
@@ -50,12 +50,12 @@ export const activityRepoLayer = Layer.effect(
 			page,
 			pageSize,
 			action,
-			entityType,
+			resourceType,
 			actorId,
 		}) => {
 			const where = and(
 				optionalEq(activityLog.action, action),
-				optionalEq(activityLog.entityType, entityType),
+				optionalEq(activityLog.resourceType, resourceType),
 				optionalEq(activityLog.actorId, actorId),
 			);
 
@@ -68,8 +68,8 @@ export const activityRepoLayer = Layer.effect(
 								actorId: activityLog.actorId,
 								actorEmail: user.email,
 								action: activityLog.action,
-								entityType: activityLog.entityType,
-								entityId: activityLog.entityId,
+								resourceType: activityLog.resourceType,
+								resourceId: activityLog.resourceId,
 								metadata: activityLog.metadata,
 								createdAt: activityLog.createdAt,
 							})

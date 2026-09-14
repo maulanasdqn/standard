@@ -11,6 +11,7 @@ Full-stack TypeScript boilerplate — moon + pnpm workspaces, Hono + oRPC, Drizz
 | DB | Drizzle ORM + Postgres |
 | Auth | better-auth, one role per user |
 | Jobs | RabbitMQ + Redis |
+| Mail | nodemailer over SMTP, mailpit in dev |
 | Web | React 19, TanStack (Router, Query, Form, Store), Vite, Tailwind v4, shadcn/ui |
 | Quality | Biome, Vitest, Playwright |
 
@@ -28,6 +29,8 @@ packages/
   permissions/  permission catalog + role maps
   activity/     activity log
   queue/        RabbitMQ helper
+  cache/        Redis cache port + rate limiting
+  mail/         nodemailer SMTP mailer
   storage/      S3-compatible object storage
   grpc/         gRPC server/client
   logger/       pino factory
@@ -43,8 +46,7 @@ Requires [moon](https://moonrepo.dev/docs/install) + [proto](https://moonrepo.de
 
 ```sh
 pnpm install
-make dev                              # start docker services (postgres, redis, rabbitmq)
-make db-migrate && make db-seed       # create tables and seed users
+make setup                            # docker services, migrate and seed
 make up                               # start api + web together
 ```
 
@@ -56,6 +58,8 @@ make web                              # web on :5173
 ```
 
 Seed logins: `admin@test.app` / `Password123`, `member@test.app` / `Password123`, `viewer@test.app` / `Password123`.
+
+Mail sent in development is caught by mailpit — read it at `http://localhost:8025`.
 
 ## Version and Health
 
@@ -73,26 +77,42 @@ The shape is `healthSchema` in `@app/schemas`, so the web page is typed against 
 
 ## Commands
 
+Every command goes through `make` or `moon`; nothing shells into a package directory.
+
 ```sh
-make services                         # start docker services
-make services-stop                    # stop docker services
-make db-migrate                       # run migrations
-make db-seed                          # seed database
-make db-studio                        # open drizzle studio
-make worker                           # run RabbitMQ worker
+make help                             # every target, with a one-line description
+make setup                            # services + migrate + seed
+make services | services-stop         # docker: postgres, redis, rabbitmq, mailpit
+make api | web | worker               # run one process
+make db-migrate | db-seed | db-studio # database
+make check | lint | test | build      # quality gates
+make e2e                              # api + web end-to-end
+make ci                               # everything CI runs, on affected projects
 ```
 
 ```sh
-moon run :check                       # typecheck all
-moon run :lint                        # lint all
-moon run :test                        # test all
-moon run :build                       # build all
+moon run :check                       # biome check (format + lint)
+moon run :build                       # tsc --noEmit, every project
+moon run :test                        # unit tests
 moon run api:db-generate              # generate drizzle migration
+moon ci                               # what CI runs
 ```
 
 ## Releasing
 
-Trunk-based development on `trunk`. Pre-push hooks run lint, format, and tests via lefthook. CI runs on every push. Dependabot keeps deps current.
+Trunk-based development on `trunk`. Branches are short-lived, branch off `trunk`, and squash-merge once CI is green. Pre-push hooks run biome and the typecheck plus unit tests via lefthook. Dependabot keeps deps current.
+
+`trunk` is protected and the rules apply to admins too:
+
+| Rule | Effect |
+|---|---|
+| Pull request required | No direct pushes to `trunk`; 0 approvals required, so you can merge your own once CI is green |
+| 3 required checks, strict | `Check, test, build (affected)`, `E2E (api + web)` and `Drizzle schema drift check` must pass, and the branch must be up to date with `trunk` |
+| Linear history, squash-only | Merge commits and rebase merges are disabled at the repo level |
+| Branch auto-deleted on merge | Keeps the branch list honest about what is in flight |
+| No force pushes or deletions | Applies to everyone, including admins |
+
+A branch that has fallen behind must be rebased on `trunk` and re-pushed; that is what keeps the history linear and every commit on `trunk` CI-green.
 
 PRs use `.github/PULL_REQUEST_TEMPLATE.md` — fill every section in place, writing "None" rather than deleting one. Reviews use `.github/PULL_REQUEST_REVIEW_TEMPLATE.md` and always cover three sections: **Functional** (correctness, and whether every Changelog bullet is actually implemented), **Clean Code** (the conventions in `.claude/skills/ts-conventions/SKILL.md`, plus duplication and naming), and **Feature Suggestions** (non-blocking, each tagged `this-pr` or `follow-up`). Findings in the first two carry a P0–P3 severity from the template's legend.
 

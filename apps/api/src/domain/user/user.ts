@@ -5,19 +5,17 @@ import type {
 	TUserUpdateInput,
 } from "@app/schemas";
 import { Context, type Effect } from "effect";
+import type { TBaseRow } from "#/domain/shared/base-row.ts";
 import type { EAuth, EDatabase } from "#/domain/shared/errors.ts";
 import type { TRowPage } from "#/domain/shared/pagination.ts";
 import { REPO_TAG } from "#/domain/shared/service-tags.ts";
 
-export type TUserRow = {
-	id: string;
+export type TUserRow = TBaseRow & {
 	name: string;
 	email: string;
 	emailVerified: boolean;
 	image: string | null;
 	role: string;
-	createdAt: Date;
-	updatedAt: Date;
 };
 
 export type TRoleMemberCounts = Readonly<Record<string, number>>;

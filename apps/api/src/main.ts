@@ -7,17 +7,23 @@ import { cors } from "hono/cors";
 import { requestId } from "hono/request-id";
 import { runtime } from "#/bootstrap/compose.ts";
 import { AuthService } from "#/infrastructure/auth/auth-service.ts";
+import { CacheService } from "#/infrastructure/cache/redis.ts";
 import { env } from "#/infrastructure/config/env.ts";
 import { logger } from "#/infrastructure/observability/logger.ts";
 import { authMount } from "#/presentation/http/mount-auth.ts";
 import { healthMount } from "#/presentation/http/mount-health.ts";
 import { orpcMount } from "#/presentation/http/mount-orpc.ts";
+import { rateLimitMount } from "#/presentation/http/mount-rate-limit.ts";
 import { webDistMount } from "#/presentation/http/mount-web-dist.ts";
 import type { ORPCContext } from "#/presentation/orpc/context.ts";
 import { routerBuild } from "#/presentation/routers/index.ts";
 
 const { auth } = await runtime.runPromise(
 	AuthService.use((service) => Effect.succeed(service)),
+);
+
+const { client: cacheClient } = await runtime.runPromise(
+	CacheService.use((service) => Effect.succeed(service)),
 );
 
 const router = routerBuild();
@@ -66,6 +72,7 @@ app.use(
 );
 
 healthMount(app);
+rateLimitMount(app, cacheClient);
 authMount(app, auth);
 orpcMount({ app, router, logger, buildContext });
 webDistMount(app, env.WEB_DIST_PATH);

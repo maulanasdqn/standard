@@ -6,7 +6,8 @@ import {
 	TableHeader,
 	TableRow,
 } from "@app/components/ui/table";
-import { formatDateTime, orDash } from "@app/format";
+import { formatDateTime, NOT_SET, orDash } from "@app/format";
+import { ACTIVITY_MESSAGE } from "@app/messages";
 import type { TActivity } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
 import type { FC, ReactElement } from "react";
@@ -18,23 +19,23 @@ type TActivityTableProps = {
 
 const metadataLabel = (metadata: unknown): string =>
 	match(metadata)
-		.with(P.nullish, () => "—")
+		.with(P.nullish, () => NOT_SET)
 		.otherwise((value) => JSON.stringify(value));
 
 export const ActivityTable: FC<TActivityTableProps> = (props): ReactElement =>
 	match(A.isEmpty(props.entries))
 		.with(true, () => (
-			<p className="text-sm text-neutral-500">No activity yet.</p>
+			<p className="text-sm text-neutral-500">{ACTIVITY_MESSAGE.EMPTY}</p>
 		))
 		.otherwise(() => (
 			<Table>
 				<TableHeader>
 					<TableRow>
-						<TableHead>When</TableHead>
-						<TableHead>Actor</TableHead>
-						<TableHead>Action</TableHead>
-						<TableHead>Entity</TableHead>
-						<TableHead>Details</TableHead>
+						<TableHead>{ACTIVITY_MESSAGE.COLUMN_WHEN}</TableHead>
+						<TableHead>{ACTIVITY_MESSAGE.COLUMN_ACTOR}</TableHead>
+						<TableHead>{ACTIVITY_MESSAGE.COLUMN_ACTION}</TableHead>
+						<TableHead>{ACTIVITY_MESSAGE.COLUMN_ENTITY}</TableHead>
+						<TableHead>{ACTIVITY_MESSAGE.COLUMN_DETAILS}</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
@@ -48,9 +49,9 @@ export const ActivityTable: FC<TActivityTableProps> = (props): ReactElement =>
 								<code className="text-xs">{entry.action}</code>
 							</TableCell>
 							<TableCell>
-								<span className="text-neutral-600">{entry.entityType}</span>{" "}
+								<span className="text-neutral-600">{entry.resourceType}</span>{" "}
 								<code className="text-xs text-neutral-400">
-									{entry.entityId}
+									{entry.resourceId}
 								</code>
 							</TableCell>
 							<TableCell className="max-w-xs truncate text-xs text-neutral-500">

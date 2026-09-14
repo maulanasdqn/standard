@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { userIdSchema } from "../auth/auth.ts";
-import { baseSchema } from "../shared/base-schema.ts";
+import { baseSchema, type TEntityOf } from "../shared/base-schema.ts";
 import { paginated, paginationSchema } from "../shared/pagination.ts";
 
 export const userSchema = baseSchema(userIdSchema).extend({
@@ -10,7 +10,7 @@ export const userSchema = baseSchema(userIdSchema).extend({
 	image: z.string().nullable(),
 	role: z.string().min(1),
 });
-export type TUser = z.infer<typeof userSchema>;
+export type TUser = TEntityOf<z.infer<typeof userSchema>>;
 
 export const userCreateInputSchema = z.object({
 	name: z.string().min(1).max(100),

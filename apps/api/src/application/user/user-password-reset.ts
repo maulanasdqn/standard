@@ -1,4 +1,4 @@
-import { ACTIVITY_ACTION, ACTIVITY_ENTITY_TYPE } from "@app/activity";
+import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
 import { USER_MESSAGE } from "@app/messages";
 import type { TUserPasswordResetInput } from "@app/schemas";
 import { Effect } from "effect";
@@ -36,8 +36,8 @@ export const userPasswordReset = Effect.fn("userPasswordReset")(function* (
 	yield* activityRepo.insert({
 		actorId,
 		action: ACTIVITY_ACTION.USER_PASSWORD_RESET,
-		entityType: ACTIVITY_ENTITY_TYPE.USER,
-		entityId: input.id,
+		resourceType: ACTIVITY_RESOURCE_TYPE.USER,
+		resourceId: input.id,
 	});
 
 	return { id: input.id };

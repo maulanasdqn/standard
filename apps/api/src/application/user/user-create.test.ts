@@ -79,7 +79,7 @@ describe("userCreate", () => {
 		expect(insert).toHaveBeenCalledWith(
 			expect.objectContaining({
 				action: ACTIVITY_ACTION.USER_CREATE,
-				entityId: row.id,
+				resourceId: row.id,
 			}),
 		);
 	});

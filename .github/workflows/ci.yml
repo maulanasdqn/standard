@@ -34,7 +34,7 @@ jobs:
         with:
           auto-install: true
 
-      - run: moon ci --color
+      - run: moon ci :check :build :test --color
 
   e2e:
     name: E2E (api + web)
@@ -80,6 +80,8 @@ jobs:
       RABBITMQ_URL: amqp://app:app@localhost:5672
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v6
         with:
@@ -92,23 +94,26 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Provide apps/api/.env for the seed script
-        run: cp apps/api/.env.example apps/api/.env
+      - uses: moonrepo/setup-toolchain@v0
+        with:
+          auto-install: true
 
       - name: API e2e
-        run: pnpm --filter @app/api-e2e e2e
+        run: moon run api-e2e:e2e
 
       - name: Install Playwright Chromium
-        run: pnpm --filter @app/web-e2e exec playwright install --with-deps chromium
+        run: moon run web-e2e:install-browsers
 
       - name: Web e2e
-        run: pnpm --filter @app/web-e2e e2e
+        run: moon run web-e2e:e2e
 
   drizzle-drift:
     name: Drizzle schema drift check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v6
         with:
@@ -121,8 +126,12 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - uses: moonrepo/setup-toolchain@v0
+        with:
+          auto-install: true
+
       - name: Regenerate migrations
-        run: cd apps/api && pnpm db:generate
+        run: moon run api:db-generate
 
       - name: Fail on drift
         run: |

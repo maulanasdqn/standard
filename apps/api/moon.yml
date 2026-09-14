@@ -47,13 +47,6 @@ tasks:
 
   db-generate:
     command: 'pnpm db:generate'
-    options:
-      runInCI: false
-
-  db-migrate:
-    command: 'pnpm db:migrate'
-    options:
-      runInCI: false
 
   db-push:
     command: 'pnpm db:push'

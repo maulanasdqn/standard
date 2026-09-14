@@ -1,7 +1,7 @@
 import { USER_MESSAGE } from "@app/messages";
 import type { TUserIdInput } from "@app/schemas";
 import { Effect } from "effect";
-import { ACTIVITY_ACTION, ACTIVITY_ENTITY_TYPE } from "@app/activity";
+import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
 import {
 	type EDatabase,
 	EForbidden,
@@ -34,8 +34,8 @@ export const userDelete = Effect.fn("userDelete")(function* (
 	yield* activityRepo.insert({
 		actorId,
 		action: ACTIVITY_ACTION.USER_DELETE,
-		entityType: ACTIVITY_ENTITY_TYPE.USER,
-		entityId: id,
+		resourceType: ACTIVITY_RESOURCE_TYPE.USER,
+		resourceId: id,
 	});
 
 	return { id };

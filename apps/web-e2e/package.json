@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"e2e": "playwright test",
-		"e2e:local": "playwright test",
+		"install-browsers": "playwright install --with-deps chromium",
 		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {

@@ -12,4 +12,5 @@ export const ERROR_MESSAGE = {
 	RETRY: "Try again",
 	RETRYING: "Retrying…",
 	GO_HOME: "Back to home",
+	TOO_MANY_REQUESTS: "Too many requests. Please wait a moment and try again.",
 } as const;

@@ -10,6 +10,7 @@ import { activityRepoLayer } from "#/infrastructure/db/repositories/activity-rep
 import { customRoleRepoLayer } from "#/infrastructure/db/repositories/custom-role-repository.ts";
 import { noteRepoLayer } from "#/infrastructure/db/repositories/note-repository.ts";
 import { userRepoLayer } from "#/infrastructure/db/repositories/user-repository.ts";
+import { MailService } from "#/infrastructure/mail/mailer.ts";
 import { QueueService } from "#/infrastructure/queue/rabbitmq.ts";
 
 export const AppLayer = Layer.mergeAll(
@@ -21,6 +22,7 @@ export const AppLayer = Layer.mergeAll(
 	AuthService.layer,
 	CacheService.layer,
 	QueueService.layer,
+	MailService.layer,
 );
 
 export const appMemoMap = Layer.makeMemoMapUnsafe();
@@ -35,4 +37,5 @@ export type TAppRuntimeServices =
 	| ActivityRepo
 	| AuthService
 	| CacheService
-	| QueueService;
+	| QueueService
+	| MailService;

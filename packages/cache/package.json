@@ -1,0 +1,21 @@
+{
+	"name": "@app/cache",
+	"version": "0.3.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"scripts": {
+		"build": "tsc --noEmit",
+		"test": "vitest run"
+	},
+	"dependencies": {
+		"@mobily/ts-belt": "^3.13.1",
+		"ts-pattern": "^5.9.0"
+	},
+	"devDependencies": {
+		"typescript": "^5.9.3",
+		"vitest": "^5.0.0"
+	}
+}

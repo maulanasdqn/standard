@@ -2,21 +2,34 @@ import { z } from "zod";
 
 const dateTimeSchema = z.iso.datetime();
 
-export type TBaseSchema<TId extends string = string> = {
+export type TBaseEvent<TId extends string = string> = {
 	id: TId;
 	createdAt: string;
+};
+
+export type TBaseEntity<TId extends string = string> = TBaseEvent<TId> & {
 	updatedAt: string;
 };
 
-export const baseSchema = <TId extends z.ZodType<string>>(
-	idSchema: TId,
+export type TEventOf<TValue extends TBaseEvent> = TValue;
+
+export type TEntityOf<TValue extends TBaseEntity> = TValue;
+
+export const eventSchema = <TIdSchema extends z.ZodType<string>>(
+	idSchema: TIdSchema,
 ): z.ZodObject<{
-	id: TId;
+	id: TIdSchema;
 	createdAt: typeof dateTimeSchema;
-	updatedAt: typeof dateTimeSchema;
 }> =>
 	z.object({
 		id: idSchema,
 		createdAt: dateTimeSchema,
-		updatedAt: dateTimeSchema,
 	});
+
+export const baseSchema = <TIdSchema extends z.ZodType<string>>(
+	idSchema: TIdSchema,
+): z.ZodObject<{
+	id: TIdSchema;
+	createdAt: typeof dateTimeSchema;
+	updatedAt: typeof dateTimeSchema;
+}> => eventSchema(idSchema).extend({ updatedAt: dateTimeSchema });

@@ -22,6 +22,13 @@
       "when": 1789031030371,
       "tag": "0002_naive_magma",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1789369178035,
+      "tag": "0003_brown_silk_fever",
+      "breakpoints": true
     }
   ]
 }

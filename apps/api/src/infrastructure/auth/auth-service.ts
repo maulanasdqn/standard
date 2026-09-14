@@ -10,6 +10,7 @@ import { DbService } from "#/infrastructure/db/db-service.ts";
 import { customRoleRepoLayer } from "#/infrastructure/db/repositories/custom-role-repository.ts";
 import { activityRepositoryCreate } from "#/infrastructure/db/repositories/activity-repository.ts";
 import { CustomRoleRepo } from "#/domain/role/custom-role.ts";
+import { MailService } from "#/infrastructure/mail/mailer.ts";
 import { SERVICE_TAG } from "#/infrastructure/service-tags.ts";
 
 export type TAuthServiceShape = TAuthService & { readonly auth: TAuth };
@@ -25,8 +26,9 @@ export class AuthService extends Context.Service<
 		Effect.gen(function* () {
 			const { db } = yield* DbService;
 			const customRoleRepo = yield* CustomRoleRepo;
+			const { mailer } = yield* MailService;
 			const activityRepo = activityRepositoryCreate(db);
-			const auth = authCreate({ db, activityRepo });
+			const auth = authCreate({ db, activityRepo, mailer });
 
 			const sessionBuild = (
 				user: Pick<TSessionUser, "id" | "email" | "name">,
@@ -70,5 +72,9 @@ export class AuthService extends Context.Service<
 
 			return AuthService.of({ auth, getSession });
 		}),
-	).pipe(Layer.provide(Layer.mergeAll(DbService.layer, customRoleRepoLayer)));
+	).pipe(
+		Layer.provide(
+			Layer.mergeAll(DbService.layer, customRoleRepoLayer, MailService.layer),
+		),
+	);
 }

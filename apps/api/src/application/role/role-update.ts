@@ -3,7 +3,7 @@ import { isRole } from "@app/permissions";
 import type { TRoleDto, TRoleUpdateInput } from "@app/schemas";
 import { Effect } from "effect";
 import { toRoleDto } from "#/application/role/to-role-dto.ts";
-import { ACTIVITY_ACTION, ACTIVITY_ENTITY_TYPE } from "@app/activity";
+import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
 import {
 	EBadRequest,
 	type EDatabase,
@@ -38,8 +38,8 @@ export const roleUpdate = Effect.fn("roleUpdate")(function* (
 	yield* activityRepo.insert({
 		actorId,
 		action: ACTIVITY_ACTION.ROLE_UPDATE,
-		entityType: ACTIVITY_ENTITY_TYPE.ROLE,
-		entityId: updated.key,
+		resourceType: ACTIVITY_RESOURCE_TYPE.ROLE,
+		resourceId: updated.key,
 	});
 
 	const counts = yield* userRepo.countByRole();
