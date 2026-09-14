@@ -502,6 +502,9 @@ importers:
 
   packages/schemas:
     dependencies:
+      '@app/activity':
+        specifier: workspace:*
+        version: link:../activity
       '@app/permissions':
         specifier: workspace:*
         version: link:../permissions

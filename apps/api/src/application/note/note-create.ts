@@ -1,7 +1,7 @@
 import type { TNoteCreateInput, TNote } from "@app/schemas";
 import { Effect } from "effect";
 import { toNoteDto } from "#/application/note/to-note-dto.ts";
-import { ACTIVITY_ACTION, ACTIVITY_ENTITY_TYPE } from "@app/activity";
+import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
 import type { EDatabase } from "#/domain/shared/errors.ts";
 import { ActivityRepo } from "#/domain/activity/activity.ts";
 import { NoteRepo } from "#/domain/note/note.ts";
@@ -17,8 +17,8 @@ export const noteCreate = Effect.fn("noteCreate")(function* (
 	yield* activityRepo.insert({
 		actorId: authorId,
 		action: ACTIVITY_ACTION.NOTE_CREATE,
-		entityType: ACTIVITY_ENTITY_TYPE.NOTE,
-		entityId: row.id,
+		resourceType: ACTIVITY_RESOURCE_TYPE.NOTE,
+		resourceId: row.id,
 	});
 
 	return toNoteDto(row);

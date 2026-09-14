@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { userIdSchema } from "../auth/auth.ts";
-import { baseSchema } from "../shared/base-schema.ts";
+import { baseSchema, type TEntityOf } from "../shared/base-schema.ts";
 import { paginated, paginationSchema } from "../shared/pagination.ts";
 
 export const noteSchema = baseSchema(z.uuid()).extend({
@@ -8,7 +8,7 @@ export const noteSchema = baseSchema(z.uuid()).extend({
 	body: z.string().max(10_000),
 	authorId: userIdSchema,
 });
-export type TNote = z.infer<typeof noteSchema>;
+export type TNote = TEntityOf<z.infer<typeof noteSchema>>;
 
 export const noteCreateInputSchema = z.object({
 	title: z.string().min(1).max(200),

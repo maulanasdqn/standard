@@ -2,7 +2,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import type { TActivityRepo } from "@app/activity";
 import { ROLE } from "@app/permissions";
-import { ACTIVITY_ACTION, ACTIVITY_ENTITY_TYPE } from "@app/activity";
+import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
 import type { TDb } from "#/infrastructure/db/client.ts";
 import { env } from "#/infrastructure/config/env.ts";
 
@@ -31,8 +31,8 @@ export const authCreate = ({ db, activityRepo }: TCreateAuthOptions) =>
 						await activityRepo.insert({
 							actorId: session.userId,
 							action: ACTIVITY_ACTION.SESSION_CREATE,
-							entityType: ACTIVITY_ENTITY_TYPE.SESSION,
-							entityId: session.id,
+							resourceType: ACTIVITY_RESOURCE_TYPE.SESSION,
+							resourceId: session.id,
 						});
 					},
 				},

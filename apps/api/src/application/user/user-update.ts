@@ -3,7 +3,7 @@ import type { TUser, TUserUpdateInput } from "@app/schemas";
 import { Effect } from "effect";
 import { match, P } from "ts-pattern";
 import { roleEnsure } from "#/application/role/role-ensure.ts";
-import { ACTIVITY_ACTION, ACTIVITY_ENTITY_TYPE } from "@app/activity";
+import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
 import {
 	type EBadRequest,
 	type EDatabase,
@@ -43,8 +43,8 @@ export const userUpdate = Effect.fn("userUpdate")(function* (
 	yield* activityRepo.insert({
 		actorId,
 		action: ACTIVITY_ACTION.USER_UPDATE,
-		entityType: ACTIVITY_ENTITY_TYPE.USER,
-		entityId: updated.id,
+		resourceType: ACTIVITY_RESOURCE_TYPE.USER,
+		resourceId: updated.id,
 	});
 
 	return toUserDto(updated);

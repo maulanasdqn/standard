@@ -4,17 +4,15 @@ import type {
 	TNoteUpdateInput,
 } from "@app/schemas";
 import { Context, type Effect } from "effect";
+import type { TBaseRow } from "#/domain/shared/base-row.ts";
 import type { EDatabase } from "#/domain/shared/errors.ts";
 import type { TRowPage } from "#/domain/shared/pagination.ts";
 import { REPO_TAG } from "#/domain/shared/service-tags.ts";
 
-export type TNoteRow = {
-	id: string;
+export type TNoteRow = TBaseRow & {
 	title: string;
 	body: string;
 	authorId: string;
-	createdAt: Date;
-	updatedAt: Date;
 };
 
 export type TNoteRepo = {

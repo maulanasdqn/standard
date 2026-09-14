@@ -50,7 +50,7 @@ describe("noteCreate", () => {
 		expect(insert).toHaveBeenCalledWith(
 			expect.objectContaining({
 				action: ACTIVITY_ACTION.NOTE_CREATE,
-				entityId: row.id,
+				resourceId: row.id,
 			}),
 		);
 	});

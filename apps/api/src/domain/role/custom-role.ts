@@ -1,18 +1,16 @@
 import type { TPermission } from "@app/permissions";
 import type { TRoleCreateInput, TRoleUpdateInput } from "@app/schemas";
 import { Context, type Effect } from "effect";
+import type { TBaseRow } from "#/domain/shared/base-row.ts";
 import type { EDatabase } from "#/domain/shared/errors.ts";
 import { REPO_TAG } from "#/domain/shared/service-tags.ts";
 
-export type TCustomRoleRow = {
-	id: string;
+export type TCustomRoleRow = TBaseRow & {
 	key: string;
 	label: string;
 	description: string | null;
 	permissions: readonly TPermission[];
 	createdBy: string | null;
-	createdAt: Date;
-	updatedAt: Date;
 };
 
 export type TCustomRoleRepo = {

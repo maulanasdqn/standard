@@ -11,6 +11,7 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
+		"@app/activity": "workspace:*",
 		"@app/permissions": "workspace:*",
 		"zod": "^4.3.6"
 	},

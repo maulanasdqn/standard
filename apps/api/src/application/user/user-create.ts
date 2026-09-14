@@ -2,7 +2,7 @@ import { USER_MESSAGE } from "@app/messages";
 import type { TUser, TUserCreateInput } from "@app/schemas";
 import { Effect } from "effect";
 import { roleEnsure } from "#/application/role/role-ensure.ts";
-import { ACTIVITY_ACTION, ACTIVITY_ENTITY_TYPE } from "@app/activity";
+import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
 import {
 	type EAuth,
 	type EBadRequest,
@@ -37,8 +37,8 @@ export const userCreate = Effect.fn("userCreate")(function* (
 	yield* activityRepo.insert({
 		actorId,
 		action: ACTIVITY_ACTION.USER_CREATE,
-		entityType: ACTIVITY_ENTITY_TYPE.USER,
-		entityId: row.id,
+		resourceType: ACTIVITY_RESOURCE_TYPE.USER,
+		resourceId: row.id,
 	});
 
 	return toUserDto(row);

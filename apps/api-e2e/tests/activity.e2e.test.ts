@@ -25,7 +25,7 @@ describe("activity REST endpoint", () => {
 			path: `/activity?page=1&pageSize=20&action=${NOTE_CREATE_ACTION}`,
 			cookie: adminCookie,
 		});
-		const entry = A.find(list.items, (item) => item.entityId === note.id);
+		const entry = A.find(list.items, (item) => item.resourceId === note.id);
 
 		expect(entry?.action).toBe(NOTE_CREATE_ACTION);
 		expect(entry?.actorEmail).toBe(SEED_CREDENTIALS.admin.email);
