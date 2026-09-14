@@ -1,9 +1,9 @@
 import type { TUserList, TUserListInput } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
 import { Effect } from "effect";
-import type { EDatabase } from "#/application/shared/errors.ts";
+import type { EDatabase } from "#/domain/shared/errors.ts";
 import { toUserDto } from "#/application/user/to-user-dto.ts";
-import { UserRepo } from "#/infrastructure/db/repositories/user-repository.ts";
+import { UserRepo } from "#/domain/user/user.ts";
 
 export const userList = Effect.fn("userList")(function* (
 	input: TUserListInput,

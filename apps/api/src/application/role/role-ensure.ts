@@ -2,8 +2,8 @@ import { ROLE_MESSAGE } from "@app/messages";
 import { isRole } from "@app/permissions";
 import { Effect } from "effect";
 import { match } from "ts-pattern";
-import { EBadRequest, type EDatabase } from "#/application/shared/errors.ts";
-import { CustomRoleRepo } from "#/infrastructure/db/repositories/custom-role-repository.ts";
+import { EBadRequest, type EDatabase } from "#/domain/shared/errors.ts";
+import { CustomRoleRepo } from "#/domain/role/custom-role.ts";
 
 type TRoleExistsEffect = Effect.Effect<boolean, EDatabase, CustomRoleRepo>;
 

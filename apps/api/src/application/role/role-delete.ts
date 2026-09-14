@@ -3,16 +3,16 @@ import { isRole } from "@app/permissions";
 import type { TRoleKeyInput } from "@app/schemas";
 import { D } from "@mobily/ts-belt";
 import { Effect } from "effect";
-import { ACTIVITY_ACTION, ACTIVITY_ENTITY_TYPE } from "@app/activity";
+import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
 import {
 	EBadRequest,
 	EConflict,
 	type EDatabase,
 	ENotFound,
-} from "#/application/shared/errors.ts";
-import { ActivityRepo } from "#/infrastructure/db/repositories/activity-repository.ts";
-import { CustomRoleRepo } from "#/infrastructure/db/repositories/custom-role-repository.ts";
-import { UserRepo } from "#/infrastructure/db/repositories/user-repository.ts";
+} from "#/domain/shared/errors.ts";
+import { ActivityRepo } from "#/domain/activity/activity.ts";
+import { CustomRoleRepo } from "#/domain/role/custom-role.ts";
+import { UserRepo } from "#/domain/user/user.ts";
 
 export const roleDelete = Effect.fn("roleDelete")(function* (
 	{ key }: TRoleKeyInput,
@@ -45,8 +45,8 @@ export const roleDelete = Effect.fn("roleDelete")(function* (
 	yield* activityRepo.insert({
 		actorId,
 		action: ACTIVITY_ACTION.ROLE_DELETE,
-		entityType: ACTIVITY_ENTITY_TYPE.ROLE,
-		entityId: key,
+		resourceType: ACTIVITY_RESOURCE_TYPE.ROLE,
+		resourceId: key,
 	});
 
 	return { key };

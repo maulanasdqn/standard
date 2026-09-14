@@ -10,9 +10,9 @@ type TActivityErr = TClientErrors["activity"];
 
 export type TActivityFilters = {
 	action: string;
-	entityType: string;
+	resourceType: string;
 	onActionChange: (next: string) => void;
-	onEntityTypeChange: (next: string) => void;
+	onResourceTypeChange: (next: string) => void;
 };
 
 const routeApi = getRouteApi("/_authenticated/activity/");
@@ -45,21 +45,21 @@ export const useActivityPageChange = (): ((page: number) => void) => {
 
 export const useActivityFilters = (): TActivityFilters => {
 	const navigate = routeApi.useNavigate();
-	const { action, entityType } = routeApi.useSearch();
+	const { action, resourceType } = routeApi.useSearch();
 
 	return {
 		action: action ?? "",
-		entityType: entityType ?? "",
+		resourceType: resourceType ?? "",
 		onActionChange: (next: string): void => {
 			void navigate({
 				search: (prev) =>
 					D.merge(prev, { action: emptyToUndefined(next), page: 1 }),
 			});
 		},
-		onEntityTypeChange: (next: string): void => {
+		onResourceTypeChange: (next: string): void => {
 			void navigate({
 				search: (prev) =>
-					D.merge(prev, { entityType: emptyToUndefined(next), page: 1 }),
+					D.merge(prev, { resourceType: emptyToUndefined(next), page: 1 }),
 			});
 		},
 	};

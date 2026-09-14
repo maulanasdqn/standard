@@ -3,12 +3,12 @@ import type { TUserCreateInput } from "@app/schemas";
 import { Effect, Layer } from "effect";
 import { describe, expect, it, type Mock, vi } from "vitest";
 import { ACTIVITY_ACTION } from "@app/activity";
-import { EConflict } from "#/application/shared/errors.ts";
+import { EConflict } from "#/domain/shared/errors.ts";
 import { userCreate } from "#/application/user/user-create.ts";
 import type { TUserRow } from "#/domain/user/user.ts";
-import { ActivityRepo } from "#/infrastructure/db/repositories/activity-repository.ts";
-import { CustomRoleRepo } from "#/infrastructure/db/repositories/custom-role-repository.ts";
-import { UserRepo } from "#/infrastructure/db/repositories/user-repository.ts";
+import { ActivityRepo } from "#/domain/activity/activity.ts";
+import { CustomRoleRepo } from "#/domain/role/custom-role.ts";
+import { UserRepo } from "#/domain/user/user.ts";
 
 const ACTOR_ID = "22222222-2222-4222-8222-222222222222";
 
@@ -79,7 +79,7 @@ describe("userCreate", () => {
 		expect(insert).toHaveBeenCalledWith(
 			expect.objectContaining({
 				action: ACTIVITY_ACTION.USER_CREATE,
-				entityId: row.id,
+				resourceId: row.id,
 			}),
 		);
 	});

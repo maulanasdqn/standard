@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { ERROR_TAG } from "#/application/shared/error-tags.ts";
+import { ERROR_TAG } from "#/domain/shared/error-tags.ts";
 
 export class ENotFound extends Schema.TaggedError<ENotFound>()(
 	ERROR_TAG.NOT_FOUND,

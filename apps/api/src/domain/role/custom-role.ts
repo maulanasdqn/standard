@@ -1,17 +1,16 @@
 import type { TPermission } from "@app/permissions";
 import type { TRoleCreateInput, TRoleUpdateInput } from "@app/schemas";
-import type { Effect } from "effect";
-import type { EDatabase } from "#/application/shared/errors.ts";
+import { Context, type Effect } from "effect";
+import type { TBaseRow } from "#/domain/shared/base-row.ts";
+import type { EDatabase } from "#/domain/shared/errors.ts";
+import { REPO_TAG } from "#/domain/shared/service-tags.ts";
 
-export type TCustomRoleRow = {
-	id: string;
+export type TCustomRoleRow = TBaseRow & {
 	key: string;
 	label: string;
 	description: string | null;
 	permissions: readonly TPermission[];
 	createdBy: string | null;
-	createdAt: Date;
-	updatedAt: Date;
 };
 
 export type TCustomRoleRepo = {
@@ -26,3 +25,8 @@ export type TCustomRoleRepo = {
 	) => Effect.Effect<TCustomRoleRow | null, EDatabase>;
 	remove: (key: string) => Effect.Effect<boolean, EDatabase>;
 };
+
+export class CustomRoleRepo extends Context.Service<
+	CustomRoleRepo,
+	TCustomRoleRepo
+>()(REPO_TAG.CUSTOM_ROLE) {}

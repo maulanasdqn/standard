@@ -10,7 +10,7 @@ export const Checkbox: FC<TCheckboxProps> = (props): ReactElement => {
 		<input
 			type="checkbox"
 			className={cn(
-				"size-4 rounded-none border-neutral-300 accent-neutral-900 disabled:opacity-50",
+				"size-4 cursor-pointer rounded-none border-neutral-300 accent-neutral-900 disabled:cursor-not-allowed disabled:opacity-50",
 				className,
 			)}
 			{...rest}

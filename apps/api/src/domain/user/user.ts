@@ -4,19 +4,18 @@ import type {
 	TUserPasswordResetInput,
 	TUserUpdateInput,
 } from "@app/schemas";
-import type { Effect } from "effect";
-import type { EAuth, EDatabase } from "#/application/shared/errors.ts";
+import { Context, type Effect } from "effect";
+import type { TBaseRow } from "#/domain/shared/base-row.ts";
+import type { EAuth, EDatabase } from "#/domain/shared/errors.ts";
 import type { TRowPage } from "#/domain/shared/pagination.ts";
+import { REPO_TAG } from "#/domain/shared/service-tags.ts";
 
-export type TUserRow = {
-	id: string;
+export type TUserRow = TBaseRow & {
 	name: string;
 	email: string;
 	emailVerified: boolean;
 	image: string | null;
 	role: string;
-	createdAt: Date;
-	updatedAt: Date;
 };
 
 export type TRoleMemberCounts = Readonly<Record<string, number>>;
@@ -33,3 +32,7 @@ export type TUserRepo = {
 	resetPassword: (input: TUserPasswordResetInput) => Effect.Effect<void, EAuth>;
 	countByRole: () => Effect.Effect<TRoleMemberCounts, EDatabase>;
 };
+
+export class UserRepo extends Context.Service<UserRepo, TUserRepo>()(
+	REPO_TAG.USER,
+) {}

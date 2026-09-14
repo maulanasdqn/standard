@@ -2,17 +2,17 @@ import { USER_MESSAGE } from "@app/messages";
 import type { TUser, TUserCreateInput } from "@app/schemas";
 import { Effect } from "effect";
 import { roleEnsure } from "#/application/role/role-ensure.ts";
-import { ACTIVITY_ACTION, ACTIVITY_ENTITY_TYPE } from "@app/activity";
+import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
 import {
 	type EAuth,
 	type EBadRequest,
 	EConflict,
 	type EDatabase,
-} from "#/application/shared/errors.ts";
+} from "#/domain/shared/errors.ts";
 import { toUserDto } from "#/application/user/to-user-dto.ts";
-import { ActivityRepo } from "#/infrastructure/db/repositories/activity-repository.ts";
-import type { CustomRoleRepo } from "#/infrastructure/db/repositories/custom-role-repository.ts";
-import { UserRepo } from "#/infrastructure/db/repositories/user-repository.ts";
+import { ActivityRepo } from "#/domain/activity/activity.ts";
+import type { CustomRoleRepo } from "#/domain/role/custom-role.ts";
+import { UserRepo } from "#/domain/user/user.ts";
 
 export const userCreate = Effect.fn("userCreate")(function* (
 	input: TUserCreateInput,
@@ -37,8 +37,8 @@ export const userCreate = Effect.fn("userCreate")(function* (
 	yield* activityRepo.insert({
 		actorId,
 		action: ACTIVITY_ACTION.USER_CREATE,
-		entityType: ACTIVITY_ENTITY_TYPE.USER,
-		entityId: row.id,
+		resourceType: ACTIVITY_RESOURCE_TYPE.USER,
+		resourceId: row.id,
 	});
 
 	return toUserDto(row);

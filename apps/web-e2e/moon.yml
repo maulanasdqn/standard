@@ -17,8 +17,11 @@ fileGroups:
 tasks:
   e2e:
     command: 'pnpm e2e'
+
+  install-browsers:
+    command: 'pnpm install-browsers'
     options:
-      runInCI: false
+      cache: false
 
   typecheck:
     command: 'pnpm typecheck'

@@ -1,4 +1,4 @@
-import { ACTIVITY_ACTION, ACTIVITY_ENTITY_TYPE } from "@app/activity";
+import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
 import { USER_MESSAGE } from "@app/messages";
 import type { TUserPasswordResetInput } from "@app/schemas";
 import { Effect } from "effect";
@@ -7,9 +7,9 @@ import {
 	type EDatabase,
 	EForbidden,
 	ENotFound,
-} from "#/application/shared/errors.ts";
-import { ActivityRepo } from "#/infrastructure/db/repositories/activity-repository.ts";
-import { UserRepo } from "#/infrastructure/db/repositories/user-repository.ts";
+} from "#/domain/shared/errors.ts";
+import { ActivityRepo } from "#/domain/activity/activity.ts";
+import { UserRepo } from "#/domain/user/user.ts";
 
 export const userPasswordReset = Effect.fn("userPasswordReset")(function* (
 	input: TUserPasswordResetInput,
@@ -36,8 +36,8 @@ export const userPasswordReset = Effect.fn("userPasswordReset")(function* (
 	yield* activityRepo.insert({
 		actorId,
 		action: ACTIVITY_ACTION.USER_PASSWORD_RESET,
-		entityType: ACTIVITY_ENTITY_TYPE.USER,
-		entityId: input.id,
+		resourceType: ACTIVITY_RESOURCE_TYPE.USER,
+		resourceId: input.id,
 	});
 
 	return { id: input.id };

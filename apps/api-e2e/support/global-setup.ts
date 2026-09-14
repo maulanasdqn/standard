@@ -30,6 +30,7 @@ const env = {
 	DATABASE_URL: E2E_DATABASE_URL,
 	REDIS_URL: process.env.REDIS_URL ?? "redis://localhost:6379",
 	RABBITMQ_URL: process.env.RABBITMQ_URL ?? "amqp://app:app@localhost:5672",
+	RATE_LIMIT_MAX: process.env.RATE_LIMIT_MAX ?? "10000",
 	BETTER_AUTH_URL: `http://127.0.0.1:${E2E_PORT}`,
 	BETTER_AUTH_SECRET: "e2e-test-secret-please-do-not-use-in-prod",
 	WEB_ORIGIN: "http://localhost:5173",
@@ -44,8 +45,8 @@ export const setup = async (): Promise<void> => {
 		{ stdio: "ignore" },
 	);
 
-	execSync("pnpm --filter @app/api exec drizzle-kit migrate", {
-		cwd: new URL("../../api", import.meta.url).pathname,
+	execSync("pnpm --filter @app/api run migrate", {
+		cwd: new URL("../../..", import.meta.url).pathname,
 		env,
 		stdio: "inherit",
 	});

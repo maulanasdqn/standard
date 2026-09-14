@@ -7,8 +7,8 @@ export const toActivityDto = (row: TActivityRow): TActivity =>
 		actorId: row.actorId,
 		actorEmail: row.actorEmail,
 		action: row.action,
-		entityType: row.entityType,
-		entityId: row.entityId,
+		resourceType: row.resourceType,
+		resourceId: row.resourceId,
 		metadata: row.metadata,
 		createdAt: row.createdAt.toISOString(),
 	});

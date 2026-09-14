@@ -1,5 +1,6 @@
 import { checkRoutePermissions } from "@app/components/guard/route-guard";
 import { PERMISSION } from "@app/permissions";
+import { ACTIVITY_MESSAGE } from "@app/messages";
 import { activityListInputSchema } from "@app/schemas";
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
@@ -17,17 +18,17 @@ const ActivityPage: FC = (): ReactElement => {
 
 	return (
 		<div className="flex max-w-5xl flex-col gap-6">
-			<h1 className="text-xl font-semibold">Activity</h1>
+			<h1 className="text-xl font-semibold">{ACTIVITY_MESSAGE.TITLE}</h1>
 			<ActivityFilters />
 			{isLoading ? (
-				<p className="text-sm text-neutral-500">Loading…</p>
+				<p className="text-sm text-neutral-500">{ACTIVITY_MESSAGE.LOADING}</p>
 			) : (
 				<ActivityTable entries={data?.items ?? []} />
 			)}
 			{data ? (
 				<ListPagination
 					pageInfo={data}
-					noun="entries"
+					noun={ACTIVITY_MESSAGE.PAGINATION_NOUN}
 					onPageChange={goToPage}
 				/>
 			) : null}

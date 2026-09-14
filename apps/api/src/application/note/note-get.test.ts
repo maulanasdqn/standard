@@ -1,8 +1,8 @@
 import { Effect, Layer } from "effect";
 import { describe, expect, it, vi } from "vitest";
 import { noteGet } from "#/application/note/note-get.ts";
-import { ENotFound } from "#/application/shared/errors.ts";
-import { NoteRepo } from "#/infrastructure/db/repositories/note-repository.ts";
+import { ENotFound } from "#/domain/shared/errors.ts";
+import { NoteRepo } from "#/domain/note/note.ts";
 
 describe("noteGet", () => {
 	it("fails with ENotFound when the note doesn't exist", async (): Promise<void> => {

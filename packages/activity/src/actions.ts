@@ -1,12 +1,12 @@
-export const ACTIVITY_ENTITY_TYPE = {
+export const ACTIVITY_RESOURCE_TYPE = {
 	NOTE: "note",
 	USER: "user",
 	ROLE: "role",
 	SESSION: "session",
 } as const;
 
-export type TActivityEntityType =
-	(typeof ACTIVITY_ENTITY_TYPE)[keyof typeof ACTIVITY_ENTITY_TYPE];
+export type TActivityResourceType =
+	(typeof ACTIVITY_RESOURCE_TYPE)[keyof typeof ACTIVITY_RESOURCE_TYPE];
 
 export const ACTIVITY_ACTION = {
 	NOTE_CREATE: "note.create",

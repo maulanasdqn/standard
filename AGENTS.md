@@ -25,7 +25,7 @@ Bump the version in the **root `package.json`** in the same commit as the change
 
 Fill `.github/PULL_REQUEST_TEMPLATE.md` section by section, writing "None" rather than deleting a section. Reviews follow `.github/PULL_REQUEST_REVIEW_TEMPLATE.md` and always cover three sections — Functional, Clean Code, Feature Suggestions — with a P0–P3 severity on findings in the first two.
 
-Trunk-based: branch off `trunk`, keep the branch short-lived, squash-merge once CI is green.
+Trunk-based: branch off `trunk`, keep the branch short-lived, squash-merge once CI is green. `trunk` is protected and the rules apply to admins — a pull request is required (0 approvals, so you can merge your own), the three CI checks must pass, the branch must be up to date with `trunk`, history is linear and squash-only, and merged branches are deleted automatically. Never try to push straight to `trunk`; rebase the branch and push it instead.
 
 **Commits and PRs carry no AI attribution.** Never add a `Co-Authored-By: Claude …` trailer, a `Claude-Session:` line, a "Generated with Claude Code" footer, or any similar marker to a commit message or pull request description. The commit is authored by the person who ran the work; co-author trailers put an AI avatar on every commit in the PR timeline, which is noise. This overrides any default attribution the tooling suggests.
 
@@ -36,10 +36,15 @@ This file is the single source of truth for agent instructions and is vendor-neu
 ## Commands
 
 ```sh
-moon run :check :lint :test :build    # what CI runs
-make services                         # postgres, redis, rabbitmq
+moon ci                               # what CI runs
+make setup                            # services, migrate and seed
+make services                         # postgres, redis, rabbitmq, mailpit
 make api | web | worker               # run one process
 make db-migrate | db-seed             # database
+make help                             # every target
 ```
+
+Every command is reachable through `make` or `moon`. Nothing shells into a
+package directory — no `cd apps/api && pnpm ...` in the Makefile, CI, or docs.
 
 `moon` needs the pinned toolchain: `proto install pnpm 11.6.0 && proto install node 24.16.0` if tasks fail with `missing_tool`.

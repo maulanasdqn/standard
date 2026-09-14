@@ -3,17 +3,17 @@ import type { TUser, TUserUpdateInput } from "@app/schemas";
 import { Effect } from "effect";
 import { match, P } from "ts-pattern";
 import { roleEnsure } from "#/application/role/role-ensure.ts";
-import { ACTIVITY_ACTION, ACTIVITY_ENTITY_TYPE } from "@app/activity";
+import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
 import {
 	type EBadRequest,
 	type EDatabase,
 	EForbidden,
 	ENotFound,
-} from "#/application/shared/errors.ts";
+} from "#/domain/shared/errors.ts";
 import { toUserDto } from "#/application/user/to-user-dto.ts";
-import { ActivityRepo } from "#/infrastructure/db/repositories/activity-repository.ts";
-import type { CustomRoleRepo } from "#/infrastructure/db/repositories/custom-role-repository.ts";
-import { UserRepo } from "#/infrastructure/db/repositories/user-repository.ts";
+import { ActivityRepo } from "#/domain/activity/activity.ts";
+import type { CustomRoleRepo } from "#/domain/role/custom-role.ts";
+import { UserRepo } from "#/domain/user/user.ts";
 
 export const userUpdate = Effect.fn("userUpdate")(function* (
 	input: TUserUpdateInput,
@@ -43,8 +43,8 @@ export const userUpdate = Effect.fn("userUpdate")(function* (
 	yield* activityRepo.insert({
 		actorId,
 		action: ACTIVITY_ACTION.USER_UPDATE,
-		entityType: ACTIVITY_ENTITY_TYPE.USER,
-		entityId: updated.id,
+		resourceType: ACTIVITY_RESOURCE_TYPE.USER,
+		resourceId: updated.id,
 	});
 
 	return toUserDto(updated);

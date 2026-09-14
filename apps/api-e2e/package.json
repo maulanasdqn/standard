@@ -5,7 +5,6 @@
 	"type": "module",
 	"scripts": {
 		"e2e": "vitest run",
-		"e2e:local": "vitest run",
 		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {

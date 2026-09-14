@@ -1,8 +1,8 @@
 import { ORPCError } from "@orpc/server";
 import { Effect } from "effect";
 import { match } from "ts-pattern";
-import { ERROR_TAG } from "#/application/shared/error-tags.ts";
-import type { TDomainError } from "#/application/shared/errors.ts";
+import { ERROR_TAG } from "#/domain/shared/error-tags.ts";
+import type { TDomainError } from "#/domain/shared/errors.ts";
 import { runtime, type TAppRuntimeServices } from "#/bootstrap/compose.ts";
 
 const toORPCError = (error: TDomainError): ORPCError<string, undefined> =>
