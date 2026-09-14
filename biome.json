@@ -8,6 +8,7 @@
 	"files": {
 		"ignoreUnknown": false,
 		"includes": [
+			"**/apps/api/scripts/**/*",
 			"**/apps/*/src/**/*",
 			"**/apps/web/index.html",
 			"**/apps/web/vite.config.ts",
@@ -70,10 +71,10 @@
 		{
 			"includes": [
 				"**/apps/api/src/main.ts",
-				"**/apps/api/src/infrastructure/auth/**",
-				"**/apps/api/src/infrastructure/db/seed.ts",
-				"**/apps/api/src/infrastructure/db/repositories/**",
-				"**/apps/api/src/presentation/routers/**"
+				"**/apps/api/src/auth/infrastructure/**",
+				"**/apps/api/src/scripts/seed.ts",
+				"**/apps/api/src/*/infrastructure/**",
+				"**/apps/api/src/*/presentation/**"
 			],
 			"linter": {
 				"rules": {

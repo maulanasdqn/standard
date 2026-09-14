@@ -1,0 +1,104 @@
+import type { TActivityEntry, TActivityRepo } from "@app/activity";
+import { and, count, desc, eq, type SQL } from "drizzle-orm";
+import type { AnyPgColumn } from "drizzle-orm/pg-core";
+import { Effect, Layer } from "effect";
+import { match, P } from "ts-pattern";
+import { EDatabase } from "#/shared/errors.ts";
+import {
+	ActivityRepo,
+	type TActivityReader,
+} from "#/activity/domain/activity.ts";
+import {
+	ActivityRecorder,
+	type TActivityRecorder,
+} from "#/shared/activity-recorder.ts";
+import { offsetFor } from "#/shared/pagination.ts";
+import type { TDb } from "#/platform/db/client.ts";
+import { DbService, dbServiceLayer } from "#/platform/db/db-service.ts";
+import { activityLog } from "#/platform/db/tables/activity.ts";
+import { user } from "#/platform/db/tables/auth.ts";
+
+export const activityRepositoryCreate = (db: TDb): TActivityRepo => ({
+	insert: async (entry: TActivityEntry): Promise<void> => {
+		await db.insert(activityLog).values({
+			actorId: entry.actorId,
+			action: entry.action,
+			resourceType: entry.resourceType,
+			resourceId: entry.resourceId,
+			metadata: entry.metadata ?? null,
+		});
+	},
+});
+
+const optionalEq = (
+	column: AnyPgColumn,
+	value: string | undefined,
+): SQL | undefined =>
+	match(value)
+		.with(P.nonNullable, (found) => eq(column, found))
+		.otherwise(() => undefined);
+
+export const activityRecorderLayer = Layer.effect(
+	ActivityRecorder,
+	Effect.gen(function* () {
+		const { db } = yield* DbService;
+		const repo = activityRepositoryCreate(db);
+
+		const insert: TActivityRecorder["insert"] = (entry: TActivityEntry) =>
+			Effect.tryPromise({
+				try: () => repo.insert(entry),
+				catch: (cause) => new EDatabase({ cause }),
+			});
+
+		return ActivityRecorder.of({ insert });
+	}),
+).pipe(Layer.provide(dbServiceLayer));
+
+export const activityRepoLayer = Layer.effect(
+	ActivityRepo,
+	Effect.gen(function* () {
+		const { db } = yield* DbService;
+		const list: TActivityReader["list"] = ({
+			page,
+			pageSize,
+			action,
+			resourceType,
+			actorId,
+		}) => {
+			const where = and(
+				optionalEq(activityLog.action, action),
+				optionalEq(activityLog.resourceType, resourceType),
+				optionalEq(activityLog.actorId, actorId),
+			);
+
+			return Effect.tryPromise({
+				try: async () => {
+					const [items, [{ value: total }]] = await Promise.all([
+						db
+							.select({
+								id: activityLog.id,
+								actorId: activityLog.actorId,
+								actorEmail: user.email,
+								action: activityLog.action,
+								resourceType: activityLog.resourceType,
+								resourceId: activityLog.resourceId,
+								metadata: activityLog.metadata,
+								createdAt: activityLog.createdAt,
+							})
+							.from(activityLog)
+							.leftJoin(user, eq(user.id, activityLog.actorId))
+							.where(where)
+							.orderBy(desc(activityLog.createdAt))
+							.limit(pageSize)
+							.offset(offsetFor({ page, pageSize })),
+						db.select({ value: count() }).from(activityLog).where(where),
+					]);
+					return { items, total };
+				},
+				catch: (cause) => new EDatabase({ cause }),
+			});
+		};
+
+		return ActivityRepo.of({ list });
+	}),
+).pipe(Layer.provide(dbServiceLayer));

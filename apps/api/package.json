@@ -13,13 +13,14 @@
 		"dev": "tsx watch --env-file-if-exists=.env src/main.ts",
 		"start": "tsx --env-file-if-exists=.env src/main.ts",
 		"worker": "tsx --env-file-if-exists=.env src/worker/run.ts",
-		"migrate": "tsx --env-file-if-exists=.env src/infrastructure/db/migrate.ts",
+		"migrate": "tsx --env-file-if-exists=.env src/scripts/migrate.ts",
+		"arch": "tsx scripts/check-architecture.ts",
 		"build": "tsc --noEmit",
 		"test": "vitest run",
 		"db:generate": "drizzle-kit generate",
 		"db:push": "drizzle-kit push",
 		"db:studio": "drizzle-kit studio",
-		"db:seed": "tsx --env-file-if-exists=.env src/infrastructure/db/seed.ts"
+		"db:seed": "tsx --env-file-if-exists=.env src/scripts/seed.ts"
 	},
 	"dependencies": {
 		"@app/activity": "workspace:*",

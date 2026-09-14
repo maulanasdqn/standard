@@ -1,0 +1,34 @@
+import type {
+	TNoteCreateInput,
+	TNoteListInput,
+	TNoteUpdateInput,
+} from "@app/schemas";
+import { Context, type Effect } from "effect";
+import type { TBaseRow } from "#/shared/base-row.ts";
+import type { EDatabase } from "#/shared/errors.ts";
+import type { TRowPage } from "#/shared/pagination.ts";
+import type { TServiceId } from "#/shared/service-id.ts";
+import { REPO_TAG } from "#/shared/repo-tags.ts";
+
+export type TNoteRow = TBaseRow & {
+	title: string;
+	body: string;
+	authorId: string;
+};
+
+export type TNoteRepo = {
+	list: (input: TNoteListInput) => Effect.Effect<TRowPage<TNoteRow>, EDatabase>;
+	findById: (id: string) => Effect.Effect<TNoteRow | null, EDatabase>;
+	create: (
+		input: TNoteCreateInput,
+		authorId: string,
+	) => Effect.Effect<TNoteRow, EDatabase>;
+	update: (
+		input: TNoteUpdateInput,
+	) => Effect.Effect<TNoteRow | null, EDatabase>;
+	remove: (id: string) => Effect.Effect<boolean, EDatabase>;
+};
+
+export type TNoteRepoId = TServiceId<typeof REPO_TAG.NOTE>;
+
+export const NoteRepo = Context.Service<TNoteRepoId, TNoteRepo>(REPO_TAG.NOTE);
