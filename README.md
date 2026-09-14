@@ -19,7 +19,7 @@ Full-stack TypeScript boilerplate — moon + pnpm workspaces, Hono + oRPC, Drizz
 
 ```
 apps/
-  api/          Hono + oRPC + Drizzle + Effect
+  api/          Hono + oRPC + Drizzle + Effect, organised by module
   api-e2e/      API integration tests
   web/          TanStack Router SPA
   web-e2e/      Playwright E2E

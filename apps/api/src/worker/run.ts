@@ -3,9 +3,9 @@ import "#/bootstrap/polyfill.ts";
 import { jobWorkerCreate } from "@app/queue";
 import { Effect } from "effect";
 import { runtime } from "#/bootstrap/compose.ts";
-import { env } from "#/infrastructure/config/env.ts";
-import { logger } from "#/infrastructure/observability/logger.ts";
-import { QueueService } from "#/infrastructure/queue/rabbitmq.ts";
+import { env } from "#/platform/config/env.ts";
+import { logger } from "#/platform/observability/logger.ts";
+import { QueueService } from "#/platform/queue/rabbitmq.ts";
 import {
 	exampleJobProcess,
 	type TExampleJobPayload,

@@ -1,0 +1,28 @@
+import type { TActivityListInput } from "@app/schemas";
+import { Context, type Effect } from "effect";
+import type { TBaseEventRow } from "#/shared/base-row.ts";
+import type { EDatabase } from "#/shared/errors.ts";
+import type { TRowPage } from "#/shared/pagination.ts";
+import type { TServiceId } from "#/shared/service-id.ts";
+import { REPO_TAG } from "#/shared/repo-tags.ts";
+
+export type TActivityRow = TBaseEventRow & {
+	actorId: string | null;
+	actorEmail: string | null;
+	action: string;
+	resourceType: string;
+	resourceId: string;
+	metadata: unknown;
+};
+
+export type TActivityReader = {
+	list: (
+		input: TActivityListInput,
+	) => Effect.Effect<TRowPage<TActivityRow>, EDatabase>;
+};
+
+export type TActivityRepoId = TServiceId<typeof REPO_TAG.ACTIVITY>;
+
+export const ActivityRepo = Context.Service<TActivityRepoId, TActivityReader>(
+	REPO_TAG.ACTIVITY,
+);

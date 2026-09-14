@@ -29,8 +29,16 @@ tasks:
     options:
       runInCI: false
 
+  arch:
+    command: 'pnpm arch'
+    inputs:
+      - 'src/**/*'
+      - 'scripts/**/*'
+
   build:
     command: 'pnpm build'
+    deps:
+      - '~:arch'
     inputs:
       - 'src/**/*'
       - 'tsconfig.json'
