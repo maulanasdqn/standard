@@ -9,6 +9,8 @@ const envSchema = z.object({
 	DATABASE_URL: z.string().min(1),
 	REDIS_URL: z.string().min(1),
 	RABBITMQ_URL: z.string().min(1),
+	RATE_LIMIT_WINDOW_SECONDS: z.coerce.number().int().default(60),
+	RATE_LIMIT_MAX: z.coerce.number().int().default(100),
 	BETTER_AUTH_URL: z.url(),
 	BETTER_AUTH_SECRET: z.string().min(16),
 	WEB_DIST_PATH: z.string().optional(),

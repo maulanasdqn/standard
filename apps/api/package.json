@@ -24,6 +24,7 @@
 	},
 	"dependencies": {
 		"@app/activity": "workspace:*",
+		"@app/cache": "workspace:*",
 		"@app/logger": "workspace:*",
 		"@app/messages": "workspace:*",
 		"@app/migrations": "workspace:*",
