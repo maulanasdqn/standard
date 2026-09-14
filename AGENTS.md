@@ -15,7 +15,15 @@ Full-stack TypeScript monorepo: moon + pnpm workspaces, Hono + oRPC + Effect (`a
 - **No comments.** Rename or extract instead.
 - **200 lines max** per file; components render and nothing else — data lives in a colocated `_hooks/*.ts`.
 
-`apps/api`'s domain/application/infrastructure layers are built on Effect v4 — read `node_modules/effect/AGENTS.md` before writing Effect code, not general Effect knowledge.
+`apps/api` is organised **by module, not by layer** — `src/<module>/` for each of `activity auth
+health note permission role user`, with `domain/`, `application/`, `infrastructure/` and
+`presentation/` inside it, plus `src/shared/` (vocabulary), `src/platform/` (db, cache, queue, mail,
+http, config) and `src/bootstrap/` (composition root). A module is reachable only through its
+`index.ts`; the allowed edges live in `apps/api/scripts/architecture-rules.ts` and are enforced by
+`moon run api:arch`, which `api:build` depends on.
+
+Those layers are built on Effect v4 — read `node_modules/effect/AGENTS.md` before writing Effect
+code, not general Effect knowledge.
 
 ## Every change bumps the version
 
