@@ -17,7 +17,9 @@ export const ADMIN_NAV_LABELS: readonly string[] = [
 ];
 
 const navLink = (page: Page, label: string): Locator =>
-	page.getByRole("navigation").getByRole("link", { name: label, exact: true });
+	page
+		.locator('[data-sidebar="content"]')
+		.getByRole("link", { name: label, exact: true });
 
 export const expectNavVisible = async (
 	page: Page,
