@@ -18,7 +18,7 @@ import { effectRun } from "#/platform/orpc/run-effect.ts";
 import { HTTP_METHOD } from "#/platform/http/http-methods.ts";
 import { ROUTE_PATH } from "#/platform/http/route-paths.ts";
 
-export const noteRouterBuild = () => ({
+const noteRouterCreate = () => ({
 	list: permissionRequire(PERMISSION.NOTE_READ)
 		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.NOTES })
 		.input(noteListInputSchema)
@@ -59,3 +59,7 @@ export const noteRouterBuild = () => ({
 			effectRun(context.runtime, noteDelete(input, context.session!.user.id)),
 		),
 });
+
+export type TNoteRouter = ReturnType<typeof noteRouterCreate>;
+
+export const noteRouterBuild = (): TNoteRouter => noteRouterCreate();

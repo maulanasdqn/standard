@@ -17,7 +17,7 @@ import { effectRun } from "#/platform/orpc/run-effect.ts";
 import { HTTP_METHOD } from "#/platform/http/http-methods.ts";
 import { ROUTE_PATH } from "#/platform/http/route-paths.ts";
 
-export const roleRouterBuild = () => ({
+const roleRouterCreate = () => ({
 	list: permissionRequire(PERMISSION.USER_MANAGE)
 		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.ROLES })
 		.output(roleListSchema)
@@ -55,3 +55,7 @@ export const roleRouterBuild = () => ({
 			effectRun(context.runtime, roleDelete(input, context.session!.user.id)),
 		),
 });
+
+export type TRoleRouter = ReturnType<typeof roleRouterCreate>;
+
+export const roleRouterBuild = (): TRoleRouter => roleRouterCreate();

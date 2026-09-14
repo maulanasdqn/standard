@@ -3,7 +3,7 @@ import { protectedProcedure } from "#/platform/orpc/middleware.ts";
 import { HTTP_METHOD } from "#/platform/http/http-methods.ts";
 import { ROUTE_PATH } from "#/platform/http/route-paths.ts";
 
-export const meRouterBuild = () => ({
+const meRouterCreate = () => ({
 	get: protectedProcedure
 		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.ME })
 		.output(meSchema)
@@ -12,3 +12,7 @@ export const meRouterBuild = () => ({
 			permissions: [...context.permissions],
 		})),
 });
+
+export type TMeRouter = ReturnType<typeof meRouterCreate>;
+
+export const meRouterBuild = (): TMeRouter => meRouterCreate();

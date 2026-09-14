@@ -20,7 +20,7 @@ import { effectRun } from "#/platform/orpc/run-effect.ts";
 import { HTTP_METHOD } from "#/platform/http/http-methods.ts";
 import { ROUTE_PATH } from "#/platform/http/route-paths.ts";
 
-export const userRouterBuild = () => ({
+const userRouterCreate = () => ({
 	list: permissionRequire(PERMISSION.USER_MANAGE)
 		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.USERS })
 		.input(userListInputSchema)
@@ -72,3 +72,7 @@ export const userRouterBuild = () => ({
 			),
 		),
 });
+
+export type TUserRouter = ReturnType<typeof userRouterCreate>;
+
+export const userRouterBuild = (): TUserRouter => userRouterCreate();
