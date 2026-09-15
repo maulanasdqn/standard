@@ -40,17 +40,17 @@
 		"@orpc/server": "^1.13.6",
 		"@orpc/zod": "^1.13.6",
 		"amqplib": "^2.0.1",
-		"better-auth": "^1.5.3",
+		"better-auth": "^1.7.4",
 		"drizzle-orm": "^0.45.1",
 		"effect": "4.0.0-rc.112",
 		"hono": "^4.12.9",
 		"ioredis": "^6.0.0",
 		"pg": "^8.16.3",
 		"ts-pattern": "^5.9.0",
-		"zod": "^4.3.6"
+		"zod": "^4.6.2"
 	},
 	"devDependencies": {
-		"@electric-sql/pglite": "^0.3.6",
+		"@electric-sql/pglite": "^0.5.8",
 		"@types/pg": "^8.15.6",
 		"dotenv": "^17.3.1",
 		"drizzle-kit": "^0.31.9",
