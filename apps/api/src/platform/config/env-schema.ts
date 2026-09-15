@@ -1,4 +1,11 @@
 import { z } from "zod";
+import { A } from "@mobily/ts-belt";
+
+const stringListParse = (value: string): readonly string[] =>
+	A.filterMap(value.split(","), (item): string | undefined => {
+		const trimmed = item.trim();
+		return trimmed === "" ? undefined : trimmed;
+	});
 
 export const envSchema = z.object({
 	NODE_ENV: z
@@ -16,6 +23,10 @@ export const envSchema = z.object({
 	BETTER_AUTH_SECRET: z.string().min(16),
 	RATE_LIMIT_WINDOW_SECONDS: z.coerce.number().int().default(60),
 	RATE_LIMIT_MAX: z.coerce.number().int().default(100),
+	RATE_LIMIT_TRUSTED_PROXY_IPS: z
+		.string()
+		.default("")
+		.transform(stringListParse),
 });
 
 export type TEnv = z.infer<typeof envSchema>;
