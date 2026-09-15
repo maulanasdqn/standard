@@ -1,5 +1,10 @@
+import type { TActivityListInput } from "@app/schemas";
 import { D } from "@mobily/ts-belt";
-import { type UseQueryResult, useQuery } from "@tanstack/react-query";
+import {
+	type UseSuspenseQueryOptions,
+	type UseSuspenseQueryResult,
+	useSuspenseQuery,
+} from "@tanstack/react-query";
 import { getRouteApi } from "@tanstack/react-router";
 import { match } from "ts-pattern";
 import { orpc } from "#/libs/orpc/client.ts";
@@ -22,19 +27,18 @@ const emptyToUndefined = (value: string): string | undefined =>
 		.with("", () => undefined)
 		.otherwise((text) => text);
 
-export const useActivityList = (): UseQueryResult<
+export const activityListOptions = (
+	input: TActivityListInput,
+): UseSuspenseQueryOptions<TActivityOut["list"], TActivityErr["list"]> =>
+	orpc.activity.list.queryOptions({
+		input,
+		queryKey: orpc.activity.list.queryKey({ input }),
+	});
+
+export const useActivityList = (): UseSuspenseQueryResult<
 	TActivityOut["list"],
 	TActivityErr["list"]
-> => {
-	const search = routeApi.useSearch();
-
-	return useQuery(
-		orpc.activity.list.queryOptions({
-			input: search,
-			queryKey: orpc.activity.list.queryKey({ input: search }),
-		}),
-	);
-};
+> => useSuspenseQuery(activityListOptions(routeApi.useSearch()));
 
 export const useActivityPageChange = (): ((page: number) => void) => {
 	const navigate = routeApi.useNavigate();

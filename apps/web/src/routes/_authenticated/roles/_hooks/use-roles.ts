@@ -1,10 +1,11 @@
 import {
 	type QueryClient,
 	type UseMutationResult,
-	type UseQueryResult,
+	type UseSuspenseQueryOptions,
+	type UseSuspenseQueryResult,
 	useMutation,
-	useQuery,
 	useQueryClient,
+	useSuspenseQuery,
 } from "@tanstack/react-query";
 import { getRouteApi } from "@tanstack/react-router";
 import { orpc } from "#/libs/orpc/client.ts";
@@ -21,32 +22,31 @@ type TRoleErr = TClientErrors["role"];
 
 const editRouteApi = getRouteApi("/_authenticated/roles/$key");
 
-const invalidateRoles = (queryClient: QueryClient): void => {
-	void queryClient.invalidateQueries({ queryKey: orpc.role.key() });
-};
+const invalidateRoles = (queryClient: QueryClient): Promise<void> =>
+	queryClient.invalidateQueries({ queryKey: orpc.role.key() });
 
-export const useRoleList = (): UseQueryResult<
+export const roleListOptions = (): UseSuspenseQueryOptions<
 	TRoleOut["list"],
 	TRoleErr["list"]
-> =>
-	useQuery(
-		orpc.role.list.queryOptions({ queryKey: orpc.role.list.queryKey() }),
-	);
+> => orpc.role.list.queryOptions({ queryKey: orpc.role.list.queryKey() });
 
-export const useRoleGet = (): UseQueryResult<
+export const roleGetOptions = (
+	key: string,
+): UseSuspenseQueryOptions<TRoleOut["get"], TRoleErr["get"]> =>
+	orpc.role.get.queryOptions({
+		input: { key },
+		queryKey: orpc.role.get.queryKey({ input: { key } }),
+	});
+
+export const useRoleList = (): UseSuspenseQueryResult<
+	TRoleOut["list"],
+	TRoleErr["list"]
+> => useSuspenseQuery(roleListOptions());
+
+export const useRoleGet = (): UseSuspenseQueryResult<
 	TRoleOut["get"],
 	TRoleErr["get"]
-> => {
-	const { key } = editRouteApi.useParams();
-	const input = { key };
-
-	return useQuery(
-		orpc.role.get.queryOptions({
-			input,
-			queryKey: orpc.role.get.queryKey({ input }),
-		}),
-	);
-};
+> => useSuspenseQuery(roleGetOptions(editRouteApi.useParams().key));
 
 export const useRoleCreate = (): UseMutationResult<
 	TRoleOut["create"],
@@ -57,6 +57,7 @@ export const useRoleCreate = (): UseMutationResult<
 
 	return useMutation(
 		orpc.role.create.mutationOptions({
+			mutationKey: orpc.role.create.mutationKey(),
 			onSuccess: () => invalidateRoles(queryClient),
 			onError: toastError,
 		}),
@@ -72,6 +73,7 @@ export const useRoleUpdate = (): UseMutationResult<
 
 	return useMutation(
 		orpc.role.update.mutationOptions({
+			mutationKey: orpc.role.update.mutationKey(),
 			onSuccess: () => invalidateRoles(queryClient),
 			onError: toastError,
 		}),
@@ -87,6 +89,7 @@ export const useRoleDelete = (): UseMutationResult<
 
 	return useMutation(
 		orpc.role.remove.mutationOptions({
+			mutationKey: orpc.role.remove.mutationKey(),
 			onSuccess: () => invalidateRoles(queryClient),
 			onError: toastError,
 		}),

@@ -1,6 +1,6 @@
 import { A } from "@mobily/ts-belt";
-import { useQuery } from "@tanstack/react-query";
-import { orpc } from "#/libs/orpc/client.ts";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { roleListOptions } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
 
 export type TRoleOption = {
 	value: string;
@@ -8,11 +8,9 @@ export type TRoleOption = {
 };
 
 export const useRoleOptions = (): readonly TRoleOption[] => {
-	const { data } = useQuery(
-		orpc.role.list.queryOptions({ queryKey: orpc.role.list.queryKey() }),
-	);
+	const { data } = useSuspenseQuery(roleListOptions());
 
-	return A.map(data?.items ?? [], (role) => ({
+	return A.map(data.items, (role) => ({
 		value: role.key,
 		label: role.label,
 	}));

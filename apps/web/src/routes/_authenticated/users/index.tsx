@@ -4,17 +4,19 @@ import { userListInputSchema } from "@app/schemas";
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
 import { ListPagination } from "#/routes/_authenticated/_components/list-pagination.tsx";
+import { roleListOptions } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
 import { UserCreateForm } from "#/routes/_authenticated/users/_components/user-create-form.tsx";
 import { UserSearch } from "#/routes/_authenticated/users/_components/user-search.tsx";
 import { UserTable } from "#/routes/_authenticated/users/_components/user-table.tsx";
 import { useRoleOptions } from "#/routes/_authenticated/users/_hooks/use-role-options.ts";
 import {
+	userListOptions,
 	useUserList,
 	useUserPageChange,
 } from "#/routes/_authenticated/users/_hooks/use-users.ts";
 
 const UsersPage: FC = (): ReactElement => {
-	const { data, isLoading } = useUserList();
+	const { data } = useUserList();
 	const goToPage = useUserPageChange();
 	const roleOptions = useRoleOptions();
 
@@ -23,14 +25,8 @@ const UsersPage: FC = (): ReactElement => {
 			<h1 className="text-xl font-semibold">Users</h1>
 			<UserCreateForm roleOptions={roleOptions} />
 			<UserSearch />
-			{isLoading ? (
-				<p className="text-sm text-neutral-500">Loading…</p>
-			) : (
-				<UserTable users={data?.items ?? []} roleOptions={roleOptions} />
-			)}
-			{data ? (
-				<ListPagination pageInfo={data} noun="users" onPageChange={goToPage} />
-			) : null}
+			<UserTable users={data.items} roleOptions={roleOptions} />
+			<ListPagination pageInfo={data} noun="users" onPageChange={goToPage} />
 		</div>
 	);
 };
@@ -38,5 +34,11 @@ const UsersPage: FC = (): ReactElement => {
 export const Route = createFileRoute("/_authenticated/users/")({
 	validateSearch: userListInputSchema,
 	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
+	loaderDeps: ({ search }) => ({ search }),
+	loader: ({ context, deps }) =>
+		Promise.all([
+			context.queryClient.ensureQueryData(userListOptions(deps.search)),
+			context.queryClient.ensureQueryData(roleListOptions()),
+		]),
 	component: UsersPage,
 });

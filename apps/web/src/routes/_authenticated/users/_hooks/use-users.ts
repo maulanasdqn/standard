@@ -1,12 +1,14 @@
 import { USER_MESSAGE } from "@app/messages";
+import type { TUserListInput } from "@app/schemas";
 import { D } from "@mobily/ts-belt";
 import {
 	type QueryClient,
 	type UseMutationResult,
-	type UseQueryResult,
+	type UseSuspenseQueryOptions,
+	type UseSuspenseQueryResult,
 	useMutation,
-	useQuery,
 	useQueryClient,
+	useSuspenseQuery,
 } from "@tanstack/react-query";
 import { getRouteApi } from "@tanstack/react-router";
 import { toast } from "sonner";
@@ -32,39 +34,40 @@ export type TUserSearch = {
 const listRouteApi = getRouteApi("/_authenticated/users/");
 const editRouteApi = getRouteApi("/_authenticated/users/$userId");
 
-const invalidateUsersAndRoles = (queryClient: QueryClient): void => {
-	void queryClient.invalidateQueries({ queryKey: orpc.user.key() });
-	void queryClient.invalidateQueries({ queryKey: orpc.role.key() });
+const invalidateUsersAndRoles = async (
+	queryClient: QueryClient,
+): Promise<void> => {
+	await Promise.all([
+		queryClient.invalidateQueries({ queryKey: orpc.user.key() }),
+		queryClient.invalidateQueries({ queryKey: orpc.role.key() }),
+	]);
 };
 
-export const useUserList = (): UseQueryResult<
+export const userListOptions = (
+	input: TUserListInput,
+): UseSuspenseQueryOptions<TUserOut["list"], TUserErr["list"]> =>
+	orpc.user.list.queryOptions({
+		input,
+		queryKey: orpc.user.list.queryKey({ input }),
+	});
+
+export const userGetOptions = (
+	id: string,
+): UseSuspenseQueryOptions<TUserOut["get"], TUserErr["get"]> =>
+	orpc.user.get.queryOptions({
+		input: { id },
+		queryKey: orpc.user.get.queryKey({ input: { id } }),
+	});
+
+export const useUserList = (): UseSuspenseQueryResult<
 	TUserOut["list"],
 	TUserErr["list"]
-> => {
-	const search = listRouteApi.useSearch();
+> => useSuspenseQuery(userListOptions(listRouteApi.useSearch()));
 
-	return useQuery(
-		orpc.user.list.queryOptions({
-			input: search,
-			queryKey: orpc.user.list.queryKey({ input: search }),
-		}),
-	);
-};
-
-export const useUserGet = (): UseQueryResult<
+export const useUserGet = (): UseSuspenseQueryResult<
 	TUserOut["get"],
 	TUserErr["get"]
-> => {
-	const { userId } = editRouteApi.useParams();
-	const input = { id: userId };
-
-	return useQuery(
-		orpc.user.get.queryOptions({
-			input,
-			queryKey: orpc.user.get.queryKey({ input }),
-		}),
-	);
-};
+> => useSuspenseQuery(userGetOptions(editRouteApi.useParams().userId));
 
 export const useUserSearch = (): TUserSearch => {
 	const navigate = listRouteApi.useNavigate();
@@ -104,6 +107,7 @@ export const useUserCreate = (): UseMutationResult<
 
 	return useMutation(
 		orpc.user.create.mutationOptions({
+			mutationKey: orpc.user.create.mutationKey(),
 			onSuccess: () => invalidateUsersAndRoles(queryClient),
 			onError: toastError,
 		}),
@@ -119,6 +123,7 @@ export const useUserUpdate = (): UseMutationResult<
 
 	return useMutation(
 		orpc.user.update.mutationOptions({
+			mutationKey: orpc.user.update.mutationKey(),
 			onSuccess: () => invalidateUsersAndRoles(queryClient),
 			onError: toastError,
 		}),
@@ -132,6 +137,7 @@ export const useUserPasswordReset = (): UseMutationResult<
 > =>
 	useMutation(
 		orpc.user.resetPassword.mutationOptions({
+			mutationKey: orpc.user.resetPassword.mutationKey(),
 			onSuccess: () => toast.success(USER_MESSAGE.PASSWORD_RESET),
 			onError: toastError,
 		}),
@@ -146,6 +152,7 @@ export const useUserDelete = (): UseMutationResult<
 
 	return useMutation(
 		orpc.user.remove.mutationOptions({
+			mutationKey: orpc.user.remove.mutationKey(),
 			onSuccess: () => invalidateUsersAndRoles(queryClient),
 			onError: toastError,
 		}),

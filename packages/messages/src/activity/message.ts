@@ -1,6 +1,5 @@
 export const ACTIVITY_MESSAGE = {
 	TITLE: "Activity",
-	LOADING: "Loading…",
 	EMPTY: "No activity yet.",
 	PAGINATION_NOUN: "entries",
 	FILTER_ACTION: "Action",

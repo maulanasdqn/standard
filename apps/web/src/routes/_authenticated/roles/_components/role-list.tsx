@@ -9,11 +9,13 @@ import {
 	TableRow,
 } from "@app/components/ui/table";
 import { orDash } from "@app/format";
+import { ROLE_MESSAGE } from "@app/messages";
 import type { TRoleDto } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
 import { Link } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
 import { match } from "ts-pattern";
+import { EmptyState } from "#/routes/_authenticated/_components/empty-state.tsx";
 import { useRoleDelete } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
 import { roleDeletable } from "#/routes/_authenticated/roles/_utils/role-deletable.ts";
 
@@ -25,7 +27,7 @@ export const RoleList: FC<TRoleListProps> = (props): ReactElement => {
 	const roleDelete = useRoleDelete();
 
 	return match(A.isEmpty(props.roles))
-		.with(true, () => <p className="text-sm text-neutral-500">No roles yet.</p>)
+		.with(true, () => <EmptyState message={ROLE_MESSAGE.EMPTY} />)
 		.otherwise(() => (
 			<Table>
 				<TableHeader>

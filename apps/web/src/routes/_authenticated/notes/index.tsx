@@ -5,20 +5,19 @@ import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
 import { NoteCreateForm } from "#/routes/_authenticated/notes/_components/note-create-form.tsx";
 import { NoteList } from "#/routes/_authenticated/notes/_components/note-list.tsx";
-import { useNoteList } from "#/routes/_authenticated/notes/_hooks/use-notes.ts";
+import {
+	noteListOptions,
+	useNoteList,
+} from "#/routes/_authenticated/notes/_hooks/use-notes.ts";
 
 const NotesPage: FC = (): ReactElement => {
-	const { data, isLoading } = useNoteList();
+	const { data } = useNoteList();
 
 	return (
 		<div className="flex max-w-2xl flex-col gap-6">
 			<h1 className="text-xl font-semibold">Notes</h1>
 			<NoteCreateForm />
-			{isLoading ? (
-				<p className="text-sm text-neutral-500">Loading…</p>
-			) : (
-				<NoteList notes={data?.items ?? []} />
-			)}
+			<NoteList notes={data.items} />
 		</div>
 	);
 };
@@ -26,5 +25,8 @@ const NotesPage: FC = (): ReactElement => {
 export const Route = createFileRoute("/_authenticated/notes/")({
 	validateSearch: noteListInputSchema,
 	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.NOTE_READ] }),
+	loaderDeps: ({ search }) => ({ search }),
+	loader: ({ context, deps }) =>
+		context.queryClient.ensureQueryData(noteListOptions(deps.search)),
 	component: NotesPage,
 });
