@@ -1,3 +1,4 @@
+import { Guard } from "@app/components/guard/guard";
 import { Badge } from "@app/components/ui/badge";
 import { Button } from "@app/components/ui/button";
 import {
@@ -10,6 +11,7 @@ import {
 } from "@app/components/ui/table";
 import { orDash } from "@app/format";
 import { ROLE_MESSAGE } from "@app/messages";
+import { PERMISSION } from "@app/permissions";
 import type { TRoleDto } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
 import { Link } from "@tanstack/react-router";
@@ -46,7 +48,9 @@ export const RoleList: FC<TRoleListProps> = (props): ReactElement => {
 							<TableCell>
 								<span className="flex items-center gap-2 font-medium">
 									{role.label}
-									{role.fixed ? <Badge variant="outline">Fixed</Badge> : null}
+									{match(role.fixed)
+										.with(true, () => <Badge variant="outline">Fixed</Badge>)
+										.otherwise(() => null)}
 								</span>
 							</TableCell>
 							<TableCell>
@@ -67,16 +71,20 @@ export const RoleList: FC<TRoleListProps> = (props): ReactElement => {
 								>
 									{role.fixed ? "View" : "Edit"}
 								</Link>
-								{roleDeletable(role) ? (
-									<Button
-										variant="ghost"
-										size="sm"
-										disabled={roleDelete.isPending}
-										onClick={() => roleDelete.mutate({ key: role.key })}
-									>
-										Delete
-									</Button>
-								) : null}
+								{match(roleDeletable(role))
+									.with(true, () => (
+										<Guard permissions={[PERMISSION.USER_MANAGE]}>
+											<Button
+												variant="ghost"
+												size="sm"
+												disabled={roleDelete.isPending}
+												onClick={() => roleDelete.mutate({ key: role.key })}
+											>
+												Delete
+											</Button>
+										</Guard>
+									))
+									.otherwise(() => null)}
 							</TableCell>
 						</TableRow>
 					))}
