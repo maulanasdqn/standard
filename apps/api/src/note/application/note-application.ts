@@ -12,6 +12,7 @@ import { noteGet } from "#/note/application/note-get.ts";
 import { noteList } from "#/note/application/note-list.ts";
 import { noteUpdate } from "#/note/application/note-update.ts";
 import type { TBaseApplication } from "#/shared/base-application.ts";
+import type { TOwnershipActor } from "#/shared/authorization/owned-entity.ts";
 
 export const noteApplication = {
 	list: noteList,
@@ -29,5 +30,6 @@ export const noteApplication = {
 		create: TNoteCreateInput;
 		update: TNoteUpdateInput;
 		remove: TNoteIdInput;
-	}
+	},
+	TOwnershipActor
 >;

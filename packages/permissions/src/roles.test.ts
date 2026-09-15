@@ -4,6 +4,13 @@ import { PERMISSION } from "./permissions.ts";
 import { permissionsForRole, ROLE } from "./roles.ts";
 
 describe("permissionsForRole", () => {
+	it("grants every permission to superadmin", (): void => {
+		const granted = permissionsForRole(ROLE.SUPERADMIN);
+		expect(
+			canAll(granted, [PERMISSION.NOTE_DELETE, PERMISSION.USER_MANAGE]),
+		).toBe(true);
+	});
+
 	it("grants every permission to admin", (): void => {
 		const granted = permissionsForRole(ROLE.ADMIN);
 		expect(
