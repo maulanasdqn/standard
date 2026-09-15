@@ -1,11 +1,12 @@
 import { D } from "@mobily/ts-belt";
-import { count, eq, ilike, type SQL } from "drizzle-orm";
+import { and, count, eq, ilike, type SQL } from "drizzle-orm";
 import { Effect, Layer } from "effect";
 import { match, P } from "ts-pattern";
 import { EDatabase } from "#/shared/errors.ts";
 import { NoteRepo, type TNoteRepo, type TNoteRow } from "#/note/domain/note.ts";
 import { offsetFor } from "#/shared/pagination.ts";
 import { DbService, dbServiceLayer } from "#/platform/db/db-service.ts";
+import { ownershipWhere } from "#/platform/db/ownership.ts";
 import { note } from "#/platform/db/tables/note.ts";
 
 const searchWhere = (search: string | undefined): SQL | undefined =>
@@ -18,8 +19,11 @@ export const noteRepoLayer = Layer.effect(
 	Effect.gen(function* () {
 		const { db } = yield* DbService;
 
-		const list: TNoteRepo["list"] = ({ page, pageSize, search }) => {
-			const where = searchWhere(search);
+		const list: TNoteRepo["list"] = ({ page, pageSize, search }, actor) => {
+			const where = and(
+				ownershipWhere(actor, note.authorId),
+				searchWhere(search),
+			);
 
 			return Effect.tryPromise({
 				try: async () => {
@@ -39,13 +43,13 @@ export const noteRepoLayer = Layer.effect(
 			});
 		};
 
-		const findById: TNoteRepo["findById"] = (id: string) =>
+		const findById: TNoteRepo["findById"] = (id: string, actor) =>
 			Effect.tryPromise({
 				try: async () => {
 					const [row] = await db
 						.select()
 						.from(note)
-						.where(eq(note.id, id))
+						.where(and(eq(note.id, id), ownershipWhere(actor, note.authorId)))
 						.limit(1);
 					return row ?? null;
 				},
@@ -64,31 +68,37 @@ export const noteRepoLayer = Layer.effect(
 				catch: (cause) => new EDatabase({ cause }),
 			});
 
-		const update: TNoteRepo["update"] = ({ id, ...patch }) =>
+		const update: TNoteRepo["update"] = ({ id, ...patch }, actor) =>
 			Effect.tryPromise({
 				try: async () => {
 					const [row] = await db
 						.update(note)
 						.set(D.merge(patch, { updatedAt: new Date() }))
-						.where(eq(note.id, id))
+						.where(and(eq(note.id, id), ownershipWhere(actor, note.authorId)))
 						.returning();
 					return row ?? null;
 				},
 				catch: (cause) => new EDatabase({ cause }),
 			});
 
-		const remove: TNoteRepo["remove"] = (id: string) =>
+		const remove: TNoteRepo["remove"] = (id: string, actor) =>
 			Effect.tryPromise({
 				try: async () => {
 					const result = await db
 						.delete(note)
-						.where(eq(note.id, id))
+						.where(and(eq(note.id, id), ownershipWhere(actor, note.authorId)))
 						.returning({ id: note.id });
 					return result.length > 0;
 				},
 				catch: (cause) => new EDatabase({ cause }),
 			});
 
-		return NoteRepo.of({ list, findById, create, update, remove });
+		return NoteRepo.of({
+			list,
+			findById,
+			create,
+			update,
+			remove,
+		});
 	}),
 ).pipe(Layer.provide(dbServiceLayer));
