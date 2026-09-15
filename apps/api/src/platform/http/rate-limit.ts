@@ -7,6 +7,7 @@ import { ERROR_MESSAGE } from "@app/messages";
 import type { Context, Next } from "hono";
 import { match } from "ts-pattern";
 import { HTTP_STATUS } from "#/platform/http/http-status.ts";
+import { rateLimitIdentifierOf } from "#/platform/http/rate-limit-identifier.ts";
 import type { TRateLimitScope } from "#/platform/http/rate-limit-scopes.ts";
 
 export type TRateLimitOptions = {
@@ -14,28 +15,22 @@ export type TRateLimitOptions = {
 	scope: TRateLimitScope;
 	windowSeconds: number;
 	max: number;
+	trustedProxyIps: readonly string[];
 };
-
-const UNKNOWN_IDENTIFIER = "unknown";
-
-const identifierOf = (context: Context): string =>
-	context.req.header("x-forwarded-for") ??
-	context.req.header("x-real-ip") ??
-	UNKNOWN_IDENTIFIER;
 
 export const rateLimit =
 	(options: TRateLimitOptions) =>
 	async (context: Context, next: Next): Promise<Response | undefined> => {
 		const result = await rateLimitCheck(options.client, {
-			identifier: identifierOf(context),
+			identifier: rateLimitIdentifierOf(context, options.trustedProxyIps),
 			scope: options.scope,
 			windowSeconds: options.windowSeconds,
 			max: options.max,
 		}).catch(
 			(): TRateLimitResult => ({
-				allowed: true,
-				count: 0,
-				remaining: options.max,
+				allowed: false,
+				count: options.max,
+				remaining: 0,
 			}),
 		);
 

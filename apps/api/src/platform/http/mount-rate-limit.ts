@@ -13,6 +13,7 @@ export const rateLimitMount = (app: Hono, client: TCacheClient): void => {
 			scope: RATE_LIMIT_SCOPE.AUTH,
 			windowSeconds: env.RATE_LIMIT_WINDOW_SECONDS,
 			max: env.RATE_LIMIT_MAX,
+			trustedProxyIps: env.RATE_LIMIT_TRUSTED_PROXY_IPS,
 		}),
 	);
 };
