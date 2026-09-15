@@ -2,7 +2,7 @@ import { AUTH_MESSAGE } from "@app/messages";
 import { loginInputSchema, type TLoginInput } from "@app/schemas";
 import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
-import { useStore } from "@tanstack/react-store";
+import { useSelector } from "@tanstack/react-store";
 import type { FormEvent } from "react";
 import { match, P } from "ts-pattern";
 import { authClient } from "#/libs/auth/client.ts";
@@ -14,7 +14,7 @@ const DEFAULT_VALUES: TLoginInput = { email: "", password: "" };
 
 export const useLoginForm = () => {
 	const navigate = useNavigate();
-	const serverError = useStore(loginError.store, (state) => state);
+	const serverError = useSelector(loginError.store);
 
 	const form = useForm({
 		defaultValues: DEFAULT_VALUES,

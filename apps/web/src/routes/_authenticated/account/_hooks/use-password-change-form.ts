@@ -1,7 +1,7 @@
 import { AUTH_MESSAGE } from "@app/messages";
 import { passwordChangeInputSchema } from "@app/schemas";
 import { useForm } from "@tanstack/react-form";
-import { useStore } from "@tanstack/react-store";
+import { useSelector } from "@tanstack/react-store";
 import type { FormEvent } from "react";
 import { toast } from "sonner";
 import { match, P } from "ts-pattern";
@@ -25,7 +25,7 @@ const DEFAULT_VALUES: TPasswordChangeFormValues = {
 };
 
 export const usePasswordChangeForm = () => {
-	const serverError = useStore(passwordChangeError.store, (state) => state);
+	const serverError = useSelector(passwordChangeError.store);
 
 	const form = useForm({
 		defaultValues: DEFAULT_VALUES,

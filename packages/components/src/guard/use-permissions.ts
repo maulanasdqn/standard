@@ -1,5 +1,5 @@
 import { canAll, canAny, type TPermission } from "@app/permissions";
-import { useStore } from "@tanstack/react-store";
+import { useSelector } from "@tanstack/react-store";
 import { permissionsStore } from "./permissions-store.ts";
 
 export type TUsePermissions = {
@@ -9,7 +9,10 @@ export type TUsePermissions = {
 };
 
 export const usePermissions = (): TUsePermissions => {
-	const { permissions } = useStore(permissionsStore, (state) => state);
+	const permissions = useSelector(
+		permissionsStore,
+		(state) => state.permissions,
+	);
 
 	return {
 		permissions,
