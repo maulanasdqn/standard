@@ -1,11 +1,13 @@
 import { Guard } from "@app/components/guard/guard";
 import { Button } from "@app/components/ui/button";
 import { formatDateTime } from "@app/format";
+import { NOTE_MESSAGE } from "@app/messages";
 import { PERMISSION } from "@app/permissions";
 import type { TNote } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
 import type { FC, ReactElement } from "react";
 import { match } from "ts-pattern";
+import { EmptyState } from "#/routes/_authenticated/_components/empty-state.tsx";
 import { useNoteDelete } from "#/routes/_authenticated/notes/_hooks/use-notes.ts";
 
 type TNoteListProps = {
@@ -16,7 +18,7 @@ export const NoteList: FC<TNoteListProps> = (props): ReactElement => {
 	const noteDelete = useNoteDelete();
 
 	return match(A.isEmpty(props.notes))
-		.with(true, () => <p className="text-sm text-neutral-500">No notes yet.</p>)
+		.with(true, () => <EmptyState message={NOTE_MESSAGE.EMPTY} />)
 		.otherwise(() => (
 			<ul className="flex flex-col divide-y divide-neutral-200 border border-neutral-200">
 				{A.map(props.notes, (note) => (

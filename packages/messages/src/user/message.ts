@@ -5,4 +5,5 @@ export const USER_MESSAGE = {
 	SELF_DELETE: "You can't delete your own account.",
 	SELF_PASSWORD_RESET: "Change your own password from your account page.",
 	PASSWORD_RESET: "Password reset. Share the new password with the user.",
+	EMPTY: "No users yet.",
 } as const;

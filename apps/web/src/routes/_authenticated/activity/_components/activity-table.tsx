@@ -12,6 +12,7 @@ import type { TActivity } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
 import type { FC, ReactElement } from "react";
 import { match, P } from "ts-pattern";
+import { EmptyState } from "#/routes/_authenticated/_components/empty-state.tsx";
 
 type TActivityTableProps = {
 	entries: readonly TActivity[];
@@ -24,9 +25,7 @@ const metadataLabel = (metadata: unknown): string =>
 
 export const ActivityTable: FC<TActivityTableProps> = (props): ReactElement =>
 	match(A.isEmpty(props.entries))
-		.with(true, () => (
-			<p className="text-sm text-neutral-500">{ACTIVITY_MESSAGE.EMPTY}</p>
-		))
+		.with(true, () => <EmptyState message={ACTIVITY_MESSAGE.EMPTY} />)
 		.otherwise(() => (
 			<Table>
 				<TableHeader>

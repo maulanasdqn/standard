@@ -9,11 +9,13 @@ import {
 	TableRow,
 } from "@app/components/ui/table";
 import { formatDateTime } from "@app/format";
+import { USER_MESSAGE } from "@app/messages";
 import type { TUser } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
 import { Link } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
 import { match } from "ts-pattern";
+import { EmptyState } from "#/routes/_authenticated/_components/empty-state.tsx";
 import type { TRoleOption } from "#/routes/_authenticated/users/_hooks/use-role-options.ts";
 import {
 	useIsSelf,
@@ -32,7 +34,7 @@ export const UserTable: FC<TUserTableProps> = (props): ReactElement => {
 	const isSelf = useIsSelf();
 
 	return match(A.isEmpty(props.users))
-		.with(true, () => <p className="text-sm text-neutral-500">No users yet.</p>)
+		.with(true, () => <EmptyState message={USER_MESSAGE.EMPTY} />)
 		.otherwise(() => (
 			<Table>
 				<TableHeader>

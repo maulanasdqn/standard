@@ -2,31 +2,26 @@ import { checkRoutePermissions } from "@app/components/guard/route-guard";
 import { PERMISSION } from "@app/permissions";
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
-import { match, P } from "ts-pattern";
 import { RoleEditForm } from "#/routes/_authenticated/roles/_components/role-edit-form.tsx";
-import { useRoleGet } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
+import {
+	roleGetOptions,
+	useRoleGet,
+} from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
 
 const RoleEditPage: FC = (): ReactElement => {
-	const { data, isLoading } = useRoleGet();
+	const { data } = useRoleGet();
 
 	return (
 		<div className="flex max-w-3xl flex-col gap-6">
-			<h1 className="text-xl font-semibold">{data?.label ?? "Role"}</h1>
-			{match({ isLoading, data })
-				.with({ isLoading: true }, () => (
-					<p className="text-sm text-neutral-500">Loading…</p>
-				))
-				.with({ data: P.nonNullable }, ({ data: role }) => (
-					<RoleEditForm key={role.key} role={role} />
-				))
-				.otherwise(() => (
-					<p className="text-sm text-neutral-500">Role not found.</p>
-				))}
+			<h1 className="text-xl font-semibold">{data.label}</h1>
+			<RoleEditForm key={data.key} role={data} />
 		</div>
 	);
 };
 
 export const Route = createFileRoute("/_authenticated/roles/$key")({
 	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
+	loader: ({ context, params }) =>
+		context.queryClient.ensureQueryData(roleGetOptions(params.key)),
 	component: RoleEditPage,
 });

@@ -4,9 +4,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
 import { PermissionMatrix } from "#/routes/_authenticated/permissions/_components/permission-matrix.tsx";
 import { usePermissionMatrix } from "#/routes/_authenticated/permissions/_hooks/use-permission-matrix.ts";
+import { roleListOptions } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
 
 const PermissionsPage: FC = (): ReactElement => {
-	const { roles, isLoading } = usePermissionMatrix();
+	const { roles } = usePermissionMatrix();
 
 	return (
 		<div className="flex max-w-5xl flex-col gap-6">
@@ -17,16 +18,14 @@ const PermissionsPage: FC = (): ReactElement => {
 					page.
 				</p>
 			</div>
-			{isLoading ? (
-				<p className="text-sm text-neutral-500">Loading…</p>
-			) : (
-				<PermissionMatrix roles={roles} />
-			)}
+			<PermissionMatrix roles={roles} />
 		</div>
 	);
 };
 
 export const Route = createFileRoute("/_authenticated/permissions/")({
 	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
+	loader: ({ context }) =>
+		context.queryClient.ensureQueryData(roleListOptions()),
 	component: PermissionsPage,
 });

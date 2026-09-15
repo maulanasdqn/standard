@@ -1,6 +1,6 @@
 import { checkRoutePermissions } from "@app/components/guard/route-guard";
-import { PERMISSION } from "@app/permissions";
 import { ACTIVITY_MESSAGE } from "@app/messages";
+import { PERMISSION } from "@app/permissions";
 import { activityListInputSchema } from "@app/schemas";
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
@@ -8,30 +8,25 @@ import { ListPagination } from "#/routes/_authenticated/_components/list-paginat
 import { ActivityFilters } from "#/routes/_authenticated/activity/_components/activity-filters.tsx";
 import { ActivityTable } from "#/routes/_authenticated/activity/_components/activity-table.tsx";
 import {
+	activityListOptions,
 	useActivityList,
 	useActivityPageChange,
 } from "#/routes/_authenticated/activity/_hooks/use-activity.ts";
 
 const ActivityPage: FC = (): ReactElement => {
-	const { data, isLoading } = useActivityList();
+	const { data } = useActivityList();
 	const goToPage = useActivityPageChange();
 
 	return (
 		<div className="flex max-w-5xl flex-col gap-6">
 			<h1 className="text-xl font-semibold">{ACTIVITY_MESSAGE.TITLE}</h1>
 			<ActivityFilters />
-			{isLoading ? (
-				<p className="text-sm text-neutral-500">{ACTIVITY_MESSAGE.LOADING}</p>
-			) : (
-				<ActivityTable entries={data?.items ?? []} />
-			)}
-			{data ? (
-				<ListPagination
-					pageInfo={data}
-					noun={ACTIVITY_MESSAGE.PAGINATION_NOUN}
-					onPageChange={goToPage}
-				/>
-			) : null}
+			<ActivityTable entries={data.items} />
+			<ListPagination
+				pageInfo={data}
+				noun={ACTIVITY_MESSAGE.PAGINATION_NOUN}
+				onPageChange={goToPage}
+			/>
 		</div>
 	);
 };
@@ -41,5 +36,8 @@ export const Route = createFileRoute("/_authenticated/activity/")({
 	beforeLoad: checkRoutePermissions({
 		permissions: [PERMISSION.ACTIVITY_READ],
 	}),
+	loaderDeps: ({ search }) => ({ search }),
+	loader: ({ context, deps }) =>
+		context.queryClient.ensureQueryData(activityListOptions(deps.search)),
 	component: ActivityPage,
 });

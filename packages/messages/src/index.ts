@@ -1,4 +1,5 @@
 export { ACTIVITY_MESSAGE } from "./activity/message.ts";
+export { APP_MESSAGE } from "./app/message.ts";
 export { AUTH_MESSAGE } from "./auth/message.ts";
 export { ERROR_MESSAGE } from "./error/message.ts";
 export { HEALTH_MESSAGE } from "./health/message.ts";

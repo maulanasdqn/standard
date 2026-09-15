@@ -8,6 +8,8 @@ import { SESSION_REACH } from "#/libs/auth/session-reach.ts";
 import { sessionRefresh } from "#/libs/auth/session.ts";
 import { sessionStore } from "#/libs/auth/session-store.ts";
 import { queryClient } from "#/libs/tanstack-query/index.ts";
+import { RouteErrorScreen } from "#/routes/_components/route-error-screen.tsx";
+import { RoutePendingScreen } from "#/routes/_components/route-pending-screen.tsx";
 import { routeTree } from "./routeTree.gen.ts";
 import "./styles.css";
 
@@ -20,6 +22,10 @@ const router = createRouter({
 		permissions: [],
 	},
 	defaultPreload: "intent",
+	defaultPendingComponent: RoutePendingScreen,
+	defaultErrorComponent: RouteErrorScreen,
+	defaultPendingMs: 500,
+	defaultPendingMinMs: 300,
 });
 
 declare module "@tanstack/react-router" {
