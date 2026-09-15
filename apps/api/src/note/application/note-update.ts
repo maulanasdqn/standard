@@ -9,10 +9,11 @@ import {
 	type TActivityRecorderId,
 } from "#/shared/activity-recorder.ts";
 import { NoteRepo, type TNoteRepoId } from "#/note/domain/note.ts";
+import type { TOwnershipActor } from "#/shared/authorization/owned-entity.ts";
 
 export const noteUpdate = Effect.fn("noteUpdate")(function* (
 	input: TNoteUpdateInput,
-	actorId: string,
+	actor: TOwnershipActor,
 ): Effect.fn.Return<
 	TNote,
 	ENotFound | EDatabase,
@@ -20,15 +21,14 @@ export const noteUpdate = Effect.fn("noteUpdate")(function* (
 > {
 	const noteRepo = yield* NoteRepo;
 	const activityRepo = yield* ActivityRecorder;
-
-	const updated = yield* noteRepo.update(input);
+	const updated = yield* noteRepo.update(input, actor);
 
 	if (updated === null) {
 		return yield* new ENotFound({ message: NOTE_MESSAGE.NOT_FOUND });
 	}
 
 	yield* activityRepo.insert({
-		actorId,
+		actorId: actor.id,
 		action: ACTIVITY_ACTION.NOTE_UPDATE,
 		resourceType: ACTIVITY_RESOURCE_TYPE.NOTE,
 		resourceId: updated.id,

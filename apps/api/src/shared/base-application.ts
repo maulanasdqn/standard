@@ -21,19 +21,26 @@ export type TBaseApplication<
 	TList,
 	TIdentifier,
 	TInput extends TApplicationInput,
+	TActor = string,
 > = {
-	readonly list: (input: TInput["list"]) => TApplicationEffect<TList>;
-	readonly get: (input: TInput["get"]) => TApplicationEffect<TEntity>;
+	readonly list: (
+		input: TInput["list"],
+		actor: TActor,
+	) => TApplicationEffect<TList>;
+	readonly get: (
+		input: TInput["get"],
+		actor: TActor,
+	) => TApplicationEffect<TEntity>;
 	readonly create: (
 		input: TInput["create"],
-		actorId: string,
+		actor: TActor,
 	) => TApplicationEffect<TEntity>;
 	readonly update: (
 		input: TInput["update"],
-		actorId: string,
+		actor: TActor,
 	) => TApplicationEffect<TEntity>;
 	readonly remove: (
 		input: TInput["remove"],
-		actorId: string,
+		actor: TActor,
 	) => TApplicationEffect<TIdentifier>;
 };

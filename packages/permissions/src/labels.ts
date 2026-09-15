@@ -10,12 +10,14 @@ export const PERMISSION_LABEL: Record<TPermission, string> = {
 };
 
 export const ROLE_LABEL: Record<TRole, string> = {
+	[ROLE.SUPERADMIN]: "Superadmin",
 	[ROLE.ADMIN]: "Admin",
 	[ROLE.MEMBER]: "Member",
 	[ROLE.VIEWER]: "Viewer",
 };
 
 export const ROLE_DESCRIPTION: Record<TRole, string> = {
+	[ROLE.SUPERADMIN]: "Full access, including ownership bypass.",
 	[ROLE.ADMIN]: "Full access, including user and role management.",
 	[ROLE.MEMBER]: "Can view, create and edit notes.",
 	[ROLE.VIEWER]: "Read-only access to notes.",

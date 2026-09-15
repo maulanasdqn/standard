@@ -4,12 +4,14 @@ import { Effect } from "effect";
 import type { EDatabase } from "#/shared/errors.ts";
 import { toNoteDto } from "#/note/application/to-note-dto.ts";
 import { NoteRepo, type TNoteRepoId } from "#/note/domain/note.ts";
+import type { TOwnershipActor } from "#/shared/authorization/owned-entity.ts";
 
 export const noteList = Effect.fn("noteList")(function* (
 	input: TNoteListInput,
+	actor: TOwnershipActor,
 ): Effect.fn.Return<TNoteList, EDatabase, TNoteRepoId> {
 	const noteRepo = yield* NoteRepo;
-	const { items, total } = yield* noteRepo.list(input);
+	const { items, total } = yield* noteRepo.list(input, actor);
 	return {
 		items: A.map(items, toNoteDto),
 		total,

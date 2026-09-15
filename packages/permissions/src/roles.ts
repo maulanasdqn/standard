@@ -6,6 +6,7 @@ import {
 } from "./permissions.ts";
 
 export const ROLE = {
+	SUPERADMIN: "superadmin",
 	ADMIN: "admin",
 	MEMBER: "member",
 	VIEWER: "viewer",
@@ -17,6 +18,7 @@ export const isRole = (value: string): value is TRole =>
 	A.some(D.values(ROLE), (role) => role === value);
 
 export const ROLE_PERMISSIONS: Record<TRole, readonly TPermission[]> = {
+	[ROLE.SUPERADMIN]: ALL_PERMISSIONS,
 	[ROLE.ADMIN]: ALL_PERMISSIONS,
 	[ROLE.MEMBER]: [PERMISSION.NOTE_READ, PERMISSION.NOTE_WRITE],
 	[ROLE.VIEWER]: [PERMISSION.NOTE_READ],

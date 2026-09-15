@@ -2,11 +2,13 @@ import { Effect, Layer } from "effect";
 import { describe, expect, it, vi } from "vitest";
 import { noteCreate } from "#/note/application/note-create.ts";
 import { ACTIVITY_ACTION } from "@app/activity";
+import { ROLE } from "@app/permissions";
 import type { TNoteRow } from "#/note/domain/note.ts";
 import { ActivityRecorder } from "#/shared/activity-recorder.ts";
 import { NoteRepo } from "#/note/domain/note.ts";
 
 const AUTHOR_ID = "22222222-2222-4222-8222-222222222222";
+const ACTOR = { id: AUTHOR_ID, role: ROLE.MEMBER };
 
 const row: TNoteRow = {
 	id: "11111111-1111-4111-8111-111111111111",
@@ -37,7 +39,7 @@ describe("noteCreate", () => {
 		);
 
 		const result = await Effect.runPromise(
-			noteCreate({ title: "Title", body: "Body" }, AUTHOR_ID).pipe(
+			noteCreate({ title: "Title", body: "Body" }, ACTOR).pipe(
 				Effect.provide(testLayer),
 			),
 		);
