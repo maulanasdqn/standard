@@ -1,3 +1,4 @@
+import { Guard } from "@app/components/guard/guard";
 import { checkRoutePermissions } from "@app/components/guard/route-guard";
 import { PERMISSION } from "@app/permissions";
 import { createFileRoute } from "@tanstack/react-router";
@@ -15,7 +16,9 @@ const RolesPage: FC = (): ReactElement => {
 	return (
 		<div className="flex max-w-5xl flex-col gap-6">
 			<h1 className="text-xl font-semibold">Roles</h1>
-			<RoleCreateForm />
+			<Guard permissions={[PERMISSION.USER_MANAGE]}>
+				<RoleCreateForm />
+			</Guard>
 			<RoleList roles={data.items} />
 		</div>
 	);

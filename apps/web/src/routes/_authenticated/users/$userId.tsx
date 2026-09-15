@@ -1,3 +1,4 @@
+import { Guard } from "@app/components/guard/guard";
 import { checkRoutePermissions } from "@app/components/guard/route-guard";
 import { PERMISSION } from "@app/permissions";
 import { createFileRoute } from "@tanstack/react-router";
@@ -21,11 +22,15 @@ const UserEditPage: FC = (): ReactElement => {
 	return (
 		<div className="flex flex-col gap-6">
 			<h1 className="text-xl font-semibold">Edit user</h1>
-			<UserEditForm user={data} roleOptions={roleOptions} />
+			<Guard permissions={[PERMISSION.USER_MANAGE]}>
+				<UserEditForm user={data} roleOptions={roleOptions} />
+			</Guard>
 			{match(isSelf(data.id))
 				.with(true, () => null)
 				.otherwise(() => (
-					<UserPasswordResetForm user={data} />
+					<Guard permissions={[PERMISSION.USER_MANAGE]}>
+						<UserPasswordResetForm user={data} />
+					</Guard>
 				))}
 		</div>
 	);

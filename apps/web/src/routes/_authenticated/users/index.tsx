@@ -1,3 +1,4 @@
+import { Guard } from "@app/components/guard/guard";
 import { checkRoutePermissions } from "@app/components/guard/route-guard";
 import { PERMISSION } from "@app/permissions";
 import { userListInputSchema } from "@app/schemas";
@@ -23,7 +24,9 @@ const UsersPage: FC = (): ReactElement => {
 	return (
 		<div className="flex max-w-5xl flex-col gap-6">
 			<h1 className="text-xl font-semibold">Users</h1>
-			<UserCreateForm roleOptions={roleOptions} />
+			<Guard permissions={[PERMISSION.USER_MANAGE]}>
+				<UserCreateForm roleOptions={roleOptions} />
+			</Guard>
 			<UserSearch />
 			<UserTable users={data.items} roleOptions={roleOptions} />
 			<ListPagination pageInfo={data} noun="users" onPageChange={goToPage} />

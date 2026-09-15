@@ -1,18 +1,21 @@
 import type { TPermission, TRole } from "@app/permissions";
 
 export const ROLE_KEY = {
+	SUPERADMIN: "superadmin",
 	ADMIN: "admin",
 	MEMBER: "member",
 	VIEWER: "viewer",
 } as const satisfies Record<string, TRole>;
 
 export const ROLE_LABEL = {
+	[ROLE_KEY.SUPERADMIN]: "Superadmin",
 	[ROLE_KEY.ADMIN]: "Admin",
 	[ROLE_KEY.MEMBER]: "Member",
 	[ROLE_KEY.VIEWER]: "Viewer",
 } as const satisfies Record<TRole, string>;
 
 export const FIXED_ROLE_KEYS: readonly TRole[] = [
+	ROLE_KEY.SUPERADMIN,
 	ROLE_KEY.ADMIN,
 	ROLE_KEY.MEMBER,
 	ROLE_KEY.VIEWER,
