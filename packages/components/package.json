@@ -1,6 +1,6 @@
 {
 	"name": "@app/components",
-	"version": "0.3.0",
+	"version": "0.8.0",
 	"private": true,
 	"type": "module",
 	"exports": {
@@ -9,6 +9,7 @@
 		"./guard/permissions-store": "./src/guard/permissions-store.ts",
 		"./guard/use-permissions": "./src/guard/use-permissions.ts",
 		"./guard/route-guard": "./src/guard/route-guard.ts",
+		"./hooks/use-mobile": "./src/hooks/use-mobile.ts",
 		"./lib/utils": "./src/lib/utils.ts",
 		"./theme.css": "./theme.css"
 	},
@@ -24,6 +25,7 @@
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"cn": "^0.2.6",
+		"lucide-react": "^0.577.0",
 		"radix-ui": "^1.6.7",
 		"tailwind-merge": "^3.0.2",
 		"ts-pattern": "^5.9.0"
