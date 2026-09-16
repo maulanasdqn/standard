@@ -2,6 +2,7 @@ import { Button } from "@app/components/ui/button";
 import { FieldError, hasFieldError } from "@app/components/ui/field-error";
 import { Input } from "@app/components/ui/input";
 import { Label } from "@app/components/ui/label";
+import { Link } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useLoginForm } from "#/routes/_public/login/_hooks/use-login.ts";
@@ -40,12 +41,12 @@ export const LoginForm: FC = (): ReactElement => {
 						<div className="grid gap-1.5">
 							<div className="flex items-center">
 								<Label htmlFor={field.name}>Password</Label>
-								<a
-									href="/"
+								<Link
+									to="/"
 									className="ml-auto text-sm underline-offset-4 hover:underline"
 								>
 									Forgot your password?
-								</a>
+								</Link>
 							</div>
 							<Input
 								id={field.name}

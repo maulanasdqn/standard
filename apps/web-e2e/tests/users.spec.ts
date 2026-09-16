@@ -1,7 +1,7 @@
 import { USER_MESSAGE } from "@app/messages";
 import type { TUserCreateInput } from "@app/schemas";
 import { expect, type Page, test } from "@playwright/test";
-import { ROLE_KEY } from "../support/access.ts";
+import { ROLE_KEY, ROLE_LABEL } from "../support/access.ts";
 import { SEED_CREDENTIALS } from "../support/credentials.ts";
 import {
 	ADMIN_NAV_LABELS,
@@ -12,6 +12,7 @@ import {
 import { signIn } from "../support/sign-in.ts";
 import { signOut } from "../support/sign-out.ts";
 import { rowWithCell } from "../support/table.ts";
+import { selectOption } from "../support/select.ts";
 
 const NEW_USER: TUserCreateInput = {
 	name: "E2E User",
@@ -43,7 +44,11 @@ test.describe("users admin flow", () => {
 		await page.getByLabel("Name", { exact: true }).fill(NEW_USER.name);
 		await page.getByLabel("Email", { exact: true }).fill(NEW_USER.email);
 		await page.getByLabel("Password", { exact: true }).fill(NEW_USER.password);
-		await page.getByLabel("Role", { exact: true }).selectOption(NEW_USER.role);
+		await selectOption(
+			page,
+			page.getByLabel("Role", { exact: true }),
+			ROLE_LABEL[ROLE_KEY.MEMBER],
+		);
 		await page.getByRole("button", { name: "Create user" }).click();
 
 		const row = rowWithCell(page, NEW_USER.email);
@@ -53,11 +58,11 @@ test.describe("users admin flow", () => {
 
 	test("changes the role inline", async (): Promise<void> => {
 		const roleSelect = page.getByLabel(`Role for ${NEW_USER.name}`);
-		await expect(roleSelect).toHaveValue(ROLE_KEY.MEMBER);
+		await expect(roleSelect).toHaveText(ROLE_LABEL[ROLE_KEY.MEMBER]);
 
-		await roleSelect.selectOption(ROLE_KEY.VIEWER);
+		await selectOption(page, roleSelect, ROLE_LABEL[ROLE_KEY.VIEWER]);
 
-		await expect(roleSelect).toHaveValue(ROLE_KEY.VIEWER);
+		await expect(roleSelect).toHaveText(ROLE_LABEL[ROLE_KEY.VIEWER]);
 	});
 
 	test("renames the user from the edit page", async (): Promise<void> => {
