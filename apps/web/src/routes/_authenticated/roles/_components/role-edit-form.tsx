@@ -24,11 +24,11 @@ export const RoleEditForm: FC<TRoleEditFormProps> = (props): ReactElement => {
 			<p className="text-sm text-neutral-500">
 				Key: <code>{props.role.key}</code> · {props.role.memberCount} members
 			</p>
-			{isFixed ? (
+			{isFixed && (
 				<p className="border border-neutral-200 bg-neutral-50 p-3 text-sm text-neutral-600">
 					Fixed roles are defined in code and can't be changed here.
 				</p>
-			) : null}
+			)}
 			<form.Field name="label">
 				{(field) => (
 					<div className="flex flex-col gap-1">
@@ -73,7 +73,7 @@ export const RoleEditForm: FC<TRoleEditFormProps> = (props): ReactElement => {
 				)}
 			</form.Field>
 			<div className="flex items-center gap-3">
-				{isFixed ? null : (
+				{isFixed && (
 					<Button type="submit" disabled={isPending}>
 						{isPending ? "Saving…" : "Save changes"}
 					</Button>
