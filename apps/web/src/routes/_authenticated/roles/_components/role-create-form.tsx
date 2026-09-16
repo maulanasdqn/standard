@@ -13,7 +13,7 @@ export const RoleCreateForm: FC = (): ReactElement => {
 	return (
 		<form
 			onSubmit={onSubmit}
-			className="flex flex-col gap-4 border border-neutral-200 p-4"
+			className="flex flex-col gap-4 rounded-xl border border-neutral-200 p-4"
 		>
 			<div className="grid gap-3 sm:grid-cols-2">
 				<form.Field name="key">

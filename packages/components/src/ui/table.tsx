@@ -17,7 +17,7 @@ export const Table: FC<TTableProps> = (props): ReactElement => {
 	const { className, ...rest } = props;
 
 	return (
-		<div className="w-full overflow-x-auto border border-neutral-200">
+		<div className="w-full overflow-x-auto rounded-xl border border-neutral-200">
 			<table className={cn("w-full text-sm", className)} {...rest} />
 		</div>
 	);

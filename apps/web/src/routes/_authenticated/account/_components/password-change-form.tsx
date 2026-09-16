@@ -11,7 +11,7 @@ export const PasswordChangeForm: FC = (): ReactElement => {
 	return (
 		<form
 			onSubmit={onSubmit}
-			className="flex flex-col gap-4 border border-neutral-200 p-4"
+			className="flex flex-col gap-4 rounded-xl border border-neutral-200 p-4"
 		>
 			<h2 className="font-medium">Change password</h2>
 			<form.Field name="currentPassword">

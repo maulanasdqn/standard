@@ -19,13 +19,13 @@ export const RoleEditForm: FC<TRoleEditFormProps> = (props): ReactElement => {
 	return (
 		<form
 			onSubmit={onSubmit}
-			className="flex flex-col gap-4 border border-neutral-200 p-4"
+			className="flex flex-col gap-4 rounded-xl border border-neutral-200 p-4"
 		>
 			<p className="text-sm text-neutral-500">
 				Key: <code>{props.role.key}</code> · {props.role.memberCount} members
 			</p>
 			{isFixed && (
-				<p className="border border-neutral-200 bg-neutral-50 p-3 text-sm text-neutral-600">
+				<p className="rounded-lg border border-neutral-200 bg-neutral-50 p-3 text-sm text-neutral-600">
 					Fixed roles are defined in code and can't be changed here.
 				</p>
 			)}

@@ -18,7 +18,7 @@ export const UserPasswordResetForm: FC<TUserPasswordResetFormProps> = (
 	return (
 		<form
 			onSubmit={onSubmit}
-			className="flex max-w-md flex-col gap-4 border border-neutral-200 p-4"
+			className="flex max-w-md flex-col gap-4 rounded-xl border border-neutral-200 p-4"
 		>
 			<div className="flex flex-col gap-1">
 				<h2 className="font-medium">Reset password</h2>
