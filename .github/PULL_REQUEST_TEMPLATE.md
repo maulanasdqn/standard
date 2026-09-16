@@ -6,7 +6,7 @@
 
 ## Summary
 
-<!-- One short paragraph: what this PR does and why. Keep it concise — this is what appears in reports. -->
+<!-- One short paragraph: what this PR does and why. Keep it concise; this is what appears in reports. -->
 
 ## Changelog
 
@@ -37,7 +37,7 @@ Notes: ...
 
 <!-- Every PR bumps the root package.json version: patch for fix/chore/docs, minor for feature/refactor, major for breaking. It is what /health serves on the API and the web. -->
 
-- [ ] Root `package.json` version bumped — `0.0.0` -> `0.0.0`
+- [ ] Root `package.json` version bumped: `0.0.0` -> `0.0.0`
 
 ## Verification
 

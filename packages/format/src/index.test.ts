@@ -3,9 +3,9 @@ import { formatUsd, orDash } from "./index.ts";
 
 describe("orDash", () => {
 	it("returns the em dash for empty values", (): void => {
-		expect(orDash(null)).toBe("—");
-		expect(orDash(undefined)).toBe("—");
-		expect(orDash("")).toBe("—");
+		expect(orDash(null)).toBe("-");
+		expect(orDash(undefined)).toBe("-");
+		expect(orDash("")).toBe("-");
 	});
 
 	it("stringifies present values", (): void => {

@@ -1,7 +1,7 @@
 export const ERROR_MESSAGE = {
 	SERVER_UNREACHABLE_TITLE: "Can't reach the server",
 	SERVER_UNREACHABLE_BODY:
-		"You have not been signed out — this is a connection problem, so nothing has been lost.",
+		"You have not been signed out. This is a connection problem, so nothing has been lost.",
 	SERVER_UNREACHABLE_NEXT:
 		"Your session is still valid. Try again once the connection is back.",
 	UNEXPECTED_TITLE: "Something went wrong",

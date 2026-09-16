@@ -137,6 +137,6 @@ jobs:
         run: |
           if [ -n "$(git status --porcelain -- 'apps/api/drizzle')" ]; then
             git status --porcelain -- 'apps/api/drizzle'
-            echo "::error::Drizzle schema drift detected — run db:generate and commit the migration"
+            echo "::error::Drizzle schema drift detected: run db:generate and commit the migration"
             exit 1
           fi

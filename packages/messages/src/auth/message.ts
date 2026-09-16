@@ -11,5 +11,5 @@ export const AUTH_MESSAGE = {
 	SESSION_UNVERIFIED:
 		"Sign-in succeeded, but the session could not be verified. Please try again.",
 	SESSION_UNREACHABLE:
-		"Sign-in succeeded, but the server is unreachable. You are still signed in — try again once the connection is back.",
+		"Sign-in succeeded, but the server is unreachable. You are still signed in, so try again once the connection is back.",
 } as const;

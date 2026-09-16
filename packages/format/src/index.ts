@@ -1,6 +1,6 @@
 import { match, P } from "ts-pattern";
 
-export const NOT_SET = "—";
+export const NOT_SET = "-";
 
 export const orDash = (value: string | number | null | undefined): string =>
 	match(value)

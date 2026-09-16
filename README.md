@@ -1,6 +1,6 @@
 # Standard
 
-Full-stack TypeScript boilerplate — moon + pnpm workspaces, Hono + oRPC, Drizzle, better-auth, React 19 + TanStack + Vite + Tailwind v4, Biome, Vitest, Playwright.
+Full-stack TypeScript boilerplate: moon + pnpm workspaces, Hono + oRPC, Drizzle, better-auth, React 19 + TanStack + Vite + Tailwind v4, Biome, Vitest, Playwright.
 
 ## Stack
 
@@ -59,11 +59,11 @@ make web                              # web on :5173
 
 Seed logins: `admin@test.app` / `Password123`, `member@test.app` / `Password123`, `viewer@test.app` / `Password123`.
 
-Mail sent in development is caught by mailpit — read it at `http://localhost:8025`.
+Mail sent in development is caught by mailpit, read it at `http://localhost:8025`.
 
 ## Version and Health
 
-The root `package.json` version is the single source of truth for the workspace. `@app/version` re-exports it as `APP_VERSION` — a plain JSON import, no build step and no generated file — and both sides serve it:
+The root `package.json` version is the single source of truth for the workspace. `@app/version` re-exports it as `APP_VERSION` (a plain JSON import, no build step and no generated file), and both sides serve it:
 
 | Surface | Response |
 |---|---|
@@ -73,7 +73,7 @@ The root `package.json` version is the single source of truth for the workspace.
 
 The shape is `healthSchema` in `@app/schemas`, so the web page is typed against what the API returns; the two versions differing means web and API are deployed out of step.
 
-**Every change bumps the root version** — patch for a fix, chore, or docs change; minor for a feature or behavior-changing refactor; major for a breaking change. Bump it in the same commit, so `/health` always names the build you are looking at. Only the root version matters; the workspace packages are private and unpublished.
+**Every change bumps the root version**: patch for a fix, chore, or docs change; minor for a feature or behavior-changing refactor; major for a breaking change. Bump it in the same commit, so `/health` always names the build you are looking at. Only the root version matters; the workspace packages are private and unpublished.
 
 ## Commands
 
@@ -114,7 +114,7 @@ Trunk-based development on `trunk`. Branches are short-lived, branch off `trunk`
 
 A branch that has fallen behind must be rebased on `trunk` and re-pushed; that is what keeps the history linear and every commit on `trunk` CI-green.
 
-PRs use `.github/PULL_REQUEST_TEMPLATE.md` — fill every section in place, writing "None" rather than deleting one. Reviews use `.github/PULL_REQUEST_REVIEW_TEMPLATE.md` and always cover three sections: **Functional** (correctness, and whether every Changelog bullet is actually implemented), **Clean Code** (the conventions in `.claude/skills/ts-conventions/SKILL.md`, plus duplication and naming), and **Feature Suggestions** (non-blocking, each tagged `this-pr` or `follow-up`). Findings in the first two carry a P0–P3 severity from the template's legend.
+PRs use `.github/PULL_REQUEST_TEMPLATE.md`. Fill every section in place, writing "None" rather than deleting one. Reviews use `.github/PULL_REQUEST_REVIEW_TEMPLATE.md` and always cover three sections: **Functional** (correctness, and whether every Changelog bullet is actually implemented), **Clean Code** (the conventions in `.claude/skills/ts-conventions/SKILL.md`, plus duplication and naming), and **Feature Suggestions** (non-blocking, each tagged `this-pr` or `follow-up`). Findings in the first two carry a P0–P3 severity from the template's legend.
 
 The root version is already current, so a release just rounds it to the release number:
 

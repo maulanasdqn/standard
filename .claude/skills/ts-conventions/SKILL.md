@@ -1,13 +1,13 @@
 ---
 name: ts-conventions
-description: Apply this project's TypeScript conventions — load this BEFORE writing or editing any .ts/.tsx file in this repo, including a one-line change, and re-check it before calling the work done. Covers the React component signature (`const X: FC<TProps> = (props): ReactElement =>`, props read as `props.x`), arrow functions only (no `function` keyword except generators), no plain strings (user-facing copy in @app/messages, domain keys in shared const objects), 200-line file limit, logic/UI separation, T/I/E naming prefixes, ts-pattern for conditionals, ts-belt for arrays/objects, Effect for apps/api business logic, and explicit return types everywhere.
+description: Apply this project's TypeScript conventions. Load this BEFORE writing or editing any .ts/.tsx file in this repo, including a one-line change, and re-check it before calling the work done. Covers the React component signature (`const X: FC<TProps> = (props): ReactElement =>`, props read as `props.x`), arrow functions only (no `function` keyword except generators), no plain strings (user-facing copy in @app/messages, domain keys in shared const objects), 200-line file limit, logic/UI separation, T/I/E naming prefixes, ts-pattern for conditionals, ts-belt for arrays/objects, Effect for apps/api business logic, explicit return types everywhere, and no em dashes anywhere in the repository.
 ---
 
 # TypeScript conventions
 
 Non-negotiable rules for every `.ts`/`.tsx` file written or edited in this project.
 
-Read the whole file before writing code, and run through it again before calling the work done — the rule most often missed on the second pass is **no plain strings**, immediately below.
+Read the whole file before writing code, and run through it again before calling the work done; the rule most often missed on the second pass is **no plain strings**, immediately below.
 
 ## React component signature
 
@@ -45,7 +45,7 @@ This applies to the shadcn/ui primitives in `packages/components/src/ui/` too, w
 
 ## Arrow functions only
 
-Every function is an arrow function assigned to a `const`. The `function` keyword is not used — not for React components, not for route pages, not for default-exported helpers.
+Every function is an arrow function assigned to a `const`. The `function` keyword is not used: not for React components, not for route pages, not for default-exported helpers.
 
 ```ts
 const HealthPage = (): ReactElement => { ... };
@@ -61,7 +61,7 @@ export const noteCreate = Effect.fn("noteCreate")(function* (input) { ... });
 const program = Effect.gen(function* () { ... });
 ```
 
-The shadcn/ui primitives in `packages/components/src/ui/` follow this rule too, so they differ from what `shadcn add` emits upstream — convert any newly added component by hand before committing it.
+The shadcn/ui primitives in `packages/components/src/ui/` follow this rule too, so they differ from what `shadcn add` emits upstream; convert any newly added component by hand before committing it.
 
 ## No plain strings
 
@@ -69,7 +69,7 @@ Every string that carries meaning is named by a shared constant and referenced f
 
 Two categories, two homes:
 
-**User-facing copy** — labels, status text, error messages, empty states, button text — lives in `@app/messages`, one `SCREAMING_SNAKE` const object per feature in `packages/messages/src/<feature>/message.ts`, declared `as const` and re-exported from the package index.
+**User-facing copy** (labels, status text, error messages, empty states, button text) lives in `@app/messages`, one `SCREAMING_SNAKE` const object per feature in `packages/messages/src/<feature>/message.ts`, declared `as const` and re-exported from the package index.
 
 ```ts
 export const HEALTH_MESSAGE = {
@@ -80,7 +80,7 @@ export const HEALTH_MESSAGE = {
 
 Components and hooks import the constant. They never contain the sentence itself.
 
-**Domain keys and enum-like values** — statuses, role keys, permissions, `Context.Service` tag ids, env keys, queue names — live in a shared const object near their domain, with the union type derived from it:
+**Domain keys and enum-like values** (statuses, role keys, permissions, `Context.Service` tag ids, env keys, queue names) live in a shared const object near their domain, with the union type derived from it:
 
 ```ts
 export const HEALTH_STATUS = { OK: "ok", READY: "ready" } as const;
@@ -97,11 +97,11 @@ match(status).with(HEALTH_STATUS.OK, () => ...)      // not .with("ok", ...)
 
 That last set matters because TypeScript does not protect you here: rename the value and a stale `.with("ok", ...)` arm still compiles, silently never matching.
 
-**Exempt:** Tailwind class strings inside `className`, and route paths handled by the router's own typed API. Those are styling and framework syntax, not named values — constant-ising them makes the code worse.
+**Exempt:** Tailwind class strings inside `className`, and route paths handled by the router's own typed API. Those are styling and framework syntax, not named values, and constant-ising them makes the code worse.
 
 ## File size
 
-200 lines max per file. Split by responsibility — one use case, one component, one repository per file — not by mechanically chopping a large file in half.
+200 lines max per file. Split by responsibility (one use case, one component, one repository per file), not by mechanically chopping a large file in half.
 
 ## Separate logic from UI
 
@@ -123,28 +123,32 @@ Code has to read clearly enough that a comment adds nothing. Rename the variable
 - No JSDoc restating a signature that's already typed.
 - If something genuinely needs documenting (a non-obvious external constraint, a workaround), it belongs in the PR description or a README, not the source file.
 
+## No em dashes
+
+The `—` character never appears in a source file, a string constant, a commit message, or a document in this repository. Rewrite the sentence with a comma, a colon, a semicolon, parentheses, or a full stop and a new sentence, rather than swapping in a lookalike glyph. Placeholder text for an empty value uses a plain hyphen (`NOT_SET = "-"` in `@app/format`).
+
 ## Naming prefixes
 
-- `T` for anything declared with `type` — `TNote`, `TCreateNoteInput`, `TNoteRepo`, `TSession`, `TDbService` (the plain shape behind a `Context.Service`, see below). An object-shaped `type` alias is still a `type`, so it gets `T`, never `I`.
-- `I` only for a literal `interface` declaration — rare here; the one legitimate case is declaration-merging into a third-party module (`interface Register` for TanStack Router).
-- `E` for enums, and for `Schema.TaggedError` classes — `EStatus`, `ERole`, `ENotFound`, `EDatabase`.
+- `T` for anything declared with `type`: `TNote`, `TCreateNoteInput`, `TNoteRepo`, `TSession`, `TDbService` (the plain shape behind a `Context.Service`, see below). An object-shaped `type` alias is still a `type`, so it gets `T`, never `I`.
+- `I` only for a literal `interface` declaration, which is rare here; the one legitimate case is declaration-merging into a third-party module (`interface Register` for TanStack Router).
+- `E` for enums, and for `Schema.TaggedError` classes: `EStatus`, `ERole`, `ENotFound`, `EDatabase`.
 
 Every type alias, interface, enum, and tagged error carries its prefix. No exceptions, no unprefixed `Note`/`Status`/`Repo`/`NotFound` names.
 
 ## No inline object types on inputs
 
-A parameter is never typed with an object literal (`input: { title: string; body: string }`). Input shapes come from the zod schemas in `@app/schemas` — `TNoteCreateInput`, `TNoteUpdateInput`, `TNoteListInput`, `TPagination` — and a repo/port signature takes exactly that inferred type. Don't hand-write a domain twin of a schema type (`TNoteQuery` duplicating `TNoteListInput`); import the schema type. Values that aren't part of the wire input (an actor id from the session) travel as a separate parameter, not merged into a new object type.
+A parameter is never typed with an object literal (`input: { title: string; body: string }`). Input shapes come from the zod schemas in `@app/schemas` (`TNoteCreateInput`, `TNoteUpdateInput`, `TNoteListInput`, `TPagination`), and a repo/port signature takes exactly that inferred type. Don't hand-write a domain twin of a schema type (`TNoteQuery` duplicating `TNoteListInput`); import the schema type. Values that aren't part of the wire input (an actor id from the session) travel as a separate parameter, not merged into a new object type.
 
 ```ts
 create: (input: TNoteCreateInput, authorId: string) => Effect.Effect<TNoteRow, EDatabase>;
 update: (input: TNoteUpdateInput) => Effect.Effect<TNoteRow | null, EDatabase>;
 ```
 
-Never inline a raw string where a shared constant already names that value — a role, a permission, a `Context.Service` tag id, an env key. Reference `ROLE.ADMIN`, `SERVICE_TAG.DB`, etc., not `"admin"`/`"app/DbService"` repeated at each call site.
+Never inline a raw string where a shared constant already names that value: a role, a permission, a `Context.Service` tag id, an env key. Reference `ROLE.ADMIN`, `SERVICE_TAG.DB`, etc., not `"admin"`/`"app/DbService"` repeated at each call site.
 
 ## ts-pattern for conditionals
 
-Replace `if`/`else` chains, `switch`, and nested ternaries with `match(...).with(...).exhaustive()` — use `.otherwise()` only when a fallback is intentional, never to paper over a missed case.
+Replace `if`/`else` chains, `switch`, and nested ternaries with `match(...).with(...).exhaustive()`. Use `.otherwise()` only when a fallback is intentional, never to paper over a missed case.
 
 ```ts
 import { match } from "ts-pattern";
@@ -157,7 +161,7 @@ const label = match(status)
 
 A plain ternary for a single true/false branch is fine (`isLoading ? <Spinner /> : <Content />`); ts-pattern is for anything with more than one meaningful case.
 
-**Exception — inside `Effect.gen`/`Effect.fn` bodies** (see below), error-raising control flow uses Effect's own idiom instead: a plain `if` guard that returns the failure, never `match`.
+**Exception, inside `Effect.gen`/`Effect.fn` bodies** (see below), error-raising control flow uses Effect's own idiom instead: a plain `if` guard that returns the failure, never `match`.
 
 ```ts
 if (row === null) {
@@ -165,19 +169,19 @@ if (row === null) {
 }
 ```
 
-This is what forcing ts-pattern here would fight: Effect's own style guide (shipped in the `effect` package as `AGENTS.md`/`CLAUDE.md`) requires exactly this shape so TypeScript can see the function won't continue past a raised error. Everywhere else — routers, hooks, components, oRPC middleware — ts-pattern stays the rule.
+This is what forcing ts-pattern here would fight: Effect's own style guide (shipped in the `effect` package as `AGENTS.md`/`CLAUDE.md`) requires exactly this shape so TypeScript can see the function won't continue past a raised error. Everywhere else (routers, hooks, components, oRPC middleware) ts-pattern stays the rule.
 
 ## Effect for apps/api business logic
 
-`apps/api` is organised by module — `src/<module>/{domain,application,infrastructure,presentation}` with `src/shared/` and `src/platform/` alongside. A module is reachable only through its `index.ts`, and the boundaries are enforced by `moon run api:arch`. Those layers are built on [Effect](https://effect.website) (`effect@rc`, v4) — not because it's trendy, but because it's the DI, error-typing, and composition mechanism for that layer. Read the actual guidance shipped with the installed package (`node_modules/effect/AGENTS.md` and `ai-docs/`) before writing Effect code — it reflects the exact installed API, not general Effect knowledge, which drifts fast across major versions.
+`apps/api` is organised by module: `src/<module>/{domain,application,infrastructure,presentation}` with `src/shared/` and `src/platform/` alongside. A module is reachable only through its `index.ts`, and the boundaries are enforced by `moon run api:arch`. Those layers are built on [Effect](https://effect.website) (`effect@rc`, v4), not because it's trendy, but because it's the DI, error-typing, and composition mechanism for that layer. Read the actual guidance shipped with the installed package (`node_modules/effect/AGENTS.md` and `ai-docs/`) before writing Effect code, because it reflects the exact installed API, not general Effect knowledge, which drifts fast across major versions.
 
-- **Errors** are `Schema.TaggedError` classes, not thrown exceptions — `application/shared/errors.ts` (`ENotFound`, `EForbidden`, `EDatabase`, ...). A use case fails with `return yield* new EError({...})`, never `throw`.
-- **Services** are `Context.Service` tags declared as a `const`, never a class — `export const NoteRepo = Context.Service<TNoteRepoId, TNoteRepo>(REPO_TAG.NOTE)`. Effect v4 ships a functional overload (`dist/Context.d.ts:239`) alongside the class one (`:290`), and the runtime lookup token is the **key string**, not the class: both forms return the same object with `self.key = key`, and every lookup is `lookup(self, key.key)` (`src/Context.ts:394-417`, `:681`). Effect's own modules use the const form (`HttpClient`, `HttpRouter`, `HttpServerRequest`, `AtomRegistry`). `of`, `use`, `useSync` and `context` are declared on `interface Service` (`dist/Context.d.ts:90-95`), so `Tag.of(...)` and `Tag.use(...)` work identically on it. What the const form cannot carry is a `static readonly layer` — the functional overload's options parameter is `{}` — so the layer is a sibling `export const xxxLayer = Layer.effect(Xxx, ...)` in the same file. Three things stay non-negotiable: the shape is a separately named `type TXxx = {...}` (suffix `Shape` when a same-named `T` type already exists, as in `TAuthServiceShape`/`TActivityRepoShape`); the identifier is a phantom `type TXxxId = TServiceId<typeof SERVICE_TAG.XXX>`, because with one type argument `Identifier` defaults to `Shape` and two structurally identical services would become interchangeable in the `R` channel; and the tag id always comes from the shared `SERVICE_TAG`/`REPO_TAG` constant, never a literal.
+- **Errors** are `Schema.TaggedError` classes, not thrown exceptions: `application/shared/errors.ts` (`ENotFound`, `EForbidden`, `EDatabase`, ...). A use case fails with `return yield* new EError({...})`, never `throw`.
+- **Services** are `Context.Service` tags declared as a `const`, never a class: `export const NoteRepo = Context.Service<TNoteRepoId, TNoteRepo>(REPO_TAG.NOTE)`. Effect v4 ships a functional overload (`dist/Context.d.ts:239`) alongside the class one (`:290`), and the runtime lookup token is the **key string**, not the class: both forms return the same object with `self.key = key`, and every lookup is `lookup(self, key.key)` (`src/Context.ts:394-417`, `:681`). Effect's own modules use the const form (`HttpClient`, `HttpRouter`, `HttpServerRequest`, `AtomRegistry`). `of`, `use`, `useSync` and `context` are declared on `interface Service` (`dist/Context.d.ts:90-95`), so `Tag.of(...)` and `Tag.use(...)` work identically on it. What the const form cannot carry is a `static readonly layer`, because the functional overload's options parameter is `{}`, so the layer is a sibling `export const xxxLayer = Layer.effect(Xxx, ...)` in the same file. Three things stay non-negotiable: the shape is a separately named `type TXxx = {...}` (suffix `Shape` when a same-named `T` type already exists, as in `TAuthServiceShape`/`TActivityRepoShape`); the identifier is a phantom `type TXxxId = TServiceId<typeof SERVICE_TAG.XXX>`, because with one type argument `Identifier` defaults to `Shape` and two structurally identical services would become interchangeable in the `R` channel; and the tag id always comes from the shared `SERVICE_TAG`/`REPO_TAG` constant, never a literal.
 - **`Schema.TaggedError` stays a class**, and this is not an inconsistency. Its overloads return `[Self] extends [never] ? MissingSelfGeneric<"Schema.TaggedError"> : Class<...>` (`dist/Schema.d.ts`), so TypeScript hands you a string telling you to use a class; the value is a constructor carrying `Error`'s prototype chain, which is what makes `return yield* new ENotFound({...})` work. A service's identity is a string, so it can be a const; an error's identity is a constructor, so it cannot.
-- **Use cases** are `Effect.fn("name")(function* (input) {...})` programs that pull dependencies with `yield* SomeService` — never a hand-rolled `makeXxx(deps) => (input) => ...` DI pattern; Effect's own context resolution replaces that entirely.
-- **The oRPC boundary** (`presentation/orpc/run-effect.ts`) is the only place an Effect program is run and crosses back into Promise-land — it catches every expected tagged error into a plain value *before* `runPromise` (so only real defects can reject the promise), then maps by `_tag` to an `ORPCError`.
-- Third-party Promise-based APIs that aren't Effect-aware (better-auth's `databaseHooks`, a callback-based queue consumer) are left as plain async functions at that exact seam — wrap them in `Effect.tryPromise` on the Effect side rather than forcing the whole third-party surface through Effect.
-- Everything outside `apps/api`'s business-logic layers (React components/hooks, oRPC/Hono framework wiring, scripts) stays plain Promise/async-await — Effect isn't a repo-wide requirement, it's scoped to where it's actually doing DI/error-typing work.
+- **Use cases** are `Effect.fn("name")(function* (input) {...})` programs that pull dependencies with `yield* SomeService`, never a hand-rolled `makeXxx(deps) => (input) => ...` DI pattern; Effect's own context resolution replaces that entirely.
+- **The oRPC boundary** (`presentation/orpc/run-effect.ts`) is the only place an Effect program is run and crosses back into Promise-land: it catches every expected tagged error into a plain value *before* `runPromise` (so only real defects can reject the promise), then maps by `_tag` to an `ORPCError`.
+- Third-party Promise-based APIs that aren't Effect-aware (better-auth's `databaseHooks`, a callback-based queue consumer) are left as plain async functions at that exact seam, so wrap them in `Effect.tryPromise` on the Effect side rather than forcing the whole third-party surface through Effect.
+- Everything outside `apps/api`'s business-logic layers (React components/hooks, oRPC/Hono framework wiring, scripts) stays plain Promise/async-await, because Effect isn't a repo-wide requirement, it's scoped to where it's actually doing DI/error-typing work.
 
 ## ts-belt for arrays and objects
 
@@ -191,11 +195,11 @@ const found = A.find(notes, (note) => note.id === id);
 const patched = D.merge(note, { title: "Updated" });
 ```
 
-Native syntax is fine only where ts-belt has no equivalent — object/array literals, spread, destructuring.
+Native syntax is fine only where ts-belt has no equivalent: object/array literals, spread, destructuring.
 
 ## Explicit return types
 
-Every function, arrow function, and method declares its return type. Never rely on inference — not for one-liners, not for anything exported, not for anything with a single return path.
+Every function, arrow function, and method declares its return type. Never rely on inference: not for one-liners, not for anything exported, not for anything with a single return path.
 
 ```ts
 const toLabel = (status: TStatus): string =>
