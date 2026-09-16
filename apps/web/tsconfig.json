@@ -3,7 +3,6 @@
 	"include": ["src/**/*.ts", "src/**/*.tsx"],
 	"compilerOptions": {
 		"jsx": "react-jsx",
-		"baseUrl": ".",
 		"paths": {
 			"#/*": ["./src/*", "../api/src/*"]
 		},

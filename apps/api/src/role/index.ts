@@ -14,7 +14,10 @@ export {
 };
 export type { TCustomRoleRepoId };
 
-export const roleModule = {
+export const roleModule: {
+	layer: typeof customRoleRepoLayer;
+	routerBuild: typeof roleRouterBuild;
+} = {
 	layer: customRoleRepoLayer,
 	routerBuild: roleRouterBuild,
 };
