@@ -1,0 +1,105 @@
+import { Badge } from "@app/components/ui/badge";
+import {
+	Card,
+	CardContent,
+	CardHeader,
+	CardTitle,
+} from "@app/components/ui/card";
+import { DASHBOARD_MESSAGE } from "@app/messages";
+import { A } from "@mobily/ts-belt";
+import { Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
+import type { FC, ReactElement } from "react";
+import { match } from "ts-pattern";
+import type { TClientOutputs } from "#/libs/orpc/types.ts";
+
+type TActivity = TClientOutputs["activity"]["list"]["items"][number];
+
+type TRecentActivityProps = {
+	entries: readonly TActivity[];
+};
+
+const formatTime = (date: string): string => {
+	const d = new Date(date);
+	const now = new Date();
+	const diffMs = now.getTime() - d.getTime();
+	const diffMins = Math.floor(diffMs / 60_000);
+	const diffHours = Math.floor(diffMs / 3_600_000);
+	const diffDays = Math.floor(diffMs / 86_400_000);
+
+	return match({ diffMins, diffHours, diffDays })
+		.when(
+			({ diffMins }) => diffMins < 1,
+			() => "just now",
+		)
+		.when(
+			({ diffMins }) => diffMins < 60,
+			({ diffMins }) => `${String(diffMins)}m ago`,
+		)
+		.when(
+			({ diffHours }) => diffHours < 24,
+			({ diffHours }) => `${String(diffHours)}h ago`,
+		)
+		.otherwise(({ diffDays }) => `${String(diffDays)}d ago`);
+};
+
+export const RecentActivity: FC<TRecentActivityProps> = (
+	props,
+): ReactElement => (
+	<Card className="col-span-full lg:col-span-2">
+		<CardHeader className="flex flex-row items-center justify-between">
+			<CardTitle className="text-sm font-medium text-muted-foreground">
+				{DASHBOARD_MESSAGE.RECENT_ACTIVITY}
+			</CardTitle>
+			<Link
+				to="/activity"
+				className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+			>
+				{DASHBOARD_MESSAGE.VIEW_ALL}
+				<ArrowRight className="size-3" />
+			</Link>
+		</CardHeader>
+		<CardContent>
+			{match(A.isEmpty(props.entries as TActivity[]))
+				.with(true, () => (
+					<p className="text-sm text-muted-foreground">
+						{DASHBOARD_MESSAGE.RECENT_ACTIVITY_EMPTY}
+					</p>
+				))
+				.otherwise(() => (
+					<div className="space-y-3">
+						{A.map(props.entries, (entry) => (
+							<div
+								key={entry.id}
+								className="flex items-center justify-between gap-4"
+							>
+								<div className="flex min-w-0 items-center gap-3">
+									<div className="size-2 shrink-0 rounded-full bg-primary/60" />
+									<div className="min-w-0">
+										<p className="truncate text-sm">
+											<span className="font-medium">{entry.actorEmail}</span>
+											<span className="text-muted-foreground">
+												{" "}
+												{entry.action}{" "}
+											</span>
+											<span className="text-muted-foreground">
+												{entry.resourceType}
+											</span>
+										</p>
+									</div>
+								</div>
+								<div className="flex shrink-0 items-center gap-2">
+									<Badge variant="outline" className="text-xs">
+										{entry.action}
+									</Badge>
+									<span className="text-xs text-muted-foreground">
+										{formatTime(entry.createdAt)}
+									</span>
+								</div>
+							</div>
+						))}
+					</div>
+				))}
+		</CardContent>
+	</Card>
+);

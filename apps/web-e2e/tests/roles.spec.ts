@@ -148,15 +148,20 @@ test.describe("roles admin flow", () => {
 		await signOut(page);
 		await signIn(page, { email: REVIEWER.email, password: REVIEWER.password });
 
-		await expectNavVisible(page, [NAV_LABEL.NOTES, NAV_LABEL.ACCOUNT]);
+		await expectNavVisible(page, [
+			NAV_LABEL.DASHBOARD,
+			NAV_LABEL.NOTES,
+			NAV_LABEL.ACCOUNT,
+		]);
 		await expectNavHidden(page, ADMIN_NAV_LABELS);
 
+		await page.goto("/notes");
 		await page.getByPlaceholder("Title").fill("Reviewer note");
 		await page.getByRole("button", { name: "Add note" }).click();
 		await confirmAction(page);
 		await expect(page.getByText("Reviewer note")).toBeVisible();
 
 		await page.goto("/roles");
-		await expect(page).toHaveURL(/\/notes/);
+		await expect(page).toHaveURL(/\/dashboard/);
 	});
 });

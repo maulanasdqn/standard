@@ -13,7 +13,7 @@ export const Route = createFileRoute("/")({
 				throw redirect({ to: "/login" });
 			})
 			.otherwise(() => {
-				throw redirect({ to: "/notes" });
+				throw redirect({ to: "/dashboard" });
 			});
 	},
 });
