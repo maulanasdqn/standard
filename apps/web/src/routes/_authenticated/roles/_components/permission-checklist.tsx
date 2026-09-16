@@ -1,4 +1,11 @@
+import {
+	Card,
+	CardContent,
+	CardHeader,
+	CardTitle,
+} from "@app/components/ui/card";
 import { Checkbox } from "@app/components/ui/checkbox";
+import { Label } from "@app/components/ui/label";
 import { PERMISSION_LABEL, type TPermission } from "@app/permissions";
 import { A } from "@mobily/ts-belt";
 import type { FC, ReactElement } from "react";
@@ -19,36 +26,35 @@ export const PermissionChecklist: FC<TPermissionChecklistProps> = (
 	return (
 		<div className="grid gap-4 sm:grid-cols-2">
 			{A.map(PERMISSION_GROUPS, (group) => (
-				<fieldset
-					key={group.resource}
-					className="flex flex-col gap-2 rounded-lg border border-border p-3"
-					disabled={disabled}
-				>
-					<legend className="px-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-						{group.resource}
-					</legend>
-					{A.map(group.permissions, (permission) => (
-						<label
-							key={permission}
-							htmlFor={`permission-${permission}`}
-							className="flex items-center gap-2 text-sm"
-						>
-							<Checkbox
-								id={`permission-${permission}`}
-								checked={A.includes(value, permission)}
-								onChange={(event) =>
-									onChange(
-										permissionsToggle(value, permission, event.target.checked),
-									)
-								}
-							/>
-							<span>{PERMISSION_LABEL[permission]}</span>
-							<code className="ml-auto text-xs text-muted-foreground">
-								{permission}
-							</code>
-						</label>
-					))}
-				</fieldset>
+				<Card key={group.resource} className="gap-3 py-4 shadow-none">
+					<CardHeader className="px-4">
+						<CardTitle className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+							{group.resource}
+						</CardTitle>
+					</CardHeader>
+					<CardContent className="flex flex-col gap-2 px-4">
+						{A.map(group.permissions, (permission) => (
+							<div key={permission} className="flex items-center gap-2 text-sm">
+								<Checkbox
+									id={`permission-${permission}`}
+									checked={A.includes(value, permission)}
+									disabled={disabled}
+									onCheckedChange={(checked) =>
+										onChange(
+											permissionsToggle(value, permission, checked === true),
+										)
+									}
+								/>
+								<Label htmlFor={`permission-${permission}`}>
+									{PERMISSION_LABEL[permission]}
+								</Label>
+								<code className="ml-auto text-xs text-muted-foreground">
+									{permission}
+								</code>
+							</div>
+						))}
+					</CardContent>
+				</Card>
 			))}
 		</div>
 	);

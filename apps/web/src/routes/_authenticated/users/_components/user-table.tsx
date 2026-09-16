@@ -1,5 +1,11 @@
 import { Guard } from "@app/components/guard/guard";
-import { Select } from "@app/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@app/components/ui/select";
 import {
 	Table,
 	TableBody,
@@ -68,22 +74,25 @@ export const UserTable: FC<TUserTableProps> = (props): ReactElement => {
 									}
 								>
 									<Select
-										aria-label={`Role for ${user.name}`}
 										value={user.role}
 										disabled={isSelf(user.id) || userUpdate.isPending}
-										onChange={(event) =>
-											userUpdate.mutate({
-												id: user.id,
-												role: event.target.value,
-											})
+										onValueChange={(role) =>
+											userUpdate.mutate({ id: user.id, role })
 										}
-										className="w-40"
 									>
-										{A.map(props.roleOptions, (option) => (
-											<option key={option.value} value={option.value}>
-												{option.label}
-											</option>
-										))}
+										<SelectTrigger
+											aria-label={`Role for ${user.name}`}
+											className="w-40"
+										>
+											<SelectValue />
+										</SelectTrigger>
+										<SelectContent>
+											{A.map(props.roleOptions, (option) => (
+												<SelectItem key={option.value} value={option.value}>
+													{option.label}
+												</SelectItem>
+											))}
+										</SelectContent>
 									</Select>
 								</Guard>
 							</TableCell>

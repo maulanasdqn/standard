@@ -1,9 +1,16 @@
 import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
 import { Label } from "@app/components/ui/label";
-import { Select } from "@app/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@app/components/ui/select";
 import { ACTIVITY_MESSAGE } from "@app/messages";
 import { A, D } from "@mobily/ts-belt";
 import type { FC, ReactElement } from "react";
+import { ACTIVITY_FILTER_ALL } from "#/routes/_authenticated/activity/_constants/filter.ts";
 import { useActivityFilters } from "#/routes/_authenticated/activity/_hooks/use-activity.ts";
 
 const ACTIONS = D.values(ACTIVITY_ACTION);
@@ -19,36 +26,40 @@ export const ActivityFilters: FC = (): ReactElement => {
 				<Label htmlFor="activity-action">
 					{ACTIVITY_MESSAGE.FILTER_ACTION}
 				</Label>
-				<Select
-					id="activity-action"
-					value={action}
-					onChange={(event) => onActionChange(event.target.value)}
-					className="w-48"
-				>
-					<option value="">{ACTIVITY_MESSAGE.FILTER_ACTION_ALL}</option>
-					{A.map(ACTIONS, (value) => (
-						<option key={value} value={value}>
-							{value}
-						</option>
-					))}
+				<Select value={action} onValueChange={onActionChange}>
+					<SelectTrigger id="activity-action" className="w-48">
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value={ACTIVITY_FILTER_ALL}>
+							{ACTIVITY_MESSAGE.FILTER_ACTION_ALL}
+						</SelectItem>
+						{A.map(ACTIONS, (value) => (
+							<SelectItem key={value} value={value}>
+								{value}
+							</SelectItem>
+						))}
+					</SelectContent>
 				</Select>
 			</div>
 			<div className="flex flex-col gap-1">
 				<Label htmlFor="activity-resource-type">
 					{ACTIVITY_MESSAGE.FILTER_ENTITY}
 				</Label>
-				<Select
-					id="activity-resource-type"
-					value={resourceType}
-					onChange={(event) => onResourceTypeChange(event.target.value)}
-					className="w-48"
-				>
-					<option value="">{ACTIVITY_MESSAGE.FILTER_ENTITY_ALL}</option>
-					{A.map(RESOURCE_TYPES, (value) => (
-						<option key={value} value={value}>
-							{value}
-						</option>
-					))}
+				<Select value={resourceType} onValueChange={onResourceTypeChange}>
+					<SelectTrigger id="activity-resource-type" className="w-48">
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value={ACTIVITY_FILTER_ALL}>
+							{ACTIVITY_MESSAGE.FILTER_ENTITY_ALL}
+						</SelectItem>
+						{A.map(RESOURCE_TYPES, (value) => (
+							<SelectItem key={value} value={value}>
+								{value}
+							</SelectItem>
+						))}
+					</SelectContent>
 				</Select>
 			</div>
 		</div>

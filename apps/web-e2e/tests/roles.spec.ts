@@ -16,6 +16,7 @@ import {
 import { signIn } from "../support/sign-in.ts";
 import { signOut } from "../support/sign-out.ts";
 import { rowWithCell } from "../support/table.ts";
+import { selectOption } from "../support/select.ts";
 
 const FIXED_NOTICE =
 	"Fixed roles are defined in code and can't be changed here.";
@@ -127,11 +128,15 @@ test.describe("roles admin flow", () => {
 		await page.getByLabel("Name", { exact: true }).fill(REVIEWER.name);
 		await page.getByLabel("Email", { exact: true }).fill(REVIEWER.email);
 		await page.getByLabel("Password", { exact: true }).fill(REVIEWER.password);
-		await page.getByLabel("Role", { exact: true }).selectOption(REVIEWER.role);
+		await selectOption(
+			page,
+			page.getByLabel("Role", { exact: true }),
+			RENAMED_LABEL,
+		);
 		await page.getByRole("button", { name: "Create user" }).click();
 
-		await expect(page.getByLabel(`Role for ${REVIEWER.name}`)).toHaveValue(
-			NEW_ROLE.key,
+		await expect(page.getByLabel(`Role for ${REVIEWER.name}`)).toHaveText(
+			RENAMED_LABEL,
 		);
 	});
 

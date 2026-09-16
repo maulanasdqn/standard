@@ -4,6 +4,7 @@ import { SEED_CREDENTIALS } from "../support/credentials.ts";
 import { expectNavHidden, NAV_LABEL } from "../support/nav.ts";
 import { signIn } from "../support/sign-in.ts";
 import { signOut } from "../support/sign-out.ts";
+import { selectOption } from "../support/select.ts";
 
 const NOTE_TITLE = "Audited from Playwright";
 
@@ -29,9 +30,11 @@ test.describe("activity log", () => {
 		await page.goto("/activity");
 		await expect(page.getByRole("heading", { name: "Activity" })).toBeVisible();
 
-		await page
-			.getByLabel("Action", { exact: true })
-			.selectOption(ACTIVITY_ACTION.NOTE_CREATE);
+		await selectOption(
+			page,
+			page.getByLabel("Action", { exact: true }),
+			ACTIVITY_ACTION.NOTE_CREATE,
+		);
 		await expect(page).toHaveURL(/action=note\.create/);
 
 		const entry = page

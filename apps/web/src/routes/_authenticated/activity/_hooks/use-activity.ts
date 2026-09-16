@@ -9,6 +9,7 @@ import { getRouteApi } from "@tanstack/react-router";
 import { match } from "ts-pattern";
 import { orpc } from "#/libs/orpc/client.ts";
 import type { TClientErrors, TClientOutputs } from "#/libs/orpc/types.ts";
+import { ACTIVITY_FILTER_ALL } from "#/routes/_authenticated/activity/_constants/filter.ts";
 
 type TActivityOut = TClientOutputs["activity"];
 type TActivityErr = TClientErrors["activity"];
@@ -22,9 +23,9 @@ export type TActivityFilters = {
 
 const routeApi = getRouteApi("/_authenticated/activity/");
 
-const emptyToUndefined = (value: string): string | undefined =>
+const filterToSearch = (value: string): string | undefined =>
 	match(value)
-		.with("", () => undefined)
+		.with(ACTIVITY_FILTER_ALL, () => undefined)
 		.otherwise((text) => text);
 
 export const activityListOptions = (
@@ -52,18 +53,18 @@ export const useActivityFilters = (): TActivityFilters => {
 	const { action, resourceType } = routeApi.useSearch();
 
 	return {
-		action: action ?? "",
-		resourceType: resourceType ?? "",
+		action: action ?? ACTIVITY_FILTER_ALL,
+		resourceType: resourceType ?? ACTIVITY_FILTER_ALL,
 		onActionChange: (next: string): void => {
 			void navigate({
 				search: (prev) =>
-					D.merge(prev, { action: emptyToUndefined(next), page: 1 }),
+					D.merge(prev, { action: filterToSearch(next), page: 1 }),
 			});
 		},
 		onResourceTypeChange: (next: string): void => {
 			void navigate({
 				search: (prev) =>
-					D.merge(prev, { resourceType: emptyToUndefined(next), page: 1 }),
+					D.merge(prev, { resourceType: filterToSearch(next), page: 1 }),
 			});
 		},
 	};

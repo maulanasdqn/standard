@@ -1,19 +1,31 @@
-import type { FC, InputHTMLAttributes, ReactElement } from "react";
+import type * as React from "react";
+import type { FC, ReactElement } from "react";
+import { CheckIcon } from "lucide-react";
+import { Checkbox as CheckboxPrimitive } from "radix-ui";
 import { cn } from "../lib/utils.ts";
 
-type TCheckboxProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type">;
-
-export const Checkbox: FC<TCheckboxProps> = (props): ReactElement => {
+const Checkbox: FC<React.ComponentProps<typeof CheckboxPrimitive.Root>> = (
+	props,
+): ReactElement => {
 	const { className, ...rest } = props;
 
 	return (
-		<input
-			type="checkbox"
+		<CheckboxPrimitive.Root
+			data-slot="checkbox"
 			className={cn(
-				"size-4 cursor-pointer rounded-sm border-input accent-primary disabled:cursor-not-allowed disabled:opacity-50",
+				"peer size-4 shrink-0 rounded-sm border border-input shadow-xs transition-shadow outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:bg-input/30 dark:aria-invalid:ring-destructive/40 dark:data-[state=checked]:bg-primary",
 				className,
 			)}
 			{...rest}
-		/>
+		>
+			<CheckboxPrimitive.Indicator
+				data-slot="checkbox-indicator"
+				className="grid place-content-center text-current transition-none"
+			>
+				<CheckIcon className="size-3.5" />
+			</CheckboxPrimitive.Indicator>
+		</CheckboxPrimitive.Root>
 	);
 };
+
+export { Checkbox };

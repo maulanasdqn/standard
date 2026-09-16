@@ -1,3 +1,4 @@
+import { Card, CardContent } from "@app/components/ui/card";
 import { roleLabel } from "@app/permissions";
 import type { FC, ReactElement } from "react";
 import { match, P } from "ts-pattern";
@@ -9,12 +10,16 @@ export const AccountSummary: FC = (): ReactElement =>
 			<p className="text-sm text-muted-foreground">Not signed in.</p>
 		))
 		.otherwise((session) => (
-			<dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 rounded-xl border border-border p-4 text-sm">
-				<dt className="text-muted-foreground">Name</dt>
-				<dd>{session.user.name}</dd>
-				<dt className="text-muted-foreground">Email</dt>
-				<dd>{session.user.email}</dd>
-				<dt className="text-muted-foreground">Role</dt>
-				<dd>{roleLabel(session.user.role)}</dd>
-			</dl>
+			<Card>
+				<CardContent>
+					<dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
+						<dt className="text-muted-foreground">Name</dt>
+						<dd>{session.user.name}</dd>
+						<dt className="text-muted-foreground">Email</dt>
+						<dd>{session.user.email}</dd>
+						<dt className="text-muted-foreground">Role</dt>
+						<dd>{roleLabel(session.user.role)}</dd>
+					</dl>
+				</CardContent>
+			</Card>
 		));
