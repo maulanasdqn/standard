@@ -3,7 +3,6 @@ import { checkRoutePermissions } from "@app/components/guard/route-guard";
 import { PERMISSION } from "@app/permissions";
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
-import { match } from "ts-pattern";
 import { roleListOptions } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
 import { UserEditForm } from "#/routes/_authenticated/users/_components/user-edit-form.tsx";
 import { UserPasswordResetForm } from "#/routes/_authenticated/users/_components/user-password-reset-form.tsx";
@@ -25,13 +24,11 @@ const UserEditPage: FC = (): ReactElement => {
 			<Guard permissions={[PERMISSION.USER_MANAGE]}>
 				<UserEditForm user={data} roleOptions={roleOptions} />
 			</Guard>
-			{match(isSelf(data.id))
-				.with(true, () => null)
-				.otherwise(() => (
-					<Guard permissions={[PERMISSION.USER_MANAGE]}>
-						<UserPasswordResetForm user={data} />
-					</Guard>
-				))}
+			{!isSelf(data.id) && (
+				<Guard permissions={[PERMISSION.USER_MANAGE]}>
+					<UserPasswordResetForm user={data} />
+				</Guard>
+			)}
 		</div>
 	);
 };
