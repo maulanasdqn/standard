@@ -6,6 +6,7 @@ import type { FormEvent } from "react";
 import { match } from "ts-pattern";
 import type { z } from "zod";
 import { useRoleUpdate } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
+import { useConfirmedAction } from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
 
 const roleEditFormSchema = roleUpdateInputSchema.omit({ key: true }).required();
 
@@ -21,18 +22,20 @@ export const useRoleEditForm = (role: TRoleDto) => {
 		permissions: [...role.permissions],
 	};
 
+	const confirm = useConfirmedAction<TRoleEditFormValues>((value) => {
+		const description = match(value.description)
+			.with("", () => null)
+			.otherwise((text) => text);
+
+		roleUpdate.mutate(D.merge(value, { key: role.key, description }), {
+			onSuccess: () => void navigate({ to: "/roles" }),
+		});
+	});
+
 	const form = useForm({
 		defaultValues,
 		validators: { onChange: roleEditFormSchema },
-		onSubmit: ({ value }) => {
-			const description = match(value.description)
-				.with("", () => null)
-				.otherwise((text) => text);
-
-			roleUpdate.mutate(D.merge(value, { key: role.key, description }), {
-				onSuccess: () => void navigate({ to: "/roles" }),
-			});
-		},
+		onSubmit: ({ value }) => confirm.request(value),
 	});
 
 	const onSubmit = (event: FormEvent): void => {
@@ -43,6 +46,7 @@ export const useRoleEditForm = (role: TRoleDto) => {
 	return {
 		form,
 		onSubmit,
+		confirm,
 		isPending: roleUpdate.isPending,
 		isFixed: role.fixed,
 	};

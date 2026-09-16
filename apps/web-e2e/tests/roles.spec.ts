@@ -17,6 +17,7 @@ import { signIn } from "../support/sign-in.ts";
 import { signOut } from "../support/sign-out.ts";
 import { rowWithCell } from "../support/table.ts";
 import { selectOption } from "../support/select.ts";
+import { confirmAction } from "../support/confirm.ts";
 
 const FIXED_NOTICE =
 	"Fixed roles are defined in code and can't be changed here.";
@@ -87,6 +88,7 @@ test.describe("roles admin flow", () => {
 			})
 			.check();
 		await page.getByRole("button", { name: "Create role" }).click();
+		await confirmAction(page);
 
 		const row = rowWithCell(page, NEW_ROLE.key);
 		await expect(row).toContainText(NEW_ROLE.label);
@@ -113,6 +115,7 @@ test.describe("roles admin flow", () => {
 			})
 			.check();
 		await page.getByRole("button", { name: "Save changes" }).click();
+		await confirmAction(page);
 
 		await expect(page).toHaveURL(/\/roles$/);
 		const row = rowWithCell(page, NEW_ROLE.key);
@@ -134,6 +137,7 @@ test.describe("roles admin flow", () => {
 			RENAMED_LABEL,
 		);
 		await page.getByRole("button", { name: "Create user" }).click();
+		await confirmAction(page);
 
 		await expect(page.getByLabel(`Role for ${REVIEWER.name}`)).toHaveText(
 			RENAMED_LABEL,
@@ -149,6 +153,7 @@ test.describe("roles admin flow", () => {
 
 		await page.getByPlaceholder("Title").fill("Reviewer note");
 		await page.getByRole("button", { name: "Add note" }).click();
+		await confirmAction(page);
 		await expect(page.getByText("Reviewer note")).toBeVisible();
 
 		await page.goto("/roles");

@@ -108,7 +108,10 @@ export const useUserCreate = (): UseMutationResult<
 	return useMutation(
 		orpc.user.create.mutationOptions({
 			mutationKey: orpc.user.create.mutationKey(),
-			onSuccess: () => invalidateUsersAndRoles(queryClient),
+			onSuccess: () => {
+				toast.success(USER_MESSAGE.CREATED);
+				return invalidateUsersAndRoles(queryClient);
+			},
 			onError: toastError,
 		}),
 	);
@@ -124,7 +127,10 @@ export const useUserUpdate = (): UseMutationResult<
 	return useMutation(
 		orpc.user.update.mutationOptions({
 			mutationKey: orpc.user.update.mutationKey(),
-			onSuccess: () => invalidateUsersAndRoles(queryClient),
+			onSuccess: () => {
+				toast.success(USER_MESSAGE.UPDATED);
+				return invalidateUsersAndRoles(queryClient);
+			},
 			onError: toastError,
 		}),
 	);
@@ -153,7 +159,10 @@ export const useUserDelete = (): UseMutationResult<
 	return useMutation(
 		orpc.user.remove.mutationOptions({
 			mutationKey: orpc.user.remove.mutationKey(),
-			onSuccess: () => invalidateUsersAndRoles(queryClient),
+			onSuccess: () => {
+				toast.success(USER_MESSAGE.DELETED);
+				return invalidateUsersAndRoles(queryClient);
+			},
 			onError: toastError,
 		}),
 	);

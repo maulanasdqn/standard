@@ -13,6 +13,7 @@ import { signIn } from "../support/sign-in.ts";
 import { signOut } from "../support/sign-out.ts";
 import { rowWithCell } from "../support/table.ts";
 import { selectOption } from "../support/select.ts";
+import { confirmAction } from "../support/confirm.ts";
 
 const NEW_USER: TUserCreateInput = {
 	name: "E2E User",
@@ -50,6 +51,7 @@ test.describe("users admin flow", () => {
 			ROLE_LABEL[ROLE_KEY.MEMBER],
 		);
 		await page.getByRole("button", { name: "Create user" }).click();
+		await confirmAction(page);
 
 		const row = rowWithCell(page, NEW_USER.email);
 		await expect(row).toBeVisible();
@@ -61,6 +63,7 @@ test.describe("users admin flow", () => {
 		await expect(roleSelect).toHaveText(ROLE_LABEL[ROLE_KEY.MEMBER]);
 
 		await selectOption(page, roleSelect, ROLE_LABEL[ROLE_KEY.VIEWER]);
+		await confirmAction(page);
 
 		await expect(roleSelect).toHaveText(ROLE_LABEL[ROLE_KEY.VIEWER]);
 	});
@@ -75,6 +78,7 @@ test.describe("users admin flow", () => {
 
 		await page.getByLabel("Name", { exact: true }).fill(RENAMED);
 		await page.getByRole("button", { name: "Save changes" }).click();
+		await confirmAction(page);
 
 		await expect(page).toHaveURL(/\/users(\?.*)?$/);
 		await expect(rowWithCell(page, NEW_USER.email)).toContainText(RENAMED);
@@ -90,6 +94,7 @@ test.describe("users admin flow", () => {
 
 		await page.getByLabel("New password").fill(RESET_PASSWORD);
 		await page.getByRole("button", { name: "Reset password" }).click();
+		await confirmAction(page);
 
 		await expect(page.getByText(USER_MESSAGE.PASSWORD_RESET)).toBeVisible();
 	});

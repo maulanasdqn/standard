@@ -9,13 +9,17 @@ import type { FC, ReactElement } from "react";
 import { PermissionChecklist } from "#/routes/_authenticated/roles/_components/permission-checklist.tsx";
 import { useRoleEditForm } from "#/routes/_authenticated/roles/_hooks/use-role-edit-form.ts";
 import { Card, CardContent } from "@app/components/ui/card";
+import { ROLE_MESSAGE } from "@app/messages";
+import { ConfirmDialog } from "#/routes/_authenticated/_components/confirm-dialog.tsx";
 
 type TRoleEditFormProps = {
 	role: TRoleDto;
 };
 
 export const RoleEditForm: FC<TRoleEditFormProps> = (props): ReactElement => {
-	const { form, onSubmit, isPending, isFixed } = useRoleEditForm(props.role);
+	const { form, onSubmit, confirm, isPending, isFixed } = useRoleEditForm(
+		props.role,
+	);
 
 	return (
 		<Card>
@@ -84,6 +88,13 @@ export const RoleEditForm: FC<TRoleEditFormProps> = (props): ReactElement => {
 						</Link>
 					</div>
 				</form>
+				<ConfirmDialog
+					open={confirm.open}
+					title={ROLE_MESSAGE.UPDATE_CONFIRM_TITLE}
+					description={ROLE_MESSAGE.UPDATE_CONFIRM_DESCRIPTION}
+					onOpenChange={confirm.onOpenChange}
+					onConfirm={confirm.onConfirm}
+				/>
 			</CardContent>
 		</Card>
 	);

@@ -5,9 +5,11 @@ import { Label } from "@app/components/ui/label";
 import type { FC, ReactElement } from "react";
 import { usePasswordChangeForm } from "#/routes/_authenticated/account/_hooks/use-password-change-form.ts";
 import { Card, CardContent } from "@app/components/ui/card";
+import { AUTH_MESSAGE } from "@app/messages";
+import { ConfirmDialog } from "#/routes/_authenticated/_components/confirm-dialog.tsx";
 
 export const PasswordChangeForm: FC = (): ReactElement => {
-	const { form, serverError, onSubmit } = usePasswordChangeForm();
+	const { form, serverError, onSubmit, confirm } = usePasswordChangeForm();
 
 	return (
 		<Card>
@@ -75,6 +77,13 @@ export const PasswordChangeForm: FC = (): ReactElement => {
 						)}
 					</form.Subscribe>
 				</form>
+				<ConfirmDialog
+					open={confirm.open}
+					title={AUTH_MESSAGE.PASSWORD_CHANGE_CONFIRM_TITLE}
+					description={AUTH_MESSAGE.PASSWORD_CHANGE_CONFIRM_DESCRIPTION}
+					onOpenChange={confirm.onOpenChange}
+					onConfirm={confirm.onConfirm}
+				/>
 			</CardContent>
 		</Card>
 	);

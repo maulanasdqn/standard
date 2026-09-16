@@ -8,6 +8,7 @@ import { match, P } from "ts-pattern";
 import { z } from "zod";
 import { authClient } from "#/libs/auth/client.ts";
 import { passwordChangeError } from "#/routes/_authenticated/account/_stores/password-change-error-store.ts";
+import { useConfirmedAction } from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
 
 const passwordChangeFormSchema = passwordChangeInputSchema
 	.extend({ confirmPassword: z.string() })
@@ -27,28 +28,36 @@ const DEFAULT_VALUES: TPasswordChangeFormValues = {
 export const usePasswordChangeForm = () => {
 	const serverError = useSelector(passwordChangeError.store);
 
+	const passwordChange = async (
+		value: TPasswordChangeFormValues,
+	): Promise<void> => {
+		passwordChangeError.clear();
+		const { error } = await authClient.changePassword({
+			currentPassword: value.currentPassword,
+			newPassword: value.newPassword,
+			revokeOtherSessions: true,
+		});
+
+		match(error)
+			.with(P.nullish, () => {
+				toast.success(AUTH_MESSAGE.PASSWORD_CHANGED);
+				form.reset();
+			})
+			.otherwise((found) => {
+				passwordChangeError.set(
+					found.message ?? AUTH_MESSAGE.PASSWORD_CHANGE_FAILED,
+				);
+			});
+	};
+
+	const confirm = useConfirmedAction<TPasswordChangeFormValues>(
+		(value) => void passwordChange(value),
+	);
+
 	const form = useForm({
 		defaultValues: DEFAULT_VALUES,
 		validators: { onChange: passwordChangeFormSchema },
-		onSubmit: async ({ value, formApi }) => {
-			passwordChangeError.clear();
-			const { error } = await authClient.changePassword({
-				currentPassword: value.currentPassword,
-				newPassword: value.newPassword,
-				revokeOtherSessions: true,
-			});
-
-			match(error)
-				.with(P.nullish, () => {
-					toast.success(AUTH_MESSAGE.PASSWORD_CHANGED);
-					formApi.reset();
-				})
-				.otherwise((found) => {
-					passwordChangeError.set(
-						found.message ?? AUTH_MESSAGE.PASSWORD_CHANGE_FAILED,
-					);
-				});
-		},
+		onSubmit: ({ value }) => confirm.request(value),
 	});
 
 	const onSubmit = (event: FormEvent): void => {
@@ -56,5 +65,5 @@ export const usePasswordChangeForm = () => {
 		void form.handleSubmit();
 	};
 
-	return { form, serverError, onSubmit };
+	return { form, serverError, onSubmit, confirm };
 };

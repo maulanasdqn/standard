@@ -10,6 +10,8 @@ import {
 import { getRouteApi } from "@tanstack/react-router";
 import { orpc } from "#/libs/orpc/client.ts";
 import { toastError } from "#/libs/orpc/toast-error.ts";
+import { ROLE_MESSAGE } from "@app/messages";
+import { toast } from "sonner";
 import type {
 	TClientErrors,
 	TClientInputs,
@@ -58,7 +60,10 @@ export const useRoleCreate = (): UseMutationResult<
 	return useMutation(
 		orpc.role.create.mutationOptions({
 			mutationKey: orpc.role.create.mutationKey(),
-			onSuccess: () => invalidateRoles(queryClient),
+			onSuccess: () => {
+				toast.success(ROLE_MESSAGE.CREATED);
+				return invalidateRoles(queryClient);
+			},
 			onError: toastError,
 		}),
 	);
@@ -74,7 +79,10 @@ export const useRoleUpdate = (): UseMutationResult<
 	return useMutation(
 		orpc.role.update.mutationOptions({
 			mutationKey: orpc.role.update.mutationKey(),
-			onSuccess: () => invalidateRoles(queryClient),
+			onSuccess: () => {
+				toast.success(ROLE_MESSAGE.UPDATED);
+				return invalidateRoles(queryClient);
+			},
 			onError: toastError,
 		}),
 	);
@@ -90,7 +98,10 @@ export const useRoleDelete = (): UseMutationResult<
 	return useMutation(
 		orpc.role.remove.mutationOptions({
 			mutationKey: orpc.role.remove.mutationKey(),
-			onSuccess: () => invalidateRoles(queryClient),
+			onSuccess: () => {
+				toast.success(ROLE_MESSAGE.DELETED);
+				return invalidateRoles(queryClient);
+			},
 			onError: toastError,
 		}),
 	);

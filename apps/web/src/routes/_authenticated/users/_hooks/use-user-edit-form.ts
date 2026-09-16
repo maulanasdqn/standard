@@ -8,6 +8,7 @@ import {
 	useIsSelf,
 	useUserUpdate,
 } from "#/routes/_authenticated/users/_hooks/use-users.ts";
+import { useConfirmedAction } from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
 
 const userEditFormSchema = userUpdateInputSchema
 	.pick({ name: true, role: true })
@@ -25,14 +26,16 @@ export const useUserEditForm = (user: TUser) => {
 		role: user.role,
 	};
 
+	const confirm = useConfirmedAction<TUserEditFormValues>((value) =>
+		userUpdate.mutate(D.merge(value, { id: user.id }), {
+			onSuccess: () => void navigate({ to: "/users" }),
+		}),
+	);
+
 	const form = useForm({
 		defaultValues,
 		validators: { onChange: userEditFormSchema },
-		onSubmit: ({ value }) => {
-			userUpdate.mutate(D.merge(value, { id: user.id }), {
-				onSuccess: () => void navigate({ to: "/users" }),
-			});
-		},
+		onSubmit: ({ value }) => confirm.request(value),
 	});
 
 	const onSubmit = (event: FormEvent): void => {
@@ -40,5 +43,5 @@ export const useUserEditForm = (user: TUser) => {
 		void form.handleSubmit();
 	};
 
-	return { form, onSubmit, isPending: userUpdate.isPending, isSelf };
+	return { form, onSubmit, confirm, isPending: userUpdate.isPending, isSelf };
 };
