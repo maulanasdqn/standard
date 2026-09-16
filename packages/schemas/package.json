@@ -13,7 +13,7 @@
 	"dependencies": {
 		"@app/activity": "workspace:*",
 		"@app/permissions": "workspace:*",
-		"zod": "^4.6.2"
+		"zod": "^4.6.4"
 	},
 	"devDependencies": {
 		"typescript": "^5.9.3",
