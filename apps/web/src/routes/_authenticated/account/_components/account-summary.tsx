@@ -9,7 +9,7 @@ export const AccountSummary: FC = (): ReactElement =>
 			<p className="text-sm text-neutral-500">Not signed in.</p>
 		))
 		.otherwise((session) => (
-			<dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 border border-neutral-200 p-4 text-sm">
+			<dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 rounded-xl border border-neutral-200 p-4 text-sm">
 				<dt className="text-neutral-500">Name</dt>
 				<dd>{session.user.name}</dd>
 				<dt className="text-neutral-500">Email</dt>

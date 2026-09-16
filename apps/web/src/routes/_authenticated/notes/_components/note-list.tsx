@@ -20,7 +20,7 @@ export const NoteList: FC<TNoteListProps> = (props): ReactElement => {
 	return match(A.isEmpty(props.notes))
 		.with(true, () => <EmptyState message={NOTE_MESSAGE.EMPTY} />)
 		.otherwise(() => (
-			<ul className="flex flex-col divide-y divide-neutral-200 border border-neutral-200">
+			<ul className="flex flex-col divide-y divide-neutral-200 overflow-hidden rounded-xl border border-neutral-200">
 				{A.map(props.notes, (note) => (
 					<li
 						key={note.id}

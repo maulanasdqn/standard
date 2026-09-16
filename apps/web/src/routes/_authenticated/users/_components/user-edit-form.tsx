@@ -21,7 +21,7 @@ export const UserEditForm: FC<TUserEditFormProps> = (props): ReactElement => {
 	return (
 		<form
 			onSubmit={onSubmit}
-			className="flex max-w-md flex-col gap-4 border border-neutral-200 p-4"
+			className="flex max-w-md flex-col gap-4 rounded-xl border border-neutral-200 p-4"
 		>
 			<p className="text-sm text-neutral-500">{props.user.email}</p>
 			<form.Field name="name">
