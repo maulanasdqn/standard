@@ -16,7 +16,7 @@ export const signIn = async (
 	credentials: TLoginInput,
 ): Promise<void> => {
 	await submitLogin(page, credentials);
-	await expect(page).toHaveURL(/\/notes/);
+	await expect(page).toHaveURL(/\/dashboard/);
 };
 
 export const signInExpectingRejection = async (

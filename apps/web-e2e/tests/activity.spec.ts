@@ -24,6 +24,7 @@ test.describe("activity log", () => {
 	});
 
 	test("records a note creation attributed to the admin", async (): Promise<void> => {
+		await page.goto("/notes");
 		await page.getByPlaceholder("Title").fill(NOTE_TITLE);
 		await page.getByRole("button", { name: "Add note" }).click();
 		await confirmAction(page);
@@ -54,6 +55,6 @@ test.describe("activity log", () => {
 		await expectNavHidden(page, [NAV_LABEL.ACTIVITY]);
 
 		await page.goto("/activity");
-		await expect(page).toHaveURL(/\/notes/);
+		await expect(page).toHaveURL(/\/dashboard/);
 	});
 });

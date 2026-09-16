@@ -14,7 +14,7 @@ export const Route = createFileRoute("/_public")({
 			})
 			.with({ session: P.nullish }, () => undefined)
 			.otherwise(() => {
-				throw redirect({ to: "/notes" });
+				throw redirect({ to: "/dashboard" });
 			});
 	},
 	component: PublicLayout,

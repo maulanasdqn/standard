@@ -38,7 +38,7 @@ export const useLoginForm = () => {
 							loginError.set(AUTH_MESSAGE.SESSION_UNVERIFIED);
 						})
 						.otherwise(async () => {
-							await navigate({ to: "/notes" });
+							await navigate({ to: "/dashboard" });
 						});
 				})
 				.otherwise(async (found) => {
