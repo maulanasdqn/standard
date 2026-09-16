@@ -6,8 +6,13 @@ import {
 	useContext,
 	useEffect,
 	useMemo,
-	useState,
 } from "react";
+import { useStore } from "@tanstack/react-store";
+import {
+	sidebarOpenMobileSet,
+	sidebarOpenSet,
+	sidebarStore,
+} from "./sidebar-store.ts";
 import { cva, type VariantProps } from "class-variance-authority";
 import { PanelLeftIcon } from "lucide-react";
 import { Slot } from "radix-ui";
@@ -77,22 +82,31 @@ const SidebarProvider: FC<TSidebarProviderProps> = (props): ReactElement => {
 	} = props;
 
 	const isMobile = useIsMobile();
-	const [openMobile, setOpenMobile] = useState(false);
+	const openMobile = useStore(sidebarStore, (state) => state.openMobile);
+	const storedOpen = useStore(sidebarStore, (state) => state.open);
+	const open = openProp ?? storedOpen;
 
-	const [_open, _setOpen] = useState(defaultOpen);
-	const open = openProp ?? _open;
+	useEffect(() => sidebarOpenSet(defaultOpen), [defaultOpen]);
 	const setOpen = useCallback(
 		(value: boolean | ((value: boolean) => boolean)) => {
 			const openState = typeof value === "function" ? value(open) : value;
 			if (setOpenProp) {
 				setOpenProp(openState);
 			} else {
-				_setOpen(openState);
+				sidebarOpenSet(openState);
 			}
 
 			document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
 		},
 		[setOpenProp, open],
+	);
+
+	const setOpenMobile = useCallback(
+		(value: boolean | ((value: boolean) => boolean)): void =>
+			sidebarOpenMobileSet(
+				typeof value === "function" ? value(openMobile) : value,
+			),
+		[openMobile],
 	);
 
 	const toggleSidebar = useCallback(() => {
