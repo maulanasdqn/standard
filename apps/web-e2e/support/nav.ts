@@ -1,6 +1,7 @@
 import { expect, type Locator, type Page } from "@playwright/test";
 
 export const NAV_LABEL = {
+	DASHBOARD: "Dashboard",
 	NOTES: "Notes",
 	USERS: "Users",
 	ROLES: "Roles",

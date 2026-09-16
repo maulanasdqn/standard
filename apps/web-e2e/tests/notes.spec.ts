@@ -22,6 +22,7 @@ test.describe("note write affordances follow the permission", () => {
 		page = await browser.newPage();
 		await signIn(page, SEED_CREDENTIALS.viewer);
 
+		await page.goto("/notes");
 		await expect(page.getByRole("heading", { name: "Notes" })).toBeVisible();
 
 		await expect(page.getByRole("button", { name: ADD_NOTE })).toHaveCount(0);
@@ -34,6 +35,7 @@ test.describe("note write affordances follow the permission", () => {
 		page = await browser.newPage();
 		await signIn(page, SEED_CREDENTIALS.admin);
 
+		await page.goto("/notes");
 		await expect(page.getByPlaceholder(TITLE_PLACEHOLDER)).toBeVisible();
 
 		await page.getByPlaceholder(TITLE_PLACEHOLDER).fill(WRITER_NOTE);
