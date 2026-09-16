@@ -73,7 +73,7 @@ export const RoleEditForm: FC<TRoleEditFormProps> = (props): ReactElement => {
 				)}
 			</form.Field>
 			<div className="flex items-center gap-3">
-				{isFixed && (
+				{!isFixed && (
 					<Button type="submit" disabled={isPending}>
 						{isPending ? "Saving…" : "Save changes"}
 					</Button>
