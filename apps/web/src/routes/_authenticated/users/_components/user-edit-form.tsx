@@ -21,9 +21,9 @@ export const UserEditForm: FC<TUserEditFormProps> = (props): ReactElement => {
 	return (
 		<form
 			onSubmit={onSubmit}
-			className="flex max-w-md flex-col gap-4 rounded-xl border border-neutral-200 p-4"
+			className="flex max-w-md flex-col gap-4 rounded-xl border border-border p-4"
 		>
-			<p className="text-sm text-neutral-500">{props.user.email}</p>
+			<p className="text-sm text-muted-foreground">{props.user.email}</p>
 			<form.Field name="name">
 				{(field) => (
 					<div className="flex flex-col gap-1">
@@ -56,7 +56,7 @@ export const UserEditForm: FC<TUserEditFormProps> = (props): ReactElement => {
 							))}
 						</Select>
 						{isSelf && (
-							<p className="text-xs text-neutral-500">
+							<p className="text-xs text-muted-foreground">
 								You can't change your own role.
 							</p>
 						)}

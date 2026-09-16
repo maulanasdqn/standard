@@ -1,5 +1,4 @@
 import { Guard } from "@app/components/guard/guard";
-import { Button } from "@app/components/ui/button";
 import { Select } from "@app/components/ui/select";
 import {
 	Table,
@@ -24,6 +23,7 @@ import {
 	useUserDelete,
 	useUserUpdate,
 } from "#/routes/_authenticated/users/_hooks/use-users.ts";
+import { DeleteConfirm } from "#/routes/_authenticated/_components/delete-confirm.tsx";
 
 const roleLabelOf = (options: readonly TRoleOption[], value: string): string =>
 	A.find(options, (option) => option.value === value)?.label ?? value;
@@ -55,7 +55,9 @@ export const UserTable: FC<TUserTableProps> = (props): ReactElement => {
 					{A.map(props.users, (user) => (
 						<TableRow key={user.id}>
 							<TableCell className="font-medium">{user.name}</TableCell>
-							<TableCell className="text-neutral-600">{user.email}</TableCell>
+							<TableCell className="text-muted-foreground">
+								{user.email}
+							</TableCell>
 							<TableCell>
 								<Guard
 									permissions={[PERMISSION.USER_MANAGE]}
@@ -85,7 +87,7 @@ export const UserTable: FC<TUserTableProps> = (props): ReactElement => {
 									</Select>
 								</Guard>
 							</TableCell>
-							<TableCell className="text-neutral-500">
+							<TableCell className="text-muted-foreground">
 								{formatDateTime(user.createdAt)}
 							</TableCell>
 							<TableCell className="text-right">
@@ -97,14 +99,12 @@ export const UserTable: FC<TUserTableProps> = (props): ReactElement => {
 									Edit
 								</Link>
 								<Guard permissions={[PERMISSION.USER_MANAGE]}>
-									<Button
-										variant="ghost"
-										size="sm"
+									<DeleteConfirm
+										title={USER_MESSAGE.DELETE_CONFIRM_TITLE}
+										description={USER_MESSAGE.DELETE_CONFIRM_DESCRIPTION}
 										disabled={isSelf(user.id) || userDelete.isPending}
-										onClick={() => userDelete.mutate({ id: user.id })}
-									>
-										Delete
-									</Button>
+										onConfirm={() => userDelete.mutate({ id: user.id })}
+									/>
 								</Guard>
 							</TableCell>
 						</TableRow>

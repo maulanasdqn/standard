@@ -15,7 +15,7 @@ type TListPaginationProps = {
 export const ListPagination: FC<TListPaginationProps> = (
 	props,
 ): ReactElement => (
-	<div className="flex items-center justify-between text-sm text-neutral-600">
+	<div className="flex items-center justify-between text-sm text-muted-foreground">
 		<span>
 			Page {props.pageInfo.page} · {props.pageInfo.total} {props.noun}
 		</span>

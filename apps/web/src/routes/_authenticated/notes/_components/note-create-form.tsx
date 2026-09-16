@@ -10,7 +10,7 @@ export const NoteCreateForm: FC = (): ReactElement => {
 	return (
 		<form
 			onSubmit={onSubmit}
-			className="flex flex-col gap-3 rounded-xl border border-neutral-200 p-4"
+			className="flex flex-col gap-3 rounded-xl border border-border p-4"
 		>
 			<form.Field name="title">
 				{(field) => (

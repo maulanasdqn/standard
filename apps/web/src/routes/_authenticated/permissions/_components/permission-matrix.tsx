@@ -38,7 +38,9 @@ export const PermissionMatrix: FC<TPermissionMatrixProps> = (
 							<span className="font-medium">
 								{PERMISSION_LABEL[permission]}
 							</span>
-							<code className="text-xs text-neutral-400">{permission}</code>
+							<code className="text-xs text-muted-foreground">
+								{permission}
+							</code>
 						</span>
 					</TableCell>
 					{A.map(props.roles, (role) => (

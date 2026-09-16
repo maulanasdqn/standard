@@ -1,6 +1,5 @@
 import { Guard } from "@app/components/guard/guard";
 import { Badge } from "@app/components/ui/badge";
-import { Button } from "@app/components/ui/button";
 import {
 	Table,
 	TableBody,
@@ -20,6 +19,7 @@ import { match } from "ts-pattern";
 import { EmptyState } from "#/routes/_authenticated/_components/empty-state.tsx";
 import { useRoleDelete } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
 import { roleDeletable } from "#/routes/_authenticated/roles/_utils/role-deletable.ts";
+import { DeleteConfirm } from "#/routes/_authenticated/_components/delete-confirm.tsx";
 
 type TRoleListProps = {
 	roles: readonly TRoleDto[];
@@ -54,7 +54,7 @@ export const RoleList: FC<TRoleListProps> = (props): ReactElement => {
 							<TableCell>
 								<code className="text-xs">{role.key}</code>
 							</TableCell>
-							<TableCell className="text-neutral-600">
+							<TableCell className="text-muted-foreground">
 								{orDash(role.description)}
 							</TableCell>
 							<TableCell className="text-right">
@@ -71,14 +71,12 @@ export const RoleList: FC<TRoleListProps> = (props): ReactElement => {
 								</Link>
 								{roleDeletable(role) && (
 									<Guard permissions={[PERMISSION.USER_MANAGE]}>
-										<Button
-											variant="ghost"
-											size="sm"
+										<DeleteConfirm
+											title={ROLE_MESSAGE.DELETE_CONFIRM_TITLE}
+											description={ROLE_MESSAGE.DELETE_CONFIRM_DESCRIPTION}
 											disabled={roleDelete.isPending}
-											onClick={() => roleDelete.mutate({ key: role.key })}
-										>
-											Delete
-										</Button>
+											onConfirm={() => roleDelete.mutate({ key: role.key })}
+										/>
 									</Guard>
 								)}
 							</TableCell>

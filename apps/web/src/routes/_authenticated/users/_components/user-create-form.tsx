@@ -20,7 +20,7 @@ export const UserCreateForm: FC<TUserCreateFormProps> = (
 	return (
 		<form
 			onSubmit={onSubmit}
-			className="grid gap-3 rounded-xl border border-neutral-200 p-4 sm:grid-cols-2"
+			className="grid gap-3 rounded-xl border border-border p-4 sm:grid-cols-2"
 		>
 			<form.Field name="name">
 				{(field) => (

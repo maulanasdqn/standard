@@ -40,7 +40,7 @@ export const ActivityTable: FC<TActivityTableProps> = (props): ReactElement =>
 				<TableBody>
 					{A.map(props.entries, (entry) => (
 						<TableRow key={entry.id}>
-							<TableCell className="whitespace-nowrap text-neutral-500">
+							<TableCell className="whitespace-nowrap text-muted-foreground">
 								{formatDateTime(entry.createdAt)}
 							</TableCell>
 							<TableCell>{orDash(entry.actorEmail)}</TableCell>
@@ -48,12 +48,14 @@ export const ActivityTable: FC<TActivityTableProps> = (props): ReactElement =>
 								<code className="text-xs">{entry.action}</code>
 							</TableCell>
 							<TableCell>
-								<span className="text-neutral-600">{entry.resourceType}</span>{" "}
-								<code className="text-xs text-neutral-400">
+								<span className="text-muted-foreground">
+									{entry.resourceType}
+								</span>{" "}
+								<code className="text-xs text-muted-foreground">
 									{entry.resourceId}
 								</code>
 							</TableCell>
-							<TableCell className="max-w-xs truncate text-xs text-neutral-500">
+							<TableCell className="max-w-xs truncate text-xs text-muted-foreground">
 								{metadataLabel(entry.metadata)}
 							</TableCell>
 						</TableRow>
