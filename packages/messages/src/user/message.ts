@@ -6,4 +6,7 @@ export const USER_MESSAGE = {
 	SELF_PASSWORD_RESET: "Change your own password from your account page.",
 	PASSWORD_RESET: "Password reset. Share the new password with the user.",
 	EMPTY: "No users yet.",
+	DELETE_CONFIRM_TITLE: "Delete this user?",
+	DELETE_CONFIRM_DESCRIPTION:
+		"The account and its notes will be removed permanently.",
 } as const;

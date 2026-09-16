@@ -6,15 +6,15 @@ import { useSession } from "#/libs/auth/use-session.ts";
 export const AccountSummary: FC = (): ReactElement =>
 	match(useSession())
 		.with(P.nullish, () => (
-			<p className="text-sm text-neutral-500">Not signed in.</p>
+			<p className="text-sm text-muted-foreground">Not signed in.</p>
 		))
 		.otherwise((session) => (
-			<dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 rounded-xl border border-neutral-200 p-4 text-sm">
-				<dt className="text-neutral-500">Name</dt>
+			<dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 rounded-xl border border-border p-4 text-sm">
+				<dt className="text-muted-foreground">Name</dt>
 				<dd>{session.user.name}</dd>
-				<dt className="text-neutral-500">Email</dt>
+				<dt className="text-muted-foreground">Email</dt>
 				<dd>{session.user.email}</dd>
-				<dt className="text-neutral-500">Role</dt>
+				<dt className="text-muted-foreground">Role</dt>
 				<dd>{roleLabel(session.user.role)}</dd>
 			</dl>
 		));

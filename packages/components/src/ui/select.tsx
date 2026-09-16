@@ -9,7 +9,7 @@ export const Select: FC<TSelectProps> = (props): ReactElement => {
 	return (
 		<select
 			className={cn(
-				"h-9 w-full cursor-pointer rounded-md border border-neutral-300 bg-white px-3 text-sm outline-none focus:border-neutral-900 disabled:cursor-not-allowed disabled:opacity-50",
+				"h-9 w-full cursor-pointer rounded-md border border-input bg-transparent px-3 text-sm outline-none focus:border-ring dark:bg-input/30 disabled:cursor-not-allowed disabled:opacity-50",
 				className,
 			)}
 			{...rest}

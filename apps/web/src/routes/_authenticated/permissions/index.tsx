@@ -13,7 +13,7 @@ const PermissionsPage: FC = (): ReactElement => {
 		<div className="flex max-w-5xl flex-col gap-6">
 			<div className="flex flex-col gap-1">
 				<h1 className="text-xl font-semibold">Permissions</h1>
-				<p className="text-sm text-neutral-500">
+				<p className="text-sm text-muted-foreground">
 					Permissions are defined in code. Assign them to roles on the Roles
 					page.
 				</p>

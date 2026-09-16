@@ -5,6 +5,16 @@
 @custom-variant dark (&:is(.dark *));
 @source "../../../packages/components";
 
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+    }
+}
+
 :root {
     --sidebar: hsl(0 0% 98%);
     --sidebar-foreground: hsl(240 5.3% 26.1%);

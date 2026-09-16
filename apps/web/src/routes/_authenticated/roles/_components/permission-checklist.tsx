@@ -21,10 +21,10 @@ export const PermissionChecklist: FC<TPermissionChecklistProps> = (
 			{A.map(PERMISSION_GROUPS, (group) => (
 				<fieldset
 					key={group.resource}
-					className="flex flex-col gap-2 rounded-lg border border-neutral-200 p-3"
+					className="flex flex-col gap-2 rounded-lg border border-border p-3"
 					disabled={disabled}
 				>
-					<legend className="px-1 text-xs font-medium uppercase tracking-wide text-neutral-500">
+					<legend className="px-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
 						{group.resource}
 					</legend>
 					{A.map(group.permissions, (permission) => (
@@ -43,7 +43,7 @@ export const PermissionChecklist: FC<TPermissionChecklistProps> = (
 								}
 							/>
 							<span>{PERMISSION_LABEL[permission]}</span>
-							<code className="ml-auto text-xs text-neutral-400">
+							<code className="ml-auto text-xs text-muted-foreground">
 								{permission}
 							</code>
 						</label>

@@ -19,10 +19,13 @@ import {
 } from "@app/components/ui/sidebar";
 import { A } from "@mobily/ts-belt";
 import { Link, useMatchRoute } from "@tanstack/react-router";
-import { ChevronsUpDown, Command, LogOut } from "lucide-react";
+import { ChevronsUpDown, Command, LogOut, Moon } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useSession } from "#/libs/auth/use-session.ts";
 import { useSessionSignOut } from "#/routes/_authenticated/_hooks/use-session-sign-out.ts";
+import { useTheme } from "#/routes/_authenticated/_hooks/use-theme.ts";
+import { Switch } from "@app/components/ui/switch";
+import { APP_MESSAGE } from "@app/messages";
 import { useVisibleNav } from "#/routes/_authenticated/_hooks/use-visible-nav.ts";
 
 export const AppSidebar: FC = (): ReactElement => {
@@ -30,6 +33,7 @@ export const AppSidebar: FC = (): ReactElement => {
 	const signOut = useSessionSignOut();
 	const navItems = useVisibleNav();
 	const matchRoute = useMatchRoute();
+	const theme = useTheme();
 
 	return (
 		<Sidebar collapsible="icon">
@@ -93,6 +97,20 @@ export const AppSidebar: FC = (): ReactElement => {
 								side="top"
 								className="w-(--radix-dropdown-menu-trigger-width)"
 							>
+								<DropdownMenuItem
+									onSelect={(event) => {
+										event.preventDefault();
+										theme.toggle();
+									}}
+								>
+									<Moon />
+									{APP_MESSAGE.DARK_MODE}
+									<Switch
+										checked={theme.isDark}
+										tabIndex={-1}
+										className="pointer-events-none ml-auto"
+									/>
+								</DropdownMenuItem>
 								<DropdownMenuItem onClick={() => void signOut()}>
 									<LogOut />
 									Sign out

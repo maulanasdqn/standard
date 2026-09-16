@@ -5,5 +5,5 @@ type TEmptyStateProps = {
 };
 
 export const EmptyState: FC<TEmptyStateProps> = (props): ReactElement => (
-	<output className="text-sm text-neutral-500">{props.message}</output>
+	<output className="text-sm text-muted-foreground">{props.message}</output>
 );
