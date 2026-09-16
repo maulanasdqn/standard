@@ -41,7 +41,7 @@ export const AppSidebar: FC = (): ReactElement => {
 				<SidebarMenu>
 					<SidebarMenuItem>
 						<SidebarMenuButton size="lg" asChild>
-							<Link to="/notes">
+							<Link to="/dashboard">
 								<div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
 									<Command className="size-4" />
 								</div>

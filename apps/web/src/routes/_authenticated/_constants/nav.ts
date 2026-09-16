@@ -4,6 +4,7 @@ import {
 	Activity,
 	CircleUser,
 	KeyRound,
+	LayoutDashboard,
 	Shield,
 	StickyNote,
 	Users,
@@ -17,6 +18,12 @@ export type TNavItem = {
 };
 
 export const NAV_ITEMS: readonly TNavItem[] = [
+	{
+		to: "/dashboard",
+		label: "Dashboard",
+		permissions: [],
+		icon: LayoutDashboard,
+	},
 	{
 		to: "/notes",
 		label: "Notes",
