@@ -6,5 +6,5 @@ export const HEALTH_MESSAGE = {
 	STATUS_DEGRADED: "Degraded",
 	WEB_VERSION: "Web version",
 	API_VERSION: "API version",
-	VERSION_UNKNOWN: "—",
+	VERSION_UNKNOWN: "-",
 } as const;

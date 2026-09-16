@@ -35,7 +35,7 @@ jobs:
             RUNS="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/check-runs" -q '[.check_runs[] | {name, conclusion}]')"
             FAILED="$(printf '%s' "$RUNS" | jq -r '[.[] | select(.name != "Publish GitHub release") | select(.conclusion != null and .conclusion != "success" and .conclusion != "skipped")] | length')"
             if [ "$FAILED" != "0" ]; then
-              echo "::error::a CI check on ${GITHUB_SHA} did not succeed — release only from green trunk"
+              echo "::error::a CI check on ${GITHUB_SHA} did not succeed: release only from green trunk"
               printf '%s\n' "$RUNS"
               exit 1
             fi
