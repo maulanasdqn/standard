@@ -55,11 +55,11 @@ export const UserEditForm: FC<TUserEditFormProps> = (props): ReactElement => {
 								</option>
 							))}
 						</Select>
-						{isSelf ? (
+						{isSelf && (
 							<p className="text-xs text-neutral-500">
 								You can't change your own role.
 							</p>
-						) : null}
+						)}
 						<FieldError errors={field.state.meta.errors} />
 					</div>
 				)}

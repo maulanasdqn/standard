@@ -48,9 +48,7 @@ export const RoleList: FC<TRoleListProps> = (props): ReactElement => {
 							<TableCell>
 								<span className="flex items-center gap-2 font-medium">
 									{role.label}
-									{match(role.fixed)
-										.with(true, () => <Badge variant="outline">Fixed</Badge>)
-										.otherwise(() => null)}
+									{role.fixed && <Badge variant="outline">Fixed</Badge>}
 								</span>
 							</TableCell>
 							<TableCell>
@@ -71,20 +69,18 @@ export const RoleList: FC<TRoleListProps> = (props): ReactElement => {
 								>
 									{role.fixed ? "View" : "Edit"}
 								</Link>
-								{match(roleDeletable(role))
-									.with(true, () => (
-										<Guard permissions={[PERMISSION.USER_MANAGE]}>
-											<Button
-												variant="ghost"
-												size="sm"
-												disabled={roleDelete.isPending}
-												onClick={() => roleDelete.mutate({ key: role.key })}
-											>
-												Delete
-											</Button>
-										</Guard>
-									))
-									.otherwise(() => null)}
+								{roleDeletable(role) && (
+									<Guard permissions={[PERMISSION.USER_MANAGE]}>
+										<Button
+											variant="ghost"
+											size="sm"
+											disabled={roleDelete.isPending}
+											onClick={() => roleDelete.mutate({ key: role.key })}
+										>
+											Delete
+										</Button>
+									</Guard>
+								)}
 							</TableCell>
 						</TableRow>
 					))}
