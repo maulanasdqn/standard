@@ -26,6 +26,19 @@ export const cacheClientFake = (): TCacheClientFake => {
 		return undefined;
 	};
 
+	const setIfAbsent = async (
+		key: string,
+		seconds: number,
+		value: string,
+	): Promise<boolean> =>
+		match(entries.has(key))
+			.with(true, (): boolean => false)
+			.otherwise((): boolean => {
+				entries.set(key, value);
+				expiries.set(key, seconds);
+				return true;
+			});
+
 	const del = async (key: string): Promise<number> =>
 		match(entries.delete(key))
 			.with(true, (): number => FOUND)
@@ -45,5 +58,5 @@ export const cacheClientFake = (): TCacheClientFake => {
 			})
 			.otherwise((): number => MISSING);
 
-	return { entries, expiries, get, setex, del, incr, expire };
+	return { entries, expiries, get, setex, setIfAbsent, del, incr, expire };
 };

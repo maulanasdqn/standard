@@ -4,6 +4,7 @@ export const CACHE_KEY_SEPARATOR = ":";
 
 export const CACHE_NAMESPACE = {
 	RATE_LIMIT: "rate-limit",
+	JOB_DEDUPE: "job-dedupe",
 } as const;
 
 export type TCacheNamespace =

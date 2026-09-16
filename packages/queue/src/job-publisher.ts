@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import type { Channel } from "amqplib";
+import { jobTopologyAssert } from "./job-topology.ts";
 
 const idempotencyMessageId = (name: string, payload: unknown): string =>
 	createHash("sha256")
@@ -15,7 +16,7 @@ export const jobPublisherCreate = <TPayload>(
 	channel: Channel,
 ): TJobQueue<TPayload> => ({
 	add: async (payload: TPayload): Promise<boolean> => {
-		await channel.assertQueue(name, { durable: true });
+		await jobTopologyAssert(name, channel);
 		return channel.sendToQueue(name, Buffer.from(JSON.stringify(payload)), {
 			persistent: true,
 			messageId: idempotencyMessageId(name, payload),
