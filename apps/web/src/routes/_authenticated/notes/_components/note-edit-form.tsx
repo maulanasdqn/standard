@@ -5,13 +5,18 @@ import { Input } from "@app/components/ui/input";
 import { Label } from "@app/components/ui/label";
 import { Textarea } from "@app/components/ui/textarea";
 import { APP_MESSAGE, NOTE_MESSAGE } from "@app/messages";
+import type { TNote } from "@app/schemas";
 import { Link } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
 import { ConfirmDialog } from "#/routes/_authenticated/_components/confirm-dialog.tsx";
-import { useNoteCreateForm } from "#/routes/_authenticated/notes/_hooks/use-note-create-form.ts";
+import { useNoteEditForm } from "#/routes/_authenticated/notes/_hooks/use-note-edit-form.ts";
 
-export const NoteCreateForm: FC = (): ReactElement => {
-	const { form, onSubmit, confirm, isPending } = useNoteCreateForm();
+type TNoteEditFormProps = {
+	note: TNote;
+};
+
+export const NoteEditForm: FC<TNoteEditFormProps> = (props): ReactElement => {
+	const { form, onSubmit, confirm, isPending } = useNoteEditForm(props.note);
 
 	return (
 		<Card className="max-w-md">
@@ -46,7 +51,7 @@ export const NoteCreateForm: FC = (): ReactElement => {
 					</form.Field>
 					<div className="flex items-center gap-3">
 						<Button type="submit" disabled={isPending}>
-							{isPending ? "Adding…" : NOTE_MESSAGE.NEW_NOTE}
+							{isPending ? "Saving…" : "Save changes"}
 						</Button>
 						<Link to="/notes" className="text-sm hover:underline">
 							{APP_MESSAGE.CANCEL}
@@ -55,8 +60,8 @@ export const NoteCreateForm: FC = (): ReactElement => {
 				</form>
 				<ConfirmDialog
 					open={confirm.open}
-					title={NOTE_MESSAGE.CREATE_CONFIRM_TITLE}
-					description={NOTE_MESSAGE.CREATE_CONFIRM_DESCRIPTION}
+					title={NOTE_MESSAGE.UPDATE_CONFIRM_TITLE}
+					description={NOTE_MESSAGE.UPDATE_CONFIRM_DESCRIPTION}
 					onOpenChange={confirm.onOpenChange}
 					onConfirm={confirm.onConfirm}
 				/>
