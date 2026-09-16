@@ -7,9 +7,11 @@ import type { FC, ReactElement } from "react";
 import { PermissionChecklist } from "#/routes/_authenticated/roles/_components/permission-checklist.tsx";
 import { useRoleCreateForm } from "#/routes/_authenticated/roles/_hooks/use-role-create-form.ts";
 import { Card, CardContent } from "@app/components/ui/card";
+import { ROLE_MESSAGE } from "@app/messages";
+import { ConfirmDialog } from "#/routes/_authenticated/_components/confirm-dialog.tsx";
 
 export const RoleCreateForm: FC = (): ReactElement => {
-	const { form, onSubmit, isPending } = useRoleCreateForm();
+	const { form, onSubmit, confirm, isPending } = useRoleCreateForm();
 
 	return (
 		<Card>
@@ -77,6 +79,13 @@ export const RoleCreateForm: FC = (): ReactElement => {
 						{isPending ? "Creating…" : "Create role"}
 					</Button>
 				</form>
+				<ConfirmDialog
+					open={confirm.open}
+					title={ROLE_MESSAGE.CREATE_CONFIRM_TITLE}
+					description={ROLE_MESSAGE.CREATE_CONFIRM_DESCRIPTION}
+					onOpenChange={confirm.onOpenChange}
+					onConfirm={confirm.onConfirm}
+				/>
 			</CardContent>
 		</Card>
 	);

@@ -1,6 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 import { SEED_CREDENTIALS } from "../support/credentials.ts";
 import { signIn } from "../support/sign-in.ts";
+import { confirmAction } from "../support/confirm.ts";
 
 const ADD_NOTE = "Add note";
 const TITLE_PLACEHOLDER = "Title";
@@ -37,6 +38,7 @@ test.describe("note write affordances follow the permission", () => {
 
 		await page.getByPlaceholder(TITLE_PLACEHOLDER).fill(WRITER_NOTE);
 		await page.getByRole("button", { name: ADD_NOTE }).click();
+		await confirmAction(page);
 
 		await expect(page.getByText(WRITER_NOTE)).toBeVisible();
 	});

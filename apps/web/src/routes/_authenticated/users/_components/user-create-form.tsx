@@ -14,6 +14,8 @@ import type { FC, ReactElement } from "react";
 import type { TRoleOption } from "#/routes/_authenticated/users/_hooks/use-role-options.ts";
 import { useUserCreateForm } from "#/routes/_authenticated/users/_hooks/use-user-create-form.ts";
 import { Card, CardContent } from "@app/components/ui/card";
+import { USER_MESSAGE } from "@app/messages";
+import { ConfirmDialog } from "#/routes/_authenticated/_components/confirm-dialog.tsx";
 
 type TUserCreateFormProps = {
 	roleOptions: readonly TRoleOption[];
@@ -22,7 +24,7 @@ type TUserCreateFormProps = {
 export const UserCreateForm: FC<TUserCreateFormProps> = (
 	props,
 ): ReactElement => {
-	const { form, onSubmit, isPending } = useUserCreateForm();
+	const { form, onSubmit, confirm, isPending } = useUserCreateForm();
 
 	return (
 		<Card>
@@ -107,6 +109,13 @@ export const UserCreateForm: FC<TUserCreateFormProps> = (
 						{isPending ? "Creating…" : "Create user"}
 					</Button>
 				</form>
+				<ConfirmDialog
+					open={confirm.open}
+					title={USER_MESSAGE.CREATE_CONFIRM_TITLE}
+					description={USER_MESSAGE.CREATE_CONFIRM_DESCRIPTION}
+					onOpenChange={confirm.onOpenChange}
+					onConfirm={confirm.onConfirm}
+				/>
 			</CardContent>
 		</Card>
 	);

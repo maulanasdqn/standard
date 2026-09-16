@@ -11,6 +11,8 @@ import {
 import { getRouteApi } from "@tanstack/react-router";
 import { orpc } from "#/libs/orpc/client.ts";
 import { toastError } from "#/libs/orpc/toast-error.ts";
+import { NOTE_MESSAGE } from "@app/messages";
+import { toast } from "sonner";
 import type {
 	TClientErrors,
 	TClientInputs,
@@ -49,7 +51,10 @@ export const useNoteCreate = (): UseMutationResult<
 	return useMutation(
 		orpc.note.create.mutationOptions({
 			mutationKey: orpc.note.create.mutationKey(),
-			onSuccess: () => invalidateNotes(queryClient),
+			onSuccess: () => {
+				toast.success(NOTE_MESSAGE.CREATED);
+				return invalidateNotes(queryClient);
+			},
 			onError: toastError,
 		}),
 	);
@@ -65,7 +70,10 @@ export const useNoteDelete = (): UseMutationResult<
 	return useMutation(
 		orpc.note.remove.mutationOptions({
 			mutationKey: orpc.note.remove.mutationKey(),
-			onSuccess: () => invalidateNotes(queryClient),
+			onSuccess: () => {
+				toast.success(NOTE_MESSAGE.DELETED);
+				return invalidateNotes(queryClient);
+			},
 			onError: toastError,
 		}),
 	);

@@ -6,6 +6,8 @@ import type { TUser } from "@app/schemas";
 import type { FC, ReactElement } from "react";
 import { useUserPasswordResetForm } from "#/routes/_authenticated/users/_hooks/use-user-password-reset-form.ts";
 import { Card, CardContent } from "@app/components/ui/card";
+import { USER_MESSAGE } from "@app/messages";
+import { ConfirmDialog } from "#/routes/_authenticated/_components/confirm-dialog.tsx";
 
 type TUserPasswordResetFormProps = {
 	user: TUser;
@@ -14,7 +16,9 @@ type TUserPasswordResetFormProps = {
 export const UserPasswordResetForm: FC<TUserPasswordResetFormProps> = (
 	props,
 ): ReactElement => {
-	const { form, onSubmit, isPending } = useUserPasswordResetForm(props.user);
+	const { form, onSubmit, confirm, isPending } = useUserPasswordResetForm(
+		props.user,
+	);
 
 	return (
 		<Card className="max-w-md">
@@ -52,6 +56,13 @@ export const UserPasswordResetForm: FC<TUserPasswordResetFormProps> = (
 						{isPending ? "Resetting…" : "Reset password"}
 					</Button>
 				</form>
+				<ConfirmDialog
+					open={confirm.open}
+					title={USER_MESSAGE.PASSWORD_RESET_CONFIRM_TITLE}
+					description={USER_MESSAGE.PASSWORD_RESET_CONFIRM_DESCRIPTION}
+					onOpenChange={confirm.onOpenChange}
+					onConfirm={confirm.onConfirm}
+				/>
 			</CardContent>
 		</Card>
 	);

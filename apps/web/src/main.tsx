@@ -2,7 +2,6 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { Toaster } from "sonner";
 import { match, P } from "ts-pattern";
 import { SESSION_REACH } from "#/libs/auth/session-reach.ts";
 import { sessionRefresh } from "#/libs/auth/session.ts";
@@ -10,6 +9,7 @@ import { sessionStore } from "#/libs/auth/session-store.ts";
 import { queryClient } from "#/libs/tanstack-query/index.ts";
 import { RouteErrorScreen } from "#/routes/_components/route-error-screen.tsx";
 import { RoutePendingScreen } from "#/routes/_components/route-pending-screen.tsx";
+import { AppToaster } from "#/routes/_components/app-toaster.tsx";
 import { routeTree } from "./routeTree.gen.ts";
 import "./styles.css";
 
@@ -62,7 +62,7 @@ const bootstrap = async (): Promise<void> => {
 				<StrictMode>
 					<QueryClientProvider client={queryClient}>
 						<RouterProvider router={router} />
-						<Toaster />
+						<AppToaster />
 					</QueryClientProvider>
 				</StrictMode>,
 			);

@@ -4,9 +4,11 @@ import { Input } from "@app/components/ui/input";
 import type { FC, ReactElement } from "react";
 import { useNoteCreateForm } from "#/routes/_authenticated/notes/_hooks/use-note-create-form.ts";
 import { Card, CardContent } from "@app/components/ui/card";
+import { NOTE_MESSAGE } from "@app/messages";
+import { ConfirmDialog } from "#/routes/_authenticated/_components/confirm-dialog.tsx";
 
 export const NoteCreateForm: FC = (): ReactElement => {
-	const { form, onSubmit } = useNoteCreateForm();
+	const { form, onSubmit, confirm } = useNoteCreateForm();
 
 	return (
 		<Card>
@@ -49,6 +51,13 @@ export const NoteCreateForm: FC = (): ReactElement => {
 						)}
 					</form.Subscribe>
 				</form>
+				<ConfirmDialog
+					open={confirm.open}
+					title={NOTE_MESSAGE.CREATE_CONFIRM_TITLE}
+					description={NOTE_MESSAGE.CREATE_CONFIRM_DESCRIPTION}
+					onOpenChange={confirm.onOpenChange}
+					onConfirm={confirm.onConfirm}
+				/>
 			</CardContent>
 		</Card>
 	);

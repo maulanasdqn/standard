@@ -4,6 +4,7 @@ import { ROLE_KEY, ROLE_LABEL } from "../support/access.ts";
 import { SEED_CREDENTIALS } from "../support/credentials.ts";
 import { signIn, signInExpectingRejection } from "../support/sign-in.ts";
 import { signOut } from "../support/sign-out.ts";
+import { confirmAction } from "../support/confirm.ts";
 
 const NEW_PASSWORD = "member-new-password-456";
 
@@ -39,6 +40,7 @@ test.describe("account self-service", () => {
 			.getByLabel("Confirm new password", { exact: true })
 			.fill(NEW_PASSWORD);
 		await page.getByRole("button", { name: "Update password" }).click();
+		await confirmAction(page);
 
 		await expect(page.getByText(AUTH_MESSAGE.PASSWORD_CHANGED)).toBeVisible();
 	});

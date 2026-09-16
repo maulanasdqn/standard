@@ -16,6 +16,8 @@ import type { FC, ReactElement } from "react";
 import type { TRoleOption } from "#/routes/_authenticated/users/_hooks/use-role-options.ts";
 import { useUserEditForm } from "#/routes/_authenticated/users/_hooks/use-user-edit-form.ts";
 import { Card, CardContent } from "@app/components/ui/card";
+import { USER_MESSAGE } from "@app/messages";
+import { ConfirmDialog } from "#/routes/_authenticated/_components/confirm-dialog.tsx";
 
 type TUserEditFormProps = {
 	user: TUser;
@@ -23,7 +25,9 @@ type TUserEditFormProps = {
 };
 
 export const UserEditForm: FC<TUserEditFormProps> = (props): ReactElement => {
-	const { form, onSubmit, isPending, isSelf } = useUserEditForm(props.user);
+	const { form, onSubmit, confirm, isPending, isSelf } = useUserEditForm(
+		props.user,
+	);
 
 	return (
 		<Card className="max-w-md">
@@ -86,6 +90,13 @@ export const UserEditForm: FC<TUserEditFormProps> = (props): ReactElement => {
 						</Link>
 					</div>
 				</form>
+				<ConfirmDialog
+					open={confirm.open}
+					title={USER_MESSAGE.UPDATE_CONFIRM_TITLE}
+					description={USER_MESSAGE.UPDATE_CONFIRM_DESCRIPTION}
+					onOpenChange={confirm.onOpenChange}
+					onConfirm={confirm.onConfirm}
+				/>
 			</CardContent>
 		</Card>
 	);
