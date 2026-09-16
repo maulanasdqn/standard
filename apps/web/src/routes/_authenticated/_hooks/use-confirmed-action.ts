@@ -1,5 +1,12 @@
-import { useState } from "react";
-import { match, P } from "ts-pattern";
+import { useStore } from "@tanstack/react-store";
+import { useId } from "react";
+import { match } from "ts-pattern";
+import {
+	confirmClear,
+	confirmRequest,
+	confirmRun,
+	confirmStore,
+} from "#/libs/confirm/confirm-store.ts";
 
 export type TConfirmedAction<TValue> = {
 	open: boolean;
@@ -11,20 +18,17 @@ export type TConfirmedAction<TValue> = {
 export const useConfirmedAction = <TValue>(
 	run: (value: TValue) => void,
 ): TConfirmedAction<TValue> => {
-	const [pending, setPending] = useState<TValue | null>(null);
+	const id = useId();
+	const open = useStore(confirmStore, (pending) => pending?.id === id);
 
 	return {
-		open: pending !== null,
-		request: (value: TValue): void => setPending(value),
-		onOpenChange: (open: boolean): void =>
-			match(open)
-				.with(false, () => setPending(null))
+		open,
+		request: (value: TValue): void =>
+			confirmRequest({ id, run: () => run(value) }),
+		onOpenChange: (next: boolean): void =>
+			match(next)
+				.with(false, () => confirmClear())
 				.otherwise(() => undefined),
-		onConfirm: (): void => {
-			match(pending)
-				.with(P.nullish, () => undefined)
-				.otherwise((value) => run(value));
-			setPending(null);
-		},
+		onConfirm: confirmRun,
 	};
 };
