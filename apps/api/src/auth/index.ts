@@ -9,7 +9,10 @@ import { authMount } from "#/auth/presentation/mount-auth.ts";
 export { AuthService, authMount, authServiceLayer };
 export type { TAuthServiceId };
 
-export const authModule = {
+export const authModule: {
+	layer: typeof authServiceLayer;
+	routerBuild: typeof meRouterBuild;
+} = {
 	layer: authServiceLayer,
 	routerBuild: meRouterBuild,
 };

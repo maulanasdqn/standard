@@ -10,7 +10,12 @@ import { Layer } from "effect";
 export { ActivityRepo, activityRecorderLayer, activityRepoLayer };
 export type { TActivityRepoId };
 
-export const activityModule = {
-	layer: Layer.mergeAll(activityRecorderLayer, activityRepoLayer),
+const activityLayer = Layer.mergeAll(activityRecorderLayer, activityRepoLayer);
+
+export const activityModule: {
+	layer: typeof activityLayer;
+	routerBuild: typeof activityRouterBuild;
+} = {
+	layer: activityLayer,
 	routerBuild: activityRouterBuild,
 };
