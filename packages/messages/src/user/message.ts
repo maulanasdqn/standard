@@ -6,6 +6,12 @@ export const USER_MESSAGE = {
 	SELF_PASSWORD_RESET: "Change your own password from your account page.",
 	PASSWORD_RESET: "Password reset. Share the new password with the user.",
 	EMPTY: "No users yet.",
+	COLUMN_NAME: "Name",
+	COLUMN_EMAIL: "Email",
+	COLUMN_ROLE: "Role",
+	COLUMN_CREATED: "Created",
+	COLUMN_ACTIONS: "Actions",
+	ACTION_EDIT: "Edit",
 	CREATE_CONFIRM_TITLE: "Create this user?",
 	CREATE_CONFIRM_DESCRIPTION:
 		"The user can sign in with the given password right away.",

@@ -1,65 +1,20 @@
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@app/components/ui/table";
-import { formatDateTime, NOT_SET, orDash } from "@app/format";
 import { ACTIVITY_MESSAGE } from "@app/messages";
 import type { TActivity } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
 import type { FC, ReactElement } from "react";
-import { match, P } from "ts-pattern";
+import { match } from "ts-pattern";
+import { DataTable } from "#/routes/_authenticated/_components/data-table.tsx";
 import { EmptyState } from "#/routes/_authenticated/_components/empty-state.tsx";
+import { useActivityTable } from "#/routes/_authenticated/activity/_hooks/use-activity-table.tsx";
 
 type TActivityTableProps = {
 	entries: readonly TActivity[];
 };
 
-const metadataLabel = (metadata: unknown): string =>
-	match(metadata)
-		.with(P.nullish, () => NOT_SET)
-		.otherwise((value) => JSON.stringify(value));
+export const ActivityTable: FC<TActivityTableProps> = (props): ReactElement => {
+	const table = useActivityTable(props.entries);
 
-export const ActivityTable: FC<TActivityTableProps> = (props): ReactElement =>
-	match(A.isEmpty(props.entries))
+	return match(A.isEmpty(props.entries))
 		.with(true, () => <EmptyState message={ACTIVITY_MESSAGE.EMPTY} />)
-		.otherwise(() => (
-			<Table>
-				<TableHeader>
-					<TableRow>
-						<TableHead>{ACTIVITY_MESSAGE.COLUMN_WHEN}</TableHead>
-						<TableHead>{ACTIVITY_MESSAGE.COLUMN_ACTOR}</TableHead>
-						<TableHead>{ACTIVITY_MESSAGE.COLUMN_ACTION}</TableHead>
-						<TableHead>{ACTIVITY_MESSAGE.COLUMN_ENTITY}</TableHead>
-						<TableHead>{ACTIVITY_MESSAGE.COLUMN_DETAILS}</TableHead>
-					</TableRow>
-				</TableHeader>
-				<TableBody>
-					{A.map(props.entries, (entry) => (
-						<TableRow key={entry.id}>
-							<TableCell className="whitespace-nowrap text-muted-foreground">
-								{formatDateTime(entry.createdAt)}
-							</TableCell>
-							<TableCell>{orDash(entry.actorEmail)}</TableCell>
-							<TableCell>
-								<code className="text-xs">{entry.action}</code>
-							</TableCell>
-							<TableCell>
-								<span className="text-muted-foreground">
-									{entry.resourceType}
-								</span>{" "}
-								<code className="text-xs text-muted-foreground">
-									{entry.resourceId}
-								</code>
-							</TableCell>
-							<TableCell className="max-w-xs truncate text-xs text-muted-foreground">
-								{metadataLabel(entry.metadata)}
-							</TableCell>
-						</TableRow>
-					))}
-				</TableBody>
-			</Table>
-		));
+		.otherwise(() => <DataTable table={table} />);
+};
