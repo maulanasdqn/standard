@@ -1,3 +1,4 @@
+import { Guard } from "@app/components/guard/guard";
 import { checkRoutePermissions } from "@app/components/guard/route-guard";
 import { PERMISSION } from "@app/permissions";
 import { noteListInputSchema } from "@app/schemas";
@@ -16,7 +17,9 @@ const NotesPage: FC = (): ReactElement => {
 	return (
 		<div className="flex max-w-2xl flex-col gap-6">
 			<h1 className="text-xl font-semibold">Notes</h1>
-			<NoteCreateForm />
+			<Guard permissions={[PERMISSION.NOTE_WRITE]}>
+				<NoteCreateForm />
+			</Guard>
 			<NoteList notes={data.items} />
 		</div>
 	);

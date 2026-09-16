@@ -1,3 +1,4 @@
+import { Guard } from "@app/components/guard/guard";
 import { Button } from "@app/components/ui/button";
 import { Select } from "@app/components/ui/select";
 import {
@@ -10,6 +11,7 @@ import {
 } from "@app/components/ui/table";
 import { formatDateTime } from "@app/format";
 import { USER_MESSAGE } from "@app/messages";
+import { PERMISSION } from "@app/permissions";
 import type { TUser } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
 import { Link } from "@tanstack/react-router";
@@ -22,6 +24,9 @@ import {
 	useUserDelete,
 	useUserUpdate,
 } from "#/routes/_authenticated/users/_hooks/use-users.ts";
+
+const roleLabelOf = (options: readonly TRoleOption[], value: string): string =>
+	A.find(options, (option) => option.value === value)?.label ?? value;
 
 type TUserTableProps = {
 	users: readonly TUser[];
@@ -52,21 +57,33 @@ export const UserTable: FC<TUserTableProps> = (props): ReactElement => {
 							<TableCell className="font-medium">{user.name}</TableCell>
 							<TableCell className="text-neutral-600">{user.email}</TableCell>
 							<TableCell>
-								<Select
-									aria-label={`Role for ${user.name}`}
-									value={user.role}
-									disabled={isSelf(user.id) || userUpdate.isPending}
-									onChange={(event) =>
-										userUpdate.mutate({ id: user.id, role: event.target.value })
+								<Guard
+									permissions={[PERMISSION.USER_MANAGE]}
+									fallback={
+										<span className="text-sm">
+											{roleLabelOf(props.roleOptions, user.role)}
+										</span>
 									}
-									className="w-40"
 								>
-									{A.map(props.roleOptions, (option) => (
-										<option key={option.value} value={option.value}>
-											{option.label}
-										</option>
-									))}
-								</Select>
+									<Select
+										aria-label={`Role for ${user.name}`}
+										value={user.role}
+										disabled={isSelf(user.id) || userUpdate.isPending}
+										onChange={(event) =>
+											userUpdate.mutate({
+												id: user.id,
+												role: event.target.value,
+											})
+										}
+										className="w-40"
+									>
+										{A.map(props.roleOptions, (option) => (
+											<option key={option.value} value={option.value}>
+												{option.label}
+											</option>
+										))}
+									</Select>
+								</Guard>
 							</TableCell>
 							<TableCell className="text-neutral-500">
 								{formatDateTime(user.createdAt)}
@@ -79,14 +96,16 @@ export const UserTable: FC<TUserTableProps> = (props): ReactElement => {
 								>
 									Edit
 								</Link>
-								<Button
-									variant="ghost"
-									size="sm"
-									disabled={isSelf(user.id) || userDelete.isPending}
-									onClick={() => userDelete.mutate({ id: user.id })}
-								>
-									Delete
-								</Button>
+								<Guard permissions={[PERMISSION.USER_MANAGE]}>
+									<Button
+										variant="ghost"
+										size="sm"
+										disabled={isSelf(user.id) || userDelete.isPending}
+										onClick={() => userDelete.mutate({ id: user.id })}
+									>
+										Delete
+									</Button>
+								</Guard>
 							</TableCell>
 						</TableRow>
 					))}

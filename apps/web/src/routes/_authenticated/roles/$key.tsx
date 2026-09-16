@@ -1,3 +1,4 @@
+import { Guard } from "@app/components/guard/guard";
 import { checkRoutePermissions } from "@app/components/guard/route-guard";
 import { PERMISSION } from "@app/permissions";
 import { createFileRoute } from "@tanstack/react-router";
@@ -14,7 +15,9 @@ const RoleEditPage: FC = (): ReactElement => {
 	return (
 		<div className="flex max-w-3xl flex-col gap-6">
 			<h1 className="text-xl font-semibold">{data.label}</h1>
-			<RoleEditForm key={data.key} role={data} />
+			<Guard permissions={[PERMISSION.USER_MANAGE]}>
+				<RoleEditForm key={data.key} role={data} />
+			</Guard>
 		</div>
 	);
 };
