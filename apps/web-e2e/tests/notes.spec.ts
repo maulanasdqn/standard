@@ -24,9 +24,7 @@ test.describe("note write affordances follow the permission", () => {
 		await page.goto("/notes");
 		await expect(page.getByRole("heading", { name: "Notes" })).toBeVisible();
 
-		await expect(
-			page.getByRole("link", { name: NEW_NOTE }),
-		).toHaveCount(0);
+		await expect(page.getByRole("link", { name: NEW_NOTE })).toHaveCount(0);
 	});
 
 	test("a note:write holder can create a note from the dedicated page", async ({
