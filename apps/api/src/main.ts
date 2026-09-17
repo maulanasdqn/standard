@@ -11,7 +11,7 @@ import { CacheService } from "#/platform/cache/redis.ts";
 import { env } from "#/platform/config/env.ts";
 import { logger } from "#/platform/observability/logger.ts";
 import { authMount } from "#/auth/presentation/mount-auth.ts";
-import { healthMount } from "#/health/presentation/mount-health.ts";
+import { healthModule, healthMount } from "#/health/index.ts";
 import { orpcMount } from "#/platform/http/mount-orpc.ts";
 import { rateLimitMount } from "#/platform/http/mount-rate-limit.ts";
 import { webDistMount } from "#/platform/http/mount-web-dist.ts";
@@ -72,7 +72,9 @@ app.use(
 	}),
 );
 
-healthMount(app);
+healthMount(app, {
+	readiness: () => runtime.runPromise(healthModule.readiness()),
+});
 rateLimitMount(app, cacheClient);
 authMount(app, auth);
 orpcMount({ app, router, logger, buildContext });

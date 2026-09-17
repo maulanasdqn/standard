@@ -1,6 +1,7 @@
 import { Layer, ManagedRuntime } from "effect";
 import { activityModule } from "#/activity/index.ts";
 import { authModule } from "#/auth/index.ts";
+import { healthModule } from "#/health/index.ts";
 import { noteModule } from "#/note/index.ts";
 import { cacheServiceLayer } from "#/platform/cache/redis.ts";
 import { dbServiceLayer } from "#/platform/db/db-service.ts";
@@ -14,6 +15,7 @@ export const AppLayer = Layer.mergeAll(
 	cacheServiceLayer,
 	queueServiceLayer,
 	mailServiceLayer,
+	healthModule.layer,
 	activityModule.layer,
 	noteModule.layer,
 	roleModule.layer,

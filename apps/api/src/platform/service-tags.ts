@@ -4,4 +4,5 @@ export const SERVICE_TAG = {
 	QUEUE: "app/QueueService",
 	MAIL: "app/MailService",
 	AUTH: "app/AuthService",
+	HEALTH_PROBE: "app/HealthProbe",
 } as const;
