@@ -4,15 +4,18 @@ import { PERMISSION } from "@app/permissions";
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
 import { NoteCreateForm } from "#/routes/_authenticated/notes/_components/note-create-form.tsx";
-import { NoteFormPage } from "#/routes/_authenticated/notes/_components/note-form-page.tsx";
+import { FormPage } from "#/routes/_authenticated/_components/form-page.tsx";
 
 const NoteCreatePage: FC = (): ReactElement => (
-	<NoteFormPage
+	<FormPage
+		parentLabel={NOTE_MESSAGE.TITLE}
+		parentTo="/notes"
+		backLabel={NOTE_MESSAGE.BACK_TO_NOTES}
 		title={NOTE_MESSAGE.NEW_NOTE}
 		description={NOTE_MESSAGE.CREATE_DESCRIPTION}
 	>
 		<NoteCreateForm />
-	</NoteFormPage>
+	</FormPage>
 );
 
 export const Route = createFileRoute("/_authenticated/notes/create")({

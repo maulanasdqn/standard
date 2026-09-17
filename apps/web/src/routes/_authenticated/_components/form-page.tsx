@@ -7,25 +7,27 @@ import {
 	BreadcrumbSeparator,
 } from "@app/components/ui/breadcrumb";
 import { Button } from "@app/components/ui/button";
-import { NOTE_MESSAGE } from "@app/messages";
-import { Link } from "@tanstack/react-router";
+import { Link, type LinkProps } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import type { FC, ReactElement, ReactNode } from "react";
 
-type TNoteFormPageProps = {
+type TFormPageProps = {
+	parentLabel: string;
+	parentTo: LinkProps["to"];
+	backLabel: string;
 	title: string;
 	description: string;
 	meta?: ReactNode;
 	children: ReactNode;
 };
 
-export const NoteFormPage: FC<TNoteFormPageProps> = (props): ReactElement => (
+export const FormPage: FC<TFormPageProps> = (props): ReactElement => (
 	<div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
 		<Breadcrumb>
 			<BreadcrumbList>
 				<BreadcrumbItem>
 					<BreadcrumbLink asChild>
-						<Link to="/notes">{NOTE_MESSAGE.TITLE}</Link>
+						<Link to={props.parentTo}>{props.parentLabel}</Link>
 					</BreadcrumbLink>
 				</BreadcrumbItem>
 				<BreadcrumbSeparator />
@@ -43,9 +45,9 @@ export const NoteFormPage: FC<TNoteFormPageProps> = (props): ReactElement => (
 					<p className="text-sm text-muted-foreground">{props.description}</p>
 				</div>
 				<Button variant="ghost" size="sm" asChild>
-					<Link to="/notes">
+					<Link to={props.parentTo}>
 						<ArrowLeft />
-						{NOTE_MESSAGE.BACK_TO_NOTES}
+						{props.backLabel}
 					</Link>
 				</Button>
 			</div>

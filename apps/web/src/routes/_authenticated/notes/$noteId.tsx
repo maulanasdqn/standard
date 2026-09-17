@@ -5,7 +5,7 @@ import { PERMISSION } from "@app/permissions";
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
 import { NoteEditForm } from "#/routes/_authenticated/notes/_components/note-edit-form.tsx";
-import { NoteFormPage } from "#/routes/_authenticated/notes/_components/note-form-page.tsx";
+import { FormPage } from "#/routes/_authenticated/_components/form-page.tsx";
 import {
 	noteGetOptions,
 	useNoteGet,
@@ -15,7 +15,10 @@ const NoteEditPage: FC = (): ReactElement => {
 	const { data } = useNoteGet();
 
 	return (
-		<NoteFormPage
+		<FormPage
+			parentLabel={NOTE_MESSAGE.TITLE}
+			parentTo="/notes"
+			backLabel={NOTE_MESSAGE.BACK_TO_NOTES}
 			title={NOTE_MESSAGE.EDIT_NOTE}
 			description={NOTE_MESSAGE.EDIT_DESCRIPTION}
 			meta={
@@ -32,7 +35,7 @@ const NoteEditPage: FC = (): ReactElement => {
 			}
 		>
 			<NoteEditForm note={data} />
-		</NoteFormPage>
+		</FormPage>
 	);
 };
 

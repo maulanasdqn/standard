@@ -1,6 +1,7 @@
 import { ROLE } from "@app/permissions";
 import { userCreateInputSchema } from "@app/schemas";
 import { useForm } from "@tanstack/react-form";
+import { useNavigate } from "@tanstack/react-router";
 import type { FormEvent } from "react";
 import type { z } from "zod";
 import { useUserCreate } from "#/routes/_authenticated/users/_hooks/use-users.ts";
@@ -16,10 +17,13 @@ const DEFAULT_VALUES: TUserCreateFormValues = {
 };
 
 export const useUserCreateForm = () => {
+	const navigate = useNavigate();
 	const userCreate = useUserCreate();
 
 	const confirm = useConfirmedAction<TUserCreateFormValues>((value) =>
-		userCreate.mutate(value, { onSuccess: () => form.reset() }),
+		userCreate.mutate(value, {
+			onSuccess: () => void navigate({ to: "/users" }),
+		}),
 	);
 
 	const form = useForm({
