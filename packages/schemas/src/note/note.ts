@@ -4,23 +4,26 @@ import { baseSchema, type TEntityOf } from "../shared/base-schema.ts";
 import { paginated, paginationSchema } from "../shared/pagination.ts";
 import { SORT_DIRECTION, sortDirectionSchema } from "../shared/sort.ts";
 
+export const NOTE_TITLE_MAX = 200;
+export const NOTE_BODY_MAX = 10_000;
+
 export const noteSchema = baseSchema(z.uuid()).extend({
-	title: z.string().min(1).max(200),
-	body: z.string().max(10_000),
+	title: z.string().min(1).max(NOTE_TITLE_MAX),
+	body: z.string().max(NOTE_BODY_MAX),
 	authorId: userIdSchema,
 });
 export type TNote = TEntityOf<z.infer<typeof noteSchema>>;
 
 export const noteCreateInputSchema = z.object({
-	title: z.string().min(1).max(200),
-	body: z.string().max(10_000).default(""),
+	title: z.string().min(1).max(NOTE_TITLE_MAX),
+	body: z.string().max(NOTE_BODY_MAX).default(""),
 });
 export type TNoteCreateInput = z.infer<typeof noteCreateInputSchema>;
 
 export const noteUpdateInputSchema = z.object({
 	id: z.uuid(),
-	title: z.string().min(1).max(200).optional(),
-	body: z.string().max(10_000).optional(),
+	title: z.string().min(1).max(NOTE_TITLE_MAX).optional(),
+	body: z.string().max(NOTE_BODY_MAX).optional(),
 });
 export type TNoteUpdateInput = z.infer<typeof noteUpdateInputSchema>;
 

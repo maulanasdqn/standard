@@ -21,4 +21,19 @@ export const NOTE_MESSAGE = {
 	SEARCH_PLACEHOLDER: "Search notes",
 	NEW_NOTE: "New Note",
 	EDIT_NOTE: "Edit Note",
+	CREATE_DESCRIPTION:
+		"Give the note a title and an optional body. Everyone who can read notes will see it.",
+	EDIT_DESCRIPTION:
+		"Update the title or body. Changes apply as soon as you confirm.",
+	DETAILS_TITLE: "Note details",
+	DETAILS_DESCRIPTION:
+		"The title shows in the list; the body holds the full text.",
+	TITLE_PLACEHOLDER: "What is this note about?",
+	BODY_PLACEHOLDER: "Write the note here",
+	BACK_TO_NOTES: "Back to notes",
+	SAVE_CHANGES: "Save changes",
+	CREATING: "Adding…",
+	SAVING: "Saving…",
+	CREATED_AT: "Created",
+	UPDATED_AT: "Updated",
 } as const;
