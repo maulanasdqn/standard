@@ -1,5 +1,14 @@
-import { index, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+	index,
+	integer,
+	pgTable,
+	text,
+	timestamp,
+	uuid,
+} from "drizzle-orm/pg-core";
 import { user } from "./auth.ts";
+
+export const NOTE_VERSION_INITIAL = 1;
 
 export const note = pgTable(
 	"note",
@@ -7,6 +16,7 @@ export const note = pgTable(
 		id: uuid("id").primaryKey().defaultRandom(),
 		title: text("title").notNull(),
 		body: text("body").notNull().default(""),
+		version: integer("version").notNull().default(NOTE_VERSION_INITIAL),
 		authorId: text("author_id")
 			.notNull()
 			.references(() => user.id, { onDelete: "cascade" }),

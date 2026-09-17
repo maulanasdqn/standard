@@ -3,7 +3,7 @@ import type { TNote, TNoteUpdateInput } from "@app/schemas";
 import { Effect } from "effect";
 import { toNoteDto } from "#/note/application/to-note-dto.ts";
 import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
-import { ENotFound, type EDatabase } from "#/shared/errors.ts";
+import { EConflict, ENotFound, type EDatabase } from "#/shared/errors.ts";
 import {
 	ActivityRecorder,
 	type TActivityRecorderId,
@@ -16,7 +16,7 @@ export const noteUpdate = Effect.fn("noteUpdate")(function* (
 	actor: TOwnershipActor,
 ): Effect.fn.Return<
 	TNote,
-	ENotFound | EDatabase,
+	ENotFound | EConflict | EDatabase,
 	TNoteRepoId | TActivityRecorderId
 > {
 	const noteRepo = yield* NoteRepo;
@@ -24,7 +24,13 @@ export const noteUpdate = Effect.fn("noteUpdate")(function* (
 	const updated = yield* noteRepo.update(input, actor);
 
 	if (updated === null) {
-		return yield* new ENotFound({ message: NOTE_MESSAGE.NOT_FOUND });
+		const current = yield* noteRepo.findById(input.id, actor);
+
+		if (current === null) {
+			return yield* new ENotFound({ message: NOTE_MESSAGE.NOT_FOUND });
+		}
+
+		return yield* new EConflict({ message: NOTE_MESSAGE.CONFLICT });
 	}
 
 	yield* activityRepo.insert({

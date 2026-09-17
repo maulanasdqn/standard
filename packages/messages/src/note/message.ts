@@ -1,6 +1,8 @@
 export const NOTE_MESSAGE = {
 	TITLE: "Notes",
 	NOT_FOUND: "This note could not be found.",
+	CONFLICT:
+		"This note was changed by someone else since you opened it. Reload it and apply your edit again.",
 	FORBIDDEN: "You don't have permission to modify this note.",
 	EMPTY: "No notes yet.",
 	DELETE_CONFIRM_TITLE: "Delete this note?",

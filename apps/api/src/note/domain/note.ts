@@ -19,6 +19,7 @@ export type TNoteRow = TBaseRow &
 		title: string;
 		body: string;
 		authorId: string;
+		version: number;
 	};
 
 export type TNoteRepo = {

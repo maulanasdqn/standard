@@ -23,7 +23,7 @@ export const useNoteEditForm = (note: TNote) => {
 	};
 
 	const confirm = useConfirmedAction<TNoteEditFormValues>((value) =>
-		noteUpdate.mutate(D.merge(value, { id: note.id }), {
+		noteUpdate.mutate(D.merge(value, { id: note.id, version: note.version }), {
 			onSuccess: () => void navigate({ to: "/notes" }),
 		}),
 	);
