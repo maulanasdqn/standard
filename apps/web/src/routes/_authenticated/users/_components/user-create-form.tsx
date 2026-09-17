@@ -31,7 +31,9 @@ export const UserCreateForm: FC<TUserCreateFormProps> = (
 			<Card>
 				<CardHeader>
 					<CardTitle>{USER_MESSAGE.DETAILS_TITLE}</CardTitle>
-					<CardDescription>{USER_MESSAGE.CREATE_DESCRIPTION}</CardDescription>
+					<CardDescription>
+						{USER_MESSAGE.CREATE_DETAILS_DESCRIPTION}
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="grid gap-6 sm:grid-cols-2">
 					<form.Field name="name">

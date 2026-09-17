@@ -16,6 +16,7 @@ export const USER_MESSAGE = {
 	DETAILS_TITLE: "Account details",
 	DETAILS_DESCRIPTION:
 		"The email is the sign-in identity and cannot be changed here.",
+	CREATE_DETAILS_DESCRIPTION: "The user signs in with this email and password.",
 	PASSWORD_TITLE: "Reset password",
 	PASSWORD_DESCRIPTION:
 		"Sets a new password and signs the user out everywhere. Share it with them out of band.",
