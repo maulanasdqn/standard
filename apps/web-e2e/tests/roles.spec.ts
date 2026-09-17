@@ -18,6 +18,7 @@ import { signOut } from "../support/sign-out.ts";
 import { rowWithCell } from "../support/table.ts";
 import { selectOption } from "../support/select.ts";
 import { confirmAction } from "../support/confirm.ts";
+import { createNote } from "../support/notes.ts";
 
 const FIXED_NOTICE =
 	"Fixed roles are defined in code and can't be changed here.";
@@ -155,11 +156,7 @@ test.describe("roles admin flow", () => {
 		]);
 		await expectNavHidden(page, ADMIN_NAV_LABELS);
 
-		await page.goto("/notes");
-		await page.getByPlaceholder("Title").fill("Reviewer note");
-		await page.getByRole("button", { name: "Add note" }).click();
-		await confirmAction(page);
-		await expect(page.getByText("Reviewer note")).toBeVisible();
+		await createNote(page, "Reviewer note");
 
 		await page.goto("/roles");
 		await expect(page).toHaveURL(/\/dashboard/);
