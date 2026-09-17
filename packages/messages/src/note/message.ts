@@ -1,4 +1,5 @@
 export const NOTE_MESSAGE = {
+	TITLE: "Notes",
 	NOT_FOUND: "This note could not be found.",
 	FORBIDDEN: "You don't have permission to modify this note.",
 	EMPTY: "No notes yet.",
@@ -7,6 +8,17 @@ export const NOTE_MESSAGE = {
 	CREATE_CONFIRM_TITLE: "Add this note?",
 	CREATE_CONFIRM_DESCRIPTION:
 		"The note will be visible to everyone who can read notes.",
+	UPDATE_CONFIRM_TITLE: "Save these changes?",
+	UPDATE_CONFIRM_DESCRIPTION: "The note will be updated immediately.",
 	CREATED: "Note added.",
+	UPDATED: "Note updated.",
 	DELETED: "Note deleted.",
+	COLUMN_TITLE: "Title",
+	COLUMN_BODY: "Body",
+	COLUMN_CREATED: "Created",
+	COLUMN_ACTIONS: "Actions",
+	ACTION_EDIT: "Edit",
+	SEARCH_PLACEHOLDER: "Search notes",
+	NEW_NOTE: "New Note",
+	EDIT_NOTE: "Edit Note",
 } as const;
