@@ -2,6 +2,7 @@ import { z } from "zod";
 import { userIdSchema } from "../auth/auth.ts";
 import { baseSchema, type TEntityOf } from "../shared/base-schema.ts";
 import { paginated, paginationSchema } from "../shared/pagination.ts";
+import { SORT_DIRECTION, sortDirectionSchema } from "../shared/sort.ts";
 
 export const userSchema = baseSchema(userIdSchema).extend({
 	name: z.string(),
@@ -38,9 +39,27 @@ export type TUserPasswordResetInput = z.infer<
 	typeof userPasswordResetInputSchema
 >;
 
+export const USER_SORT = {
+	NAME: "name",
+	EMAIL: "email",
+	ROLE: "role",
+	CREATED_AT: "createdAt",
+} as const;
+
+export type TUserSort = (typeof USER_SORT)[keyof typeof USER_SORT];
+
 export const userListInputSchema = paginationSchema.extend({
 	search: z.string().optional(),
 	role: z.string().optional(),
+	sortBy: z
+		.enum([
+			USER_SORT.NAME,
+			USER_SORT.EMAIL,
+			USER_SORT.ROLE,
+			USER_SORT.CREATED_AT,
+		])
+		.default(USER_SORT.CREATED_AT),
+	sortDir: sortDirectionSchema.default(SORT_DIRECTION.ASC),
 });
 export type TUserListInput = z.infer<typeof userListInputSchema>;
 

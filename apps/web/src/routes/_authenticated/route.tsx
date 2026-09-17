@@ -20,7 +20,9 @@ const AuthenticatedLayout: FC = (): ReactElement => (
 				<Separator orientation="vertical" className="mr-2 !h-4" />
 			</header>
 			<main className="min-w-0 flex-1 overflow-y-auto p-6">
-				<Outlet />
+				<div className="mx-auto w-full max-w-7xl">
+					<Outlet />
+				</div>
 			</main>
 		</SidebarInset>
 	</SidebarProvider>

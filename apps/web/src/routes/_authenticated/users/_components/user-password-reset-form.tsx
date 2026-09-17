@@ -1,13 +1,19 @@
 import { Button } from "@app/components/ui/button";
-import { FieldError } from "@app/components/ui/field-error";
-import { Input } from "@app/components/ui/input";
-import { Label } from "@app/components/ui/label";
-import type { TUser } from "@app/schemas";
-import type { FC, ReactElement } from "react";
-import { useUserPasswordResetForm } from "#/routes/_authenticated/users/_hooks/use-user-password-reset-form.ts";
-import { Card, CardContent } from "@app/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@app/components/ui/card";
 import { USER_MESSAGE } from "@app/messages";
+import type { TUser } from "@app/schemas";
+import { Loader2 } from "lucide-react";
+import type { FC, ReactElement } from "react";
 import { ConfirmDialog } from "#/routes/_authenticated/_components/confirm-dialog.tsx";
+import { UserTextField } from "#/routes/_authenticated/users/_components/user-text-field.tsx";
+import { useUserPasswordResetForm } from "#/routes/_authenticated/users/_hooks/use-user-password-reset-form.ts";
 
 type TUserPasswordResetFormProps = {
 	user: TUser;
@@ -21,49 +27,43 @@ export const UserPasswordResetForm: FC<TUserPasswordResetFormProps> = (
 	);
 
 	return (
-		<Card className="max-w-md">
-			<CardContent>
-				<form onSubmit={onSubmit} className="flex flex-col gap-4">
-					<div className="flex flex-col gap-1">
-						<h2 className="font-medium">Reset password</h2>
-						<p className="text-sm text-muted-foreground">
-							Sets a new password for {props.user.email} and signs them out
-							everywhere. Share it with them out of band.
-						</p>
-					</div>
+		<form onSubmit={onSubmit}>
+			<Card>
+				<CardHeader>
+					<CardTitle>{USER_MESSAGE.PASSWORD_TITLE}</CardTitle>
+					<CardDescription>{USER_MESSAGE.PASSWORD_DESCRIPTION}</CardDescription>
+				</CardHeader>
+				<CardContent className="grid gap-6 sm:grid-cols-2">
 					<form.Field name="password">
 						{(field) => (
-							<div className="flex flex-col gap-1">
-								<Label htmlFor="reset-password">New password</Label>
-								<Input
-									id="reset-password"
-									type="password"
-									autoComplete="new-password"
-									value={field.state.value}
-									onBlur={field.handleBlur}
-									onChange={(event) => field.handleChange(event.target.value)}
-								/>
-								<FieldError errors={field.state.meta.errors} />
-							</div>
+							<UserTextField
+								id="reset-password"
+								type="password"
+								autoComplete="new-password"
+								label={USER_MESSAGE.NEW_PASSWORD}
+								placeholder={USER_MESSAGE.NEW_PASSWORD_PLACEHOLDER}
+								value={field.state.value}
+								errors={field.state.meta.errors}
+								onBlur={field.handleBlur}
+								onChange={field.handleChange}
+							/>
 						)}
 					</form.Field>
-					<Button
-						type="submit"
-						variant="outline"
-						disabled={isPending}
-						className="self-start"
-					>
-						{isPending ? "Resetting…" : "Reset password"}
+				</CardContent>
+				<CardFooter className="justify-end border-t pt-6">
+					<Button type="submit" variant="outline" disabled={isPending}>
+						{isPending && <Loader2 className="animate-spin" />}
+						{isPending ? USER_MESSAGE.RESETTING : USER_MESSAGE.RESET_ACTION}
 					</Button>
-				</form>
-				<ConfirmDialog
-					open={confirm.open}
-					title={USER_MESSAGE.PASSWORD_RESET_CONFIRM_TITLE}
-					description={USER_MESSAGE.PASSWORD_RESET_CONFIRM_DESCRIPTION}
-					onOpenChange={confirm.onOpenChange}
-					onConfirm={confirm.onConfirm}
-				/>
-			</CardContent>
-		</Card>
+				</CardFooter>
+			</Card>
+			<ConfirmDialog
+				open={confirm.open}
+				title={USER_MESSAGE.PASSWORD_RESET_CONFIRM_TITLE}
+				description={USER_MESSAGE.PASSWORD_RESET_CONFIRM_DESCRIPTION}
+				onOpenChange={confirm.onOpenChange}
+				onConfirm={confirm.onConfirm}
+			/>
+		</form>
 	);
 };

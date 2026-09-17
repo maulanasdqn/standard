@@ -30,7 +30,7 @@ export const QuickActions: FC = (): ReactElement => (
 			</Guard>
 			<Guard permissions={[PERMISSION.USER_MANAGE]}>
 				<Button variant="outline" size="sm" className="justify-start" asChild>
-					<Link to="/users">
+					<Link to="/users/create">
 						<Plus className="size-4" />
 						{DASHBOARD_MESSAGE.CREATE_USER}
 					</Link>

@@ -2,6 +2,7 @@ import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
 import { z } from "zod";
 import { eventSchema, type TEventOf } from "../shared/base-schema.ts";
 import { paginated, paginationSchema } from "../shared/pagination.ts";
+import { SORT_DIRECTION, sortDirectionSchema } from "../shared/sort.ts";
 
 export const activitySchema = eventSchema(z.uuid()).extend({
 	actorId: z.string().nullable(),
@@ -13,10 +14,26 @@ export const activitySchema = eventSchema(z.uuid()).extend({
 });
 export type TActivity = TEventOf<z.infer<typeof activitySchema>>;
 
+export const ACTIVITY_SORT = {
+	CREATED_AT: "createdAt",
+	ACTION: "action",
+	RESOURCE_TYPE: "resourceType",
+} as const;
+
+export type TActivitySort = (typeof ACTIVITY_SORT)[keyof typeof ACTIVITY_SORT];
+
 export const activityListInputSchema = paginationSchema.extend({
 	action: z.string().optional(),
 	resourceType: z.string().optional(),
 	actorId: z.string().optional(),
+	sortBy: z
+		.enum([
+			ACTIVITY_SORT.CREATED_AT,
+			ACTIVITY_SORT.ACTION,
+			ACTIVITY_SORT.RESOURCE_TYPE,
+		])
+		.default(ACTIVITY_SORT.CREATED_AT),
+	sortDir: sortDirectionSchema.default(SORT_DIRECTION.DESC),
 });
 export type TActivityListInput = z.infer<typeof activityListInputSchema>;
 

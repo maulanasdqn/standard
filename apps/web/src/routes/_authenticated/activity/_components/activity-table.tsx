@@ -1,20 +1,21 @@
 import { ACTIVITY_MESSAGE } from "@app/messages";
-import type { TActivity } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
 import type { FC, ReactElement } from "react";
 import { match } from "ts-pattern";
 import { DataTable } from "#/routes/_authenticated/_components/data-table.tsx";
 import { EmptyState } from "#/routes/_authenticated/_components/empty-state.tsx";
-import { useActivityTable } from "#/routes/_authenticated/activity/_hooks/use-activity-table.tsx";
+import { ActivityFilters } from "#/routes/_authenticated/activity/_components/activity-filters.tsx";
+import {
+	type TActivityTableInput,
+	useActivityTable,
+} from "#/routes/_authenticated/activity/_hooks/use-activity-table.tsx";
 
-type TActivityTableProps = {
-	entries: readonly TActivity[];
-};
+export const ActivityTable: FC<TActivityTableInput> = (props): ReactElement => {
+	const table = useActivityTable(props);
 
-export const ActivityTable: FC<TActivityTableProps> = (props): ReactElement => {
-	const table = useActivityTable(props.entries);
-
-	return match(A.isEmpty(props.entries))
+	return match(A.isEmpty(props.list.items))
 		.with(true, () => <EmptyState message={ACTIVITY_MESSAGE.EMPTY} />)
-		.otherwise(() => <DataTable table={table} />);
+		.otherwise(() => (
+			<DataTable table={table} toolbar={<ActivityFilters />} paginated />
+		));
 };

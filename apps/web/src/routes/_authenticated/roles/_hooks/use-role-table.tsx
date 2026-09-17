@@ -51,6 +51,7 @@ const columns = helper.columns([
 	helper.display({
 		id: "actions",
 		header: ROLE_MESSAGE.COLUMN_ACTIONS,
+		enableHiding: false,
 		meta: { className: "text-right" },
 		cell: (context): ReactElement => (
 			<RoleActionsCell role={context.row.original} />
@@ -61,4 +62,10 @@ const columns = helper.columns([
 export const useRoleTable = (
 	roles: readonly TRoleDto[],
 ): ReactTable<TTableFeatures, TRoleDto> =>
-	useTable({ features: TABLE_FEATURES, columns, data: roles, getRowId });
+	useTable({
+		features: TABLE_FEATURES,
+		enableSorting: false,
+		columns,
+		data: roles,
+		getRowId,
+	});

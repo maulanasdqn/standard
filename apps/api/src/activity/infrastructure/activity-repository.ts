@@ -1,5 +1,5 @@
 import type { TActivityEntry, TActivityRepo } from "@app/activity";
-import { and, count, desc, eq, type SQL } from "drizzle-orm";
+import { and, count, eq, type SQL } from "drizzle-orm";
 import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { Effect, Layer } from "effect";
 import { match, P } from "ts-pattern";
@@ -12,7 +12,8 @@ import {
 	ActivityRecorder,
 	type TActivityRecorder,
 } from "#/shared/activity-recorder.ts";
-import { offsetFor } from "#/shared/pagination.ts";
+import { offsetFor, orderFor } from "#/shared/pagination.ts";
+import { ACTIVITY_SORT, type TActivitySort } from "@app/schemas";
 import type { TDb } from "#/platform/db/client.ts";
 import { DbService, dbServiceLayer } from "#/platform/db/db-service.ts";
 import { activityLog } from "#/platform/db/tables/activity.ts";
@@ -29,6 +30,12 @@ export const activityRepositoryCreate = (db: TDb): TActivityRepo => ({
 		});
 	},
 });
+
+const SORT_COLUMN: Record<TActivitySort, AnyPgColumn> = {
+	[ACTIVITY_SORT.CREATED_AT]: activityLog.createdAt,
+	[ACTIVITY_SORT.ACTION]: activityLog.action,
+	[ACTIVITY_SORT.RESOURCE_TYPE]: activityLog.resourceType,
+};
 
 const optionalEq = (
 	column: AnyPgColumn,
@@ -64,6 +71,8 @@ export const activityRepoLayer = Layer.effect(
 			action,
 			resourceType,
 			actorId,
+			sortBy,
+			sortDir,
 		}) => {
 			const where = and(
 				optionalEq(activityLog.action, action),
@@ -88,7 +97,7 @@ export const activityRepoLayer = Layer.effect(
 							.from(activityLog)
 							.leftJoin(user, eq(user.id, activityLog.actorId))
 							.where(where)
-							.orderBy(desc(activityLog.createdAt))
+							.orderBy(orderFor(SORT_COLUMN[sortBy], sortDir))
 							.limit(pageSize)
 							.offset(offsetFor({ page, pageSize })),
 						db.select({ value: count() }).from(activityLog).where(where),

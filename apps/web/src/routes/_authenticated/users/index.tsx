@@ -1,35 +1,47 @@
 import { Guard } from "@app/components/guard/guard";
 import { checkRoutePermissions } from "@app/components/guard/route-guard";
+import { Button } from "@app/components/ui/button";
+import { USER_MESSAGE } from "@app/messages";
 import { PERMISSION } from "@app/permissions";
 import { userListInputSchema } from "@app/schemas";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Plus } from "lucide-react";
 import type { FC, ReactElement } from "react";
-import { ListPagination } from "#/routes/_authenticated/_components/list-pagination.tsx";
 import { roleListOptions } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
-import { UserCreateForm } from "#/routes/_authenticated/users/_components/user-create-form.tsx";
-import { UserSearch } from "#/routes/_authenticated/users/_components/user-search.tsx";
 import { UserTable } from "#/routes/_authenticated/users/_components/user-table.tsx";
 import { useRoleOptions } from "#/routes/_authenticated/users/_hooks/use-role-options.ts";
 import {
 	userListOptions,
 	useUserList,
-	useUserPageChange,
+	useUserListChange,
 } from "#/routes/_authenticated/users/_hooks/use-users.ts";
 
 const UsersPage: FC = (): ReactElement => {
 	const { data } = useUserList();
-	const goToPage = useUserPageChange();
+	const search = Route.useSearch();
+	const onChange = useUserListChange();
 	const roleOptions = useRoleOptions();
 
 	return (
-		<div className="flex max-w-5xl flex-col gap-6">
-			<h1 className="text-xl font-semibold">Users</h1>
-			<Guard permissions={[PERMISSION.USER_MANAGE]}>
-				<UserCreateForm roleOptions={roleOptions} />
-			</Guard>
-			<UserSearch />
-			<UserTable users={data.items} roleOptions={roleOptions} />
-			<ListPagination pageInfo={data} noun="users" onPageChange={goToPage} />
+		<div className="flex flex-col gap-6">
+			<div className="flex items-center justify-between">
+				<h1 className="text-xl font-semibold">{USER_MESSAGE.TITLE}</h1>
+				<Guard permissions={[PERMISSION.USER_MANAGE]}>
+					<Button asChild size="sm">
+						<Link to="/users/create">
+							<Plus className="mr-1 size-4" />
+							{USER_MESSAGE.NEW_USER}
+						</Link>
+					</Button>
+				</Guard>
+			</div>
+			<UserTable
+				list={data}
+				roleOptions={roleOptions}
+				sortBy={search.sortBy}
+				sortDir={search.sortDir}
+				onChange={onChange}
+			/>
 		</div>
 	);
 };

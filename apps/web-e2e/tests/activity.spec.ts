@@ -5,7 +5,7 @@ import { expectNavHidden, NAV_LABEL } from "../support/nav.ts";
 import { signIn } from "../support/sign-in.ts";
 import { signOut } from "../support/sign-out.ts";
 import { selectOption } from "../support/select.ts";
-import { confirmAction } from "../support/confirm.ts";
+import { createNote } from "../support/notes.ts";
 
 const NOTE_TITLE = "Audited from Playwright";
 
@@ -24,11 +24,7 @@ test.describe("activity log", () => {
 	});
 
 	test("records a note creation attributed to the admin", async (): Promise<void> => {
-		await page.goto("/notes");
-		await page.getByPlaceholder("Title").fill(NOTE_TITLE);
-		await page.getByRole("button", { name: "Add note" }).click();
-		await confirmAction(page);
-		await expect(page.getByText(NOTE_TITLE)).toBeVisible();
+		await createNote(page, NOTE_TITLE);
 
 		await page.goto("/activity");
 		await expect(page.getByRole("heading", { name: "Activity" })).toBeVisible();

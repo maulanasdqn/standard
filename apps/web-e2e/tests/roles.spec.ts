@@ -16,8 +16,9 @@ import {
 import { signIn } from "../support/sign-in.ts";
 import { signOut } from "../support/sign-out.ts";
 import { rowWithCell } from "../support/table.ts";
-import { selectOption } from "../support/select.ts";
 import { confirmAction } from "../support/confirm.ts";
+import { createUser } from "../support/users.ts";
+import { createNote } from "../support/notes.ts";
 
 const FIXED_NOTICE =
 	"Fixed roles are defined in code and can't be changed here.";
@@ -126,18 +127,7 @@ test.describe("roles admin flow", () => {
 	});
 
 	test("assigns the custom role to a new user", async (): Promise<void> => {
-		await page.goto("/users");
-
-		await page.getByLabel("Name", { exact: true }).fill(REVIEWER.name);
-		await page.getByLabel("Email", { exact: true }).fill(REVIEWER.email);
-		await page.getByLabel("Password", { exact: true }).fill(REVIEWER.password);
-		await selectOption(
-			page,
-			page.getByLabel("Role", { exact: true }),
-			RENAMED_LABEL,
-		);
-		await page.getByRole("button", { name: "Create user" }).click();
-		await confirmAction(page);
+		await createUser(page, REVIEWER, RENAMED_LABEL);
 
 		await expect(page.getByLabel(`Role for ${REVIEWER.name}`)).toHaveText(
 			RENAMED_LABEL,
@@ -155,11 +145,7 @@ test.describe("roles admin flow", () => {
 		]);
 		await expectNavHidden(page, ADMIN_NAV_LABELS);
 
-		await page.goto("/notes");
-		await page.getByPlaceholder("Title").fill("Reviewer note");
-		await page.getByRole("button", { name: "Add note" }).click();
-		await confirmAction(page);
-		await expect(page.getByText("Reviewer note")).toBeVisible();
+		await createNote(page, "Reviewer note");
 
 		await page.goto("/roles");
 		await expect(page).toHaveURL(/\/dashboard/);

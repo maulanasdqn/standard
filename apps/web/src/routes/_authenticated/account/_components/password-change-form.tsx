@@ -24,6 +24,7 @@ export const PasswordChangeForm: FC = (): ReactElement => {
 									id={field.name}
 									type="password"
 									autoComplete="current-password"
+									placeholder={AUTH_MESSAGE.CURRENT_PASSWORD_PLACEHOLDER}
 									value={field.state.value}
 									onBlur={field.handleBlur}
 									onChange={(event) => field.handleChange(event.target.value)}
@@ -40,6 +41,7 @@ export const PasswordChangeForm: FC = (): ReactElement => {
 									id={field.name}
 									type="password"
 									autoComplete="new-password"
+									placeholder={AUTH_MESSAGE.NEW_PASSWORD_PLACEHOLDER}
 									value={field.state.value}
 									onBlur={field.handleBlur}
 									onChange={(event) => field.handleChange(event.target.value)}
@@ -56,6 +58,7 @@ export const PasswordChangeForm: FC = (): ReactElement => {
 									id={field.name}
 									type="password"
 									autoComplete="new-password"
+									placeholder={AUTH_MESSAGE.CONFIRM_PASSWORD_PLACEHOLDER}
 									value={field.state.value}
 									onBlur={field.handleBlur}
 									onChange={(event) => field.handleChange(event.target.value)}
