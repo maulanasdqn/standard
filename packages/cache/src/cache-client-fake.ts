@@ -1,10 +1,13 @@
-import { match } from "ts-pattern";
+import { match, P } from "ts-pattern";
 import type { TCacheClient } from "./cache-client.ts";
 
 export type TCacheClientFake = TCacheClient & {
 	entries: Map<string, string>;
 	expiries: Map<string, number>;
+	fail: (reason: string | null) => void;
 };
+
+const PONG = "PONG";
 
 const FOUND = 1;
 const MISSING = 0;
@@ -12,6 +15,19 @@ const MISSING = 0;
 export const cacheClientFake = (): TCacheClientFake => {
 	const entries = new Map<string, string>();
 	const expiries = new Map<string, number>();
+
+	let failure: string | null = null;
+
+	const fail = (reason: string | null): void => {
+		failure = reason;
+	};
+
+	const ping = async (): Promise<string> =>
+		match(failure)
+			.with(P.nullish, (): string => PONG)
+			.otherwise((reason): string => {
+				throw new Error(reason);
+			});
 
 	const get = async (key: string): Promise<string | null> =>
 		entries.get(key) ?? null;
@@ -58,5 +74,16 @@ export const cacheClientFake = (): TCacheClientFake => {
 			})
 			.otherwise((): number => MISSING);
 
-	return { entries, expiries, get, setex, setIfAbsent, del, incr, expire };
+	return {
+		entries,
+		expiries,
+		fail,
+		ping,
+		get,
+		setex,
+		setIfAbsent,
+		del,
+		incr,
+		expire,
+	};
 };

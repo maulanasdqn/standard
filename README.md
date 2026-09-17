@@ -68,7 +68,8 @@ The root `package.json` version is the single source of truth for the workspace.
 | Surface | Response |
 |---|---|
 | `health.check` over RPC, `GET /api/health` | `{ status: "ok", version }` |
-| `GET /healthz`, `GET /ready` | `{ status, version }` |
+| `GET /healthz` | `{ status, version }`, liveness only: the process answers, nothing is probed |
+| `GET /ready` | `{ status, version, dependencies }`, and **503** when any dependency is down |
 | `/health` on the web (no auth) | its own version next to the API's |
 
 The shape is `healthSchema` in `@app/schemas`, so the web page is typed against what the API returns; the two versions differing means web and API are deployed out of step.
