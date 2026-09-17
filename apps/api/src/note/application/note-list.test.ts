@@ -2,6 +2,7 @@ import { Effect, Layer } from "effect";
 import { describe, expect, it, vi } from "vitest";
 import { noteList } from "#/note/application/note-list.ts";
 import { ROLE } from "@app/permissions";
+import { NOTE_SORT, SORT_DIRECTION } from "@app/schemas";
 import type { TNoteRow } from "#/note/domain/note.ts";
 import { NoteRepo } from "#/note/domain/note.ts";
 
@@ -14,7 +15,12 @@ const SUPERADMIN_ACTOR = {
 	role: ROLE.SUPERADMIN,
 };
 const NOTE_ID = "11111111-1111-4111-8111-111111111111";
-const INPUT = { page: 1, pageSize: 20 };
+const INPUT = {
+	page: 1,
+	pageSize: 20,
+	sortBy: NOTE_SORT.CREATED_AT,
+	sortDir: SORT_DIRECTION.DESC,
+};
 
 const row: TNoteRow = {
 	id: NOTE_ID,

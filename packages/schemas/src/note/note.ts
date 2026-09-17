@@ -2,6 +2,7 @@ import { z } from "zod";
 import { userIdSchema } from "../auth/auth.ts";
 import { baseSchema, type TEntityOf } from "../shared/base-schema.ts";
 import { paginated, paginationSchema } from "../shared/pagination.ts";
+import { SORT_DIRECTION, sortDirectionSchema } from "../shared/sort.ts";
 
 export const noteSchema = baseSchema(z.uuid()).extend({
 	title: z.string().min(1).max(200),
@@ -26,8 +27,20 @@ export type TNoteUpdateInput = z.infer<typeof noteUpdateInputSchema>;
 export const noteIdInputSchema = z.object({ id: z.uuid() });
 export type TNoteIdInput = z.infer<typeof noteIdInputSchema>;
 
+export const NOTE_SORT = {
+	TITLE: "title",
+	CREATED_AT: "createdAt",
+	UPDATED_AT: "updatedAt",
+} as const;
+
+export type TNoteSort = (typeof NOTE_SORT)[keyof typeof NOTE_SORT];
+
 export const noteListInputSchema = paginationSchema.extend({
 	search: z.string().optional(),
+	sortBy: z
+		.enum([NOTE_SORT.TITLE, NOTE_SORT.CREATED_AT, NOTE_SORT.UPDATED_AT])
+		.default(NOTE_SORT.CREATED_AT),
+	sortDir: sortDirectionSchema.default(SORT_DIRECTION.DESC),
 });
 export type TNoteListInput = z.infer<typeof noteListInputSchema>;
 

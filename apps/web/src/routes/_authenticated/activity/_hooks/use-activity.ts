@@ -1,4 +1,4 @@
-import type { TActivityListInput } from "@app/schemas";
+import type { TActivityListInput, TActivitySort } from "@app/schemas";
 import { D } from "@mobily/ts-belt";
 import {
 	type UseSuspenseQueryOptions,
@@ -9,6 +9,7 @@ import { getRouteApi } from "@tanstack/react-router";
 import { match } from "ts-pattern";
 import { orpc } from "#/libs/orpc/client.ts";
 import type { TClientErrors, TClientOutputs } from "#/libs/orpc/types.ts";
+import type { TListChange } from "#/libs/table/list-patch.ts";
 import { ACTIVITY_FILTER_ALL } from "#/routes/_authenticated/activity/_constants/filter.ts";
 
 type TActivityOut = TClientOutputs["activity"];
@@ -41,10 +42,10 @@ export const useActivityList = (): UseSuspenseQueryResult<
 	TActivityErr["list"]
 > => useSuspenseQuery(activityListOptions(routeApi.useSearch()));
 
-export const useActivityPageChange = (): ((page: number) => void) => {
+export const useActivityListChange = (): TListChange<TActivitySort> => {
 	const navigate = routeApi.useNavigate();
-	return (page: number): void => {
-		void navigate({ search: (prev) => D.merge(prev, { page }) });
+	return (patch): void => {
+		void navigate({ search: (prev) => D.merge(prev, patch) });
 	};
 };
 

@@ -1,18 +1,28 @@
 import { formatDateTime, NOT_SET, orDash } from "@app/format";
 import { ACTIVITY_MESSAGE } from "@app/messages";
-import type { TActivity } from "@app/schemas";
 import {
-	createColumnHelper,
-	type ReactTable,
-	useTable,
-} from "@tanstack/react-table";
+	ACTIVITY_SORT,
+	type TActivity,
+	type TActivityList,
+	type TActivitySort,
+	type TSortDirection,
+} from "@app/schemas";
+import { createColumnHelper, type ReactTable } from "@tanstack/react-table";
 import type { ReactElement } from "react";
 import { match, P } from "ts-pattern";
-import { TABLE_FEATURES, type TTableFeatures } from "#/libs/table/features.ts";
+import type { TTableFeatures } from "#/libs/table/features.ts";
+import type { TListChange } from "#/libs/table/list-patch.ts";
+import { useServerTable } from "#/routes/_authenticated/_hooks/use-server-table.ts";
 
 const helper = createColumnHelper<TTableFeatures, TActivity>();
 
 const getRowId = (entry: TActivity): string => entry.id;
+
+const SORT_KEYS: readonly TActivitySort[] = [
+	ACTIVITY_SORT.CREATED_AT,
+	ACTIVITY_SORT.ACTION,
+	ACTIVITY_SORT.RESOURCE_TYPE,
+];
 
 const metadataLabel = (metadata: unknown): string =>
 	match(metadata)
@@ -27,6 +37,7 @@ const columns = helper.columns([
 	}),
 	helper.accessor("actorEmail", {
 		header: ACTIVITY_MESSAGE.COLUMN_ACTOR,
+		enableSorting: false,
 		cell: (context): string => orDash(context.getValue()),
 	}),
 	helper.accessor("action", {
@@ -35,14 +46,11 @@ const columns = helper.columns([
 			<code className="text-xs">{context.getValue()}</code>
 		),
 	}),
-	helper.display({
-		id: "entity",
+	helper.accessor("resourceType", {
 		header: ACTIVITY_MESSAGE.COLUMN_ENTITY,
 		cell: (context): ReactElement => (
 			<>
-				<span className="text-muted-foreground">
-					{context.row.original.resourceType}
-				</span>{" "}
+				<span className="text-muted-foreground">{context.getValue()}</span>{" "}
 				<code className="text-xs text-muted-foreground">
 					{context.row.original.resourceId}
 				</code>
@@ -51,12 +59,31 @@ const columns = helper.columns([
 	}),
 	helper.accessor("metadata", {
 		header: ACTIVITY_MESSAGE.COLUMN_DETAILS,
+		enableSorting: false,
 		meta: { className: "max-w-xs truncate text-xs text-muted-foreground" },
 		cell: (context): string => metadataLabel(context.getValue()),
 	}),
 ]);
 
+export type TActivityTableInput = {
+	list: TActivityList;
+	sortBy: TActivitySort;
+	sortDir: TSortDirection;
+	onChange: TListChange<TActivitySort>;
+};
+
 export const useActivityTable = (
-	entries: readonly TActivity[],
+	input: TActivityTableInput,
 ): ReactTable<TTableFeatures, TActivity> =>
-	useTable({ features: TABLE_FEATURES, columns, data: entries, getRowId });
+	useServerTable({
+		columns,
+		data: input.list.items,
+		getRowId,
+		total: input.list.total,
+		page: input.list.page,
+		pageSize: input.list.pageSize,
+		sortBy: input.sortBy,
+		sortDir: input.sortDir,
+		sortKeys: SORT_KEYS,
+		onChange: input.onChange,
+	});

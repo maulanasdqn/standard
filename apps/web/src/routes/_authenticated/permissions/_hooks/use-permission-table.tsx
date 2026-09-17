@@ -72,5 +72,11 @@ export const usePermissionTable = (): ReactTable<
 		...A.map(data.items, roleColumn),
 	]);
 
-	return useTable({ features: TABLE_FEATURES, columns, data: ROWS, getRowId });
+	return useTable({
+		features: TABLE_FEATURES,
+		enableSorting: false,
+		columns,
+		data: ROWS,
+		getRowId,
+	});
 };

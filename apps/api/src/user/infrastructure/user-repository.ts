@@ -3,7 +3,9 @@ import { and, count, eq, ilike, or, type SQL } from "drizzle-orm";
 import { Effect, Layer } from "effect";
 import { match, P } from "ts-pattern";
 import { EAuth, EDatabase } from "#/shared/errors.ts";
-import { offsetFor } from "#/shared/pagination.ts";
+import { offsetFor, orderFor } from "#/shared/pagination.ts";
+import { USER_SORT, type TUserSort } from "@app/schemas";
+import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { UserRepo, type TUserRepo, type TUserRow } from "#/user/domain/user.ts";
 import { AuthService, authServiceLayer } from "#/auth/index.ts";
 import { DbService, dbServiceLayer } from "#/platform/db/db-service.ts";
@@ -11,6 +13,13 @@ import { session, user } from "#/platform/db/tables/auth.ts";
 
 const CREDENTIAL_PROVIDER_ID = "credential";
 const USER_PROVISIONING_METHOD = "admin";
+
+const SORT_COLUMN: Record<TUserSort, AnyPgColumn> = {
+	[USER_SORT.NAME]: user.name,
+	[USER_SORT.EMAIL]: user.email,
+	[USER_SORT.ROLE]: user.role,
+	[USER_SORT.CREATED_AT]: user.createdAt,
+};
 
 const searchWhere = (search: string | undefined): SQL | undefined =>
 	match(search)
@@ -30,7 +39,14 @@ export const userRepoLayer = Layer.effect(
 		const { db } = yield* DbService;
 		const { auth } = yield* AuthService;
 
-		const list: TUserRepo["list"] = ({ page, pageSize, search, role }) => {
+		const list: TUserRepo["list"] = ({
+			page,
+			pageSize,
+			search,
+			role,
+			sortBy,
+			sortDir,
+		}) => {
 			const where = and(searchWhere(search), roleWhere(role));
 
 			return Effect.tryPromise({
@@ -42,7 +58,7 @@ export const userRepoLayer = Layer.effect(
 							.where(where)
 							.limit(pageSize)
 							.offset(offsetFor({ page, pageSize }))
-							.orderBy(user.createdAt),
+							.orderBy(orderFor(SORT_COLUMN[sortBy], sortDir)),
 						db.select({ value: count() }).from(user).where(where),
 					]);
 					return { items, total };

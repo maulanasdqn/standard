@@ -4,28 +4,26 @@ import { PERMISSION } from "@app/permissions";
 import { activityListInputSchema } from "@app/schemas";
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
-import { ListPagination } from "#/routes/_authenticated/_components/list-pagination.tsx";
-import { ActivityFilters } from "#/routes/_authenticated/activity/_components/activity-filters.tsx";
 import { ActivityTable } from "#/routes/_authenticated/activity/_components/activity-table.tsx";
 import {
 	activityListOptions,
 	useActivityList,
-	useActivityPageChange,
+	useActivityListChange,
 } from "#/routes/_authenticated/activity/_hooks/use-activity.ts";
 
 const ActivityPage: FC = (): ReactElement => {
 	const { data } = useActivityList();
-	const goToPage = useActivityPageChange();
+	const search = Route.useSearch();
+	const onChange = useActivityListChange();
 
 	return (
 		<div className="flex flex-col gap-6">
 			<h1 className="text-xl font-semibold">{ACTIVITY_MESSAGE.TITLE}</h1>
-			<ActivityFilters />
-			<ActivityTable entries={data.items} />
-			<ListPagination
-				pageInfo={data}
-				noun={ACTIVITY_MESSAGE.PAGINATION_NOUN}
-				onPageChange={goToPage}
+			<ActivityTable
+				list={data}
+				sortBy={search.sortBy}
+				sortDir={search.sortDir}
+				onChange={onChange}
 			/>
 		</div>
 	);

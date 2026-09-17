@@ -8,4 +8,5 @@ export { MAIL_MESSAGE } from "./mail/message.ts";
 export { NOTE_MESSAGE } from "./note/message.ts";
 export { PERMISSION_MESSAGE } from "./permission/message.ts";
 export { ROLE_MESSAGE } from "./role/message.ts";
+export { TABLE_MESSAGE } from "./table/message.ts";
 export { USER_MESSAGE } from "./user/message.ts";

@@ -7,18 +7,17 @@ import { noteListInputSchema } from "@app/schemas";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import type { FC, ReactElement } from "react";
-import { ListPagination } from "#/routes/_authenticated/_components/list-pagination.tsx";
-import { NoteSearch } from "#/routes/_authenticated/notes/_components/note-search.tsx";
 import { NoteTable } from "#/routes/_authenticated/notes/_components/note-table.tsx";
 import {
 	noteListOptions,
 	useNoteList,
-	useNotePageChange,
+	useNoteListChange,
 } from "#/routes/_authenticated/notes/_hooks/use-notes.ts";
 
 const NotesPage: FC = (): ReactElement => {
 	const { data } = useNoteList();
-	const goToPage = useNotePageChange();
+	const search = Route.useSearch();
+	const onChange = useNoteListChange();
 
 	return (
 		<div className="flex flex-col gap-6">
@@ -33,9 +32,12 @@ const NotesPage: FC = (): ReactElement => {
 					</Button>
 				</Guard>
 			</div>
-			<NoteSearch />
-			<NoteTable notes={data.items} />
-			<ListPagination pageInfo={data} noun="notes" onPageChange={goToPage} />
+			<NoteTable
+				list={data}
+				sortBy={search.sortBy}
+				sortDir={search.sortDir}
+				onChange={onChange}
+			/>
 		</div>
 	);
 };
