@@ -18,7 +18,7 @@ const ActivityPage: FC = (): ReactElement => {
 	const goToPage = useActivityPageChange();
 
 	return (
-		<div className="flex max-w-5xl flex-col gap-6">
+		<div className="flex flex-col gap-6">
 			<h1 className="text-xl font-semibold">{ACTIVITY_MESSAGE.TITLE}</h1>
 			<ActivityFilters />
 			<ActivityTable entries={data.items} />

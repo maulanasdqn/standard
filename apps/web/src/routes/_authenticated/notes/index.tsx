@@ -21,7 +21,7 @@ const NotesPage: FC = (): ReactElement => {
 	const goToPage = useNotePageChange();
 
 	return (
-		<div className="flex max-w-5xl flex-col gap-6">
+		<div className="flex flex-col gap-6">
 			<div className="flex items-center justify-between">
 				<h1 className="text-xl font-semibold">{NOTE_MESSAGE.TITLE}</h1>
 				<Guard permissions={[PERMISSION.NOTE_WRITE]}>

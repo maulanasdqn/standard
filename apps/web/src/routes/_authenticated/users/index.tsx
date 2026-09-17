@@ -22,7 +22,7 @@ const UsersPage: FC = (): ReactElement => {
 	const roleOptions = useRoleOptions();
 
 	return (
-		<div className="flex max-w-5xl flex-col gap-6">
+		<div className="flex flex-col gap-6">
 			<h1 className="text-xl font-semibold">Users</h1>
 			<Guard permissions={[PERMISSION.USER_MANAGE]}>
 				<UserCreateForm roleOptions={roleOptions} />
