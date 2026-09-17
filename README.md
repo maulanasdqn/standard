@@ -116,12 +116,6 @@ A branch that has fallen behind must be rebased on `trunk` and re-pushed; that i
 
 PRs use `.github/PULL_REQUEST_TEMPLATE.md`. Fill every section in place, writing "None" rather than deleting one. Reviews use `.github/PULL_REQUEST_REVIEW_TEMPLATE.md` and always cover three sections: **Functional** (correctness, and whether every Changelog bullet is actually implemented), **Clean Code** (the conventions in `.claude/skills/ts-conventions/SKILL.md`, plus duplication and naming), and **Feature Suggestions** (non-blocking, each tagged `this-pr` or `follow-up`). Findings in the first two carry a P0–P3 severity from the template's legend.
 
-The root version is already current, so a release just rounds it to the release number:
+Releases are automatic, and there is nothing to run by hand. Every merge to `trunk` carries a version bump, so the release workflow reads the root version on each push to `trunk`, waits for the three required checks to be green on that exact commit, tags it `vX.Y.Z`, and publishes a GitHub release with notes built from the conventional commits since the previous tag.
 
-```sh
-npm version X.Y.Z --no-git-tag-version
-git add -A && git commit -m "chore(release): vX.Y.Z"
-git tag vX.Y.Z && git push origin trunk --follow-tags
-```
-
-The release workflow verifies CI is green, then publishes a GitHub release with notes from conventional commits.
+It is keyed on the tag rather than on the diff, so a version that already has a tag is skipped and the job is a no-op. That makes the workflow safe to re-run, and `workflow_dispatch` is there for exactly that: re-releasing a version whose publish failed after its checks went green.

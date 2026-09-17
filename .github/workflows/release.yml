@@ -2,14 +2,19 @@ name: Release
 
 on:
   push:
-    tags: ["v*"]
+    branches: [trunk]
+  workflow_dispatch:
 
 permissions:
   contents: write
 
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 jobs:
   release:
-    name: Publish GitHub release
+    name: Release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -17,23 +22,28 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      - name: Verify the tag matches package.json
+      - name: Decide whether this version is already released
+        id: version
         run: |
-          TAG="${GITHUB_REF_NAME#v}"
           VERSION="$(node -p "require('./package.json').version")"
-          if [ "$TAG" != "$VERSION" ]; then
-            echo "::error::tag v$TAG does not match package.json version $VERSION"
-            exit 1
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if git rev-parse -q --verify "refs/tags/v${VERSION}" >/dev/null; then
+            echo "v${VERSION} is already tagged, nothing to release"
+            echo "release=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "v${VERSION} has no tag yet, releasing"
+            echo "release=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Wait for CI to be green on the tagged commit
+      - name: Wait for CI to be green on this commit
+        if: steps.version.outputs.release == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           REQUIRED=("Check, test, build (affected)" "E2E (api + web)" "Drizzle schema drift check")
           for attempt in $(seq 1 40); do
             RUNS="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/check-runs" -q '[.check_runs[] | {name, conclusion}]')"
-            FAILED="$(printf '%s' "$RUNS" | jq -r '[.[] | select(.name != "Publish GitHub release") | select(.conclusion != null and .conclusion != "success" and .conclusion != "skipped")] | length')"
+            FAILED="$(printf '%s' "$RUNS" | jq -r '[.[] | select(.name != "Release") | select(.conclusion != null and .conclusion != "success" and .conclusion != "skipped")] | length')"
             if [ "$FAILED" != "0" ]; then
               echo "::error::a CI check on ${GITHUB_SHA} did not succeed: release only from green trunk"
               printf '%s\n' "$RUNS"
@@ -53,10 +63,21 @@ jobs:
           echo "::error::CI did not finish on ${GITHUB_SHA} within 20 minutes"
           exit 1
 
-      - name: Build release notes from conventional commits
+      - name: Tag the commit
+        if: steps.version.outputs.release == 'true'
+        env:
+          TAG: v${{ steps.version.outputs.version }}
         run: |
-          PREV="$(git describe --tags --abbrev=0 "${GITHUB_REF_NAME}^" 2>/dev/null || true)"
-          RANGE="${PREV:+${PREV}..}${GITHUB_REF_NAME}"
+          git tag "$TAG" "$GITHUB_SHA"
+          git push origin "$TAG"
+
+      - name: Build release notes from conventional commits
+        if: steps.version.outputs.release == 'true'
+        env:
+          TAG: v${{ steps.version.outputs.version }}
+        run: |
+          PREV="$(git describe --tags --abbrev=0 "${TAG}^" 2>/dev/null || true)"
+          RANGE="${PREV:+${PREV}..}${TAG}"
           {
             for section in "feat:Features" "fix:Fixes" "refactor:Refactoring" "ci:CI" "docs:Docs" "test:Tests" "chore:Chores"; do
               prefix="${section%%:*}"
@@ -69,12 +90,14 @@ jobs:
               fi
             done
             if [ -n "$PREV" ]; then
-              printf 'Full changelog: https://github.com/%s/compare/%s...%s\n' "$GITHUB_REPOSITORY" "$PREV" "$GITHUB_REF_NAME"
+              printf 'Full changelog: https://github.com/%s/compare/%s...%s\n' "$GITHUB_REPOSITORY" "$PREV" "$TAG"
             fi
           } > release-notes.md
           cat release-notes.md
 
       - name: Publish
+        if: steps.version.outputs.release == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" --title "Standard $GITHUB_REF_NAME" --notes-file release-notes.md --latest
+          TAG: v${{ steps.version.outputs.version }}
+        run: gh release create "$TAG" --title "Standard $TAG" --notes-file release-notes.md --latest
