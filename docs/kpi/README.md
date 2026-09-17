@@ -1,10 +1,10 @@
-# Engineering Standards: Strata52 Compliance Matrix
+# Engineering Standards Compliance Matrix
 
-The Strata52 Engineering Standards are a **spec-review rubric**, not a set of measured KPIs: they list what every Engineering Spec and every build must already answer, without being restated per project. This document splits the rubric into 37 discrete, checkable standards, adds 16 the rubric never asks for but this boilerplate already ships, ranks all 53 P0–P3, and records where this repository stands on each.
+The external engineering standards this matrix tracks are a **spec-review rubric**, not a set of measured KPIs: they list what every Engineering Spec and every build must already answer, without being restated per project. This document splits the rubric into 37 discrete, checkable standards, adds 16 the rubric never asks for but this boilerplate already ships, ranks all 53 P0–P3, and records where this repository stands on each.
 
 ## How to read this
 
-**★ marks a standard the Strata52 rubric does not list.** Those 16 rows are what this boilerplate contributes on its own, and they are the reason the rubric rows that are already Done were cheap rather than expensive.
+**★ marks a standard the external rubric does not list.** Those 16 rows are what this boilerplate contributes on its own, and they are the reason the rubric rows that are already Done were cheap rather than expensive.
 
 **Severity is the criticality of the standard itself**, using the P0–P3 legend from `.github/PULL_REQUEST_REVIEW_TEMPLATE.md`. It does not change with our status: a P0 standard stays P0 whether we pass it or not. Read `Severity` and `Status` together: `P0` + `Missing` is what to fix first.
 

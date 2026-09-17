@@ -25,6 +25,14 @@ http, config) and `src/bootstrap/` (composition root). A module is reachable onl
 Those layers are built on Effect v4, so read `node_modules/effect/AGENTS.md` before writing Effect
 code, not general Effect knowledge.
 
+## Keep the repository neutral
+
+This is a reusable boilerplate, so no client, company, partner, or vendor name belongs anywhere in it. That covers documentation, code and comments, string constants in `@app/messages`, test fixtures, branch names, commit messages, and pull request titles and descriptions. It covers abbreviations and initialisms too, because a short form in a commit subject is just as searchable as the full name.
+
+When external material has to be described, name what it is rather than who produced it: "the engineering standards rubric" or "an external review rubric" carries the meaning without naming anyone. The same goes for a person, who is "the PM" or "the reviewer", never a name.
+
+Check before committing, not after. A name that reaches `trunk` in a commit subject cannot be removed without rewriting history, and release notes are generated from pull request bodies, so a name left in a merged pull request keeps resurfacing on release pages.
+
 ## No em dashes
 
 The `—` character is not used anywhere in this repository: not in documentation, not in code or user-facing copy in `@app/messages`, not in commit messages, and not in pull request descriptions or reviews. Do not substitute a lookalike glyph either. Rewrite the sentence so ordinary punctuation carries the relationship: a comma for a simple aside, a colon when what follows explains what precedes it, a semicolon between two independent clauses, parentheses for a genuine aside, or a full stop and a new sentence, which is usually the cleanest result.
