@@ -14,7 +14,7 @@ const RolesPage: FC = (): ReactElement => {
 	const { data } = useRoleList();
 
 	return (
-		<div className="flex max-w-5xl flex-col gap-6">
+		<div className="flex flex-col gap-6">
 			<h1 className="text-xl font-semibold">Roles</h1>
 			<Guard permissions={[PERMISSION.USER_MANAGE]}>
 				<RoleCreateForm />

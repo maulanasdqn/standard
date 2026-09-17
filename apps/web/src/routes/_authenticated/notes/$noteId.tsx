@@ -13,7 +13,7 @@ const NoteEditPage: FC = (): ReactElement => {
 	const { data } = useNoteGet();
 
 	return (
-		<div className="flex max-w-5xl flex-col gap-6">
+		<div className="flex flex-col gap-6">
 			<h1 className="text-xl font-semibold">{NOTE_MESSAGE.EDIT_NOTE}</h1>
 			<NoteEditForm note={data} />
 		</div>
