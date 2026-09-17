@@ -23,6 +23,7 @@ export const cacheClientCreate = (redisUrl: string): Redis =>
 	});
 
 export const cacheClientOf = (redis: Redis): TCacheClient => ({
+	ping: (): Promise<string> => redis.ping(),
 	get: (key: string): Promise<string | null> => redis.get(key),
 	setex: (key: string, seconds: number, value: string): Promise<unknown> =>
 		redis.setex(key, seconds, value),
