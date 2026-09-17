@@ -6,6 +6,7 @@ import { Link } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useLoginForm } from "#/routes/_public/login/_hooks/use-login.ts";
+import { AUTH_MESSAGE } from "@app/messages";
 
 export const LoginForm: FC = (): ReactElement => {
 	const { form, serverError, onSubmit } = useLoginForm();
@@ -26,7 +27,7 @@ export const LoginForm: FC = (): ReactElement => {
 							<Input
 								id={field.name}
 								type="email"
-								placeholder="m@example.com"
+								placeholder={AUTH_MESSAGE.EMAIL_PLACEHOLDER}
 								aria-invalid={hasFieldError(field.state.meta.errorMap)}
 								value={field.state.value}
 								onBlur={field.handleBlur}
@@ -51,6 +52,7 @@ export const LoginForm: FC = (): ReactElement => {
 							<Input
 								id={field.name}
 								type="password"
+								placeholder={AUTH_MESSAGE.PASSWORD_PLACEHOLDER}
 								aria-invalid={hasFieldError(field.state.meta.errorMap)}
 								value={field.state.value}
 								onBlur={field.handleBlur}

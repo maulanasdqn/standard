@@ -41,6 +41,7 @@ export const UserPasswordResetForm: FC<TUserPasswordResetFormProps> = (
 								type="password"
 								autoComplete="new-password"
 								label={USER_MESSAGE.NEW_PASSWORD}
+								placeholder={USER_MESSAGE.NEW_PASSWORD_PLACEHOLDER}
 								value={field.state.value}
 								errors={field.state.meta.errors}
 								onBlur={field.handleBlur}

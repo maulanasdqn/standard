@@ -40,6 +40,7 @@ export const RoleEditForm: FC<TRoleEditFormProps> = (props): ReactElement => {
 								<Label htmlFor={field.name}>Label</Label>
 								<Input
 									id={field.name}
+									placeholder={ROLE_MESSAGE.LABEL_PLACEHOLDER}
 									value={field.state.value}
 									disabled={isFixed}
 									onBlur={field.handleBlur}
@@ -55,6 +56,7 @@ export const RoleEditForm: FC<TRoleEditFormProps> = (props): ReactElement => {
 								<Label htmlFor={field.name}>Description</Label>
 								<Textarea
 									id={field.name}
+									placeholder={ROLE_MESSAGE.DESCRIPTION_PLACEHOLDER}
 									value={field.state.value ?? ""}
 									disabled={isFixed}
 									onBlur={field.handleBlur}
