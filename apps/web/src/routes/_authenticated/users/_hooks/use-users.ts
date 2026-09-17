@@ -16,6 +16,8 @@ import { match } from "ts-pattern";
 import { useSession } from "#/libs/auth/use-session.ts";
 import { orpc } from "#/libs/orpc/client.ts";
 import { toastError } from "#/libs/orpc/toast-error.ts";
+import type { TListChange } from "#/libs/table/list-patch.ts";
+import type { TUserSort } from "@app/schemas";
 import type {
 	TClientErrors,
 	TClientInputs,
@@ -86,10 +88,10 @@ export const useUserSearch = (): TUserSearch => {
 	};
 };
 
-export const useUserPageChange = (): ((page: number) => void) => {
+export const useUserListChange = (): TListChange<TUserSort> => {
 	const navigate = listRouteApi.useNavigate();
-	return (page: number): void => {
-		void navigate({ search: (prev) => D.merge(prev, { page }) });
+	return (patch): void => {
+		void navigate({ search: (prev) => D.merge(prev, patch) });
 	};
 };
 

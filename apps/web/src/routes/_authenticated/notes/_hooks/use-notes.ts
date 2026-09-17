@@ -1,5 +1,5 @@
 import { NOTE_MESSAGE } from "@app/messages";
-import type { TNoteListInput } from "@app/schemas";
+import type { TNoteListInput, TNoteSort } from "@app/schemas";
 import { D } from "@mobily/ts-belt";
 import {
 	type QueryClient,
@@ -20,6 +20,7 @@ import type {
 	TClientInputs,
 	TClientOutputs,
 } from "#/libs/orpc/types.ts";
+import type { TListChange } from "#/libs/table/list-patch.ts";
 
 type TNoteIn = TClientInputs["note"];
 type TNoteOut = TClientOutputs["note"];
@@ -79,10 +80,10 @@ export const useNoteSearch = (): TNoteSearch => {
 	};
 };
 
-export const useNotePageChange = (): ((page: number) => void) => {
+export const useNoteListChange = (): TListChange<TNoteSort> => {
 	const navigate = listRouteApi.useNavigate();
-	return (page: number): void => {
-		void navigate({ search: (prev) => D.merge(prev, { page }) });
+	return (patch): void => {
+		void navigate({ search: (prev) => D.merge(prev, patch) });
 	};
 };
 

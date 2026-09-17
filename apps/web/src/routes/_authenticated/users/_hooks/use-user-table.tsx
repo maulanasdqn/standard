@@ -1,13 +1,18 @@
 import { formatDateTime } from "@app/format";
 import { USER_MESSAGE } from "@app/messages";
-import type { TUser, TUserUpdateInput } from "@app/schemas";
 import {
-	createColumnHelper,
-	type ReactTable,
-	useTable,
-} from "@tanstack/react-table";
+	USER_SORT,
+	type TSortDirection,
+	type TUser,
+	type TUserList,
+	type TUserSort,
+	type TUserUpdateInput,
+} from "@app/schemas";
+import { createColumnHelper, type ReactTable } from "@tanstack/react-table";
 import type { ReactElement } from "react";
-import { TABLE_FEATURES, type TTableFeatures } from "#/libs/table/features.ts";
+import type { TTableFeatures } from "#/libs/table/features.ts";
+import type { TListChange } from "#/libs/table/list-patch.ts";
+import { useServerTable } from "#/routes/_authenticated/_hooks/use-server-table.ts";
 import {
 	type TConfirmedAction,
 	useConfirmedAction,
@@ -24,15 +29,28 @@ const helper = createColumnHelper<TTableFeatures, TUser>();
 
 const getRowId = (user: TUser): string => user.id;
 
+const SORT_KEYS: readonly TUserSort[] = [
+	USER_SORT.NAME,
+	USER_SORT.EMAIL,
+	USER_SORT.ROLE,
+	USER_SORT.CREATED_AT,
+];
+
+export type TUserTableInput = {
+	list: TUserList;
+	roleOptions: readonly TRoleOption[];
+	sortBy: TUserSort;
+	sortDir: TSortDirection;
+	onChange: TListChange<TUserSort>;
+};
+
 export type TUserTable = {
 	table: ReactTable<TTableFeatures, TUser>;
 	roleChange: TConfirmedAction<TUserUpdateInput>;
 };
 
-export const useUserTable = (
-	users: readonly TUser[],
-	roleOptions: readonly TRoleOption[],
-): TUserTable => {
+export const useUserTable = (input: TUserTableInput): TUserTable => {
+	const { roleOptions } = input;
 	const userUpdate = useUserUpdate();
 	const isSelf = useIsSelf();
 	const roleChange = useConfirmedAction<TUserUpdateInput>((input) =>
@@ -69,6 +87,7 @@ export const useUserTable = (
 		helper.display({
 			id: "actions",
 			header: USER_MESSAGE.COLUMN_ACTIONS,
+			enableHiding: false,
 			meta: { className: "text-right" },
 			cell: (context): ReactElement => (
 				<UserActionsCell
@@ -79,11 +98,17 @@ export const useUserTable = (
 		}),
 	]);
 
-	const table = useTable({
-		features: TABLE_FEATURES,
+	const table = useServerTable({
 		columns,
-		data: users,
+		data: input.list.items,
 		getRowId,
+		total: input.list.total,
+		page: input.list.page,
+		pageSize: input.list.pageSize,
+		sortBy: input.sortBy,
+		sortDir: input.sortDir,
+		sortKeys: SORT_KEYS,
+		onChange: input.onChange,
 	});
 
 	return { table, roleChange };

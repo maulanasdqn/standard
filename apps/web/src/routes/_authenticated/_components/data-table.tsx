@@ -8,49 +8,115 @@ import {
 } from "@app/components/ui/table";
 import { A } from "@mobily/ts-belt";
 import {
+	type Column,
 	flexRender,
+	type Header,
 	type ReactTable,
 	type RowData,
 } from "@tanstack/react-table";
-import type { ReactElement } from "react";
+import type { ReactElement, ReactNode } from "react";
+import { match } from "ts-pattern";
 import type { TTableFeatures } from "#/libs/table/features.ts";
+import {
+	DataTableColumnsMenu,
+	type TColumnToggle,
+} from "#/routes/_authenticated/_components/data-table-columns-menu.tsx";
+import { DataTablePagination } from "#/routes/_authenticated/_components/data-table-pagination.tsx";
+import { DataTableSortButton } from "#/routes/_authenticated/_components/data-table-sort-button.tsx";
 
 type TDataTableProps<TData extends RowData> = {
 	table: ReactTable<TTableFeatures, TData>;
+	toolbar?: ReactNode;
+	paginated?: boolean;
 };
+
+const columnLabel = <TData extends RowData>(
+	column: Column<TTableFeatures, TData, unknown>,
+): string =>
+	match(column.columnDef.header)
+		.with(undefined, () => column.id)
+		.otherwise((header) => (typeof header === "string" ? header : column.id));
+
+const toToggle = <TData extends RowData>(
+	column: Column<TTableFeatures, TData, unknown>,
+): TColumnToggle => ({
+	id: column.id,
+	label: columnLabel(column),
+	visible: column.getIsVisible(),
+	toggle: () => column.toggleVisibility(),
+});
+
+const headerContent = <TData extends RowData>(
+	header: Header<TTableFeatures, TData, unknown>,
+): ReactNode =>
+	match(header.column.getCanSort())
+		.with(true, () => (
+			<DataTableSortButton
+				label={flexRender(header.column.columnDef.header, header.getContext())}
+				sorted={header.column.getIsSorted()}
+				onToggle={() => header.column.toggleSorting()}
+			/>
+		))
+		.otherwise(() =>
+			flexRender(header.column.columnDef.header, header.getContext()),
+		);
 
 export const DataTable = <TData extends RowData>(
 	props: TDataTableProps<TData>,
-): ReactElement => (
-	<Table>
-		<TableHeader>
-			{A.map(props.table.getHeaderGroups(), (group) => (
-				<TableRow key={group.id}>
-					{A.map(group.headers, (header) => (
-						<TableHead
-							key={header.id}
-							className={header.column.columnDef.meta?.className}
-						>
-							{!header.isPlaceholder &&
-								flexRender(header.column.columnDef.header, header.getContext())}
-						</TableHead>
+): ReactElement => {
+	const { paginated = false } = props;
+	const hideable = A.filter(props.table.getAllLeafColumns(), (column) =>
+		column.getCanHide(),
+	);
+
+	return (
+		<div className="flex flex-col gap-4">
+			<div className="flex flex-wrap items-center gap-4">
+				{props.toolbar}
+				<DataTableColumnsMenu columns={A.map(hideable, toToggle)} />
+			</div>
+			<Table>
+				<TableHeader>
+					{A.map(props.table.getHeaderGroups(), (group) => (
+						<TableRow key={group.id}>
+							{A.map(group.headers, (header) => (
+								<TableHead
+									key={header.id}
+									className={header.column.columnDef.meta?.className}
+								>
+									{!header.isPlaceholder && headerContent(header)}
+								</TableHead>
+							))}
+						</TableRow>
 					))}
-				</TableRow>
-			))}
-		</TableHeader>
-		<TableBody>
-			{A.map(props.table.getRowModel().rows, (row) => (
-				<TableRow key={row.id}>
-					{A.map(row.getAllCells(), (cell) => (
-						<TableCell
-							key={cell.id}
-							className={cell.column.columnDef.meta?.className}
-						>
-							{flexRender(cell.column.columnDef.cell, cell.getContext())}
-						</TableCell>
+				</TableHeader>
+				<TableBody>
+					{A.map(props.table.getRowModel().rows, (row) => (
+						<TableRow key={row.id}>
+							{A.map(row.getVisibleCells(), (cell) => (
+								<TableCell
+									key={cell.id}
+									className={cell.column.columnDef.meta?.className}
+								>
+									{flexRender(cell.column.columnDef.cell, cell.getContext())}
+								</TableCell>
+							))}
+						</TableRow>
 					))}
-				</TableRow>
-			))}
-		</TableBody>
-	</Table>
-);
+				</TableBody>
+			</Table>
+			{paginated && (
+				<DataTablePagination
+					pageIndex={props.table.state.pagination.pageIndex}
+					pageSize={props.table.state.pagination.pageSize}
+					pageCount={props.table.getPageCount()}
+					rowCount={props.table.getRowCount()}
+					canPrevious={props.table.getCanPreviousPage()}
+					canNext={props.table.getCanNextPage()}
+					onPageIndexChange={(index) => props.table.setPageIndex(index)}
+					onPageSizeChange={(size) => props.table.setPageSize(size)}
+				/>
+			)}
+		</div>
+	);
+};

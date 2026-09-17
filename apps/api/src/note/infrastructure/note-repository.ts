@@ -4,10 +4,18 @@ import { Effect, Layer } from "effect";
 import { match, P } from "ts-pattern";
 import { EDatabase } from "#/shared/errors.ts";
 import { NoteRepo, type TNoteRepo, type TNoteRow } from "#/note/domain/note.ts";
-import { offsetFor } from "#/shared/pagination.ts";
+import { offsetFor, orderFor } from "#/shared/pagination.ts";
+import { NOTE_SORT, type TNoteSort } from "@app/schemas";
+import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { DbService, dbServiceLayer } from "#/platform/db/db-service.ts";
 import { ownershipWhere } from "#/platform/db/ownership.ts";
 import { note } from "#/platform/db/tables/note.ts";
+
+const SORT_COLUMN: Record<TNoteSort, AnyPgColumn> = {
+	[NOTE_SORT.TITLE]: note.title,
+	[NOTE_SORT.CREATED_AT]: note.createdAt,
+	[NOTE_SORT.UPDATED_AT]: note.updatedAt,
+};
 
 const searchWhere = (search: string | undefined): SQL | undefined =>
 	match(search)
@@ -19,7 +27,10 @@ export const noteRepoLayer = Layer.effect(
 	Effect.gen(function* () {
 		const { db } = yield* DbService;
 
-		const list: TNoteRepo["list"] = ({ page, pageSize, search }, actor) => {
+		const list: TNoteRepo["list"] = (
+			{ page, pageSize, search, sortBy, sortDir },
+			actor,
+		) => {
 			const where = and(
 				ownershipWhere(actor, note.authorId),
 				searchWhere(search),
@@ -34,7 +45,7 @@ export const noteRepoLayer = Layer.effect(
 							.where(where)
 							.limit(pageSize)
 							.offset(offsetFor({ page, pageSize }))
-							.orderBy(note.createdAt),
+							.orderBy(orderFor(SORT_COLUMN[sortBy], sortDir)),
 						db.select({ value: count() }).from(note).where(where),
 					]);
 					return { items, total };

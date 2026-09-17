@@ -4,21 +4,20 @@ import { PERMISSION } from "@app/permissions";
 import { userListInputSchema } from "@app/schemas";
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
-import { ListPagination } from "#/routes/_authenticated/_components/list-pagination.tsx";
 import { roleListOptions } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
 import { UserCreateForm } from "#/routes/_authenticated/users/_components/user-create-form.tsx";
-import { UserSearch } from "#/routes/_authenticated/users/_components/user-search.tsx";
 import { UserTable } from "#/routes/_authenticated/users/_components/user-table.tsx";
 import { useRoleOptions } from "#/routes/_authenticated/users/_hooks/use-role-options.ts";
 import {
 	userListOptions,
 	useUserList,
-	useUserPageChange,
+	useUserListChange,
 } from "#/routes/_authenticated/users/_hooks/use-users.ts";
 
 const UsersPage: FC = (): ReactElement => {
 	const { data } = useUserList();
-	const goToPage = useUserPageChange();
+	const search = Route.useSearch();
+	const onChange = useUserListChange();
 	const roleOptions = useRoleOptions();
 
 	return (
@@ -27,9 +26,13 @@ const UsersPage: FC = (): ReactElement => {
 			<Guard permissions={[PERMISSION.USER_MANAGE]}>
 				<UserCreateForm roleOptions={roleOptions} />
 			</Guard>
-			<UserSearch />
-			<UserTable users={data.items} roleOptions={roleOptions} />
-			<ListPagination pageInfo={data} noun="users" onPageChange={goToPage} />
+			<UserTable
+				list={data}
+				roleOptions={roleOptions}
+				sortBy={search.sortBy}
+				sortDir={search.sortDir}
+				onChange={onChange}
+			/>
 		</div>
 	);
 };
