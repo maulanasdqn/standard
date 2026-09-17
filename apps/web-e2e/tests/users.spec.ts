@@ -14,6 +14,7 @@ import { signOut } from "../support/sign-out.ts";
 import { rowWithCell } from "../support/table.ts";
 import { selectOption } from "../support/select.ts";
 import { confirmAction } from "../support/confirm.ts";
+import { createUser } from "../support/users.ts";
 
 const NEW_USER: TUserCreateInput = {
 	name: "E2E User",
@@ -39,19 +40,8 @@ test.describe("users admin flow", () => {
 	});
 
 	test("creates a user from the form", async (): Promise<void> => {
-		await page.goto("/users");
+		await createUser(page, NEW_USER, ROLE_LABEL[ROLE_KEY.MEMBER]);
 		await expect(page.getByRole("heading", { name: "Users" })).toBeVisible();
-
-		await page.getByLabel("Name", { exact: true }).fill(NEW_USER.name);
-		await page.getByLabel("Email", { exact: true }).fill(NEW_USER.email);
-		await page.getByLabel("Password", { exact: true }).fill(NEW_USER.password);
-		await selectOption(
-			page,
-			page.getByLabel("Role", { exact: true }),
-			ROLE_LABEL[ROLE_KEY.MEMBER],
-		);
-		await page.getByRole("button", { name: "Create user" }).click();
-		await confirmAction(page);
 
 		const row = rowWithCell(page, NEW_USER.email);
 		await expect(row).toBeVisible();

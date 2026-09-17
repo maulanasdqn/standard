@@ -1,8 +1,11 @@
 import { Guard } from "@app/components/guard/guard";
 import { checkRoutePermissions } from "@app/components/guard/route-guard";
+import { formatDateTime } from "@app/format";
+import { USER_MESSAGE } from "@app/messages";
 import { PERMISSION } from "@app/permissions";
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
+import { FormPage } from "#/routes/_authenticated/_components/form-page.tsx";
 import { roleListOptions } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
 import { UserEditForm } from "#/routes/_authenticated/users/_components/user-edit-form.tsx";
 import { UserPasswordResetForm } from "#/routes/_authenticated/users/_components/user-password-reset-form.tsx";
@@ -19,8 +22,25 @@ const UserEditPage: FC = (): ReactElement => {
 	const isSelf = useIsSelf();
 
 	return (
-		<div className="flex flex-col gap-6">
-			<h1 className="text-xl font-semibold">Edit user</h1>
+		<FormPage
+			parentLabel={USER_MESSAGE.TITLE}
+			parentTo="/users"
+			backLabel={USER_MESSAGE.BACK_TO_USERS}
+			title={USER_MESSAGE.EDIT_USER}
+			description={USER_MESSAGE.EDIT_DESCRIPTION}
+			meta={
+				<dl className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted-foreground">
+					<div className="flex gap-1">
+						<dt>{USER_MESSAGE.COLUMN_EMAIL}</dt>
+						<dd>{data.email}</dd>
+					</div>
+					<div className="flex gap-1">
+						<dt>{USER_MESSAGE.COLUMN_CREATED}</dt>
+						<dd>{formatDateTime(data.createdAt)}</dd>
+					</div>
+				</dl>
+			}
+		>
 			<Guard permissions={[PERMISSION.USER_MANAGE]}>
 				<UserEditForm user={data} roleOptions={roleOptions} />
 			</Guard>
@@ -29,7 +49,7 @@ const UserEditPage: FC = (): ReactElement => {
 					<UserPasswordResetForm user={data} />
 				</Guard>
 			)}
-		</div>
+		</FormPage>
 	);
 };
 

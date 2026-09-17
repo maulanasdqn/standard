@@ -1,21 +1,21 @@
 import { Button } from "@app/components/ui/button";
-import { FieldError } from "@app/components/ui/field-error";
-import { Input } from "@app/components/ui/input";
-import { Label } from "@app/components/ui/label";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@app/components/ui/select";
-import { A } from "@mobily/ts-belt";
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@app/components/ui/card";
+import { APP_MESSAGE, USER_MESSAGE } from "@app/messages";
+import { Link } from "@tanstack/react-router";
+import { Loader2 } from "lucide-react";
 import type { FC, ReactElement } from "react";
+import { ConfirmDialog } from "#/routes/_authenticated/_components/confirm-dialog.tsx";
+import { UserRoleField } from "#/routes/_authenticated/users/_components/user-role-field.tsx";
+import { UserTextField } from "#/routes/_authenticated/users/_components/user-text-field.tsx";
 import type { TRoleOption } from "#/routes/_authenticated/users/_hooks/use-role-options.ts";
 import { useUserCreateForm } from "#/routes/_authenticated/users/_hooks/use-user-create-form.ts";
-import { Card, CardContent } from "@app/components/ui/card";
-import { USER_MESSAGE } from "@app/messages";
-import { ConfirmDialog } from "#/routes/_authenticated/_components/confirm-dialog.tsx";
 
 type TUserCreateFormProps = {
 	roleOptions: readonly TRoleOption[];
@@ -27,96 +27,84 @@ export const UserCreateForm: FC<TUserCreateFormProps> = (
 	const { form, onSubmit, confirm, isPending } = useUserCreateForm();
 
 	return (
-		<Card>
-			<CardContent>
-				<form onSubmit={onSubmit} className="grid gap-3 sm:grid-cols-2">
+		<form onSubmit={onSubmit}>
+			<Card>
+				<CardHeader>
+					<CardTitle>{USER_MESSAGE.DETAILS_TITLE}</CardTitle>
+					<CardDescription>{USER_MESSAGE.CREATE_DESCRIPTION}</CardDescription>
+				</CardHeader>
+				<CardContent className="grid gap-6 sm:grid-cols-2">
 					<form.Field name="name">
 						{(field) => (
-							<div className="flex flex-col gap-1">
-								<Label htmlFor={field.name}>Name</Label>
-								<Input
-									id={field.name}
-									value={field.state.value}
-									onBlur={field.handleBlur}
-									onChange={(event) => field.handleChange(event.target.value)}
-								/>
-								<FieldError errors={field.state.meta.errors} />
-							</div>
+							<UserTextField
+								id={field.name}
+								label={USER_MESSAGE.COLUMN_NAME}
+								placeholder={USER_MESSAGE.NAME_PLACEHOLDER}
+								value={field.state.value}
+								errors={field.state.meta.errors}
+								onBlur={field.handleBlur}
+								onChange={field.handleChange}
+							/>
 						)}
 					</form.Field>
 					<form.Field name="email">
 						{(field) => (
-							<div className="flex flex-col gap-1">
-								<Label htmlFor={field.name}>Email</Label>
-								<Input
-									id={field.name}
-									type="email"
-									value={field.state.value}
-									onBlur={field.handleBlur}
-									onChange={(event) => field.handleChange(event.target.value)}
-								/>
-								<FieldError errors={field.state.meta.errors} />
-							</div>
+							<UserTextField
+								id={field.name}
+								type="email"
+								label={USER_MESSAGE.COLUMN_EMAIL}
+								placeholder={USER_MESSAGE.EMAIL_PLACEHOLDER}
+								value={field.state.value}
+								errors={field.state.meta.errors}
+								onBlur={field.handleBlur}
+								onChange={field.handleChange}
+							/>
 						)}
 					</form.Field>
 					<form.Field name="password">
 						{(field) => (
-							<div className="flex flex-col gap-1">
-								<Label htmlFor={field.name}>Password</Label>
-								<Input
-									id={field.name}
-									type="password"
-									value={field.state.value}
-									onBlur={field.handleBlur}
-									onChange={(event) => field.handleChange(event.target.value)}
-								/>
-								<FieldError errors={field.state.meta.errors} />
-							</div>
+							<UserTextField
+								id={field.name}
+								type="password"
+								autoComplete="new-password"
+								label={USER_MESSAGE.COLUMN_PASSWORD}
+								value={field.state.value}
+								errors={field.state.meta.errors}
+								onBlur={field.handleBlur}
+								onChange={field.handleChange}
+							/>
 						)}
 					</form.Field>
 					<form.Field name="role">
 						{(field) => (
-							<div className="flex flex-col gap-1">
-								<Label htmlFor={field.name}>Role</Label>
-								<Select
-									value={field.state.value}
-									onValueChange={field.handleChange}
-								>
-									<SelectTrigger
-										id={field.name}
-										className="w-full"
-										onBlur={field.handleBlur}
-									>
-										<SelectValue />
-									</SelectTrigger>
-									<SelectContent>
-										{A.map(props.roleOptions, (option) => (
-											<SelectItem key={option.value} value={option.value}>
-												{option.label}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
-								<FieldError errors={field.state.meta.errors} />
-							</div>
+							<UserRoleField
+								id={field.name}
+								value={field.state.value}
+								roleOptions={props.roleOptions}
+								errors={field.state.meta.errors}
+								onBlur={field.handleBlur}
+								onChange={field.handleChange}
+							/>
 						)}
 					</form.Field>
-					<Button
-						type="submit"
-						disabled={isPending}
-						className="self-end sm:col-span-2 sm:justify-self-start"
-					>
-						{isPending ? "Creating…" : "Create user"}
+				</CardContent>
+				<CardFooter className="justify-end gap-2 border-t pt-6">
+					<Button variant="outline" asChild>
+						<Link to="/users">{APP_MESSAGE.CANCEL}</Link>
 					</Button>
-				</form>
-				<ConfirmDialog
-					open={confirm.open}
-					title={USER_MESSAGE.CREATE_CONFIRM_TITLE}
-					description={USER_MESSAGE.CREATE_CONFIRM_DESCRIPTION}
-					onOpenChange={confirm.onOpenChange}
-					onConfirm={confirm.onConfirm}
-				/>
-			</CardContent>
-		</Card>
+					<Button type="submit" disabled={isPending}>
+						{isPending && <Loader2 className="animate-spin" />}
+						{isPending ? USER_MESSAGE.CREATING : USER_MESSAGE.CREATE_ACTION}
+					</Button>
+				</CardFooter>
+			</Card>
+			<ConfirmDialog
+				open={confirm.open}
+				title={USER_MESSAGE.CREATE_CONFIRM_TITLE}
+				description={USER_MESSAGE.CREATE_CONFIRM_DESCRIPTION}
+				onOpenChange={confirm.onOpenChange}
+				onConfirm={confirm.onConfirm}
+			/>
+		</form>
 	);
 };
