@@ -36,13 +36,13 @@ The rubric's domain examples (Drive filing, CSI terminology, rebid ambiguity) co
 
 | Severity | Total | ★ Beyond rubric | Done | Partial | Missing | N/A |
 |----------|-------|-----------------|------|---------|---------|-----|
-| P0 | 17 | 4 | 7 | 2 | 5 | 3 |
+| P0 | 17 | 4 | 13 | 0 | 1 | 3 |
 | P1 | 22 | 7 | 7 | 6 | 8 | 1 |
 | P2 | 13 | 5 | 5 | 1 | 6 | 1 |
 | P3 | 1 | 0 | 0 | 0 | 1 | 0 |
-| **Total** | **53** | **16** | **19** | **9** | **20** | **5** |
+| **Total** | **53** | **16** | **25** | **7** | **16** | **5** |
 
-Boilerplate readiness: **19 Yes, 14 Partial, 20 No.** Every ★ row but one is a Yes, because the standards this boilerplate sets beyond the rubric are precisely what a new product inherits without writing a line.
+Boilerplate readiness: **25 Yes, 12 Partial, 16 No.** Every ★ row but one is a Yes, because the standards this boilerplate sets beyond the rubric are precisely what a new product inherits without writing a line.
 
 ## Matrix
 
@@ -55,13 +55,13 @@ Boilerplate readiness: **19 Yes, 14 Partial, 20 No.** Every ★ row but one is a
 | ★ Authorization is data, not scattered code | One permission catalog drives the API middleware and the UI guards, so the two cannot drift | P0 | Done | Yes | `@app/permissions` (`permissions.ts`, `roles.ts`, `can.ts`, `labels.ts`) is consumed by `permissionRequire` on the api and by `Guard` / `RouteGuard` / `usePermissions` in `packages/components/src/guard` |
 | ★ Roles are editable at runtime, not hardcoded | New roles are created and re-scoped without a deploy | P0 | Done | Yes | The `custom_role` table plus full CRUD in `apps/api/src/role/` and the permission checklist UI at `apps/web/src/routes/_authenticated/roles/` |
 | ★ Every mutation writes an audit row | Who did what to which resource, recorded by the use-case rather than by a caller who might forget | P0 | Done | Yes | `ActivityRecorder` is a required dependency of every mutating use-case across `note/`, `role/`, and `user/` (create, update, delete, and password reset), surfaced with filters at `/activity` |
-| Uniqueness rules have an enforceable mechanism | A promised uniqueness rule must be a constraint, not an intention | P0 | Partial | Partial | `custom_role.key` is `.unique()` in `apps/api/src/platform/db/tables/custom-role.ts`, and the drift check keeps constraints honest. Job idempotency has no mechanism; see the next row |
-| Repeated submissions are de-duplicated | The same submission twice must not produce two external actions | P0 | Partial | Partial | `packages/queue/src/job-publisher.ts` hashes a deterministic `messageId`, but nothing ever reads it: no dedupe store, no unique constraint, no consumer-side check. The uniqueness is promised and unenforced |
-| Retry with backoff on transient failure | Transient failures retry on a defined policy before being treated as failures | P0 | Missing | No | No `Effect.retry` or `Schedule` anywhere in `apps/api/src` or `packages/*/src`; the only retry setting is ioredis's `maxRetriesPerRequest` in `apps/api/src/platform/cache/redis.ts` |
-| Failed work has a recovery path (dead letter) | Work that fails permanently is preserved for inspection and replay, never dropped | P0 | Missing | No | `packages/queue/src/job-worker.ts` calls `channel.nack(found, false, false)`, requeue `false` with no dead-letter exchange on `assertQueue`, so any handler throw discards the message silently |
-| Concurrency tests | Two reviewers, or a retry racing the original, must not create conflicting approvals or duplicate active items | P0 | Missing | No | No concurrent-path test in `apps/api-e2e/tests` or the unit tests. `update` in `apps/api/src/note/infrastructure/note-repository.ts` is a last-write-wins `UPDATE` with no version or `updatedAt` predicate |
+| Uniqueness rules have an enforceable mechanism | A promised uniqueness rule must be a constraint, not an intention | P0 | Done | Yes | `custom_role.key` is `.unique()` in `apps/api/src/platform/db/tables/custom-role.ts`, the drift check keeps constraints honest, and the job `messageId` is now enforced through an atomic claim rather than merely computed |
+| Repeated submissions are de-duplicated | The same submission twice must not produce two external actions | P0 | Done | Yes | The worker claims the deterministic `messageId` from `packages/queue/src/job-publisher.ts` through the `TJobDedupe` port before running a handler and releases it on failure, backed by an atomic `setIfAbsent` in `@app/cache`, so a repeat delivery is skipped while a retry still runs |
+| Retry with backoff on transient failure | Transient failures retry on a defined policy before being treated as failures | P0 | Done | Yes | `packages/queue/src/job-worker.ts` republishes a failed job to `<queue>.retry` with an exponential per-message delay and an attempt header, bounded by `JOB_RETRY_DEFAULT` |
+| Failed work has a recovery path (dead letter) | Work that fails permanently is preserved for inspection and replay, never dropped | P0 | Done | Yes | `jobTopologyAssert` declares `<queue>.dlq` beside every queue, and a job that exhausts its attempt budget is parked there instead of discarded |
+| Concurrency tests | Two reviewers, or a retry racing the original, must not create conflicting approvals or duplicate active items | P0 | Done | Yes | Notes carry a `version` that the update predicate matches and the write increments, so a stale edit updates no rows and returns 409 rather than overwriting. Two concurrent updates and a replayed stale update are covered in `apps/api-e2e/tests/notes.e2e.test.ts`. See the scope note below: this guard is deliberate, not blanket |
 | Backup and restore | A defined, exercised backup and restore procedure for every stateful store | P0 | Missing | No | No backup configuration or documented restore procedure for Postgres, Redis, or RabbitMQ |
-| Duplicate prevention validated before enabling live action | Duplicate prevention and recovery are proven *before* the first real external action is allowed | P0 | Missing | No | Follows from the two rows above: there is nothing to validate yet, and no gate that would stop a live action from being enabled first |
+| Duplicate prevention validated before enabling live action | Duplicate prevention and recovery are proven *before* the first real external action is allowed | P0 | Done | Yes | `packages/queue/src/job-worker.test.ts` covers retry routing, dead-lettering, and repeat suppression; the note concurrency tests cover the read-modify-write side against a real database |
 | Validated rules decide, the model only suggests | The model proposes; validated application rules authorize | P0 | N/A | No | No model in the codebase: no `anthropic`, `openai`, `@ai-sdk`, or `langchain` dependency in any `package.json`. Applies the moment a model output can drive an action |
 | Confidence alone never authorizes an external action | A high score is not an authorization | P0 | N/A | No | Same condition as above |
 | Hard blockers override confidence | Missing content, stale project references, unresolved destinations, or rebid ambiguity block automatic action even at high confidence | P0 | N/A | No | Same condition as above |
@@ -102,10 +102,16 @@ Boilerplate readiness: **19 Yes, 14 Partial, 20 No.** Every ★ row but one is a
 | Client-approved labels | Use the practical names the client already uses; do not impose a taxonomy that discovery did not call for | P2 | N/A | Partial | No client-facing taxonomy in this repository, but `@app/messages` is already the enforced home for every user-facing string, so approved copy lands in one reviewable place |
 | Error responses are shaped consistently | Every failure reaches the client in one known shape | P3 | Missing | Partial | `toORPCError` in `apps/api/src/platform/orpc/error-mapping.ts` is the single choke point and already exists, but it collapses every non-oRPC `Error` into `INTERNAL_SERVER_ERROR` carrying the raw `e.message`, which leaks internal text and discards the tagged error that produced it |
 
+## Where concurrency guards apply
+
+The optimistic version on notes is **scoped on purpose, and is not a pattern to roll out across every table.** A version column buys protection against two people overwriting each other, and it costs a schema column, a required field on every update input, a new error path, and a reload-and-retry burden pushed onto whoever is editing.
+
+That trade is worth making where concurrent editing is realistic and a silent overwrite either destroys work or produces a wrong decision. It is not worth making on a record that one administrator edits occasionally, or where the last write genuinely is the intended answer. Notes qualified because they are the module with a real editing surface; roles and users deliberately keep their simpler updates.
+
+So a module that still uses a last-write-wins update is not automatically carrying a defect. Read this rubric row as satisfied by protecting what matters, never by adding a version column everywhere.
+
 ## Suggested order of work
 
-1. **Job durability**: a dead-letter exchange and a bounded retry policy in `packages/queue/src`, so failed work stops disappearing. This unblocks the idempotency and duplicate-prevention rows behind it.
-2. **Enforce the idempotency that is already promised**: consume the `messageId` hash against a dedupe store or a unique constraint, then add the concurrency tests that prove it.
-3. **Make health and readiness real**: check the database, Redis, and RabbitMQ, so orchestration can act on the answer.
-4. **Wrap multi-write operations in transactions**, starting with the mutation-plus-activity pattern that every module repeats.
-5. **Write the operating documents**: deployment, backup and restore, runbooks, alert ownership. These are cheap to write and are what the rubric's handoff section actually asks for.
+1. **Make health and readiness real**: check the database, Redis, and RabbitMQ, so orchestration can act on the answer. A readiness probe that cannot fail is the largest remaining P1.
+2. **Wrap multi-write operations in transactions**, starting with the mutation-plus-activity pattern that every module repeats.
+3. **Write the operating documents**: deployment, backup and restore, runbooks, alert ownership. Backup and restore is the last open P0 and is the cheapest of these to write.
