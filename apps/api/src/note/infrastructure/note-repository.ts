@@ -11,6 +11,8 @@ import { DbService, dbServiceLayer } from "#/platform/db/db-service.ts";
 import { ownershipWhere } from "#/platform/db/ownership.ts";
 import { note } from "#/platform/db/tables/note.ts";
 
+const VERSION_STEP = 1;
+
 const SORT_COLUMN: Record<TNoteSort, AnyPgColumn> = {
 	[NOTE_SORT.TITLE]: note.title,
 	[NOTE_SORT.CREATED_AT]: note.createdAt,
@@ -79,13 +81,24 @@ export const noteRepoLayer = Layer.effect(
 				catch: (cause) => new EDatabase({ cause }),
 			});
 
-		const update: TNoteRepo["update"] = ({ id, ...patch }, actor) =>
+		const update: TNoteRepo["update"] = ({ id, version, ...patch }, actor) =>
 			Effect.tryPromise({
 				try: async () => {
 					const [row] = await db
 						.update(note)
-						.set(D.merge(patch, { updatedAt: new Date() }))
-						.where(and(eq(note.id, id), ownershipWhere(actor, note.authorId)))
+						.set(
+							D.merge(patch, {
+								updatedAt: new Date(),
+								version: version + VERSION_STEP,
+							}),
+						)
+						.where(
+							and(
+								eq(note.id, id),
+								eq(note.version, version),
+								ownershipWhere(actor, note.authorId),
+							),
+						)
 						.returning();
 					return row ?? null;
 				},

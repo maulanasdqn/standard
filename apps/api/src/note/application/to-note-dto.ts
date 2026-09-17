@@ -7,6 +7,7 @@ export const toNoteDto = (row: TNoteRow): TNote =>
 		title: row.title,
 		body: row.body,
 		authorId: row.authorId,
+		version: row.version,
 		createdAt: row.createdAt.toISOString(),
 		updatedAt: row.updatedAt.toISOString(),
 	});

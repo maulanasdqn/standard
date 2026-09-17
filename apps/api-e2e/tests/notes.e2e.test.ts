@@ -34,4 +34,79 @@ describe("notes REST endpoints", () => {
 		const list = (await listResponse.json()) as { items: { title: string }[] };
 		expect(A.some(list.items, (item) => item.title === "From e2e")).toBe(true);
 	});
+
+	it("lets only one of two concurrent updates win and rejects the stale one", async (): Promise<void> => {
+		const createResponse = await fetch(`${BASE_URL}/api/notes`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json", cookie },
+			body: JSON.stringify({ title: "Contended", body: "start" }),
+		});
+		const created = (await createResponse.json()) as {
+			id: string;
+			version: number;
+		};
+
+		const updateWith = (title: string): Promise<Response> =>
+			fetch(`${BASE_URL}/api/notes/${created.id}`, {
+				method: "PATCH",
+				headers: { "Content-Type": "application/json", cookie },
+				body: JSON.stringify({
+					id: created.id,
+					title,
+					version: created.version,
+				}),
+			});
+
+		const [first, second] = await Promise.all([
+			updateWith("Writer one"),
+			updateWith("Writer two"),
+		]);
+
+		const statuses = A.sort([first.status, second.status], (a, b) => a - b);
+		expect(statuses).toStrictEqual([200, 409]);
+
+		const afterResponse = await fetch(`${BASE_URL}/api/notes/${created.id}`, {
+			headers: { cookie },
+		});
+		const after = (await afterResponse.json()) as {
+			title: string;
+			version: number;
+		};
+		expect(after.version).toBe(created.version + 1);
+		expect(["Writer one", "Writer two"]).toContain(after.title);
+	});
+
+	it("rejects an update that carries a version the note has moved past", async (): Promise<void> => {
+		const createResponse = await fetch(`${BASE_URL}/api/notes`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json", cookie },
+			body: JSON.stringify({ title: "Stale", body: "start" }),
+		});
+		const created = (await createResponse.json()) as {
+			id: string;
+			version: number;
+		};
+
+		const firstResponse = await fetch(`${BASE_URL}/api/notes/${created.id}`, {
+			method: "PATCH",
+			headers: { "Content-Type": "application/json", cookie },
+			body: JSON.stringify({
+				id: created.id,
+				title: "Applied",
+				version: created.version,
+			}),
+		});
+		expect(firstResponse.status).toBe(200);
+
+		const staleResponse = await fetch(`${BASE_URL}/api/notes/${created.id}`, {
+			method: "PATCH",
+			headers: { "Content-Type": "application/json", cookie },
+			body: JSON.stringify({
+				id: created.id,
+				title: "Overwrites",
+				version: created.version,
+			}),
+		});
+		expect(staleResponse.status).toBe(409);
+	});
 });

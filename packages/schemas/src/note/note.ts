@@ -7,10 +7,13 @@ import { SORT_DIRECTION, sortDirectionSchema } from "../shared/sort.ts";
 export const NOTE_TITLE_MAX = 200;
 export const NOTE_BODY_MAX = 10_000;
 
+export const noteVersionSchema = z.number().int().positive();
+
 export const noteSchema = baseSchema(z.uuid()).extend({
 	title: z.string().min(1).max(NOTE_TITLE_MAX),
 	body: z.string().max(NOTE_BODY_MAX),
 	authorId: userIdSchema,
+	version: noteVersionSchema,
 });
 export type TNote = TEntityOf<z.infer<typeof noteSchema>>;
 
@@ -22,6 +25,7 @@ export type TNoteCreateInput = z.infer<typeof noteCreateInputSchema>;
 
 export const noteUpdateInputSchema = z.object({
 	id: z.uuid(),
+	version: noteVersionSchema,
 	title: z.string().min(1).max(NOTE_TITLE_MAX).optional(),
 	body: z.string().max(NOTE_BODY_MAX).optional(),
 });
