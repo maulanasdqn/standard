@@ -70,6 +70,7 @@ export const UserCreateForm: FC<TUserCreateFormProps> = (
 								type="password"
 								autoComplete="new-password"
 								label={USER_MESSAGE.COLUMN_PASSWORD}
+								placeholder={USER_MESSAGE.PASSWORD_PLACEHOLDER}
 								value={field.state.value}
 								errors={field.state.meta.errors}
 								onBlur={field.handleBlur}

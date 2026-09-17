@@ -1,6 +1,7 @@
 import { Input } from "@app/components/ui/input";
 import type { FC, ReactElement } from "react";
 import { useUserSearchForm } from "#/routes/_authenticated/users/_hooks/use-user-search-form.ts";
+import { USER_MESSAGE } from "@app/messages";
 
 export const UserSearch: FC = (): ReactElement => {
 	const { form, onSubmit } = useUserSearchForm();
@@ -11,7 +12,7 @@ export const UserSearch: FC = (): ReactElement => {
 				{(field) => (
 					<Input
 						type="search"
-						placeholder="Search by name or email"
+						placeholder={USER_MESSAGE.SEARCH_PLACEHOLDER}
 						aria-label="Search users"
 						value={field.state.value ?? ""}
 						onBlur={field.handleBlur}

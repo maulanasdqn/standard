@@ -24,7 +24,7 @@ export const RoleCreateForm: FC = (): ReactElement => {
 									<Label htmlFor={field.name}>Key</Label>
 									<Input
 										id={field.name}
-										placeholder="reviewer"
+										placeholder={ROLE_MESSAGE.KEY_PLACEHOLDER}
 										value={field.state.value}
 										onBlur={field.handleBlur}
 										onChange={(event) => field.handleChange(event.target.value)}
@@ -39,7 +39,7 @@ export const RoleCreateForm: FC = (): ReactElement => {
 									<Label htmlFor={field.name}>Label</Label>
 									<Input
 										id={field.name}
-										placeholder="Reviewer"
+										placeholder={ROLE_MESSAGE.LABEL_PLACEHOLDER}
 										value={field.state.value}
 										onBlur={field.handleBlur}
 										onChange={(event) => field.handleChange(event.target.value)}
@@ -55,6 +55,7 @@ export const RoleCreateForm: FC = (): ReactElement => {
 								<Label htmlFor={field.name}>Description</Label>
 								<Textarea
 									id={field.name}
+									placeholder={ROLE_MESSAGE.DESCRIPTION_PLACEHOLDER}
 									value={field.state.value ?? ""}
 									onBlur={field.handleBlur}
 									onChange={(event) => field.handleChange(event.target.value)}
