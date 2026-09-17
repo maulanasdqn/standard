@@ -1,14 +1,22 @@
 import { Button } from "@app/components/ui/button";
-import { Card, CardContent } from "@app/components/ui/card";
-import { FieldError } from "@app/components/ui/field-error";
-import { Input } from "@app/components/ui/input";
-import { Label } from "@app/components/ui/label";
-import { Textarea } from "@app/components/ui/textarea";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@app/components/ui/card";
 import { APP_MESSAGE, NOTE_MESSAGE } from "@app/messages";
 import type { TNote } from "@app/schemas";
 import { Link } from "@tanstack/react-router";
+import { Loader2 } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { ConfirmDialog } from "#/routes/_authenticated/_components/confirm-dialog.tsx";
+import {
+	NoteBodyField,
+	NoteTitleField,
+} from "#/routes/_authenticated/notes/_components/note-fields.tsx";
 import { useNoteEditForm } from "#/routes/_authenticated/notes/_hooks/use-note-edit-form.ts";
 
 type TNoteEditFormProps = {
@@ -19,53 +27,53 @@ export const NoteEditForm: FC<TNoteEditFormProps> = (props): ReactElement => {
 	const { form, onSubmit, confirm, isPending } = useNoteEditForm(props.note);
 
 	return (
-		<Card className="max-w-md">
-			<CardContent>
-				<form onSubmit={onSubmit} className="flex flex-col gap-4">
+		<form onSubmit={onSubmit}>
+			<Card>
+				<CardHeader>
+					<CardTitle>{NOTE_MESSAGE.DETAILS_TITLE}</CardTitle>
+					<CardDescription>{NOTE_MESSAGE.DETAILS_DESCRIPTION}</CardDescription>
+				</CardHeader>
+				<CardContent className="flex flex-col gap-6">
 					<form.Field name="title">
 						{(field) => (
-							<div className="flex flex-col gap-1">
-								<Label htmlFor={field.name}>{NOTE_MESSAGE.COLUMN_TITLE}</Label>
-								<Input
-									id={field.name}
-									value={field.state.value}
-									onBlur={field.handleBlur}
-									onChange={(event) => field.handleChange(event.target.value)}
-								/>
-								<FieldError errors={field.state.meta.errors} />
-							</div>
+							<NoteTitleField
+								id={field.name}
+								value={field.state.value}
+								errors={field.state.meta.errors}
+								onBlur={field.handleBlur}
+								onChange={field.handleChange}
+							/>
 						)}
 					</form.Field>
 					<form.Field name="body">
 						{(field) => (
-							<div className="flex flex-col gap-1">
-								<Label htmlFor={field.name}>{NOTE_MESSAGE.COLUMN_BODY}</Label>
-								<Textarea
-									id={field.name}
-									value={field.state.value}
-									onBlur={field.handleBlur}
-									onChange={(event) => field.handleChange(event.target.value)}
-								/>
-							</div>
+							<NoteBodyField
+								id={field.name}
+								value={field.state.value ?? ""}
+								errors={field.state.meta.errors}
+								onBlur={field.handleBlur}
+								onChange={field.handleChange}
+							/>
 						)}
 					</form.Field>
-					<div className="flex items-center gap-3">
-						<Button type="submit" disabled={isPending}>
-							{isPending ? "Saving…" : "Save changes"}
-						</Button>
-						<Link to="/notes" className="text-sm hover:underline">
-							{APP_MESSAGE.CANCEL}
-						</Link>
-					</div>
-				</form>
-				<ConfirmDialog
-					open={confirm.open}
-					title={NOTE_MESSAGE.UPDATE_CONFIRM_TITLE}
-					description={NOTE_MESSAGE.UPDATE_CONFIRM_DESCRIPTION}
-					onOpenChange={confirm.onOpenChange}
-					onConfirm={confirm.onConfirm}
-				/>
-			</CardContent>
-		</Card>
+				</CardContent>
+				<CardFooter className="justify-end gap-2 border-t pt-6">
+					<Button variant="outline" asChild>
+						<Link to="/notes">{APP_MESSAGE.CANCEL}</Link>
+					</Button>
+					<Button type="submit" disabled={isPending}>
+						{isPending && <Loader2 className="animate-spin" />}
+						{isPending ? NOTE_MESSAGE.SAVING : NOTE_MESSAGE.SAVE_CHANGES}
+					</Button>
+				</CardFooter>
+			</Card>
+			<ConfirmDialog
+				open={confirm.open}
+				title={NOTE_MESSAGE.UPDATE_CONFIRM_TITLE}
+				description={NOTE_MESSAGE.UPDATE_CONFIRM_DESCRIPTION}
+				onOpenChange={confirm.onOpenChange}
+				onConfirm={confirm.onConfirm}
+			/>
+		</form>
 	);
 };

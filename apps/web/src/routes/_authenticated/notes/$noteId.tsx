@@ -1,9 +1,11 @@
 import { checkRoutePermissions } from "@app/components/guard/route-guard";
+import { formatDateTime } from "@app/format";
 import { NOTE_MESSAGE } from "@app/messages";
 import { PERMISSION } from "@app/permissions";
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
 import { NoteEditForm } from "#/routes/_authenticated/notes/_components/note-edit-form.tsx";
+import { NoteFormPage } from "#/routes/_authenticated/notes/_components/note-form-page.tsx";
 import {
 	noteGetOptions,
 	useNoteGet,
@@ -13,10 +15,24 @@ const NoteEditPage: FC = (): ReactElement => {
 	const { data } = useNoteGet();
 
 	return (
-		<div className="flex flex-col gap-6">
-			<h1 className="text-xl font-semibold">{NOTE_MESSAGE.EDIT_NOTE}</h1>
+		<NoteFormPage
+			title={NOTE_MESSAGE.EDIT_NOTE}
+			description={NOTE_MESSAGE.EDIT_DESCRIPTION}
+			meta={
+				<dl className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted-foreground">
+					<div className="flex gap-1">
+						<dt>{NOTE_MESSAGE.CREATED_AT}</dt>
+						<dd>{formatDateTime(data.createdAt)}</dd>
+					</div>
+					<div className="flex gap-1">
+						<dt>{NOTE_MESSAGE.UPDATED_AT}</dt>
+						<dd>{formatDateTime(data.updatedAt)}</dd>
+					</div>
+				</dl>
+			}
+		>
 			<NoteEditForm note={data} />
-		</div>
+		</NoteFormPage>
 	);
 };
 
