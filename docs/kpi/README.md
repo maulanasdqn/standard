@@ -38,11 +38,11 @@ The rubric's domain examples (Drive filing, CSI terminology, rebid ambiguity) co
 |----------|-------|-----------------|------|---------|---------|-----|
 | P0 | 17 | 4 | 14 | 0 | 0 | 3 |
 | P1 | 22 | 7 | 15 | 3 | 3 | 1 |
-| P2 | 13 | 5 | 6 | 1 | 5 | 1 |
+| P2 | 13 | 5 | 7 | 1 | 4 | 1 |
 | P3 | 1 | 0 | 1 | 0 | 0 | 0 |
-| **Total** | **53** | **16** | **36** | **4** | **8** | **5** |
+| **Total** | **53** | **16** | **37** | **4** | **7** | **5** |
 
-The table above counts the **Status** column. **Boilerplate Ready** is a separate axis with its own values, so it is tallied separately: **36 Yes, 8 Partial, 9 No.** Both add up to 53, and the 32 appearing in each is a coincidence rather than a repeated figure: every standard that is Done is also inherited, but some rows that are only Partial or Missing here still hand the next product something reusable.
+The table above counts the **Status** column. **Boilerplate Ready** is a separate axis with its own values, so it is tallied separately: **37 Yes, 8 Partial, 8 No.** Both add up to 53, and the 32 appearing in each is a coincidence rather than a repeated figure: every standard that is Done is also inherited, but some rows that are only Partial or Missing here still hand the next product something reusable.
 
 Every ★ row but one is a Yes, because the standards this boilerplate sets beyond the rubric are precisely what a new product inherits without writing a line.
 
@@ -97,7 +97,7 @@ Every ★ row but one is a Yes, because the standards this boilerplate sets beyo
 | Expired credentials are handled | Expiry is a recognized, recoverable state, not an unexplained error | P2 | Partial | Partial | better-auth handles session expiry, and `buildContext` in `apps/api/src/main.ts` degrades a failed session lookup to `null`. External provider credentials (SMTP, S3) have no expiry or re-auth handling, so they surface as a generic thrown error |
 | Unreadable or oversized attachments | Size and type limits are enforced and rejections are explicit | P2 | Missing | Partial | `packages/storage/src/storage.ts` enforces no size or content-type limit, and `remove()` ignores the response status entirely. The package is also not imported anywhere yet, so there is no upload endpoint, but the limits must exist before one lands |
 | Support and runbooks | A written procedure for the failures that are expected to happen | P2 | Done | Yes | `docs/operations/runbooks.md` covers readiness failure, Postgres and Redis outages, dead-lettered and stalled jobs, and a bad deploy, each starting from how you know rather than from what to type |
-| Data retention | How long each class of data is kept, and what prunes it | P2 | Missing | No | `activity_log` (`apps/api/src/platform/db/tables/activity.ts`) grows without bound; no retention policy and no pruning job |
+| Data retention | How long each class of data is kept, and what prunes it | P2 | Done | Yes | `docs/operations/retention.md` sets a 90 day window on `activity_log` through `ACTIVITY_RETENTION_DAYS`, pruned by the worker daily in batches of 1,000 so a maintenance job never takes a long lock on a table every write touches. It also argues why a time window beats a row cap for an audit trail, and states what every other store keeps and why |
 | Staged rollout | New behavior reaches a slice before everyone | P2 | Missing | No | No feature flags and no canary or percentage rollout |
 | Acceptance scenarios cover failure and recovery | The demo or walkthrough maps to real acceptance scenarios, including the failure and recovery cases | P2 | Missing | Partial | `apps/api-e2e/tests` and `apps/web-e2e/tests` give a working harness with sign-in, access, and table helpers, but every spec covers a happy path or authorization. No test exercises a dependency outage, a retry, or a recovery |
 | Baselines carry evidence | Source, units, measurement method, and approved event definitions for every reported saving or error baseline | P2 | Missing | No | No baseline or value-reporting definitions exist |

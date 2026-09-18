@@ -4,4 +4,5 @@ export const REPO_TAG = {
 	CUSTOM_ROLE: "app/CustomRoleRepo",
 	ACTIVITY: "app/ActivityRepo",
 	ACTIVITY_RECORDER: "app/ActivityRecorder",
+	ACTIVITY_PRUNER: "app/ActivityPruner",
 } as const;

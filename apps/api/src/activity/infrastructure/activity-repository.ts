@@ -1,11 +1,13 @@
 import type { TActivityEntry, TActivityRepo } from "@app/activity";
-import { and, count, eq, type SQL } from "drizzle-orm";
+import { and, count, eq, inArray, lt, type SQL } from "drizzle-orm";
 import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { Effect, Layer } from "effect";
 import { match, P } from "ts-pattern";
 import { EDatabase } from "#/shared/errors.ts";
 import {
+	ActivityPruner,
 	ActivityRepo,
+	type TActivityPruner,
 	type TActivityReader,
 } from "#/activity/domain/activity.ts";
 import {
@@ -115,5 +117,36 @@ export const activityRepoLayer = Layer.effect(
 		};
 
 		return ActivityRepo.of({ list });
+	}),
+).pipe(Layer.provide(dbServiceLayer));
+
+export const activityPrunerLayer = Layer.effect(
+	ActivityPruner,
+	Effect.gen(function* () {
+		const { db } = yield* DbService;
+
+		const deleteOlderThan: TActivityPruner["deleteOlderThan"] = (
+			cutoff,
+			batchSize,
+		) =>
+			Effect.tryPromise({
+				try: async (): Promise<number> => {
+					const stale = dbActive(db)
+						.select({ id: activityLog.id })
+						.from(activityLog)
+						.where(lt(activityLog.createdAt, cutoff))
+						.limit(batchSize);
+
+					const removed = await dbActive(db)
+						.delete(activityLog)
+						.where(inArray(activityLog.id, stale))
+						.returning({ id: activityLog.id });
+
+					return removed.length;
+				},
+				catch: (cause) => new EDatabase({ cause }),
+			});
+
+		return ActivityPruner.of({ deleteOlderThan });
 	}),
 ).pipe(Layer.provide(dbServiceLayer));

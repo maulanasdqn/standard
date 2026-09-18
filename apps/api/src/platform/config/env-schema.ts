@@ -40,6 +40,7 @@ export const envSchema = z
 		MAIL_FROM: z.string().min(1).default("Standard <no-reply@standard.test>"),
 		BETTER_AUTH_URL: z.url(),
 		BETTER_AUTH_SECRET: z.string().min(32),
+		ACTIVITY_RETENTION_DAYS: z.coerce.number().int().positive().default(90),
 		RATE_LIMIT_WINDOW_SECONDS: z.coerce.number().int().default(60),
 		RATE_LIMIT_MAX: z.coerce.number().int().default(100),
 		RATE_LIMIT_TRUSTED_PROXY_IPS: z
