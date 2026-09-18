@@ -2,10 +2,14 @@ import { spawn, type ChildProcess } from "node:child_process";
 import { execSync } from "node:child_process";
 import { match, P } from "ts-pattern";
 
-const E2E_PORT = 3107;
-const BASE_DATABASE_URL = process.env.DATABASE_URL ?? "postgres://app:app@localhost:5432/app";
-const E2E_DATABASE_URL = BASE_DATABASE_URL.replace(/\/[^/]+$/, "/app_e2e");
-const HEALTH_URL = `http://127.0.0.1:${E2E_PORT}/healthz`;
+import {
+	ADMIN_DATABASE_URL,
+	API_PORT,
+	E2E_DATABASE_URL,
+	apiEnv,
+} from "./services.ts";
+
+const HEALTH_URL = `http://127.0.0.1:${API_PORT}/healthz`;
 
 let apiProcess: ChildProcess | undefined;
 
@@ -23,25 +27,12 @@ const waitForHealth = async (timeoutMs = 15_000): Promise<void> => {
 	throw new Error(`API did not become healthy at ${HEALTH_URL} within ${timeoutMs}ms`);
 };
 
-const env = {
-	...process.env,
-	NODE_ENV: "test",
-	PORT: String(E2E_PORT),
-	DATABASE_URL: E2E_DATABASE_URL,
-	REDIS_URL: process.env.REDIS_URL ?? "redis://localhost:6379",
-	RABBITMQ_URL: process.env.RABBITMQ_URL ?? "amqp://app:app@localhost:5672",
-	RATE_LIMIT_MAX: process.env.RATE_LIMIT_MAX ?? "10000",
-	BETTER_AUTH_URL: `http://127.0.0.1:${E2E_PORT}`,
-	BETTER_AUTH_SECRET: "e2e-test-secret-please-do-not-use-in-prod",
-	WEB_ORIGIN: "http://localhost:5173",
-};
+const env = apiEnv({});
 
 export const setup = async (): Promise<void> => {
 	const dbName = new URL(E2E_DATABASE_URL).pathname.slice(1);
-	const adminUrl = BASE_DATABASE_URL.replace(/\/[^/]+$/, "/postgres");
-
 	execSync(
-		`psql "${adminUrl}" -c "DROP DATABASE IF EXISTS ${dbName}" -c "CREATE DATABASE ${dbName}"`,
+		`psql "${ADMIN_DATABASE_URL}" -c "DROP DATABASE IF EXISTS ${dbName}" -c "CREATE DATABASE ${dbName}"`,
 		{ stdio: "ignore" },
 	);
 
