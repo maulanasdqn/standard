@@ -16,6 +16,21 @@ const transactionStorage = new AsyncLocalStorage<TDb>();
 
 export const dbActive = (db: TDb): TDb => transactionStorage.getStore() ?? db;
 
+export const dbActiveProxy = (db: TDb): TDb =>
+	new Proxy(db, {
+		get: (_target, property): unknown => {
+			const active = dbActive(db) as unknown as Record<
+				string | symbol,
+				unknown
+			>;
+			const value = active[property];
+
+			return match(typeof value)
+				.with("function", (): unknown => (value as () => unknown).bind(active))
+				.otherwise((): unknown => value);
+		},
+	});
+
 const rollbackOf = (exit: unknown): TRollback => ({ tag: ROLLBACK_TAG, exit });
 
 const isRollback = (cause: unknown): cause is TRollback =>

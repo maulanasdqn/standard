@@ -2,7 +2,11 @@ import { Effect, Layer } from "effect";
 import { describe, expect, it } from "vitest";
 import type { TDb } from "#/platform/db/client.ts";
 import { DbService } from "#/platform/db/db-service.ts";
-import { dbActive, transactional } from "#/platform/db/transaction.ts";
+import {
+	dbActive,
+	dbActiveProxy,
+	transactional,
+} from "#/platform/db/transaction.ts";
 import { ENotFound } from "#/shared/errors.ts";
 
 const TX = { marker: "transaction" } as unknown as TDb;
@@ -95,5 +99,39 @@ describe("transactional", () => {
 		const fake = dbFake();
 
 		expect(dbActive(fake.db)).toBe(fake.db);
+	});
+});
+
+describe("dbActiveProxy", () => {
+	it("forwards a property to the pool when no transaction is open", (): void => {
+		const pool = { marker: "pool" } as unknown as TDb;
+		const proxied = dbActiveProxy(pool) as unknown as { marker: string };
+
+		expect(proxied.marker).toBe("pool");
+	});
+
+	it("forwards a property to the transaction while one is open", async (): Promise<void> => {
+		const fake = dbFake();
+		const proxied = dbActiveProxy(fake.db) as unknown as { marker: string };
+
+		const seen = await Effect.runPromise(
+			transactional(Effect.sync(() => proxied.marker)).pipe(
+				Effect.provide(layerFor(fake.db)),
+			),
+		);
+
+		expect(seen).toBe("transaction");
+	});
+
+	it("binds a forwarded method to the connection it came from", async (): Promise<void> => {
+		const pool = {
+			marker: "pool",
+			where: function (this: { marker: string }): string {
+				return this.marker;
+			},
+		} as unknown as TDb;
+		const proxied = dbActiveProxy(pool) as unknown as { where: () => string };
+
+		expect(proxied.where()).toBe("pool");
 	});
 });
