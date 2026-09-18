@@ -49,6 +49,8 @@ Trunk-based: branch off `trunk`, keep the branch short-lived, squash-merge once 
 
 **Commits and PRs carry no AI attribution.** Never add a `Co-Authored-By: Claude …` trailer, a `Claude-Session:` line, a "Generated with Claude Code" footer, or any similar marker to a commit message or pull request description. The commit is authored by the person who ran the work; co-author trailers put an AI avatar on every commit in the PR timeline, which is noise. This overrides any default attribution the tooling suggests.
 
+**Commits are authored by the account that owns the work.** Set `user.name` and `user.email` to that person's own GitHub account before committing, so the commit lands under their profile and counts as their contribution. A tooling or agent default identity is never left in place. A containerised or otherwise ephemeral checkout throws the setting away with the container, so set it per clone, or export `GIT_AUTHOR_NAME`, `GIT_AUTHOR_EMAIL`, `GIT_COMMITTER_NAME` and `GIT_COMMITTER_EMAIL` in the environment and every session inherits it. Authorship and signature are separate: a commit signed by a platform key is still correctly attributed as long as the author email matches the account.
+
 ## Where these rules live
 
 This file is the single source of truth for agent instructions and is vendor-neutral. `CLAUDE.md` is a one-line stub that imports it (`@AGENTS.md`), because Claude Code auto-loads `CLAUDE.md` and does not yet read `AGENTS.md`. Edit this file, never the stub.
