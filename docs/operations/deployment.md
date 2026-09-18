@@ -11,6 +11,14 @@ make image-run    # run it against the local services
 
 The image is tagged with the root `package.json` version, which is the same value `/health` reports at runtime. That is what lets you confirm which build is actually live rather than which build you believe you deployed.
 
+## Releases
+
+Releases are automatic. Every merge to `trunk` carries a version bump, so the release workflow reads the root `package.json` version on each push to `trunk`, waits for the three required checks to be green on that exact commit, tags it `vX.Y.Z`, and publishes a GitHub release.
+
+The notes are not commit subjects. `.github/scripts/release-notes.sh` walks the commits since the previous tag, follows each `(#N)` back to its pull request, and lifts that PR's **Changelog** section verbatim, plus its **Breaking Changes / Feature Impact** section when it says anything other than None. Entries are grouped by the conventional-commit type of the squash commit. That is why the pull request template calls the Changelog section "For reporting": what is written there is what ships on the release page. A commit with no pull request behind it falls back to its subject line.
+
+The workflow is keyed on the tag rather than on the diff, so a version that already has a tag is skipped and the job is a no-op. That makes it safe to re-run, and `workflow_dispatch` exists for exactly that: re-releasing a version whose publish failed after its checks went green.
+
 ## Order of operations
 
 Migrations are forward-only and run as a separate step, never on process start, so that two API replicas coming up at once cannot race each other.

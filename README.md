@@ -46,9 +46,12 @@ Requires [moon](https://moonrepo.dev/docs/install) + [proto](https://moonrepo.de
 
 ```sh
 pnpm install
+cp apps/api/.env.example apps/api/.env # and apps/web/.env.example to apps/web/.env
 make setup                            # docker services, migrate and seed
 make up                               # start api + web together
 ```
+
+The example files already match what `docker-compose.dev.yml` brings up, so they work unedited for local development. `apps/api/.env.example` is the full list of variables the API accepts, and `envSchema` rejects a missing or malformed one at boot rather than failing later in a request.
 
 Or run them separately:
 
@@ -75,7 +78,7 @@ The root `package.json` version is the single source of truth for the workspace.
 
 The shape is `healthSchema` in `@app/schemas`, so the web page is typed against what the API returns; the two versions differing means web and API are deployed out of step.
 
-**Every change bumps the root version**: patch for a fix, chore, or docs change; minor for a feature or behavior-changing refactor; major for a breaking change. Bump it in the same commit, so `/health` always names the build you are looking at. Only the root version matters; the workspace packages are private and unpublished.
+**Every change bumps the root version** in the same commit, so `/health` always names the build you are looking at: patch for a fix, chore or docs change, minor for a feature, major for a breaking change. Only the root version matters; the workspace packages are private and unpublished.
 
 ## Commands
 
@@ -120,8 +123,15 @@ A branch that has fallen behind must be rebased on `trunk` and re-pushed; that i
 
 PRs use `.github/PULL_REQUEST_TEMPLATE.md`. Fill every section in place, writing "None" rather than deleting one. Reviews use `.github/PULL_REQUEST_REVIEW_TEMPLATE.md` and always cover three sections: **Functional** (correctness, and whether every Changelog bullet is actually implemented), **Clean Code** (the conventions in `.claude/skills/ts-conventions/SKILL.md`, plus duplication and naming), and **Feature Suggestions** (non-blocking, each tagged `this-pr` or `follow-up`). Findings in the first two carry a P0–P3 severity from the template's legend.
 
-Releases are automatic, and there is nothing to run by hand. Every merge to `trunk` carries a version bump, so the release workflow reads the root version on each push to `trunk`, waits for the three required checks to be green on that exact commit, tags it `vX.Y.Z`, and publishes a GitHub release.
+Releases are automatic and there is nothing to run by hand: every merge to `trunk` carries a version bump, and the workflow tags that commit once its checks are green. The notes are lifted from each PR's Changelog section rather than from commit subjects, which is why that section is written for whoever reads the release page. How it is assembled, and how to re-run a publish that failed, are in [docs/operations/deployment.md](docs/operations/deployment.md).
 
-The notes are not commit subjects. `.github/scripts/release-notes.sh` walks the commits since the previous tag, follows each `(#N)` back to its pull request, and lifts that PR's **Changelog** section verbatim, plus its **Breaking Changes / Feature Impact** section when it says anything other than None. Entries are grouped by the conventional-commit type of the squash commit. That is why the PR template calls the Changelog section "For reporting": what you write there is what ships in the release, so write it for someone reading the release page, not for the reviewer. A commit with no pull request behind it falls back to its subject line.
+## Documentation
 
-It is keyed on the tag rather than on the diff, so a version that already has a tag is skipped and the job is a no-op. That makes the workflow safe to re-run, and `workflow_dispatch` is there for exactly that: re-releasing a version whose publish failed after its checks went green.
+| Document | Answers |
+|---|---|
+| [AGENTS.md](AGENTS.md) | The rules an agent or a new contributor works under, and which file to read before what |
+| [.claude/skills/ts-conventions/SKILL.md](.claude/skills/ts-conventions/SKILL.md) | The TypeScript ruleset, in full |
+| [docs/adding-a-module.md](docs/adding-a-module.md) | Every touchpoint a new module, endpoint or permission has to reach |
+| [docs/effect-services.md](docs/effect-services.md) | Why a service is a const and an error is a class |
+| [docs/operations/](docs/operations/) | Deploying, backups, runbooks, alerting, credentials, retention, logging |
+| [docs/kpi/](docs/kpi/) | Where this repository stands against an external engineering standards rubric |
