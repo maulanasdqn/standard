@@ -6,14 +6,14 @@ Full-stack TypeScript monorepo: moon + pnpm workspaces, Hono + oRPC + Effect (`a
 
 **Read `.claude/skills/ts-conventions/SKILL.md` first.** It is the full ruleset and it is non-negotiable. The rules that get broken most often, in short:
 
-- **No plain strings.** User-facing copy lives in `@app/messages` as a `SCREAMING_SNAKE` const object (`NOTE_MESSAGE`, `USER_MESSAGE`, …), never inline in JSX. Domain keys (statuses, roles, permissions, service tags, env keys) live in a shared const object (`PERMISSION`, `SERVICE_TAG`, `HEALTH_STATUS`, …) with the union type derived from it, and are referenced everywhere including `ts-pattern` `.with(...)` arms and `z.literal(...)`. Tailwind class strings in `className` are exempt: they are styling, not named values.
-- **Component signature.** Every React component is `const X: FC<TProps> = (props): ReactElement =>`, with props read as `props.x` and never destructured in the parameter list. Destructure in the body only for defaults or a rest element, naming the rest `rest`.
-- **Arrow functions only.** Every function is an arrow function assigned to a `const`, never the `function` keyword, including React and route components. The sole exception is generators, which cannot be arrows: `Effect.fn(...)(function* ...)` and `Effect.gen(function* ...)` keep the keyword.
-- **ts-pattern** for conditionals, **ts-belt** (`A`, `D`) for arrays and objects, never native `if`/`switch` chains or `Array.prototype`.
-- **Explicit return types** on every function, including one-liners.
-- **`T` / `I` / `E` prefixes** on every type, interface and enum or tagged error.
-- **No comments.** Rename or extract instead.
-- **200 lines max** per file; components render and nothing else, so data lives in a colocated `_hooks/*.ts`.
+- **No plain strings.** User-facing copy lives in `@app/messages` as a `SCREAMING_SNAKE` const object (`NOTE_MESSAGE`, `USER_MESSAGE`, …), never inline in JSX. Domain keys (statuses, roles, permissions, service tags, env keys) live in a shared const object (`PERMISSION`, `SERVICE_TAG`, `HEALTH_STATUS`, …) with the union type derived from it, and are referenced everywhere including `ts-pattern` `.with(...)` arms and `z.literal(...)`. Tailwind class strings in `className` are exempt: they are styling, not named values
+- **Component signature.** Every React component is `const X: FC<TProps> = (props): ReactElement =>`, with props read as `props.x` and never destructured in the parameter list. Destructure in the body only for defaults or a rest element, naming the rest `rest`
+- **Arrow functions only.** Every function is an arrow function assigned to a `const`, never the `function` keyword, including React and route components. The sole exception is generators, which cannot be arrows: `Effect.fn(...)(function* ...)` and `Effect.gen(function* ...)` keep the keyword
+- **ts-pattern** for conditionals, **ts-belt** (`A`, `D`) for arrays and objects, never native `if`/`switch` chains or `Array.prototype`
+- **Explicit return types** on every function, including one-liners
+- **`T` / `I` / `E` prefixes** on every type, interface and enum or tagged error
+- **No comments.** Rename or extract instead
+- **200 lines max** per file; components render and nothing else, so data lives in a colocated `_hooks/*.ts`
 
 `apps/api` is organised **by module, not by layer**: `src/<module>/` for each of `activity auth
 health note permission role user`, with `domain/`, `application/`, `infrastructure/` and
@@ -38,6 +38,19 @@ Check before committing, not after. A name that reaches `trunk` in a commit subj
 ## No em dashes
 
 The `—` character is not used anywhere in this repository: not in documentation, not in code or user-facing copy in `@app/messages`, not in commit messages, and not in pull request descriptions or reviews. Do not substitute a lookalike glyph either. Rewrite the sentence so ordinary punctuation carries the relationship: a comma for a simple aside, a colon when what follows explains what precedes it, a semicolon between two independent clauses, parentheses for a genuine aside, or a full stop and a new sentence, which is usually the cleanest result.
+
+## List items do not end with a full stop
+
+A bullet or a numbered item carries no closing punctuation, even when it is a
+full sentence. An item made of several sentences keeps the full stops between
+them and drops only the last one. A trailing period on every item in a list is
+one of the tells that marks text as machine written, and it reads as padding
+rather than punctuation.
+
+Ordinary paragraphs, table cells and headings are unaffected, and a question
+mark or an exclamation mark at the end of an item stays, because removing it
+would change the meaning rather than remove decoration. An item that ends in an
+ellipsis, such as a placeholder in the pull request template, keeps it.
 
 ## Every change bumps the version
 
