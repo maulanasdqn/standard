@@ -1,5 +1,9 @@
 import { createTransport } from "nodemailer";
 
+export const MAIL_CONNECTION_TIMEOUT_MS = 10_000;
+export const MAIL_GREETING_TIMEOUT_MS = 10_000;
+export const MAIL_SOCKET_TIMEOUT_MS = 20_000;
+
 export type TMailMessage = {
 	to: string;
 	subject: string;
@@ -17,7 +21,12 @@ export type TMailerOptions = {
 };
 
 export const mailerCreate = (options: TMailerOptions): TMailer => {
-	const transport = createTransport(options.smtpUrl);
+	const transport = createTransport({
+		url: options.smtpUrl,
+		connectionTimeout: MAIL_CONNECTION_TIMEOUT_MS,
+		greetingTimeout: MAIL_GREETING_TIMEOUT_MS,
+		socketTimeout: MAIL_SOCKET_TIMEOUT_MS,
+	});
 
 	const send = async (message: TMailMessage): Promise<void> => {
 		await transport.sendMail({
