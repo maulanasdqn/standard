@@ -34,8 +34,8 @@ export type TNoteSearch = {
 const listRouteApi = getRouteApi("/_authenticated/notes/");
 const editRouteApi = getRouteApi("/_authenticated/notes/$noteId");
 
-const invalidateNotes = (queryClient: QueryClient): Promise<void> =>
-	queryClient.invalidateQueries({ queryKey: orpc.note.list.key() });
+export const invalidateNotes = (queryClient: QueryClient): Promise<void> =>
+	queryClient.invalidateQueries({ queryKey: orpc.note.key() });
 
 export const noteListOptions = (
 	input: TNoteListInput,
