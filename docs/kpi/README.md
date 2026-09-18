@@ -36,13 +36,13 @@ The rubric's domain examples (Drive filing, CSI terminology, rebid ambiguity) co
 
 | Severity | Total | ★ Beyond rubric | Done | Partial | Missing | N/A |
 |----------|-------|-----------------|------|---------|---------|-----|
-| P0 | 17 | 4 | 13 | 0 | 1 | 3 |
-| P1 | 22 | 7 | 7 | 6 | 8 | 1 |
-| P2 | 13 | 5 | 5 | 1 | 6 | 1 |
+| P0 | 17 | 4 | 14 | 0 | 0 | 3 |
+| P1 | 22 | 7 | 8 | 7 | 6 | 1 |
+| P2 | 13 | 5 | 6 | 1 | 5 | 1 |
 | P3 | 1 | 0 | 0 | 0 | 1 | 0 |
-| **Total** | **53** | **16** | **25** | **7** | **16** | **5** |
+| **Total** | **53** | **16** | **28** | **8** | **12** | **5** |
 
-Boilerplate readiness: **25 Yes, 12 Partial, 16 No.** Every ★ row but one is a Yes, because the standards this boilerplate sets beyond the rubric are precisely what a new product inherits without writing a line.
+Boilerplate readiness: **28 Yes, 13 Partial, 12 No.** Every ★ row but one is a Yes, because the standards this boilerplate sets beyond the rubric are precisely what a new product inherits without writing a line.
 
 ## Matrix
 
@@ -60,7 +60,7 @@ Boilerplate readiness: **25 Yes, 12 Partial, 16 No.** Every ★ row but one is a
 | Retry with backoff on transient failure | Transient failures retry on a defined policy before being treated as failures | P0 | Done | Yes | `packages/queue/src/job-worker.ts` republishes a failed job to `<queue>.retry` with an exponential per-message delay and an attempt header, bounded by `JOB_RETRY_DEFAULT` |
 | Failed work has a recovery path (dead letter) | Work that fails permanently is preserved for inspection and replay, never dropped | P0 | Done | Yes | `jobTopologyAssert` declares `<queue>.dlq` beside every queue, and a job that exhausts its attempt budget is parked there instead of discarded |
 | Concurrency tests | Two reviewers, or a retry racing the original, must not create conflicting approvals or duplicate active items | P0 | Done | Yes | Notes carry a `version` that the update predicate matches and the write increments, so a stale edit updates no rows and returns 409 rather than overwriting. Two concurrent updates and a replayed stale update are covered in `apps/api-e2e/tests/notes.e2e.test.ts`. See the scope note below: this guard is deliberate, not blanket |
-| Backup and restore | A defined, exercised backup and restore procedure for every stateful store | P0 | Missing | No | No backup configuration or documented restore procedure for Postgres, Redis, or RabbitMQ |
+| Backup and restore | A defined, exercised backup and restore procedure for every stateful store | P0 | Done | Yes | `docs/operations/backup-restore.md` names what holds state and what deliberately is not backed up, sets retention and isolation, and defines a restore drill whose output is the measured recovery time and recovery point. The drill has not been run yet, so those two numbers are recorded as not yet measured rather than guessed |
 | Duplicate prevention validated before enabling live action | Duplicate prevention and recovery are proven *before* the first real external action is allowed | P0 | Done | Yes | `packages/queue/src/job-worker.test.ts` covers retry routing, dead-lettering, and repeat suppression; the note concurrency tests cover the read-modify-write side against a real database |
 | Validated rules decide, the model only suggests | The model proposes; validated application rules authorize | P0 | N/A | No | No model in the codebase: no `anthropic`, `openai`, `@ai-sdk`, or `langchain` dependency in any `package.json`. Applies the moment a model output can drive an action |
 | Confidence alone never authorizes an external action | A high score is not an authorization | P0 | N/A | No | Same condition as above |
@@ -82,8 +82,8 @@ Boilerplate readiness: **25 Yes, 12 Partial, 16 No.** Every ★ row but one is a
 | Timeouts on every outbound call | A lost response must become a failure, not a hang | P1 | Missing | No | No `Effect.timeout` and no `AbortSignal` in the repository. `packages/storage/src/storage.ts`, the mailer, and the auth provider calls can all hang indefinitely |
 | Explicit intermediate state | States such as *approved but not yet filed* are stored explicitly, never implied by the gap between two steps | P1 | Missing | No | No domain table carries a lifecycle state column; `note` has no status field. Any future two-step action would leave its middle state unrepresented |
 | Uncertain results are reconciled by a defined rule | What is uncertain, how it is reconciled, and what must reach a human | P1 | Missing | No | No review queue, no reconciliation rule, no human-review state |
-| Alert ownership | Every alert has a named owner who receives it | P1 | Missing | No | No alerting, no on-call mapping, and no `.github/CODEOWNERS` |
-| Deployment is defined | How a build reaches an environment | P1 | Missing | No | No `Dockerfile` and no deploy workflow. `release.yml` publishes a GitHub release and stops there |
+| Alert ownership | Every alert has a named owner who receives it | P1 | Partial | Partial | `docs/operations/alerting.md` defines nine alerts with conditions, page-or-ticket severity, thresholds with their reasoning, and a runbook link each. The Owner column is deliberately empty: who carries the pager is the team's to fill, and the row stays Partial until it is |
+| Deployment is defined | How a build reaches an environment | P1 | Done | Yes | A `Dockerfile` builds both processes into one image tagged with the root version, `make image` builds it, and `docs/operations/deployment.md` fixes the order: migrate as a separate job, then roll the api, then the worker, with liveness on `/healthz` and readiness on `/ready` |
 | Monitoring beyond logs | Metrics and traces, not only request lines | P1 | Missing | Partial | `apps/api/src/main.ts` logs structured request lines via the reusable `@app/logger` pino factory, good and the only signal. No metrics, no tracing, no log shipping |
 | Provider permissions described separately from application restrictions | The account's real scope is stated apart from what the application chooses to allow, because an application allowlist does not narrow a broadly authorized account | P1 | Missing | No | `storageCreate` in `packages/storage/src/storage.ts` takes a full access key and secret with no stated bucket or prefix scope, and nothing documents what the credential itself is allowed to reach versus what the application restricts |
 | Held-out evaluation dataset | A held-out set with sample counts and dataset, model, and config versions, measuring correct automatic action, coverage, and review volume | P1 | N/A | No | No model in the codebase. Required before any model output is trusted |
@@ -94,7 +94,7 @@ Boilerplate readiness: **25 Yes, 12 Partial, 16 No.** Every ★ row but one is a
 | ★ Dependencies are kept current automatically | Upgrades arrive as small reviewed PRs rather than an annual migration | P2 | Done | Yes | `.github/dependabot.yml`: weekly npm and github-actions updates, minor and patch grouped into one PR |
 | Expired credentials are handled | Expiry is a recognized, recoverable state, not an unexplained error | P2 | Partial | Partial | better-auth handles session expiry, and `buildContext` in `apps/api/src/main.ts` degrades a failed session lookup to `null`. External provider credentials (SMTP, S3) have no expiry or re-auth handling, so they surface as a generic thrown error |
 | Unreadable or oversized attachments | Size and type limits are enforced and rejections are explicit | P2 | Missing | Partial | `packages/storage/src/storage.ts` enforces no size or content-type limit, and `remove()` ignores the response status entirely. The package is also not imported anywhere yet, so there is no upload endpoint, but the limits must exist before one lands |
-| Support and runbooks | A written procedure for the failures that are expected to happen | P2 | Missing | No | No `docs/runbooks`. `README.md` covers local development setup only |
+| Support and runbooks | A written procedure for the failures that are expected to happen | P2 | Done | Yes | `docs/operations/runbooks.md` covers readiness failure, Postgres and Redis outages, dead-lettered and stalled jobs, and a bad deploy, each starting from how you know rather than from what to type |
 | Data retention | How long each class of data is kept, and what prunes it | P2 | Missing | No | `activity_log` (`apps/api/src/platform/db/tables/activity.ts`) grows without bound; no retention policy and no pruning job |
 | Staged rollout | New behavior reaches a slice before everyone | P2 | Missing | No | No feature flags and no canary or percentage rollout |
 | Acceptance scenarios cover failure and recovery | The demo or walkthrough maps to real acceptance scenarios, including the failure and recovery cases | P2 | Missing | Partial | `apps/api-e2e/tests` and `apps/web-e2e/tests` give a working harness with sign-in, access, and table helpers, but every spec covers a happy path or authorization. No test exercises a dependency outage, a retry, or a recovery |
@@ -112,6 +112,9 @@ So a module that still uses a last-write-wins update is not automatically carryi
 
 ## Suggested order of work
 
-1. **Make health and readiness real**: check the database, Redis, and RabbitMQ, so orchestration can act on the answer. A readiness probe that cannot fail is the largest remaining P1.
-2. **Wrap multi-write operations in transactions**, starting with the mutation-plus-activity pattern that every module repeats.
-3. **Write the operating documents**: deployment, backup and restore, runbooks, alert ownership. Backup and restore is the last open P0 and is the cheapest of these to write.
+**Every P0 is now closed.** Fourteen are Done and three stay N/A until a model is introduced, so what follows is P1 and below.
+
+1. **Wrap multi-write operations in transactions**, starting with the mutation-plus-activity pattern that every module repeats. The open question is where the boundary sits: inside each use case pulls a real database into every unit test, so the request seam is the better candidate.
+2. **Ship the request logs somewhere queryable.** Several alerts in `docs/operations/alerting.md` are defined but cannot be wired until this exists, so it blocks more than its own row.
+3. **Put timeouts on the remaining outbound calls.** The readiness probe is the only bounded one today; the mailer, storage, and auth provider can still hang.
+4. **Fill the Owner column** in `docs/operations/alerting.md` and run the first restore drill. Both are the team's to do rather than the code's, and both close a row that is otherwise written and waiting.
