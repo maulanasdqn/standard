@@ -1,3 +1,4 @@
+import { A } from "@mobily/ts-belt";
 import { METRICS_CONTENT_TYPE, type TMetrics } from "./metrics.ts";
 
 export type TMetricsObservation = {
@@ -27,12 +28,14 @@ export const metricsFake = (): TMetricsFake => {
 		observations,
 		requestObserve,
 		render: async (): Promise<string> =>
-			observations
-				.map(
+			A.join(
+				A.map(
+					observations,
 					(observation): string =>
 						`${observation.method} ${observation.route} ${observation.status}`,
-				)
-				.join("\n"),
+				),
+				"\n",
+			),
 		contentType: METRICS_CONTENT_TYPE,
 	};
 };

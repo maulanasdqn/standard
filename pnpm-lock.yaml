@@ -501,6 +501,9 @@ importers:
 
   packages/metrics:
     dependencies:
+      '@mobily/ts-belt':
+        specifier: ^3.13.1
+        version: 3.13.1
       prom-client:
         specifier: ^15.1.3
         version: 15.1.3
@@ -508,9 +511,6 @@ importers:
         specifier: ^5.9.0
         version: 5.9.0
     devDependencies:
-      '@mobily/ts-belt':
-        specifier: ^3.13.1
-        version: 3.13.1
       typescript:
         specifier: ^7.0.2
         version: 7.0.2

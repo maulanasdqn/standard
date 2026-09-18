@@ -12,7 +12,9 @@ The API exposes Prometheus text on `GET /metrics`. Until this existed the only s
 
 Every series carries `service="api"`.
 
-**The `route` label is the matched route template, never the request path.** A label whose values are unbounded turns a time series database into an outage, so the template is what gets recorded. A request that matches no route is labelled `unmatched` rather than left blank.
+**The probe paths are not counted.** `/healthz`, `/ready` and `/metrics` are excluded from both the counter and the histogram, because a liveness probe on a short interval outnumbers real traffic in every environment and would dominate the 5xx share that the error rate alert reads. Probe health is alerted on by probing, not by counting, which is what [alerting.md](alerting.md) already does.
+
+**The `route` label is the matched route template, never the request path.** A label whose values are unbounded turns a time series database into an outage, so the template is what gets recorded. A request that matches no route at all is labelled with the wildcard Hono matched it against, `/*`, which is checked in the end to end suite. The normaliser's `unmatched` fallback exists for a future mount that could leave the route blank, and does not fire in this wiring.
 
 The consequence is worth stating plainly, because it limits what these numbers can answer. The RPC and REST surfaces are each mounted behind one wildcard, so every call through them collapses into a single series. Checked against a running API:
 
