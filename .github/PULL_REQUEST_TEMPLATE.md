@@ -21,6 +21,7 @@
 <!-- Schema, env vars, or infra changes required. Write "None" if not applicable. -->
 
 - [ ] Database migration / schema change
+  - [ ] It is additive, or it is the contract phase of an expand and contract whose expand phase is already deployed (see [expand and contract](../docs/operations/deployment.md#expand-and-contract))
 - [ ] New or renamed env vars (document in `.env.example`)
 - [ ] Infra / config change
 - [ ] None

@@ -35,10 +35,17 @@ tasks:
       - 'src/**/*'
       - 'scripts/**/*'
 
+  migrations:
+    command: 'pnpm migrations'
+    inputs:
+      - 'drizzle/**/*.sql'
+      - 'scripts/**/*'
+
   build:
     command: 'pnpm build'
     deps:
       - '~:arch'
+      - '~:migrations'
     inputs:
       - 'src/**/*'
       - 'tsconfig.json'

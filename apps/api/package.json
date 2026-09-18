@@ -15,6 +15,7 @@
 		"worker": "tsx --env-file-if-exists=.env src/worker/run.ts",
 		"migrate": "tsx --env-file-if-exists=.env src/scripts/migrate.ts",
 		"arch": "tsx scripts/check-architecture.ts",
+		"migrations": "tsx scripts/check-migrations.ts",
 		"build": "tsc --noEmit",
 		"test": "vitest run",
 		"db:generate": "drizzle-kit generate",
