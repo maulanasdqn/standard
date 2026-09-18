@@ -26,8 +26,22 @@ export const queueConnectionCreate = async (
 };
 
 export type TQueueService = {
+	readonly connection: () => Effect.Effect<TQueueConnection, EQueue>;
 	readonly channel: () => Effect.Effect<Channel, EQueue>;
 };
+
+export const QUEUE_LOST_REASON = {
+	CLOSED: "closed",
+	ERRORED: "errored",
+} as const;
+
+export type TQueueLostReason =
+	(typeof QUEUE_LOST_REASON)[keyof typeof QUEUE_LOST_REASON];
+
+export type TQueueLostHandler = (
+	reason: TQueueLostReason,
+	cause: unknown,
+) => void;
 
 export type TQueueServiceId = TServiceId<typeof SERVICE_TAG.QUEUE>;
 
@@ -71,19 +85,46 @@ export const queueServiceCreate = (
 			})
 			.otherwise((pending): Promise<TQueueConnection> => pending);
 
-	const channel = (): Effect.Effect<Channel, EQueue> =>
+	const connection = (): Effect.Effect<TQueueConnection, EQueue> =>
 		Effect.tryPromise({
-			try: async (): Promise<Channel> =>
+			try: async (): Promise<TQueueConnection> =>
 				match(state.current)
-					.with(null, async (): Promise<Channel> => (await opened()).channel)
-					.otherwise(async (found): Promise<Channel> => found.channel),
+					.with(null, (): Promise<TQueueConnection> => opened())
+					.otherwise(async (found): Promise<TQueueConnection> => found),
 			catch: (cause): EQueue => {
 				forget();
 				return new EQueue({ cause });
 			},
 		});
 
-	return { channel };
+	const channel = (): Effect.Effect<Channel, EQueue> =>
+		connection().pipe(Effect.map((found): Channel => found.channel));
+
+	return { connection, channel };
+};
+
+export const queueConnectionWatch = (
+	model: ChannelModel,
+	onLost: TQueueLostHandler,
+): void => {
+	let notified = false;
+
+	const notify = (reason: TQueueLostReason, cause: unknown): void => {
+		match(notified)
+			.with(true, (): void => undefined)
+			.otherwise((): void => {
+				notified = true;
+				onLost(reason, cause);
+			});
+	};
+
+	model.on("close", (cause: unknown): void => {
+		notify(QUEUE_LOST_REASON.CLOSED, cause);
+	});
+
+	model.on("error", (cause: unknown): void => {
+		notify(QUEUE_LOST_REASON.ERRORED, cause);
+	});
 };
 
 export const queueServiceLayer = Layer.effect(
@@ -91,23 +132,39 @@ export const queueServiceLayer = Layer.effect(
 	Effect.sync(() => QueueService.of(queueServiceCreate(env.RABBITMQ_URL))),
 );
 
+export const queueConnectionAwait = (
+	service: TQueueService,
+	attempts: number = QUEUE_CONNECT_ATTEMPTS,
+	delayMs: number = QUEUE_CONNECT_DELAY_MS,
+): Effect.Effect<TQueueConnection, EQueue> =>
+	service.connection().pipe(
+		Effect.catch(
+			(error: EQueue): Effect.Effect<TQueueConnection, EQueue> =>
+				match(attempts > NO_ATTEMPTS_LEFT)
+					.with(
+						false,
+						(): Effect.Effect<TQueueConnection, EQueue> => Effect.fail(error),
+					)
+					.otherwise(
+						(): Effect.Effect<TQueueConnection, EQueue> =>
+							Effect.sleep(delayMs).pipe(
+								Effect.flatMap(() =>
+									queueConnectionAwait(
+										service,
+										attempts - ONE_ATTEMPT,
+										delayMs,
+									),
+								),
+							),
+					),
+		),
+	);
+
 export const queueChannelAwait = (
 	service: TQueueService,
 	attempts: number = QUEUE_CONNECT_ATTEMPTS,
 	delayMs: number = QUEUE_CONNECT_DELAY_MS,
 ): Effect.Effect<Channel, EQueue> =>
-	service.channel().pipe(
-		Effect.catch(
-			(error: EQueue): Effect.Effect<Channel, EQueue> =>
-				match(attempts > NO_ATTEMPTS_LEFT)
-					.with(false, (): Effect.Effect<Channel, EQueue> => Effect.fail(error))
-					.otherwise(
-						(): Effect.Effect<Channel, EQueue> =>
-							Effect.sleep(delayMs).pipe(
-								Effect.flatMap(() =>
-									queueChannelAwait(service, attempts - ONE_ATTEMPT, delayMs),
-								),
-							),
-					),
-		),
+	queueConnectionAwait(service, attempts, delayMs).pipe(
+		Effect.map((found): Channel => found.channel),
 	);

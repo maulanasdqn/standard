@@ -58,6 +58,9 @@ Do not purge the dead-letter queue to make the number go down. It is the only co
 1. Check the worker process is running at all. It is separate from the API and is easy to forget in a deploy.
 2. Check RabbitMQ is reachable from the worker. A worker started while the broker is down waits and retries for about a minute before giving up and exiting, so the orchestrator restarts it; a worker that exits repeatedly means the broker has been unreachable for longer than that.
 3. Confirm the worker is consuming: the main queue should show a consumer count above zero.
+4. Look for `worker.broker.lost` in the worker logs. The worker exits when its broker connection closes or errors, so this line is followed by a restart and then by the startup wait in step 2. Seeing it once around a broker restart is expected and self-healing. Seeing it repeatedly means the connection is being dropped, by an idle timeout, a proxy, or a broker under memory pressure.
+
+A worker that is running and shows a consumer count of zero should not happen any more. That was the old failure: the connection dropped, nothing re-subscribed, and the process stayed alive, so `restart: unless-stopped` never fired and the queue filled in silence. If you do see it, the exit path itself failed and the process needs killing by hand.
 
 ## Password reset emails are not arriving
 

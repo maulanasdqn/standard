@@ -2,7 +2,9 @@ import { Effect } from "effect";
 import { describe, expect, it, vi } from "vitest";
 import { EQueue } from "#/shared/errors.ts";
 import {
+	QUEUE_LOST_REASON,
 	queueChannelAwait,
+	queueConnectionWatch,
 	queueServiceCreate,
 	type TQueueConnection,
 } from "#/platform/queue/rabbitmq.ts";
@@ -110,5 +112,40 @@ describe("queueChannelAwait", () => {
 
 		expect(error).toBeInstanceOf(EQueue);
 		expect(open).toHaveBeenCalledTimes(3);
+	});
+});
+
+describe("queueConnectionWatch", () => {
+	it("reports a closed connection once", (): void => {
+		const fake = connectionFake();
+		const onLost = vi.fn();
+
+		queueConnectionWatch(fake.model, onLost);
+		fake.handlers.close?.();
+
+		expect(onLost).toHaveBeenCalledTimes(1);
+		expect(onLost.mock.calls[0]?.[0]).toBe(QUEUE_LOST_REASON.CLOSED);
+	});
+
+	it("reports an errored connection", (): void => {
+		const fake = connectionFake();
+		const onLost = vi.fn();
+
+		queueConnectionWatch(fake.model, onLost);
+		fake.handlers.error?.();
+
+		expect(onLost).toHaveBeenCalledTimes(1);
+		expect(onLost.mock.calls[0]?.[0]).toBe(QUEUE_LOST_REASON.ERRORED);
+	});
+
+	it("reports only once when an error is followed by a close", (): void => {
+		const fake = connectionFake();
+		const onLost = vi.fn();
+
+		queueConnectionWatch(fake.model, onLost);
+		fake.handlers.error?.();
+		fake.handlers.close?.();
+
+		expect(onLost).toHaveBeenCalledTimes(1);
 	});
 });
