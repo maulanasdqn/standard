@@ -72,6 +72,19 @@ Do not purge the dead-letter queue to make the number go down. It is the only co
 
 Do not make the reset endpoint fail when mail fails. Answering success regardless is what keeps the endpoint from becoming an account-enumeration oracle, and it is the reason this alert exists instead.
 
+## A job could not be consumed at all
+
+**You know because** `job.consume.failed` appears in the worker logs. It is not the same as a job that failed: a handler that throws is retried and then dead-lettered, and neither of those logs this event. This one means the consumer could not even reach that point, so the message may still be unacknowledged.
+
+**Impact** One delivery is stuck. Prefetch is 1, so a message the broker keeps redelivering can stall the queue behind it.
+
+1. Read the `err` on the line. Two causes account for almost all of it.
+2. A cache error means Redis was unreachable while the de-duplication claim was being taken. The message is routed to the retry queue, so it recovers on its own once Redis is back. Check `/ready` on the API, which reports `cache` separately.
+3. A channel error means the broker connection died mid-message. The message stays unacknowledged and the broker redelivers it to the next consumer. Confirm the worker is still consuming with `rabbitmqctl list_consumers`, and restart it if the queue has consumers but nothing is moving.
+4. A malformed payload does **not** produce this event. It goes straight to `<queue>.dlq` without being retried, because a payload that cannot be parsed will not parse on the second attempt either. Look there instead, and see [Jobs are piling up in the dead-letter queue](#jobs-are-piling-up-in-the-dead-letter-queue).
+
+The worker no longer exits on any of these. Before, an error before the handler escaped as an unhandled rejection, which on Node 24 ends the process, and the unacknowledged message was redelivered into the same crash on restart.
+
 ## A deploy made things worse
 
 1. Confirm which build is live: `curl -s https://<host>/health | jq .version`. The two versions on `/health`, web and API, differing means they were deployed out of step.
