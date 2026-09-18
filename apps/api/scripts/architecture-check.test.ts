@@ -142,6 +142,39 @@ describe("area boundaries", () => {
 });
 
 describe("fail-closed behaviour", () => {
+	it("allows index.ts to sit at the module root as its surface", () => {
+		expect(
+			rulesOf("note/index.ts", 'export { a } from "#/note/domain/note.ts";'),
+		).toEqual([]);
+	});
+
+	it("rejects a helper dropped at the module root, which would bypass the layer rules", () => {
+		expect(
+			rulesOf(
+				"note/helpers.ts",
+				'import { a } from "#/note/infrastructure/note-repository.ts";',
+			),
+		).toContain("module-layer");
+	});
+
+	it("rejects a directory inside a module that is not a layer", () => {
+		expect(
+			rulesOf(
+				"note/helpers/format.ts",
+				'import { a } from "#/note/domain/note.ts";',
+			),
+		).toContain("module-layer");
+	});
+
+	it("leaves a file inside a real layer alone", () => {
+		expect(
+			rulesOf(
+				"note/application/note-create.ts",
+				'import { a } from "#/note/domain/note.ts";',
+			),
+		).toEqual([]);
+	});
+
 	it("rejects a top-level directory that is neither a module nor an area", () => {
 		expect(rulesOf("billing/domain/plan.ts", "")).toEqual([
 			"unclassified-path",

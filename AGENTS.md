@@ -20,7 +20,9 @@ health note permission role user`, with `domain/`, `application/`, `infrastructu
 `presentation/` inside it, plus `src/shared/` (vocabulary), `src/platform/` (db, cache, queue, mail,
 http, config) and `src/bootstrap/` (composition root). A module is reachable only through its
 `index.ts`; the allowed edges live in `apps/api/scripts/architecture-rules.ts` and are enforced by
-`moon run api:arch`, which `api:build` depends on.
+`moon run api:arch`, which `api:build` depends on. Every file inside a module belongs to one of the
+four layers, and `index.ts` is the only thing allowed to sit at the module root: a helper dropped
+next to it would answer to no layer rule at all.
 
 Those layers are built on Effect v4, so read `node_modules/effect/AGENTS.md` before writing Effect
 code, not general Effect knowledge.
