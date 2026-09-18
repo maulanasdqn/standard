@@ -1,6 +1,6 @@
 import { METRIC_NAME } from "@app/metrics";
 import { describe, expect, it } from "vitest";
-import { BASE_URL } from "../support/client.ts";
+import { BASE_URL, client } from "../support/client.ts";
 
 const HTTP_OK = 200;
 
@@ -17,7 +17,9 @@ describe("metrics", () => {
 		expect(body).toContain('service="api"');
 	});
 
-	it("counts the requests the suite has already made, by route and status", async (): Promise<void> => {
+	it("counts an rpc call under the wildcard its router is mounted on", async (): Promise<void> => {
+		await client.health.check();
+
 		const body = await (await fetch(`${BASE_URL}/metrics`)).text();
 
 		expect(body).toContain(METRIC_NAME.HTTP_REQUESTS_TOTAL);
