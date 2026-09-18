@@ -3,6 +3,7 @@ $schema: 'https://moonrepo.dev/schemas/tasks.json'
 fileGroups:
   sources:
     - 'src/**/*'
+    - 'scripts/**/*'
   configs:
     - '*.{js,json,ts,yml}'
 

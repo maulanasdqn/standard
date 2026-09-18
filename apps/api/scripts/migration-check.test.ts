@@ -83,7 +83,8 @@ describe("violationsFor", () => {
 	});
 
 	it("catches a statement interrupted by a block comment spanning lines", () => {
-		const sql = 'ALTER TABLE "note" DROP /* spans\n  two lines */ COLUMN "body";';
+		const sql =
+			'ALTER TABLE "note" DROP /* spans\n  two lines */ COLUMN "body";';
 		const [violation] = violationsFor(FILE, sql);
 
 		expect(violation?.statement).toBe(UNSAFE_STATEMENT.DROP_COLUMN);
