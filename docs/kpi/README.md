@@ -37,12 +37,12 @@ The rubric's domain examples (Drive filing, CSI terminology, rebid ambiguity) co
 | Severity | Total | ★ Beyond rubric | Done | Partial | Missing | N/A |
 |----------|-------|-----------------|------|---------|---------|-----|
 | P0 | 17 | 4 | 14 | 0 | 0 | 3 |
-| P1 | 22 | 7 | 13 | 4 | 4 | 1 |
+| P1 | 22 | 7 | 14 | 4 | 3 | 1 |
 | P2 | 13 | 5 | 6 | 1 | 5 | 1 |
 | P3 | 1 | 0 | 1 | 0 | 0 | 0 |
-| **Total** | **53** | **16** | **34** | **5** | **9** | **5** |
+| **Total** | **53** | **16** | **35** | **5** | **8** | **5** |
 
-The table above counts the **Status** column. **Boilerplate Ready** is a separate axis with its own values, so it is tallied separately: **34 Yes, 9 Partial, 10 No.** Both add up to 53, and the 32 appearing in each is a coincidence rather than a repeated figure: every standard that is Done is also inherited, but some rows that are only Partial or Missing here still hand the next product something reusable.
+The table above counts the **Status** column. **Boilerplate Ready** is a separate axis with its own values, so it is tallied separately: **35 Yes, 9 Partial, 9 No.** Both add up to 53, and the 32 appearing in each is a coincidence rather than a repeated figure: every standard that is Done is also inherited, but some rows that are only Partial or Missing here still hand the next product something reusable.
 
 Every ★ row but one is a Yes, because the standards this boilerplate sets beyond the rubric are precisely what a new product inherits without writing a line.
 
@@ -80,7 +80,7 @@ Every ★ row but one is a Yes, because the standards this boilerplate sets beyo
 | Environments are specified | Named environments with their own configuration and guardrails | P1 | Partial | Partial | `envSchema` enumerates `development` / `test` / `production` and enforces production HTTPS. There is no staging environment and no non-dev compose file or manifest: `docker-compose.dev.yml` is the only one |
 | Rollback is possible and defined | A deployed build can be identified and reverted | P1 | Done | Yes | Tagged releases plus `APP_VERSION` at `/health` identify the running build, and `docs/operations/deployment.md` defines expand and contract so a code rollback is never stranded behind a schema the older build cannot read. `moon run api:migrations` fails the build on `DROP COLUMN`, `RENAME COLUMN`, `DROP TABLE` and `SET NOT NULL`, with an explicit in-file marker for a deliberate contract phase, so the rule is enforced rather than remembered |
 | ★ Infrastructure sits behind swappable ports | Cache, mail, queue, and storage are packages with interfaces and test fakes, not direct client calls in use-cases | P1 | Partial | Partial | `@app/cache` ships `cache-client-fake.ts` for tests; `@app/queue`, `@app/mail`, and `@app/logger` follow the same shape. `@app/storage` and `@app/grpc` are written and tested but imported by nothing yet |
-| Partial processing is atomic | A multi-write operation either completes or leaves no trace | P1 | Missing | No | No `db.transaction` anywhere in the repository. `noteUpdate` in `apps/api/src/note/application/note-update.ts` writes the row, then inserts the activity record as a second statement, and a failure in between leaves a mutation with no audit trail. The same two-step pattern repeats across every note, role, and user use-case |
+| Partial processing is atomic | A multi-write operation either completes or leaves no trace | P1 | Done | Yes | Every mutating route runs inside one database transaction, opened at the oRPC seam by `effectRunTransactional` so the use cases and their unit tests stay free of a database. Repositories read the active connection rather than the pool captured when their layer was built, and better-auth receives a proxy that resolves it per call, so its user and password writes join the same transaction instead of committing on their own |
 | Timeouts on every outbound call | A lost response must become a failure, not a hang | P1 | Done | Yes | Every outbound call the api owns is bounded: connection and statement timeouts on the Postgres pool, `commandTimeout` on Redis, connection, greeting and socket timeouts on SMTP, an `AbortSignal.timeout` on every `@app/storage` request, and a bounded readiness probe. better-auth is configured for email and password only, so it makes no outbound HTTP call of its own |
 | Explicit intermediate state | States such as *approved but not yet filed* are stored explicitly, never implied by the gap between two steps | P1 | Missing | No | No domain table carries a lifecycle state column; `note` has no status field. Any future two-step action would leave its middle state unrepresented |
 | Uncertain results are reconciled by a defined rule | What is uncertain, how it is reconciled, and what must reach a human | P1 | Missing | No | No review queue, no reconciliation rule, no human-review state |
