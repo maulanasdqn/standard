@@ -113,6 +113,8 @@ Trunk-based development on `trunk`. Branches are short-lived, branch off `trunk`
 | Branch auto-deleted on merge | Keeps the branch list honest about what is in flight |
 | No force pushes or deletions | Applies to everyone, including admins |
 
+`E2E (api + web)` is a gate rather than a suite: the API and the web suites run as two parallel jobs and the gate reports their combined result, so the required check keeps one name. Both suites are skipped when a change touches only Markdown, documentation and the root version, which is why a documentation pull request goes green in seconds.
+
 A branch that has fallen behind must be rebased on `trunk` and re-pushed; that is what keeps the history linear and every commit on `trunk` CI-green.
 
 PRs use `.github/PULL_REQUEST_TEMPLATE.md`. Fill every section in place, writing "None" rather than deleting one. Reviews use `.github/PULL_REQUEST_REVIEW_TEMPLATE.md` and always cover three sections: **Functional** (correctness, and whether every Changelog bullet is actually implemented), **Clean Code** (the conventions in `.claude/skills/ts-conventions/SKILL.md`, plus duplication and naming), and **Feature Suggestions** (non-blocking, each tagged `this-pr` or `follow-up`). Findings in the first two carry a P0–P3 severity from the template's legend.
