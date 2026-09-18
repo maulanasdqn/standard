@@ -56,7 +56,7 @@ Do not purge the dead-letter queue to make the number go down. It is the only co
 **Impact** The main queue depth climbs and nothing drains it.
 
 1. Check the worker process is running at all. It is separate from the API and is easy to forget in a deploy.
-2. Check RabbitMQ is reachable from the worker. The queue layer fails at boot, so a worker started while the broker was down stays dead and needs a restart.
+2. Check RabbitMQ is reachable from the worker. A worker started while the broker is down waits and retries for about a minute before giving up and exiting, so the orchestrator restarts it; a worker that exits repeatedly means the broker has been unreachable for longer than that.
 3. Confirm the worker is consuming: the main queue should show a consumer count above zero.
 
 ## A deploy made things worse
