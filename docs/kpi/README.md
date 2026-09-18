@@ -37,10 +37,10 @@ The rubric's domain examples (Drive filing, CSI terminology, rebid ambiguity) co
 | Severity | Total | ★ Beyond rubric | Done | Partial | Missing | N/A |
 |----------|-------|-----------------|------|---------|---------|-----|
 | P0 | 17 | 4 | 14 | 0 | 0 | 3 |
-| P1 | 22 | 7 | 15 | 3 | 3 | 1 |
+| P1 | 22 | 7 | 15 | 4 | 2 | 1 |
 | P2 | 13 | 5 | 8 | 1 | 3 | 1 |
 | P3 | 1 | 0 | 1 | 0 | 0 | 0 |
-| **Total** | **53** | **16** | **38** | **4** | **6** | **5** |
+| **Total** | **53** | **16** | **38** | **5** | **5** | **5** |
 
 The table above counts the **Status** column. **Boilerplate Ready** is a separate axis with its own values, so it is tallied separately: **38 Yes, 7 Partial, 8 No.** Both add up to 53, and the 32 appearing in each is a coincidence rather than a repeated figure: every standard that is Done is also inherited, but some rows that are only Partial or Missing here still hand the next product something reusable.
 
@@ -86,7 +86,7 @@ Every ★ row but one is a Yes, because the standards this boilerplate sets beyo
 | Uncertain results are reconciled by a defined rule | What is uncertain, how it is reconciled, and what must reach a human | P1 | Missing | No | No review queue, no reconciliation rule, no human-review state |
 | Alert ownership | Every alert has a named owner who receives it | P1 | Done | Yes | All nine alerts in `docs/operations/alerting.md` name an owner, with `fradotech` as the default that receives anything not reassigned. The document also says why a single default beats an empty column at this team size, and what to do when a second person shares the pager |
 | Deployment is defined | How a build reaches an environment | P1 | Done | Yes | A `Dockerfile` builds both processes into one image tagged with the root version, `make image` builds it, and `docs/operations/deployment.md` fixes the order: migrate as a separate job, then roll the api, then the worker, with liveness on `/healthz` and readiness on `/ready` |
-| Monitoring beyond logs | Metrics and traces, not only request lines | P1 | Missing | Partial | `apps/api/src/main.ts` logs structured request lines via the reusable `@app/logger` pino factory, good and the only signal. No metrics, no tracing, no log shipping |
+| Monitoring beyond logs | Metrics and traces, not only request lines | P1 | Partial | Partial | Request lines carry `reqId`, method, path, status and duration, and are now shippable: `LOG_TRANSPORT_TARGET` and `LOG_TRANSPORT_OPTIONS` point pino at any transport while the default stays stdout for a platform collector, and the paths most likely to carry a credential are redacted before a line is written, including the error `cause` that `toORPCError` keeps for the logs. `docs/operations/logging.md` explains why shipping is the platform's job by default. Still missing: no `/metrics` endpoint and no trace propagation |
 | Provider permissions described separately from application restrictions | The account's real scope is stated apart from what the application chooses to allow, because an application allowlist does not narrow a broadly authorized account | P1 | Done | Yes | `docs/operations/credentials.md` describes every credential twice, as what the provider grants and what the application restricts itself to, so the gap between the two is visible. Object storage has no entry because no key exists yet, and the rules its first key must satisfy are written in advance |
 | Held-out evaluation dataset | A held-out set with sample counts and dataset, model, and config versions, measuring correct automatic action, coverage, and review volume | P1 | N/A | No | No model in the codebase. Required before any model output is trusted |
 | ★ CI runs only what changed | The task graph decides the work, so the pipeline stays fast as the repo grows | P2 | Done | Yes | moon projects declare `inputs` per task; `moon ci :check :build :test` runs affected projects only |

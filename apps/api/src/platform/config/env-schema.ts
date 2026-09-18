@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { A } from "@mobily/ts-belt";
-import { match } from "ts-pattern";
+import { match, P } from "ts-pattern";
 
 const NODE_ENV = {
 	PRODUCTION: "production",
@@ -18,6 +18,21 @@ const ENV_KEY = {
 const ENV_VALIDATION_MESSAGE = {
 	HTTPS_REQUIRED: "HTTPS is required in production.",
 } as const;
+
+const blankAsUndefined = (value: unknown): unknown =>
+	match(value)
+		.with("", (): undefined => undefined)
+		.otherwise((found): unknown => found);
+
+const jsonObjectParse = (
+	value: string | undefined,
+): Record<string, unknown> | undefined =>
+	match(value)
+		.with(P.nullish, (): undefined => undefined)
+		.otherwise(
+			(found): Record<string, unknown> =>
+				JSON.parse(found) as Record<string, unknown>,
+		);
 
 const stringListParse = (value: string): readonly string[] =>
 	A.filterMap(value.split(","), (item): string | undefined => {
@@ -40,6 +55,17 @@ export const envSchema = z
 		MAIL_FROM: z.string().min(1).default("Standard <no-reply@standard.test>"),
 		BETTER_AUTH_URL: z.url(),
 		BETTER_AUTH_SECRET: z.string().min(32),
+		LOG_LEVEL: z.preprocess(
+			blankAsUndefined,
+			z.enum(["fatal", "error", "warn", "info", "debug", "trace"]).optional(),
+		),
+		LOG_TRANSPORT_TARGET: z.preprocess(
+			blankAsUndefined,
+			z.string().min(1).optional(),
+		),
+		LOG_TRANSPORT_OPTIONS: z
+			.preprocess(blankAsUndefined, z.string().optional())
+			.transform(jsonObjectParse),
 		ACTIVITY_RETENTION_DAYS: z.coerce.number().int().positive().default(90),
 		RATE_LIMIT_WINDOW_SECONDS: z.coerce.number().int().default(60),
 		RATE_LIMIT_MAX: z.coerce.number().int().default(100),
