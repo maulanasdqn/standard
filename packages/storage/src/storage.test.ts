@@ -10,8 +10,13 @@ import {
 } from "./storage-limits.ts";
 import { type TStorageOptions, storageCreate } from "./storage.ts";
 
-const LARGE_KEY = "large";
+const LARGE_CHUNKED_KEY = "large-chunked";
+const LARGE_DECLARED_KEY = "large-declared";
+const ENDLESS_KEY = "endless";
 const MISSING_KEY = "missing";
+
+const OVER_LIMIT = STORAGE_MEGABYTE + 1;
+const CHUNK = "x".repeat(64 * 1024);
 
 const credentials = {
 	accessKeyId: "test-access-key",
@@ -50,8 +55,20 @@ describe("storageCreate against a local server", () => {
 				.with(P.string.includes(MISSING_KEY), (): void => {
 					res.writeHead(404).end();
 				})
-				.with(P.string.includes(LARGE_KEY), (): void => {
-					res.writeHead(200).end("x".repeat(STORAGE_MEGABYTE + 1));
+				.with(P.string.includes(LARGE_DECLARED_KEY), (): void => {
+					res
+						.writeHead(200, { "content-length": String(OVER_LIMIT) })
+						.end("x".repeat(OVER_LIMIT));
+				})
+				.with(P.string.includes(LARGE_CHUNKED_KEY), (): void => {
+					res.writeHead(200).end("x".repeat(OVER_LIMIT));
+				})
+				.with(P.string.includes(ENDLESS_KEY), (): void => {
+					res.writeHead(200);
+					const timer = setInterval((): void => {
+						res.write(CHUNK);
+					}, 1);
+					res.on("close", (): void => clearInterval(timer));
 				})
 				.otherwise((): void => {
 					res.writeHead(200).end("hello");
@@ -124,8 +141,29 @@ describe("storageCreate against a local server", () => {
 		expect(requests).toHaveLength(0);
 	});
 
-	it("refuses to read an object larger than the limit", async (): Promise<void> => {
-		const get = storageCreate(options()).get(LARGE_KEY);
+	it("refuses an oversized object on its declared length, before reading a byte", async (): Promise<void> => {
+		const get = storageCreate(options()).get(LARGE_DECLARED_KEY);
+
+		await expect(get).rejects.toSatisfy(
+			(error: unknown): boolean =>
+				isStorageRejection(error) &&
+				error.rejection === STORAGE_REJECTION.TOO_LARGE &&
+				error.byteLength === OVER_LIMIT,
+		);
+	});
+
+	it("refuses an oversized object that arrives chunked, with no declared length", async (): Promise<void> => {
+		const get = storageCreate(options()).get(LARGE_CHUNKED_KEY);
+
+		await expect(get).rejects.toSatisfy(
+			(error: unknown): boolean =>
+				isStorageRejection(error) &&
+				error.rejection === STORAGE_REJECTION.TOO_LARGE,
+		);
+	});
+
+	it("stops reading a stream that never ends rather than buffering it", async (): Promise<void> => {
+		const get = storageCreate(options()).get(ENDLESS_KEY);
 
 		await expect(get).rejects.toSatisfy(
 			(error: unknown): boolean =>

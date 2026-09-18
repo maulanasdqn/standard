@@ -1,6 +1,8 @@
 import { AwsClient } from "aws4fetch";
 import { match, P } from "ts-pattern";
+import { storageBodyRead, storageDeclaredByteLength } from "./storage-body.ts";
 import {
+	type TStorageContentType,
 	type TStorageLimits,
 	type TStorageRejectionError,
 	storagePutRejection,
@@ -20,7 +22,6 @@ const HTTP_STATUS = {
 } as const;
 
 const CONTENT_TYPE_HEADER = "content-type";
-const CONTENT_LENGTH_HEADER = "content-length";
 
 export type TStorageOptions = {
 	accessKeyId: string;
@@ -28,7 +29,7 @@ export type TStorageOptions = {
 	bucket: string;
 	endpoint: string;
 	maxBytes: number;
-	allowedContentTypes: readonly string[];
+	allowedContentTypes: readonly TStorageContentType[];
 	region?: string;
 	timeoutMs?: number;
 };
@@ -56,9 +57,6 @@ const rejectionThrow = (rejection: TStorageRejectionError | null): void =>
 			throw found;
 		})
 		.otherwise((): void => undefined);
-
-const declaredByteLength = (response: Response): number =>
-	Number(response.headers.get(CONTENT_LENGTH_HEADER) ?? 0);
 
 export const storageCreate = (options: TStorageOptions): TStorage => {
 	const client = new AwsClient({
@@ -108,12 +106,15 @@ export const storageCreate = (options: TStorageOptions): TStorage => {
 				throw failedOn("get", key, found.status);
 			})
 			.otherwise(async (found): Promise<Uint8Array | null> => {
-				rejectionThrow(
-					storageReadRejection(limits, key, declaredByteLength(found)),
-				);
-				const bytes = new Uint8Array(await found.arrayBuffer());
-				rejectionThrow(storageReadRejection(limits, key, bytes.byteLength));
-				return bytes;
+				const declared = storageDeclaredByteLength(found);
+
+				match(declared)
+					.with(P.number, (length): void => {
+						rejectionThrow(storageReadRejection(limits, key, length));
+					})
+					.otherwise((): void => undefined);
+
+				return await storageBodyRead(limits, key, found.body);
 			});
 	};
 

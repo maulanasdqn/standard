@@ -70,7 +70,7 @@ export const storageContentTypeNormalise = (contentType: string): string =>
 
 export type TStorageLimits = {
 	maxBytes: number;
-	allowedContentTypes: readonly string[];
+	allowedContentTypes: readonly TStorageContentType[];
 };
 
 export const storagePutRejection = (
@@ -80,41 +80,46 @@ export const storagePutRejection = (
 	contentType: string,
 ): TStorageRejectionError | null => {
 	const normalised = storageContentTypeNormalise(contentType);
-	const byteLength = storageByteLength(body);
 
-	return match({ normalised, byteLength })
+	const allowed = A.some(
+		limits.allowedContentTypes,
+		(candidate): boolean => candidate === normalised,
+	);
+
+	return match({ normalised, allowed })
 		.with(
 			{ normalised: "" },
 			(): TStorageRejectionError =>
 				storageRejection(STORAGE_REJECTION.CONTENT_TYPE_MISSING, {
 					key,
 					limitBytes: limits.maxBytes,
-					byteLength,
 				}),
 		)
 		.with(
-			P.when(
-				(): boolean => !A.includes(limits.allowedContentTypes, normalised),
-			),
+			{ allowed: false },
 			(): TStorageRejectionError =>
 				storageRejection(STORAGE_REJECTION.CONTENT_TYPE_NOT_ALLOWED, {
 					key,
 					limitBytes: limits.maxBytes,
-					byteLength,
 					contentType: normalised,
 				}),
 		)
-		.with(
-			P.when((): boolean => byteLength > limits.maxBytes),
-			(): TStorageRejectionError =>
-				storageRejection(STORAGE_REJECTION.TOO_LARGE, {
-					key,
-					limitBytes: limits.maxBytes,
-					byteLength,
-					contentType: normalised,
-				}),
-		)
-		.otherwise((): TStorageRejectionError | null => null);
+		.otherwise((): TStorageRejectionError | null => {
+			const byteLength = storageByteLength(body);
+
+			return match(byteLength > limits.maxBytes)
+				.with(
+					true,
+					(): TStorageRejectionError =>
+						storageRejection(STORAGE_REJECTION.TOO_LARGE, {
+							key,
+							limitBytes: limits.maxBytes,
+							byteLength,
+							contentType: normalised,
+						}),
+				)
+				.otherwise((): TStorageRejectionError | null => null);
+		});
 };
 
 export const storageReadRejection = (

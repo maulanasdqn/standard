@@ -55,6 +55,12 @@ describe("storagePutRejection", () => {
 		expect(rejection?.message).toBe(STORAGE_MESSAGE.CONTENT_TYPE_MISSING);
 	});
 
+	it("does not measure a body it has already refused on type", (): void => {
+		const rejection = storagePutRejection(limits, "a.csv", "body", "");
+
+		expect(rejection?.byteLength).toBeUndefined();
+	});
+
 	it("rejects a type outside the allowlist", (): void => {
 		const rejection = storagePutRejection(
 			limits,
