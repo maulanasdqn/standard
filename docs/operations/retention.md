@@ -34,6 +34,21 @@ Running the prune twice at once is harmless. Both passes delete rows that match,
 | `session`, `account`, `verification` | Managed by better-auth | Sessions expire on their own schedule, and a password reset already deletes the user's sessions |
 | Redis | Minutes to a day | Rate-limit counters expire with their window, job de-duplication claims after 24 hours. Nothing there is a record of anything |
 | RabbitMQ | Until acknowledged | Except the dead-letter queue, which holds until someone drains it. That is the point of it, and it is why the depth is alerted on rather than pruned |
+| Note attachments in object storage | As long as the note that owns them | Removed by the sweep below once the database stops referencing them |
 | Backups | 30 daily, 12 monthly | See [backup-restore.md](backup-restore.md) |
+
+## Attachment objects
+
+An object store is not transactional with the database, so the two can only be kept honest by deciding which one is the truth. Here the database is: `note_attachment` is the list of objects that should exist, and anything in the bucket without a row is garbage.
+
+Every key is claimed in `note_attachment_reap` **before** the object is written, and the claim is released in the same transaction that records the row. Deleting an attachment, or deleting a note, claims its keys again inside the transaction that removes the rows. The worker then deletes, every 15 minutes, every claimed key that no `note_attachment` row refers to.
+
+That ordering is what makes each failure survivable:
+
+- a crash between the write and the insert leaves a claim with no row, so the sweep deletes the object
+- a rolled back transaction takes the claim with it, and the object it would have deleted is still referenced, so nothing is lost
+- a delete that commits leaves a claim the sweep acts on, so no object outlives its row
+
+The cost is that a deleted image can sit in the bucket for up to 15 minutes, and that an interrupted upload holds its key for an hour before the sweep treats it as abandoned. Both are cheaper than the alternative, which is deleting an object that something still points at.
 
 A backup taken today still contains activity rows that the live table has since pruned, and it will for as long as that backup is kept. If the retention window is ever set for a legal reason rather than an operational one, the backup retention has to be part of the same conversation.

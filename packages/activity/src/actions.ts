@@ -1,5 +1,6 @@
 export const ACTIVITY_RESOURCE_TYPE = {
 	NOTE: "note",
+	NOTE_ATTACHMENT: "note_attachment",
 	USER: "user",
 	ROLE: "role",
 	SESSION: "session",
@@ -12,6 +13,8 @@ export const ACTIVITY_ACTION = {
 	NOTE_CREATE: "note.create",
 	NOTE_UPDATE: "note.update",
 	NOTE_DELETE: "note.delete",
+	NOTE_ATTACHMENT_UPLOAD: "note_attachment.upload",
+	NOTE_ATTACHMENT_DELETE: "note_attachment.delete",
 	USER_CREATE: "user.create",
 	USER_UPDATE: "user.update",
 	USER_DELETE: "user.delete",

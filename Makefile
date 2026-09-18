@@ -13,7 +13,7 @@ install: ## Install workspace dependencies
 
 setup: services db-migrate db-seed ## Start the services, migrate and seed
 
-services: ## Start postgres, redis, rabbitmq and mailpit
+services: ## Start postgres, redis, rabbitmq, mailpit and minio
 	$(COMPOSE) up -d
 
 services-stop: ## Stop the docker services

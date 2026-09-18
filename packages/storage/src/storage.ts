@@ -37,10 +37,10 @@ export type TStorageOptions = {
 export type TStorage = {
 	put: (
 		key: string,
-		body: Uint8Array | string,
+		body: Uint8Array<ArrayBuffer> | string,
 		contentType: string,
 	) => Promise<void>;
-	get: (key: string) => Promise<Uint8Array | null>;
+	get: (key: string) => Promise<Uint8Array<ArrayBuffer> | null>;
 	remove: (key: string) => Promise<void>;
 	getUrl: (key: string, expiresInSeconds?: number) => Promise<string>;
 };
@@ -100,12 +100,12 @@ export const storageCreate = (options: TStorageOptions): TStorage => {
 		return match(response)
 			.with(
 				{ status: HTTP_STATUS.NOT_FOUND },
-				async (): Promise<Uint8Array | null> => null,
+				async (): Promise<Uint8Array<ArrayBuffer> | null> => null,
 			)
-			.with({ ok: false }, (found): Promise<Uint8Array | null> => {
+			.with({ ok: false }, (found): Promise<Uint8Array<ArrayBuffer> | null> => {
 				throw failedOn("get", key, found.status);
 			})
-			.otherwise(async (found): Promise<Uint8Array | null> => {
+			.otherwise(async (found): Promise<Uint8Array<ArrayBuffer> | null> => {
 				const declared = storageDeclaredByteLength(found);
 
 				match(declared)

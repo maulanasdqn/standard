@@ -14,16 +14,17 @@ So every credential below is described twice: what the provider actually grants,
 | `SMTP_URL` | Send as the configured account | Outbound mail only, from `MAIL_FROM` | On exposure |
 | `BETTER_AUTH_SECRET` | Signs and verifies every session | Session tokens only. Refused at boot below 32 characters | On exposure, which invalidates every session |
 | `METRICS_TOKEN` | Reads `/metrics` on the api: request counts and durations by route and status, plus process memory, CPU and event loop figures | Nothing else. It authorises no application route and carries no session | On exposure. Rotating it only interrupts scraping |
+| `STORAGE_ACCESS_KEY_ID` and `STORAGE_SECRET_ACCESS_KEY` | Whatever the bucket policy grants the key. In development it is the MinIO root account, which owns the whole local instance | `GET`, `PUT` and `DELETE` on objects under the `notes/` prefix of `STORAGE_BUCKET`, plus presigned reads. It never lists buckets and never changes bucket configuration | On exposure. Rotating it does not invalidate presigned URLs already handed out, which expire on their own within `STORAGE_URL_EXPIRY_SECONDS` |
 
-Object storage has no entry because **no object storage credential exists yet**. `@app/storage` is written and tested but imported by nothing, and there is no S3 environment variable in `apps/api/.env.example` or `env-schema.ts`.
+The development key is the MinIO root user from `docker-compose.dev.yml`, so the two columns are as far apart as they get. That is acceptable for a local instance holding nothing, and it is exactly what the next section exists to prevent anywhere else.
 
-## Before the first object storage key is issued
+## Before the first production object storage key is issued
 
-That absence is an opportunity: the policy can be written before there is anything to audit. Whoever issues the first key does it under these rules, and adds a row above.
+The policy is written before there is anything to audit. Whoever issues the first real key does it under these rules, and narrows the row above for that environment.
 
 - **One key per application per environment.** Never a shared account key, and never the same key in staging and production. A key that serves two things cannot be revoked for one of them
 - **Scoped to a single bucket**, named in the policy, not implied by usage
-- **Scoped to a prefix** where the application uses one. The prefix in the code and the prefix in the policy are stated together, so a reviewer can see whether they match
+- **Scoped to a prefix** where the application uses one. The code writes note attachments under `notes/<noteId>/<random>`, so the policy says `notes/*` and a reviewer can see that the two match
 - **Actions limited to what the code calls.** `@app/storage` uses `GET`, `PUT`, and `DELETE` on objects, plus presigned URL generation, which needs no extra grant. It never lists buckets and never touches bucket configuration, so neither should the policy
 - **No public bucket.** Presigned URLs through `getUrl` are how an object reaches a browser, and they expire
 

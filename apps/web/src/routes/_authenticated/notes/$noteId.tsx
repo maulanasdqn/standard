@@ -4,8 +4,10 @@ import { NOTE_MESSAGE } from "@app/messages";
 import { PERMISSION } from "@app/permissions";
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
+import { NoteAttachmentPanel } from "#/routes/_authenticated/notes/_components/note-attachment-panel.tsx";
 import { NoteEditForm } from "#/routes/_authenticated/notes/_components/note-edit-form.tsx";
 import { FormPage } from "#/routes/_authenticated/_components/form-page.tsx";
+import { noteAttachmentListOptions } from "#/routes/_authenticated/notes/_hooks/use-note-attachments.ts";
 import {
 	noteGetOptions,
 	useNoteGet,
@@ -34,7 +36,10 @@ const NoteEditPage: FC = (): ReactElement => {
 				</dl>
 			}
 		>
-			<NoteEditForm note={data} />
+			<div className="flex flex-col gap-6">
+				<NoteEditForm note={data} />
+				<NoteAttachmentPanel noteId={data.id} />
+			</div>
 		</FormPage>
 	);
 };
@@ -42,6 +47,11 @@ const NoteEditPage: FC = (): ReactElement => {
 export const Route = createFileRoute("/_authenticated/notes/$noteId")({
 	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.NOTE_WRITE] }),
 	loader: ({ context, params }) =>
-		context.queryClient.ensureQueryData(noteGetOptions(params.noteId)),
+		Promise.all([
+			context.queryClient.ensureQueryData(noteGetOptions(params.noteId)),
+			context.queryClient.ensureQueryData(
+				noteAttachmentListOptions(params.noteId),
+			),
+		]),
 	component: NoteEditPage,
 });

@@ -7,6 +7,10 @@ const ENV = {
 	DATABASE_URL: "postgres://app:app@localhost:5432/app",
 	RABBITMQ_URL: "amqp://app:app@localhost:5672",
 	REDIS_URL: "redis://localhost:6379",
+	STORAGE_ENDPOINT: "https://objects.standard.test",
+	STORAGE_BUCKET: "standard",
+	STORAGE_ACCESS_KEY_ID: "storage-key",
+	STORAGE_SECRET_ACCESS_KEY: "storage-secret",
 	WEB_ORIGIN: "https://standard.test",
 } as const;
 
@@ -25,6 +29,22 @@ describe("envSchema security", () => {
 				...ENV,
 				NODE_ENV: "production",
 				WEB_ORIGIN: "http://standard.test",
+			}).success,
+		).toBe(false);
+	});
+
+	it("refuses to start without a bucket to write to", () => {
+		const { STORAGE_BUCKET: _omitted, ...withoutBucket } = ENV;
+
+		expect(envSchema.safeParse(withoutBucket).success).toBe(false);
+	});
+
+	it("rejects an HTTP storage endpoint in production", () => {
+		expect(
+			envSchema.safeParse({
+				...ENV,
+				NODE_ENV: "production",
+				STORAGE_ENDPOINT: "http://objects.standard.test",
 			}).success,
 		).toBe(false);
 	});

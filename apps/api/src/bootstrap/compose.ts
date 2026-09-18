@@ -7,6 +7,7 @@ import { cacheServiceLayer } from "#/platform/cache/redis.ts";
 import { dbServiceLayer } from "#/platform/db/db-service.ts";
 import { mailServiceLayer } from "#/platform/mail/mailer.ts";
 import { queueServiceLayer } from "#/platform/queue/rabbitmq.ts";
+import { storageServiceLayer } from "#/platform/storage/storage-service.ts";
 import { roleModule } from "#/role/index.ts";
 import { userModule } from "#/user/index.ts";
 
@@ -15,6 +16,7 @@ export const AppLayer = Layer.mergeAll(
 	cacheServiceLayer,
 	queueServiceLayer,
 	mailServiceLayer,
+	storageServiceLayer,
 	healthModule.layer,
 	activityModule.layer,
 	noteModule.layer,
