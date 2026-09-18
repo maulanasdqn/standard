@@ -1,3 +1,4 @@
+import { A } from "@mobily/ts-belt";
 import { describe, expect, it } from "vitest";
 import { violationsFor } from "./migration-check.ts";
 import {
@@ -35,7 +36,7 @@ describe("violationsFor", () => {
 		const sql = 'ALTER TABLE "note" DROP COLUMN "body";\nDROP TABLE "old";';
 		const found = violationsFor(FILE, sql);
 
-		expect(found.map((v) => v.statement)).toStrictEqual([
+		expect(A.map(found, (v) => v.statement)).toStrictEqual([
 			UNSAFE_STATEMENT.DROP_COLUMN,
 			UNSAFE_STATEMENT.DROP_TABLE,
 		]);
@@ -45,6 +46,34 @@ describe("violationsFor", () => {
 		const sql = 'ALTER TABLE "note" ALTER COLUMN "body" SET NOT NULL;';
 
 		expect(violationsFor(FILE, sql)).toHaveLength(1);
+	});
+
+	it("catches a statement split across lines", () => {
+		const sql = 'ALTER TABLE "note" DROP\n  COLUMN "body";';
+		const [violation] = violationsFor(FILE, sql);
+
+		expect(violation?.statement).toBe(UNSAFE_STATEMENT.DROP_COLUMN);
+		expect(violation?.line).toBe(1);
+	});
+
+	it("catches a statement padded with extra whitespace", () => {
+		const sql = 'ALTER TABLE "note" DROP    COLUMN "body";';
+
+		expect(violationsFor(FILE, sql)).toHaveLength(1);
+	});
+
+	it("catches a statement interrupted by a comment", () => {
+		const sql = 'ALTER TABLE "note" DROP -- why\nCOLUMN "body";';
+
+		expect(violationsFor(FILE, sql)).toHaveLength(1);
+	});
+
+	it("reports the line the statement starts on, not the line it ends on", () => {
+		const sql = 'SELECT 1;\nALTER TABLE "note"\n  RENAME\n  COLUMN "a" TO "b";';
+		const [violation] = violationsFor(FILE, sql);
+
+		expect(violation?.statement).toBe(UNSAFE_STATEMENT.RENAME_COLUMN);
+		expect(violation?.line).toBe(3);
 	});
 
 	it("lets a deliberate contract phase through when the file is marked", () => {

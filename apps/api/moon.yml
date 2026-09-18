@@ -48,6 +48,7 @@ tasks:
       - '~:migrations'
     inputs:
       - 'src/**/*'
+      - 'scripts/**/*'
       - 'tsconfig.json'
       - 'package.json'
       - '/package.json'
@@ -56,6 +57,7 @@ tasks:
     command: 'pnpm test'
     inputs:
       - 'src/**/*'
+      - 'scripts/**/*'
       - 'tsconfig.json'
       - 'package.json'
       - '/package.json'

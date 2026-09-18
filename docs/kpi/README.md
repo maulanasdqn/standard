@@ -42,7 +42,9 @@ The rubric's domain examples (Drive filing, CSI terminology, rebid ambiguity) co
 | P3 | 1 | 0 | 1 | 0 | 0 | 0 |
 | **Total** | **53** | **16** | **32** | **6** | **10** | **5** |
 
-Boilerplate readiness: **32 Yes, 10 Partial, 11 No.** Every ★ row but one is a Yes, because the standards this boilerplate sets beyond the rubric are precisely what a new product inherits without writing a line.
+The table above counts the **Status** column. **Boilerplate Ready** is a separate axis with its own values, so it is tallied separately: **32 Yes, 10 Partial, 11 No.** Both add up to 53, and the 32 appearing in each is a coincidence rather than a repeated figure: every standard that is Done is also inherited, but some rows that are only Partial or Missing here still hand the next product something reusable.
+
+Every ★ row but one is a Yes, because the standards this boilerplate sets beyond the rubric are precisely what a new product inherits without writing a line.
 
 ## Matrix
 
