@@ -1,12 +1,12 @@
 # Engineering Standards Compliance Matrix
 
-The external engineering standards this matrix tracks are a **spec-review rubric**, not a set of measured KPIs: they list what every Engineering Spec and every build must already answer, without being restated per project. This document splits the rubric into 37 discrete, checkable standards, adds 16 the rubric never asks for but this boilerplate already ships, ranks all 53 P0–P3, and records where this repository stands on each.
+The engineering standards this matrix tracks are a **spec-review rubric**, not measured KPIs: they list what every Engineering Spec and every build must already answer. This document splits the rubric into 37 checkable standards, adds 16 the rubric never asks for but this boilerplate already ships, ranks all 53 P0–P3, and records where this repository stands on each.
 
 ## How to read this
 
-**★ marks a standard the external rubric does not list.** Those 16 rows are what this boilerplate contributes on its own, and they are the reason the rubric rows that are already Done were cheap rather than expensive.
+**★ marks a standard the external rubric does not list.** Those 16 rows are what this boilerplate contributes on its own, and they are why the rubric rows that are Done were cheap rather than expensive.
 
-**Severity is the criticality of the standard itself**, using the P0–P3 legend from `.github/PULL_REQUEST_REVIEW_TEMPLATE.md`. It does not change with our status: a P0 standard stays P0 whether we pass it or not. Read `Severity` and `Status` together: `P0` + `Missing` is what to fix first.
+**Severity is the criticality of the standard itself**, not of our status: a P0 stays P0 whether we pass it or not, so `P0` + `Missing` is what to fix first. The legend is the one in `.github/PULL_REQUEST_REVIEW_TEMPLATE.md`.
 
 | Severity | Meaning |
 |----------|---------|
@@ -22,7 +22,7 @@ The external engineering standards this matrix tracks are a **spec-review rubric
 | Missing | Not present |
 | N/A | Not exercised by the current codebase; required the moment the capability lands |
 
-**Boilerplate Ready** answers what a new product built on this repository inherits, which is not the same question as whether this repository meets the standard.
+**Boilerplate Ready** answers what a new product built on this repository inherits, which is a different question from whether this repository meets the standard.
 
 | Boilerplate Ready | Meaning |
 |-------------------|---------|
@@ -30,7 +30,7 @@ The external engineering standards this matrix tracks are a **spec-review rubric
 | Partial | The reusable part exists; the product finishes the standard on top of it |
 | No | Nothing to inherit, so the next product builds this from scratch |
 
-The rubric's domain examples (Drive filing, CSI terminology, rebid ambiguity) come from a document-filing product. This repository is a full-stack boilerplate with no AI model and no filing workflow, so those rows are marked N/A with the condition that makes them apply.
+The rubric's domain examples (Drive filing, CSI terminology, rebid ambiguity) come from a document-filing product. This repository is a full-stack boilerplate with no AI model and no filing workflow, so those rows are N/A with the condition that makes them apply.
 
 ## Scorecard
 
@@ -42,9 +42,7 @@ The rubric's domain examples (Drive filing, CSI terminology, rebid ambiguity) co
 | P3 | 1 | 0 | 1 | 0 | 0 | 0 |
 | **Total** | **53** | **16** | **40** | **3** | **5** | **5** |
 
-The table above counts the **Status** column. **Boilerplate Ready** is a separate axis with its own values, so it is tallied separately: **40 Yes, 5 Partial, 8 No.** Both add up to 53. The two axes share a figure because every standard that is Done is also inherited for free, while some rows that are only Partial or Missing here still hand the next product something reusable.
-
-Every ★ row but one is a Yes, because the standards this boilerplate sets beyond the rubric are precisely what a new product inherits without writing a line.
+That table counts **Status**. **Boilerplate Ready** is a separate axis, tallied separately: **40 Yes, 5 Partial, 8 No.** Both add up to 53, and the two axes share a figure because every Done row is also inherited for free, while some Partial and Missing rows still hand the next product something reusable. Every ★ row but one is a Yes.
 
 ## Matrix
 
@@ -106,53 +104,27 @@ Every ★ row but one is a Yes, because the standards this boilerplate sets beyo
 
 ## Where concurrency guards apply
 
-The optimistic version on notes is **scoped on purpose, and is not a pattern to roll out across every table.** A version column buys protection against two people overwriting each other, and it costs a schema column, a required field on every update input, a new error path, and a reload-and-retry burden pushed onto whoever is editing.
+The optimistic version on notes is **scoped on purpose, and is not a pattern to roll out across every table.** It costs a schema column, a required field on every update input, a new error path, and a reload-and-retry burden on whoever is editing, so it earns its place only where concurrent editing is realistic and a silent overwrite either destroys work or produces a wrong decision. Notes qualified because they are the module with a real editing surface; roles and users deliberately keep their simpler updates.
 
-That trade is worth making where concurrent editing is realistic and a silent overwrite either destroys work or produces a wrong decision. It is not worth making on a record that one administrator edits occasionally, or where the last write genuinely is the intended answer. Notes qualified because they are the module with a real editing surface; roles and users deliberately keep their simpler updates.
-
-So a module that still uses a last-write-wins update is not automatically carrying a defect. Read this rubric row as satisfied by protecting what matters, never by adding a version column everywhere.
+A module that still uses last-write-wins is therefore not carrying a defect. This rubric row is satisfied by protecting what matters, never by adding a version column everywhere.
 
 ## Deliberately not done
 
-Some rows are open because nobody has got to them. These are open because someone decided not to, which is a different thing, and the difference is worth recording so the next reader does not treat the list as a backlog.
+These rows are open because someone decided not to, not because nobody has got to them. The difference is worth recording so the next reader does not treat the list as a backlog.
 
-### Every module defines its full contract (P1)
+**Every module defines its full contract (P1).** Five of the eight things the rubric asks for are already carried by the code: zod validates the inputs, the layering is the processing, the tagged errors are the failure path, and `moon run api:arch` enforces the boundary rather than describing it. What is left is seven prose tables naming each module's trigger, saved state and external systems, and prose is the part that rots: a contract document that has drifted from the code is worse than none, because it is believed. Worth revisiting when a module grows past what someone can hold in their head, or when someone outside the team has to change one.
 
-Seven modules, each needing a table naming its trigger, its saved state and the external systems it touches. The other five things the rubric asks for are already carried by the code: zod validates the inputs, the layering is the processing, the tagged errors are the failure path, and `moon run api:arch` enforces the boundary rather than merely describing it.
+**Explicit intermediate state, and uncertain results reconciled by a rule (P1).** Both describe a workflow that pauses, and nothing in this codebase pauses. Adding a lifecycle column and a review queue now means inventing a requirement and then designing against the invention. These are the two rows most likely to become urgent the moment a real workflow lands, and they should be designed with that workflow in front of you.
 
-So the work is seven prose tables, and prose is the part that rots. A contract document that has drifted from the code is worse than none, because it is believed. The payoff is a reader knowing the blast radius of a change without reading the module, which is real but modest in a codebase this size, where the module is a few hundred lines and the answer is a `grep` away.
+**Staged rollout (P2).** Every deploy is all or nothing, which is survivable because the things that make a bad deploy unrecoverable are already closed: rollback is defined, migrations are gated by a check that fails the build, readiness pulls a sick instance out of rotation, and the previous image tag is one command away. A flag system with nothing to flag is cost without benefit.
 
-Worth revisiting when a module grows past what someone can hold in their head, or when someone outside the team has to change one. Neither is true yet.
-
-### Explicit intermediate state, and uncertain results reconciled by a rule (P1)
-
-Both describe a workflow that pauses: something approved but not yet filed, something a model was unsure about. Nothing in this codebase pauses. Adding a lifecycle column and a review queue now means inventing a requirement and then designing against the invention, which is how you end up with the wrong abstraction defended by tests.
-
-These are the two rows most likely to become urgent the moment a real workflow lands, and they should be designed with that workflow in front of you, not before it.
-
-### Staged rollout (P2)
-
-Every deploy is all or nothing. That is survivable here because the things that make a bad deploy unrecoverable are already closed: rollback is defined, migrations are gated by a check that fails the build, readiness pulls a sick instance out of rotation, and the previous image tag is always one command away.
-
-Feature flags are worth their weight when a release is too big to reverse or has to reach a slice of users first. Neither is true of this codebase today, and a flag system with nothing to flag is cost without benefit.
-
-### Infrastructure behind swappable ports (P1)
-
-`@app/storage` and `@app/grpc` are written and tested but imported by nothing. Deleting them would close the row immediately, which is exactly why closing it that way would be dishonest: the row would go green because the evidence was removed. gRPC is expected to be used, so both stay and the row stays Partial, which is the true state.
+**Infrastructure behind swappable ports (P1).** `@app/storage` and `@app/grpc` are written and tested but imported by nothing. Deleting them would close the row by removing the evidence, so both stay and the row stays Partial, which is the true state.
 
 ## What is left
 
-**Every P0 and every P3 is closed.** Fourteen P0 rows are Done and three stay N/A until a model is introduced. Of the eight rows still open, five are recorded in [Deliberately not done](#deliberately-not-done) rather than waiting for someone, so the real remainder is short.
+**Every P0 and every P3 is closed.** Fourteen P0 rows are Done and three stay N/A until a model is introduced. Of the eight rows still open, five are recorded in [Deliberately not done](#deliberately-not-done), so the real remainder is short.
 
-**Waiting on a decision about infrastructure**
-
-1. **Metrics and tracing.** Request lines are now shippable and redacted, which is the half that unblocks the error-rate and latency alerts already written in `docs/operations/alerting.md`. A `/metrics` endpoint and trace propagation are the other half, and OpenTelemetry is the vendor-neutral way in. Held until there is somewhere to send them.
-
-**Waiting on people rather than code**
-
-2. **Run the first restore drill, and rehearse a rollback.** Both procedures are written and neither has been run, because until staging was specified there was nowhere to run them. The recovery time and recovery point in `docs/operations/backup-restore.md` are recorded as not yet measured, and this is where those two numbers come from.
+1. **Metrics and tracing.** Request lines are shippable and redacted, which unblocks the error-rate and latency alerts already written in `docs/operations/alerting.md`. A `/metrics` endpoint and trace propagation are the other half, held until there is somewhere to send them.
+2. **The first restore drill, and a rollback rehearsal.** Both procedures are written and neither has been run, because until staging was specified there was nowhere to run them. This is where the recovery time and recovery point in `docs/operations/backup-restore.md` come from.
 3. **Baselines.** Source, units, measurement method and approved event definitions for anything reported as a saving. These are the PM's numbers, not engineering's.
-
-**Waiting on a surface that does not exist yet**
-
-4. **Attachment limits.** `@app/storage` enforces no size or content-type limit. Nothing imports it and there is no upload endpoint, so the limits must land with the first one rather than before it. The credential policy in `docs/operations/credentials.md` was written the same way, ahead of the key it governs.
+4. **Attachment limits.** `@app/storage` enforces no size or content-type limit. Nothing imports it and there is no upload endpoint, so the limits land with the first one rather than before it.
