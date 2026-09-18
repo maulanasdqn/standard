@@ -42,7 +42,7 @@ The rubric's domain examples (Drive filing, CSI terminology, rebid ambiguity) co
 | P3 | 1 | 0 | 1 | 0 | 0 | 0 |
 | **Total** | **53** | **16** | **41** | **4** | **3** | **5** |
 
-That table counts **Status**. **Boilerplate Ready** is a separate axis, tallied separately: **42 Yes, 4 Partial, 7 No.** Both add up to 53. Yes runs ahead of Done because a row can hand the next product everything it needs while staying open here, which is what a written baseline register with no values in it does. Every ★ row but one is a Yes.
+That table counts **Status**. **Boilerplate Ready** is a separate axis, tallied separately: **43 Yes, 3 Partial, 7 No.** Both add up to 53. Yes runs ahead of Done because a row can hand the next product everything it needs while staying open here, which is what a written baseline register with no values in it does. Every ★ row but one is a Yes.
 
 ## Matrix
 
