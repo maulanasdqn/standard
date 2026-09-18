@@ -101,28 +101,3 @@ That table counts **Status**. **Boilerplate Ready** is a separate axis, tallied 
 | Baselines carry evidence | Source, units, measurement method, and approved event definitions for every reported saving or error baseline | P2 | Partial | Yes | `docs/operations/baselines.md` fixes what a baseline row must carry, requires the definition to be approved before the value is measured, and names the four event sources this system can actually emit together with the limits on each, including the retention window that bounds how far back any figure can reach. The register is deliberately empty: the values themselves are the PM's to define and approve, and nothing may be reported until a row exists |
 | Client-approved labels | Use the practical names the client already uses; do not impose a taxonomy that discovery did not call for | P2 | N/A | Partial | No client-facing taxonomy in this repository, but `@app/messages` is already the enforced home for every user-facing string, so approved copy lands in one reviewable place |
 | Error responses are shaped consistently | Every failure reaches the client in one known shape | P3 | Done | Yes | `toORPCError` no longer copies a raw `Error.message` into the response. An unexpected failure becomes one `INTERNAL_SERVER_ERROR` carrying `ERROR_MESSAGE.INTERNAL`, with the original kept as `cause` so it still reaches the logs while being structurally absent from `toJSON`. Covered by `error-mapping.test.ts` |
-
-## Where concurrency guards apply
-
-The optimistic version on notes is **scoped on purpose, and is not a pattern to roll out across every table.** It costs a schema column, a required field on every update input, a new error path, and a reload-and-retry burden on whoever is editing, so it earns its place only where concurrent editing is realistic and a silent overwrite either destroys work or produces a wrong decision. Notes qualified because they are the module with a real editing surface; roles and users deliberately keep their simpler updates.
-
-A module that still uses last-write-wins is therefore not carrying a defect. This rubric row is satisfied by protecting what matters, never by adding a version column everywhere.
-
-## Deliberately not done
-
-These rows are open because someone decided not to, not because nobody has got to them. The difference is worth recording so the next reader does not treat the list as a backlog.
-
-**Every module defines its full contract (P1).** Five of the eight things the rubric asks for are already carried by the code: zod validates the inputs, the layering is the processing, the tagged errors are the failure path, and `moon run api:arch` enforces the boundary rather than describing it. What is left is seven prose tables naming each module's trigger, saved state and external systems, and prose is the part that rots: a contract document that has drifted from the code is worse than none, because it is believed. Worth revisiting when a module grows past what someone can hold in their head, or when someone outside the team has to change one.
-
-**Explicit intermediate state, and uncertain results reconciled by a rule (P1).** Both describe a workflow that pauses, and nothing in this codebase pauses. Adding a lifecycle column and a review queue now means inventing a requirement and then designing against the invention. These are the two rows most likely to become urgent the moment a real workflow lands, and they should be designed with that workflow in front of you.
-
-**Staged rollout (P2).** Every deploy is all or nothing, which is survivable because the things that make a bad deploy unrecoverable are already closed: rollback is defined, migrations are gated by a check that fails the build, readiness pulls a sick instance out of rotation, and the previous image tag is one command away. A flag system with nothing to flag is cost without benefit.
-
-**Infrastructure behind swappable ports (P1).** `@app/storage` and `@app/grpc` are written and tested but imported by nothing. Deleting them would close the row by removing the evidence, so both stay and the row stays Partial, which is the true state.
-
-## What is left
-
-**Every P0, every P1 that anyone intends to close, and every P3 is closed.** Of the six rows still open, five are recorded in [Deliberately not done](#deliberately-not-done). The sixth is not engineering's to close.
-
-1. **The first restore drill, and a rollback rehearsal.** Both procedures are written and neither has been run, because until staging was specified there was nowhere to run them. This is where the recovery time and recovery point in `docs/operations/backup-restore.md` come from, and both are still recorded as not yet measured.
-2. **Baseline values.** `docs/operations/baselines.md` fixes what a baseline has to carry and what this system can count. The register stays empty until the PM defines an event, approves the definition, and someone runs the method, in that order.
