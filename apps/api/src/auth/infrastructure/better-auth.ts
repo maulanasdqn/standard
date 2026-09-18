@@ -1,8 +1,12 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import type { TActivityRepo } from "@app/activity";
-import { passwordResetMailBuild, type TMailer } from "@app/mail";
-import { MAIL_MESSAGE } from "@app/messages";
+import {
+	MAIL_TEMPLATE,
+	mailSendSafe,
+	passwordResetMailBuild,
+	type TMailer,
+} from "@app/mail";
 import { ROLE } from "@app/permissions";
 import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
 import type { TDb } from "#/platform/db/client.ts";
@@ -26,13 +30,12 @@ export const authCreate = ({ db, activityRepo, mailer }: TCreateAuthOptions) =>
 		emailAndPassword: {
 			enabled: true,
 			sendResetPassword: async ({ user, url }): Promise<void> => {
-				await mailer
-					.send(
-						passwordResetMailBuild({ to: user.email, name: user.name, url }),
-					)
-					.catch((cause): void => {
-						logger.error({ cause }, MAIL_MESSAGE.PASSWORD_RESET_FAILED);
-					});
+				await mailSendSafe(
+					mailer,
+					logger,
+					MAIL_TEMPLATE.PASSWORD_RESET,
+					passwordResetMailBuild({ to: user.email, name: user.name, url }),
+				);
 			},
 		},
 		user: {

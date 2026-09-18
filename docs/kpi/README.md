@@ -37,12 +37,12 @@ The rubric's domain examples (Drive filing, CSI terminology, rebid ambiguity) co
 | Severity | Total | ★ Beyond rubric | Done | Partial | Missing | N/A |
 |----------|-------|-----------------|------|---------|---------|-----|
 | P0 | 17 | 4 | 14 | 0 | 0 | 3 |
-| P1 | 22 | 7 | 15 | 4 | 2 | 1 |
-| P2 | 13 | 5 | 8 | 1 | 3 | 1 |
+| P1 | 23 | 7 | 16 | 4 | 2 | 1 |
+| P2 | 12 | 5 | 8 | 0 | 3 | 1 |
 | P3 | 1 | 0 | 1 | 0 | 0 | 0 |
-| **Total** | **53** | **16** | **38** | **5** | **5** | **5** |
+| **Total** | **53** | **16** | **39** | **4** | **5** | **5** |
 
-The table above counts the **Status** column. **Boilerplate Ready** is a separate axis with its own values, so it is tallied separately: **38 Yes, 7 Partial, 8 No.** Both add up to 53, and the 32 appearing in each is a coincidence rather than a repeated figure: every standard that is Done is also inherited, but some rows that are only Partial or Missing here still hand the next product something reusable.
+The table above counts the **Status** column. **Boilerplate Ready** is a separate axis with its own values, so it is tallied separately: **39 Yes, 6 Partial, 8 No.** Both add up to 53, and the 32 appearing in each is a coincidence rather than a repeated figure: every standard that is Done is also inherited, but some rows that are only Partial or Missing here still hand the next product something reusable.
 
 Every ★ row but one is a Yes, because the standards this boilerplate sets beyond the rubric are precisely what a new product inherits without writing a line.
 
@@ -94,7 +94,7 @@ Every ★ row but one is a Yes, because the standards this boilerplate sets beyo
 | ★ A new machine reaches a working system in one command | Onboarding is a command, not a document | P2 | Done | Yes | `make setup` starts Postgres, Redis, RabbitMQ, and mailpit, then migrates and seeds; three known logins are documented in `README.md` |
 | ★ A UI baseline ships with the boilerplate | Tables, pagination, empty states, confirm dialogs, theming, and responsiveness exist before the first feature | P2 | Done | Yes | shadcn/ui primitives in `packages/components/src/ui`, shared `data-table` / `list-pagination` / `empty-state` / `confirm-dialog`, a theme store, and `use-mobile` |
 | ★ Dependencies are kept current automatically | Upgrades arrive as small reviewed PRs rather than an annual migration | P2 | Done | Yes | `.github/dependabot.yml`: weekly npm and github-actions updates, minor and patch grouped into one PR |
-| Expired credentials are handled | Expiry is a recognized, recoverable state, not an unexplained error | P2 | Partial | Partial | better-auth handles session expiry, and `buildContext` in `apps/api/src/main.ts` degrades a failed session lookup to `null`. External provider credentials (SMTP, S3) have no expiry or re-auth handling, so they surface as a generic thrown error |
+| Expired credentials are handled | Expiry is a recognized, recoverable state, not an unexplained error | P1 | Done | Yes | Promoted from P2 on evidence: a password reset whose mail could not be sent still answers the user with success, deliberately, so an expired SMTP credential locked people out with no signal anywhere except one unread log line. `mailSendSafe` now emits a `mail.send.failed` event with its template and without the recipient, `docs/operations/alerting.md` alerts on a single occurrence, and a runbook covers it. better-auth handles session expiry, and object storage has no credential yet |
 | Unreadable or oversized attachments | Size and type limits are enforced and rejections are explicit | P2 | Missing | Partial | `packages/storage/src/storage.ts` enforces no size or content-type limit, and `remove()` ignores the response status entirely. The package is also not imported anywhere yet, so there is no upload endpoint, but the limits must exist before one lands |
 | Support and runbooks | A written procedure for the failures that are expected to happen | P2 | Done | Yes | `docs/operations/runbooks.md` covers readiness failure, Postgres and Redis outages, dead-lettered and stalled jobs, and a bad deploy, each starting from how you know rather than from what to type |
 | Data retention | How long each class of data is kept, and what prunes it | P2 | Done | Yes | `docs/operations/retention.md` sets a 90 day window on `activity_log` through `ACTIVITY_RETENTION_DAYS`, pruned by the worker daily in batches of 1,000 so a maintenance job never takes a long lock on a table every write touches. It also argues why a time window beats a row cap for an audit trail, and states what every other store keeps and why |
