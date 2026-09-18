@@ -37,12 +37,12 @@ The rubric's domain examples (Drive filing, CSI terminology, rebid ambiguity) co
 | Severity | Total | ★ Beyond rubric | Done | Partial | Missing | N/A |
 |----------|-------|-----------------|------|---------|---------|-----|
 | P0 | 17 | 4 | 14 | 0 | 0 | 3 |
-| P1 | 23 | 7 | 16 | 4 | 2 | 1 |
+| P1 | 23 | 7 | 17 | 3 | 2 | 1 |
 | P2 | 12 | 5 | 8 | 0 | 3 | 1 |
 | P3 | 1 | 0 | 1 | 0 | 0 | 0 |
-| **Total** | **53** | **16** | **39** | **4** | **5** | **5** |
+| **Total** | **53** | **16** | **40** | **3** | **5** | **5** |
 
-The table above counts the **Status** column. **Boilerplate Ready** is a separate axis with its own values, so it is tallied separately: **39 Yes, 6 Partial, 8 No.** Both add up to 53, and the 32 appearing in each is a coincidence rather than a repeated figure: every standard that is Done is also inherited, but some rows that are only Partial or Missing here still hand the next product something reusable.
+The table above counts the **Status** column. **Boilerplate Ready** is a separate axis with its own values, so it is tallied separately: **40 Yes, 5 Partial, 8 No.** Both add up to 53. The two axes share a figure because every standard that is Done is also inherited for free, while some rows that are only Partial or Missing here still hand the next product something reusable.
 
 Every ★ row but one is a Yes, because the standards this boilerplate sets beyond the rubric are precisely what a new product inherits without writing a line.
 
@@ -140,11 +140,19 @@ Feature flags are worth their weight when a release is too big to reverse or has
 
 `@app/storage` and `@app/grpc` are written and tested but imported by nothing. Deleting them would close the row immediately, which is exactly why closing it that way would be dishonest: the row would go green because the evidence was removed. gRPC is expected to be used, so both stay and the row stays Partial, which is the true state.
 
-## Suggested order of work
+## What is left
 
-**Every P0 is now closed.** Fourteen are Done and three stay N/A until a model is introduced, so what follows is P1 and below.
+**Every P0 and every P3 is closed.** Fourteen P0 rows are Done and three stay N/A until a model is introduced. Of the eight rows still open, five are recorded in [Deliberately not done](#deliberately-not-done) rather than waiting for someone, so the real remainder is short.
 
-1. **Wrap multi-write operations in transactions**, starting with the mutation-plus-activity pattern that every module repeats. The open question is where the boundary sits: inside each use case pulls a real database into every unit test, so the request seam is the better candidate.
-2. **Ship the request logs somewhere queryable.** Several alerts in `docs/operations/alerting.md` are defined but cannot be wired until this exists, so it blocks more than its own row.
-3. **Put timeouts on the remaining outbound calls.** The readiness probe is the only bounded one today; the mailer, storage, and auth provider can still hang.
-4. **Fill the Owner column** in `docs/operations/alerting.md` and run the first restore drill. Both are the team's to do rather than the code's, and both close a row that is otherwise written and waiting.
+**Waiting on a decision about infrastructure**
+
+1. **Metrics and tracing.** Request lines are now shippable and redacted, which is the half that unblocks the error-rate and latency alerts already written in `docs/operations/alerting.md`. A `/metrics` endpoint and trace propagation are the other half, and OpenTelemetry is the vendor-neutral way in. Held until there is somewhere to send them.
+
+**Waiting on people rather than code**
+
+2. **Run the first restore drill, and rehearse a rollback.** Both procedures are written and neither has been run, because until staging was specified there was nowhere to run them. The recovery time and recovery point in `docs/operations/backup-restore.md` are recorded as not yet measured, and this is where those two numbers come from.
+3. **Baselines.** Source, units, measurement method and approved event definitions for anything reported as a saving. These are the PM's numbers, not engineering's.
+
+**Waiting on a surface that does not exist yet**
+
+4. **Attachment limits.** `@app/storage` enforces no size or content-type limit. Nothing imports it and there is no upload endpoint, so the limits must land with the first one rather than before it. The credential policy in `docs/operations/credentials.md` was written the same way, ahead of the key it governs.
