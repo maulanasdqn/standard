@@ -1,6 +1,6 @@
 {
 	"name": "standard",
-	"version": "0.25.0",
+	"version": "0.25.1",
 	"private": true,
 	"packageManager": "pnpm@11.6.0",
 	"type": "module",
@@ -15,8 +15,8 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.5.13",
-		"@types/node": "^24.0.0",
-		"lefthook": "^2.1.10",
+		"@types/node": "^26.5.1",
+		"lefthook": "^2.1.14",
 		"typescript": "^7.0.2"
 	}
 }
