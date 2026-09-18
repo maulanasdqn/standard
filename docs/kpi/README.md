@@ -37,12 +37,12 @@ The rubric's domain examples (Drive filing, CSI terminology, rebid ambiguity) co
 | Severity | Total | ★ Beyond rubric | Done | Partial | Missing | N/A |
 |----------|-------|-----------------|------|---------|---------|-----|
 | P0 | 17 | 4 | 14 | 0 | 0 | 3 |
-| P1 | 22 | 7 | 11 | 5 | 5 | 1 |
+| P1 | 22 | 7 | 13 | 4 | 4 | 1 |
 | P2 | 13 | 5 | 6 | 1 | 5 | 1 |
 | P3 | 1 | 0 | 1 | 0 | 0 | 0 |
-| **Total** | **53** | **16** | **32** | **6** | **10** | **5** |
+| **Total** | **53** | **16** | **34** | **5** | **9** | **5** |
 
-The table above counts the **Status** column. **Boilerplate Ready** is a separate axis with its own values, so it is tallied separately: **32 Yes, 10 Partial, 11 No.** Both add up to 53, and the 32 appearing in each is a coincidence rather than a repeated figure: every standard that is Done is also inherited, but some rows that are only Partial or Missing here still hand the next product something reusable.
+The table above counts the **Status** column. **Boilerplate Ready** is a separate axis with its own values, so it is tallied separately: **34 Yes, 9 Partial, 10 No.** Both add up to 53, and the 32 appearing in each is a coincidence rather than a repeated figure: every standard that is Done is also inherited, but some rows that are only Partial or Missing here still hand the next product something reusable.
 
 Every ★ row but one is a Yes, because the standards this boilerplate sets beyond the rubric are precisely what a new product inherits without writing a line.
 
@@ -84,10 +84,10 @@ Every ★ row but one is a Yes, because the standards this boilerplate sets beyo
 | Timeouts on every outbound call | A lost response must become a failure, not a hang | P1 | Done | Yes | Every outbound call the api owns is bounded: connection and statement timeouts on the Postgres pool, `commandTimeout` on Redis, connection, greeting and socket timeouts on SMTP, an `AbortSignal.timeout` on every `@app/storage` request, and a bounded readiness probe. better-auth is configured for email and password only, so it makes no outbound HTTP call of its own |
 | Explicit intermediate state | States such as *approved but not yet filed* are stored explicitly, never implied by the gap between two steps | P1 | Missing | No | No domain table carries a lifecycle state column; `note` has no status field. Any future two-step action would leave its middle state unrepresented |
 | Uncertain results are reconciled by a defined rule | What is uncertain, how it is reconciled, and what must reach a human | P1 | Missing | No | No review queue, no reconciliation rule, no human-review state |
-| Alert ownership | Every alert has a named owner who receives it | P1 | Partial | Partial | `docs/operations/alerting.md` defines nine alerts with conditions, page-or-ticket severity, thresholds with their reasoning, and a runbook link each. The Owner column is deliberately empty: who carries the pager is the team's to fill, and the row stays Partial until it is |
+| Alert ownership | Every alert has a named owner who receives it | P1 | Done | Yes | All nine alerts in `docs/operations/alerting.md` name an owner, with `fradotech` as the default that receives anything not reassigned. The document also says why a single default beats an empty column at this team size, and what to do when a second person shares the pager |
 | Deployment is defined | How a build reaches an environment | P1 | Done | Yes | A `Dockerfile` builds both processes into one image tagged with the root version, `make image` builds it, and `docs/operations/deployment.md` fixes the order: migrate as a separate job, then roll the api, then the worker, with liveness on `/healthz` and readiness on `/ready` |
 | Monitoring beyond logs | Metrics and traces, not only request lines | P1 | Missing | Partial | `apps/api/src/main.ts` logs structured request lines via the reusable `@app/logger` pino factory, good and the only signal. No metrics, no tracing, no log shipping |
-| Provider permissions described separately from application restrictions | The account's real scope is stated apart from what the application chooses to allow, because an application allowlist does not narrow a broadly authorized account | P1 | Missing | No | `storageCreate` in `packages/storage/src/storage.ts` takes a full access key and secret with no stated bucket or prefix scope, and nothing documents what the credential itself is allowed to reach versus what the application restricts |
+| Provider permissions described separately from application restrictions | The account's real scope is stated apart from what the application chooses to allow, because an application allowlist does not narrow a broadly authorized account | P1 | Done | Yes | `docs/operations/credentials.md` describes every credential twice, as what the provider grants and what the application restricts itself to, so the gap between the two is visible. Object storage has no entry because no key exists yet, and the rules its first key must satisfy are written in advance |
 | Held-out evaluation dataset | A held-out set with sample counts and dataset, model, and config versions, measuring correct automatic action, coverage, and review volume | P1 | N/A | No | No model in the codebase. Required before any model output is trusted |
 | ★ CI runs only what changed | The task graph decides the work, so the pipeline stays fast as the repo grows | P2 | Done | Yes | moon projects declare `inputs` per task; `moon ci :check :build :test` runs affected projects only |
 | ★ One deployable artifact | The API serves the built SPA, so there is a single process to ship and a single origin to configure | P2 | Done | Yes | `webDistMount(app, env.WEB_DIST_PATH)` in `apps/api/src/main.ts` |
