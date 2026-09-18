@@ -76,6 +76,28 @@ describe("violationsFor", () => {
 		expect(violation?.line).toBe(3);
 	});
 
+	it("catches a statement interrupted by a block comment", () => {
+		const sql = 'ALTER TABLE "note" DROP /* deliberate */ COLUMN "body";';
+
+		expect(violationsFor(FILE, sql)).toHaveLength(1);
+	});
+
+	it("catches a statement interrupted by a block comment spanning lines", () => {
+		const sql = 'ALTER TABLE "note" DROP /* spans\n  two lines */ COLUMN "body";';
+		const [violation] = violationsFor(FILE, sql);
+
+		expect(violation?.statement).toBe(UNSAFE_STATEMENT.DROP_COLUMN);
+		expect(violation?.line).toBe(1);
+	});
+
+	it("keeps line numbers accurate for statements after a block comment", () => {
+		const sql = '/* header\n   notes */\nSELECT 1;\nDROP TABLE "old";';
+		const [violation] = violationsFor(FILE, sql);
+
+		expect(violation?.statement).toBe(UNSAFE_STATEMENT.DROP_TABLE);
+		expect(violation?.line).toBe(4);
+	});
+
 	it("lets a deliberate contract phase through when the file is marked", () => {
 		const sql = `-- ${MIGRATION_SAFETY_MARKER}\n${RENAME}`;
 

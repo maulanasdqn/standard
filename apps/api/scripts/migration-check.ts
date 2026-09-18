@@ -27,7 +27,18 @@ const NOT_FOUND = -1;
 const COMMENT_START = "--";
 const SEPARATOR = " ";
 const EMPTY = "";
+const NEWLINE = "\n";
 const WHITESPACE_RUN = /\s+/g;
+const BLOCK_COMMENT = /\/\*[\s\S]*?\*\//g;
+
+const newlineCount = (text: string): number =>
+	text.split(NEWLINE).length - FIRST_LINE;
+
+const withoutBlockComments = (contents: string): string =>
+	contents.replace(
+		BLOCK_COMMENT,
+		(found): string => `${SEPARATOR}${NEWLINE.repeat(newlineCount(found))}`,
+	);
 
 const withoutComment = (line: string): string =>
 	A.head(line.split(COMMENT_START)) ?? EMPTY;
@@ -62,7 +73,7 @@ const appended = (
 
 export const normalize = (contents: string): TNormalized =>
 	A.reduceWithIndex<string, TNormalized>(
-		contents.split("\n"),
+		withoutBlockComments(contents).split(NEWLINE),
 		{ text: EMPTY, lineOf: [], sourceOf: [] },
 		(accumulated, line, index) => appended(accumulated, line, index),
 	);
