@@ -82,4 +82,16 @@ That marks the removal as the deliberate second half of an expand and contract, 
 
 ## Staged rollout
 
-Not implemented. There are no feature flags and no canary. Until there are, treat every deploy as all-or-nothing and keep the previous image tag ready.
+Not implemented, and declined on purpose. There are no feature flags, no canary and no percentage rollout: every deploy reaches every user at once.
+
+What the release machinery gives instead is recovery, not containment. A release is a tag whose version is verified against `package.json` and cut only from a commit where all three required checks are green, the image is pinned to that tag rather than `latest`, `/health` reports the version actually serving, and `moon run api:migrations` refuses a destructive migration, so a rollback never lands on a schema the older build cannot read. A bad release is therefore identifiable, and reversible in one deploy.
+
+What it does not give is a smaller blast radius. Between the moment a bad build starts serving and the moment someone notices, everybody is on it. That window is exactly what a staged rollout buys down, and nothing above substitutes for it.
+
+The trade is accepted while the cost sits the way it does now. A flag is a branch in the code and a second state to test, a flag nobody deletes becomes a permanent fork of the product, and a canary needs at least two independently routable instances plus metrics sliced per instance for the comparison to mean anything. None of that is free, and today it would be paid to protect a deploy that can already be undone in minutes.
+
+Revisit when any of this becomes true:
+
+- a release goes out broken and users see it before the alerts do
+- the traffic is large enough that a full blast radius costs more than maintaining flags
+- a change has to reach a subset of users by design rather than out of caution
