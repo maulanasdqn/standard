@@ -118,7 +118,10 @@ export const envSchema = z
 		TRACING_HEADERS: z
 			.preprocess(blankAsUndefined, z.string().optional())
 			.transform(jsonObjectParse),
-		TRACING_SAMPLE_RATIO: z.coerce.number().min(0).max(1).default(1),
+		TRACING_SAMPLE_RATIO: z.preprocess(
+			blankAsUndefined,
+			z.coerce.number().min(0).max(1).default(1),
+		),
 		METRICS_ENABLED: z.preprocess(
 			blankAsUndefined,
 			z.stringbool().default(true),

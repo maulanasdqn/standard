@@ -60,11 +60,13 @@ The request log line carries `traceId` and `spanId` next to `reqId`, so a line f
 |---|---|---|
 | `TRACING_ENDPOINT` | unset | An OTLP over HTTP traces endpoint, for example `http://collector:4318/v1/traces`. Empty means no spans are created and nothing is exported |
 | `TRACING_HEADERS` | unset | JSON, for a collector that wants an API key |
-| `TRACING_SAMPLE_RATIO` | `1` | Ratio between 0 and 1, sampled on the trace id so a trace is kept or dropped whole |
+| `TRACING_SAMPLE_RATIO` | `1` | Ratio between 0 and 1, sampled on the trace id so a trace is kept or dropped whole. Blank reads as the default, not as zero |
 
 Unlike metrics, tracing is off until an endpoint is named, because a scrape is pulled and an export is pushed: there is nothing to push to until someone runs a collector.
 
 ## What is still missing
+
+Spans are not flushed on shutdown. Nothing in this codebase handles `SIGTERM` yet, so a rolling deploy drops whatever the batch processor is still holding, up to five seconds of spans. It is the last few spans of a replay being retired, which is rarely the interesting part, and fixing it properly means graceful shutdown for the HTTP server too rather than a flush bolted onto tracing alone.
 
 Spans cover the HTTP seam and nothing below it. There is no instrumentation on Postgres, Redis or the broker, so a trace tells you which request was slow but not which query made it slow. Adding it means the OpenTelemetry auto-instrumentations, which patch modules as they load and need loader hooks to work under ESM. That is a real piece of work rather than a line of configuration, and it is worth doing when a slow request stops being obvious from the code.
 
