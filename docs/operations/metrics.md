@@ -48,8 +48,24 @@ curl -H "Authorization: Bearer $METRICS_TOKEN" https://staging.example.com/metri
 
 Rotate the token the way any other secret is rotated, and record it in [credentials.md](credentials.md).
 
+## Tracing
+
+Every request also opens one server span, named `GET /notes/{id}` after the matched route and carrying the method, the path, the route and the response status. A 5xx sets the span status to error, and a handler that throws records the exception before the span ends.
+
+**An incoming `traceparent` is continued rather than replaced.** A request that arrives with a W3C trace context joins that trace as a child span, so a call that crosses two services reads as one trace instead of two unrelated ones. Outgoing calls can carry it onward with `tracingHeadersInject`.
+
+The request log line carries `traceId` and `spanId` next to `reqId`, so a line found in the logs leads to the trace and back.
+
+| Variable | Default | Effect |
+|---|---|---|
+| `TRACING_ENDPOINT` | unset | An OTLP over HTTP traces endpoint, for example `http://collector:4318/v1/traces`. Empty means no spans are created and nothing is exported |
+| `TRACING_HEADERS` | unset | JSON, for a collector that wants an API key |
+| `TRACING_SAMPLE_RATIO` | `1` | Ratio between 0 and 1, sampled on the trace id so a trace is kept or dropped whole |
+
+Unlike metrics, tracing is off until an endpoint is named, because a scrape is pulled and an export is pushed: there is nothing to push to until someone runs a collector.
+
 ## What is still missing
 
-There is no tracing yet: no span propagation, and no exporter. A slow request shows up as a latency bucket and a log line, and finding out which query made it slow still means reading the code.
+Spans cover the HTTP seam and nothing below it. There is no instrumentation on Postgres, Redis or the broker, so a trace tells you which request was slow but not which query made it slow. Adding it means the OpenTelemetry auto-instrumentations, which patch modules as they load and need loader hooks to work under ESM. That is a real piece of work rather than a line of configuration, and it is worth doing when a slow request stops being obvious from the code.
 
 Job outcomes are not counted here either. The worker has no HTTP surface to scrape, and queue depth, retries and dead letters are already visible in the broker's own metrics, which is where the queue alerts in [alerting.md](alerting.md) read them from. A counter in the application would be a second, less reliable copy.

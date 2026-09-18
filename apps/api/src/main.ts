@@ -6,6 +6,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { requestId } from "hono/request-id";
 import { runtime } from "#/bootstrap/compose.ts";
+import { tracing } from "#/bootstrap/tracing.ts";
 import { AuthService } from "#/auth/infrastructure/auth-service.ts";
 import { CacheService } from "#/platform/cache/redis.ts";
 import { env } from "#/platform/config/env.ts";
@@ -49,7 +50,7 @@ const app = new Hono();
 
 app.use("*", requestId());
 
-observabilityMount(app, { logger, metrics });
+observabilityMount(app, { logger, metrics, tracing });
 
 app.use(
 	"*",

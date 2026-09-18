@@ -1,5 +1,10 @@
 import type { TLogger } from "@app/logger";
 import { type TMetrics, metricsRouteNormalise } from "@app/metrics";
+import {
+	type TTracing,
+	type TTracingOutcome,
+	tracingRequestRun,
+} from "@app/tracing";
 import { A } from "@mobily/ts-belt";
 import type { Hono } from "hono";
 import { match } from "ts-pattern";
@@ -15,6 +20,7 @@ const PROBE_PATH: readonly string[] = [
 export type TObservabilityMountDeps = {
 	logger: TLogger;
 	metrics: TMetrics;
+	tracing: TTracing;
 };
 
 export const observabilityMount = (
@@ -24,28 +30,46 @@ export const observabilityMount = (
 	app.use("*", async (context, next): Promise<void> => {
 		const reqId = context.get("requestId");
 		const start = Date.now();
-		let status: number = HTTP_STATUS.INTERNAL_SERVER_ERROR;
+		const method = context.req.method;
+		const path = context.req.path;
 
-		try {
-			await next();
-			status = context.res.status;
-		} finally {
-			const durMs = Date.now() - start;
-			const method = context.req.method;
-			const path = context.req.path;
+		await tracingRequestRun(
+			deps.tracing,
+			{ method, path, headers: context.req.header() },
+			async (ids): Promise<TTracingOutcome> => {
+				let status: number = HTTP_STATUS.INTERNAL_SERVER_ERROR;
 
-			deps.logger.info({ reqId, method, path, status, durMs }, "request");
-
-			match(A.includes(PROBE_PATH, path))
-				.with(true, (): void => undefined)
-				.otherwise((): void => {
-					deps.metrics.requestObserve(
-						method,
-						metricsRouteNormalise(context.req.routePath),
+				try {
+					await next();
+					status = context.res.status;
+					return {
 						status,
-						durMs,
+						route: metricsRouteNormalise(context.req.routePath),
+					};
+				} finally {
+					const durMs = Date.now() - start;
+					const route = metricsRouteNormalise(context.req.routePath);
+
+					deps.logger.info(
+						{
+							reqId,
+							traceId: ids.traceId,
+							spanId: ids.spanId,
+							method,
+							path,
+							status,
+							durMs,
+						},
+						"request",
 					);
-				});
-		}
+
+					match(A.includes(PROBE_PATH, path))
+						.with(true, (): void => undefined)
+						.otherwise((): void => {
+							deps.metrics.requestObserve(method, route, status, durMs);
+						});
+				}
+			},
+		);
 	});
 };

@@ -11,7 +11,7 @@ What it takes to run this stack somewhere other than a laptop, and what to do wh
 | [credentials.md](credentials.md) | What each credential actually allows, next to what the application restricts itself to |
 | [retention.md](retention.md) | What is kept, for how long, and what deletes it |
 | [logging.md](logging.md) | Where logs go, how to ship them, and what is redacted first |
-| [metrics.md](metrics.md) | What `/metrics` exposes, and the token that guards it |
+| [metrics.md](metrics.md) | What `/metrics` exposes, the token that guards it, and how tracing is switched on |
 | [baselines.md](baselines.md) | What a reported saving or error figure has to carry before it is reported |
 
 ## Processes

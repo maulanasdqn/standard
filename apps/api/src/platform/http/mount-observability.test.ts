@@ -1,5 +1,6 @@
 import { loggerCreate } from "@app/logger";
 import { metricsFake } from "@app/metrics";
+import { tracingOff } from "@app/tracing";
 import { Hono } from "hono";
 import { requestId } from "hono/request-id";
 import { describe, expect, it } from "vitest";
@@ -17,7 +18,7 @@ const appWith = (): { app: Hono; metrics: ReturnType<typeof metricsFake> } => {
 	const metrics = metricsFake();
 
 	app.use("*", requestId());
-	observabilityMount(app, { logger, metrics });
+	observabilityMount(app, { logger, metrics, tracing: tracingOff("test") });
 
 	app.get(ROUTE_PATH.HEALTHZ, (context) => context.text("ok"));
 	app.get(ROUTE_PATH.READY, (context) => context.text("ok"));
