@@ -1,5 +1,7 @@
 export const AUTH_MESSAGE = {
 	UNAUTHORIZED: "Please sign in to continue.",
+	SIGN_OUT_FAILED:
+		"Could not sign you out. You are still signed in on this device, so try again.",
 	SESSION_UNAVAILABLE:
 		"We could not check your session just now. You have not been signed out, so try again in a moment.",
 	FORBIDDEN: "You don't have permission to perform this action.",
