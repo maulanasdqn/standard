@@ -114,6 +114,14 @@ export const envSchema = z
 			.string()
 			.default("")
 			.transform(stringListParse),
+		TRACING_ENDPOINT: z.preprocess(blankAsUndefined, z.url().optional()),
+		TRACING_HEADERS: z
+			.preprocess(blankAsUndefined, z.string().optional())
+			.transform(jsonObjectParse),
+		TRACING_SAMPLE_RATIO: z.preprocess(
+			blankAsUndefined,
+			z.coerce.number().min(0).max(1).default(1),
+		),
 		METRICS_ENABLED: z.preprocess(
 			blankAsUndefined,
 			z.stringbool().default(true),

@@ -1,5 +1,6 @@
 import { loggerCreate } from "@app/logger";
 import { metricsFake } from "@app/metrics";
+import { type TTracingMemory, tracingMemory, tracingOff } from "@app/tracing";
 import { Hono } from "hono";
 import { requestId } from "hono/request-id";
 import { describe, expect, it } from "vitest";
@@ -10,6 +11,8 @@ import { ROUTE_PATH } from "#/platform/http/route-paths.ts";
 const URL_BASE = "http://localhost";
 const BOOM = "/boom";
 
+const SPAN_STATUS_ERROR = 2;
+
 const logger = loggerCreate({ service: "test", env: "test", level: "fatal" });
 
 const appWith = (): { app: Hono; metrics: ReturnType<typeof metricsFake> } => {
@@ -17,7 +20,7 @@ const appWith = (): { app: Hono; metrics: ReturnType<typeof metricsFake> } => {
 	const metrics = metricsFake();
 
 	app.use("*", requestId());
-	observabilityMount(app, { logger, metrics });
+	observabilityMount(app, { logger, metrics, tracing: tracingOff("test") });
 
 	app.get(ROUTE_PATH.HEALTHZ, (context) => context.text("ok"));
 	app.get(ROUTE_PATH.READY, (context) => context.text("ok"));
@@ -29,6 +32,30 @@ const appWith = (): { app: Hono; metrics: ReturnType<typeof metricsFake> } => {
 
 	return { app, metrics };
 };
+
+describe("observabilityMount with tracing on", () => {
+	it("marks the span an error when the handler throws, and still counts it", async (): Promise<void> => {
+		const tracing: TTracingMemory = tracingMemory("test");
+		const app = new Hono();
+		const metrics = metricsFake();
+
+		app.use("*", requestId());
+		observabilityMount(app, { logger, metrics, tracing });
+		app.get(BOOM, (): never => {
+			throw new Error("handler exploded");
+		});
+
+		await app.request(`${URL_BASE}${BOOM}`);
+
+		expect(tracing.finished()).toHaveLength(1);
+		expect(tracing.finished()[0]?.status.code).toBe(SPAN_STATUS_ERROR);
+		expect(metrics.observations[0]?.status).toBe(
+			HTTP_STATUS.INTERNAL_SERVER_ERROR,
+		);
+
+		await tracing.shutdown();
+	});
+});
 
 describe("observabilityMount", () => {
 	it("counts an ordinary request under its matched route", async (): Promise<void> => {

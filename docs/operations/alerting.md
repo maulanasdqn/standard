@@ -37,4 +37,4 @@ Readiness and liveness alerts stay HTTP probes against `/ready` and `/healthz`, 
 
 Queue depth, dead letter depth and backup age are not application metrics and are not exposed here. They come from the broker's own metrics and from whatever runs the backup. The mail alert stays a log rule, because `mail.send.failed` carries the template that failed and a counter would lose it.
 
-There is still no tracing, so a slow request can be seen but not followed. That is what keeps the `Monitoring beyond logs` row in [../kpi/README.md](../kpi/README.md) open.
+Tracing is wired but off until `TRACING_ENDPOINT` names a collector. Once it does, a request log line carries the `traceId` that leads to the trace, which is the path from an alert to a single slow request.

@@ -81,6 +81,27 @@ describe("envSchema security", () => {
 		expect(result.success).toBe(false);
 	});
 
+	it("reads a blank sample ratio as the default rather than as zero", () => {
+		const result = envSchema.safeParse({ ...ENV, TRACING_SAMPLE_RATIO: "" });
+
+		expect(result.success && result.data.TRACING_SAMPLE_RATIO).toBe(1);
+	});
+
+	it("still honours an explicit sample ratio", () => {
+		const result = envSchema.safeParse({
+			...ENV,
+			TRACING_SAMPLE_RATIO: "0.1",
+		});
+
+		expect(result.success && result.data.TRACING_SAMPLE_RATIO).toBe(0.1);
+	});
+
+	it("rejects a sample ratio outside zero to one", () => {
+		expect(
+			envSchema.safeParse({ ...ENV, TRACING_SAMPLE_RATIO: "2" }).success,
+		).toBe(false);
+	});
+
 	it("rejects LOG_TRANSPORT_OPTIONS that is not valid JSON", () => {
 		const result = envSchema.safeParse({
 			...ENV,
