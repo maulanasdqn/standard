@@ -571,6 +571,12 @@ importers:
 
   packages/storage:
     dependencies:
+      '@app/messages':
+        specifier: workspace:*
+        version: link:../messages
+      '@mobily/ts-belt':
+        specifier: ^3.13.1
+        version: 3.13.1
       aws4fetch:
         specifier: ^1.0.20
         version: 1.0.20

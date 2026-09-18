@@ -11,6 +11,8 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
+		"@app/messages": "workspace:*",
+		"@mobily/ts-belt": "^3.13.1",
 		"aws4fetch": "^1.0.20",
 		"ts-pattern": "^5.9.0"
 	},
