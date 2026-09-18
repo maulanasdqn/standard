@@ -139,6 +139,9 @@ importers:
       '@app/permissions':
         specifier: workspace:*
         version: link:../../packages/permissions
+      '@app/queue':
+        specifier: workspace:*
+        version: link:../../packages/queue
       '@app/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
@@ -148,6 +151,9 @@ importers:
       '@orpc/client':
         specifier: ^1.13.6
         version: 1.15.0
+      amqplib:
+        specifier: ^2.0.1
+        version: 2.0.1
       drizzle-kit:
         specifier: ^0.31.9
         version: 0.31.10
