@@ -2,7 +2,8 @@ COMPOSE := docker compose -f docker-compose.dev.yml
 
 .PHONY: help install setup services services-stop services-logs dev up \
 	api web worker db-migrate db-seed db-generate db-push db-studio \
-	check lint format test build ci browsers e2e e2e-api e2e-web clean
+	check lint format test build ci browsers e2e e2e-api e2e-web clean \
+	image image-run
 
 help: ## List the available targets
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-16s %s\n", $$1, $$2}'
@@ -50,6 +51,12 @@ db-push: ## Push the schema straight to the database
 
 db-studio: ## Open drizzle studio
 	moon run api:db-studio
+
+image: ## Build the production container image
+	docker build -t standard:$(shell node -p "require('./package.json').version") -t standard:latest .
+
+image-run: ## Run the production image against the local services
+	docker run --rm -p 3001:3001 --env-file apps/api/.env standard:latest
 
 check: ## Biome check across the workspace
 	moon run :check
