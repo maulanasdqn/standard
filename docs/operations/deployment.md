@@ -35,7 +35,36 @@ Point the orchestrator's liveness probe at `/healthz` and its readiness probe at
 
 Roll back by deploying the previous image tag. Confirm with `/health`, which reports the version that is actually running.
 
-Migrations are the constraint: there is no `down` migration, so a rollback of code is safe only while the newer schema still satisfies the older code. That is the reason for the backward-compatible migration rule above. A rollback across a destructive migration is a restore, not a rollback, and belongs in [backup-restore.md](backup-restore.md).
+Migrations are the constraint: there is no `down` migration, so a rollback of code is safe only while the newer schema still satisfies the older code. A rollback across a destructive migration is not a rollback at all, it is a restore, and it belongs in [backup-restore.md](backup-restore.md). Keeping that from happening is what the next section is for.
+
+## Expand and contract
+
+**A migration may not break the code that is currently running.** During a rolling deploy both the old and the new build serve traffic at the same time, so any change that the old build cannot survive takes the site down the moment it lands, and rolling the code back does not bring it up again.
+
+Every schema change is therefore split across two releases:
+
+| Phase | Release | What it does |
+|---|---|---|
+| Expand | First | Add the new column or table. It is nullable or has a default, so existing rows need no backfill. The new build writes to both the old and the new shape |
+| Contract | Second, once the first is fully rolled out | Remove the old column or table. Nothing reads it any more, so nothing breaks |
+
+That means renaming a column is never one migration. Add the new one, backfill it, write to both, and drop the old one in a later release. The same applies to dropping anything, and to tightening an existing column to `NOT NULL`, which fails on the next insert from a build that still writes null.
+
+Additive changes are unaffected. `CREATE TABLE`, `CREATE INDEX`, and `ADD COLUMN` with a default or nullable are safe in a single release, and that is the large majority of schema work.
+
+### Enforcement
+
+`moon run api:migrations` fails the build on `DROP COLUMN`, `RENAME COLUMN`, `DROP TABLE`, and `SET NOT NULL` in `apps/api/drizzle`. It runs in CI as a dependency of `api:build`, so an unsafe migration cannot reach `trunk` by being missed in review.
+
+The contract phase is legitimate, so there is a way through. Put this at the top of the migration file:
+
+```sql
+-- migration-safety: contract-phase
+```
+
+That marks the removal as the deliberate second half of an expand and contract, and it is visible in the diff, so the reviewer sees the claim being made rather than a rule quietly bypassed. Use it when the expand phase is already deployed everywhere, and not before.
+
+`0003_brown_silk_fever.sql` renamed two columns in a single migration and predates this policy. It is listed as an exception in `apps/api/scripts/migration-rules.ts` rather than rewritten, since it shipped long ago. It is also the concrete example of what this rule exists to prevent.
 
 ## Staged rollout
 
