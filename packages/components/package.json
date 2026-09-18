@@ -19,7 +19,7 @@
 	},
 	"dependencies": {
 		"@app/permissions": "workspace:*",
-		"@tanstack/react-router": "^1.170.36",
+		"@tanstack/react-router": "1.170.34",
 		"@tanstack/react-store": "^0.11.1",
 		"@tanstack/store": "^0.11.1",
 		"class-variance-authority": "^0.7.1",
