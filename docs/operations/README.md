@@ -38,7 +38,7 @@ The worker is not optional. Without it, published jobs accumulate in their queue
 |---|---|---|
 | Local | `development` | `make setup` brings up Postgres, Redis, RabbitMQ and mailpit through `docker-compose.dev.yml` |
 | CI | `test` | Services are declared per job in `.github/workflows/ci.yml` |
-| Staging | `production` | Not yet provisioned. Provision it before the first production deploy, because a rollback has never been rehearsed anywhere else |
+| Staging | `production` | Specified in `docker-compose.staging.yml` and `.env.staging.example`, not yet provisioned. Provision it before the first production deploy, because a rollback and a restore have never been rehearsed anywhere |
 | Production | `production` | `envSchema` refuses to start unless `WEB_ORIGIN` and `BETTER_AUTH_URL` are HTTPS and `BETTER_AUTH_SECRET` is at least 32 characters |
 
 Configuration is environment variables only, validated at boot by `apps/api/src/platform/config/env-schema.ts`. `apps/api/.env.example` is the full list. A missing or malformed variable stops the process at startup rather than failing later in a request.
