@@ -88,6 +88,18 @@ Do not make the reset endpoint fail when mail fails. Answering success regardles
 
 The worker no longer exits on any of these. Before, an error before the handler escaped as an unhandled rejection, which on Node 24 ends the process, and the unacknowledged message was redelivered into the same crash on restart.
 
+## Everyone appears to be signed out
+
+**You know because** users report being signed out, and `session.resolve.failed` appears in the API logs. The application answers 503 on protected routes, and the web shows the server-unreachable screen rather than the login page.
+
+**Impact** Nobody can use a protected route. Sessions themselves are intact: the failure is in resolving them, not in ending them.
+
+1. Check `/ready`. Resolving a session reads the database to find the user's role, so a Postgres outage produces exactly this.
+2. Read the `err` on `session.resolve.failed`. A database error points at step 1. An authentication error points at better-auth itself, usually a schema drift after a migration.
+3. Nothing needs to be done to the sessions. Once the dependency is back, the next request resolves normally and nobody has to sign in again.
+
+This used to present as a mass sign-out. An infrastructure failure was caught and turned into an anonymous session, so the API answered 401, and the web maps any sub-500 status to signed out. The operational cause was invisible and valid users were pushed to the login screen.
+
 ## A deploy made things worse
 
 1. Confirm which build is live: `curl -s https://<host>/health | jq .version`. The two versions on `/health`, web and API, differing means they were deployed out of step.

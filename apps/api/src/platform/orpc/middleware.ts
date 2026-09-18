@@ -4,6 +4,7 @@ import { D } from "@mobily/ts-belt";
 import { ORPCError, os } from "@orpc/server";
 import { match, P } from "ts-pattern";
 import type { TORPCContext } from "#/platform/orpc/context.ts";
+import { SESSION_STATE } from "#/shared/session.ts";
 import { toORPCError } from "#/platform/orpc/error-mapping.ts";
 
 const base = os.$context<TORPCContext>();
@@ -18,13 +19,20 @@ export const publicProcedure = base.use(async ({ next }) => {
 
 export const protectedProcedure = publicProcedure.use(
 	async ({ context, next }) =>
-		match(context.session)
-			.with(P.nullish, () => {
+		match({ state: context.sessionState, session: context.session })
+			.with({ state: SESSION_STATE.UNAVAILABLE }, () => {
+				throw new ORPCError("SERVICE_UNAVAILABLE", {
+					message: AUTH_MESSAGE.SESSION_UNAVAILABLE,
+				});
+			})
+			.with({ session: P.nullish }, () => {
 				throw new ORPCError("UNAUTHORIZED", {
 					message: AUTH_MESSAGE.UNAUTHORIZED,
 				});
 			})
-			.otherwise((session) => next({ context: D.merge(context, { session }) })),
+			.otherwise(({ session }) =>
+				next({ context: D.merge(context, { session }) }),
+			),
 );
 
 export const permissionRequire = (...required: TPermission[]) =>

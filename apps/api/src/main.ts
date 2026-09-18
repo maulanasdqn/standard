@@ -3,6 +3,7 @@ import "#/bootstrap/polyfill.ts";
 import { serve } from "@hono/node-server";
 import { Effect } from "effect";
 import { Hono } from "hono";
+import { match, P } from "ts-pattern";
 import { cors } from "hono/cors";
 import { requestId } from "hono/request-id";
 import { runtime } from "#/bootstrap/compose.ts";
@@ -20,6 +21,11 @@ import { observabilityMount } from "#/platform/http/mount-observability.ts";
 import { rateLimitMount } from "#/platform/http/mount-rate-limit.ts";
 import { webDistMount } from "#/platform/http/mount-web-dist.ts";
 import type { TORPCContext } from "#/platform/orpc/context.ts";
+import {
+	SESSION_STATE,
+	type TSession,
+	type TSessionState,
+} from "#/shared/session.ts";
 import { routerBuild } from "#/bootstrap/router.ts";
 
 const { auth } = await runtime.runPromise(
@@ -32,16 +38,51 @@ const { client: cacheClient } = await runtime.runPromise(
 
 const router = routerBuild();
 
-const buildContext = async (headers: Headers): Promise<TORPCContext> => {
-	const session = await runtime.runPromise(
+type TSessionResolution = {
+	session: TSession | null;
+	sessionState: TSessionState;
+};
+
+const SESSION_UNAVAILABLE: TSessionResolution = {
+	session: null,
+	sessionState: SESSION_STATE.UNAVAILABLE,
+};
+
+const sessionResolutionOf = (session: TSession | null): TSessionResolution =>
+	match(session)
+		.with(
+			P.nullish,
+			(): TSessionResolution => ({
+				session: null,
+				sessionState: SESSION_STATE.ANONYMOUS,
+			}),
+		)
+		.otherwise(
+			(found): TSessionResolution => ({
+				session: found,
+				sessionState: SESSION_STATE.RESOLVED,
+			}),
+		);
+
+const sessionResolve = (headers: Headers): Promise<TSessionResolution> =>
+	runtime.runPromise(
 		AuthService.use((service) => service.getSession(headers)).pipe(
-			Effect.catch(() => Effect.succeed(null)),
+			Effect.map(sessionResolutionOf),
+			Effect.catch((cause): Effect.Effect<TSessionResolution> => {
+				logger.error({ err: cause }, "session.resolve.failed");
+				return Effect.succeed(SESSION_UNAVAILABLE);
+			}),
 		),
 	);
+
+const buildContext = async (headers: Headers): Promise<TORPCContext> => {
+	const resolution = await sessionResolve(headers);
+
 	return {
 		headers,
-		session,
-		permissions: session?.permissions ?? [],
+		session: resolution.session,
+		sessionState: resolution.sessionState,
+		permissions: resolution.session?.permissions ?? [],
 		runtime,
 	};
 };
