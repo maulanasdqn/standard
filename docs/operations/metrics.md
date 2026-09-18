@@ -7,12 +7,23 @@ The API exposes Prometheus text on `GET /metrics`. Until this existed the only s
 | Metric | Type | Labels | Answers |
 |---|---|---|---|
 | `http_requests_total` | counter | `method`, `route`, `status` | Request volume, and the 5xx share that the error rate alert needs |
-| `http_request_duration_seconds` | histogram | `method`, `route`, `status` | Latency percentiles per route, from ten buckets between 10ms and 10s |
+| `http_request_duration_seconds` | histogram | `method`, `route`, `status` | Latency percentiles per route, from ten buckets between 10ms and 10s. Read the route caveat below before trusting this per endpoint |
 | `process_*`, `nodejs_*` | gauges and counters | none | Memory, CPU, event loop lag, garbage collection and handle counts |
 
 Every series carries `service="api"`.
 
-**The `route` label is the matched route template, never the request path.** `/api/notes/{id}` is one series no matter how many notes exist, because a label whose values are unbounded turns a time series database into an outage. A request that matches no route is labelled `unmatched` rather than left blank.
+**The `route` label is the matched route template, never the request path.** A label whose values are unbounded turns a time series database into an outage, so the template is what gets recorded. A request that matches no route is labelled `unmatched` rather than left blank.
+
+The consequence is worth stating plainly, because it limits what these numbers can answer. The RPC and REST surfaces are each mounted behind one wildcard, so every call through them collapses into a single series. Checked against a running API:
+
+```
+http_requests_total{method="GET",route="/healthz",status="200"}  1
+http_requests_total{method="POST",route="/rpc/*",status="200"}   1
+http_requests_total{method="GET",route="/api/*",status="200"}    1
+http_requests_total{method="GET",route="/api/*",status="401"}    1
+```
+
+So error rate and overall latency are answerable, including error rate per surface, which is what the alert in [alerting.md](alerting.md) needs. **Latency for one specific endpoint is not**, because `note.list` and `user.create` are the same series. Resolving that means labelling RPC calls by their procedure path, which is a closed set and therefore safe, unlike the REST paths that carry resource ids. That is worth doing when someone needs per-endpoint latency, and not before.
 
 ## Reaching it
 
