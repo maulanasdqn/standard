@@ -21,10 +21,10 @@ Object storage has no entry because **no object storage credential exists yet**.
 
 That absence is an opportunity: the policy can be written before there is anything to audit. Whoever issues the first key does it under these rules, and adds a row above.
 
-- **One key per application per environment.** Never a shared account key, and never the same key in staging and production. A key that serves two things cannot be revoked for one of them.
-- **Scoped to a single bucket**, named in the policy, not implied by usage.
-- **Scoped to a prefix** where the application uses one. The prefix in the code and the prefix in the policy are stated together, so a reviewer can see whether they match.
-- **Actions limited to what the code calls.** `@app/storage` uses `GET`, `PUT`, and `DELETE` on objects, plus presigned URL generation, which needs no extra grant. It never lists buckets and never touches bucket configuration, so neither should the policy.
-- **No public bucket.** Presigned URLs through `getUrl` are how an object reaches a browser, and they expire.
+- **One key per application per environment.** Never a shared account key, and never the same key in staging and production. A key that serves two things cannot be revoked for one of them
+- **Scoped to a single bucket**, named in the policy, not implied by usage
+- **Scoped to a prefix** where the application uses one. The prefix in the code and the prefix in the policy are stated together, so a reviewer can see whether they match
+- **Actions limited to what the code calls.** `@app/storage` uses `GET`, `PUT`, and `DELETE` on objects, plus presigned URL generation, which needs no extra grant. It never lists buckets and never touches bucket configuration, so neither should the policy
+- **No public bucket.** Presigned URLs through `getUrl` are how an object reaches a browser, and they expire
 
 If a rule cannot be honoured, write the exception in the table above rather than leaving the row optimistic. A credential described as narrower than it is, is worse than one described accurately as broad.

@@ -32,7 +32,7 @@ Notes: ...
 
 <!-- Behavior that changes for existing users/callers, or a new capability unlocked. Write "None" if not applicable. -->
 
-- None.
+- None
 
 ## Version
 

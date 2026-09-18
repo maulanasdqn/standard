@@ -41,11 +41,11 @@ Then point a non-production API at it, run `pnpm --filter @app/api migrate`, and
 
 Quarterly, and before any release that carries a destructive migration:
 
-1. Restore the most recent nightly dump into a scratch database.
-2. Run the migrations against it and confirm the run is clean.
-3. Start an API against it and confirm `GET /ready` answers 200.
-4. Sign in as a seeded user and read one record from each of users, roles, notes, and the activity log.
-5. Record the wall-clock time from step 1 to step 4, and the age of the restored data.
+1. Restore the most recent nightly dump into a scratch database
+2. Run the migrations against it and confirm the run is clean
+3. Start an API against it and confirm `GET /ready` answers 200
+4. Sign in as a seeded user and read one record from each of users, roles, notes, and the activity log
+5. Record the wall-clock time from step 1 to step 4, and the age of the restored data
 
 Step 5 is the output. Those two numbers are the real recovery time and recovery point; anything written in a plan without them is a guess.
 

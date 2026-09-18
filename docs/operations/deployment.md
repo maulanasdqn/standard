@@ -15,10 +15,10 @@ The image is tagged with the root `package.json` version, which is the same valu
 
 Migrations are forward-only and run as a separate step, never on process start, so that two API replicas coming up at once cannot race each other.
 
-1. Build and push the image for the commit.
-2. Run `pnpm --filter @app/api migrate` once, as a job, against the target database.
-3. Roll the API replicas.
-4. Roll the worker replicas.
+1. Build and push the image for the commit
+2. Run `pnpm --filter @app/api migrate` once, as a job, against the target database
+3. Roll the API replicas
+4. Roll the worker replicas
 
 Step 2 before step 3 means the schema must stay backward compatible with the currently running code for the duration of the roll. Add columns as nullable or with a default, and remove them in a later release once nothing reads them.
 
@@ -30,9 +30,9 @@ Step 2 before step 3 means the schema must stay backward compatible with the cur
 
 Three things the compose file encodes on purpose:
 
-- **`STANDARD_IMAGE` is pinned to a tag**, not `latest`. A staging environment that silently drifts to a newer build cannot be used to rehearse a deploy, because you would not know which build you rehearsed.
-- **The api port binds to `127.0.0.1`.** TLS terminates in a reverse proxy in front, which is also what makes `RATE_LIMIT_TRUSTED_PROXY_IPS` meaningful. Exposing the port publicly would defeat both.
-- **Secrets are not shared with production.** Staging exists to be broken, so its credentials must not be worth stealing.
+- **`STANDARD_IMAGE` is pinned to a tag**, not `latest`. A staging environment that silently drifts to a newer build cannot be used to rehearse a deploy, because you would not know which build you rehearsed
+- **The api port binds to `127.0.0.1`.** TLS terminates in a reverse proxy in front, which is also what makes `RATE_LIMIT_TRUSTED_PROXY_IPS` meaningful. Exposing the port publicly would defeat both
+- **Secrets are not shared with production.** Staging exists to be broken, so its credentials must not be worth stealing
 
 Staging is where the things that are currently unrehearsed get rehearsed: a rollback to the previous image tag, and the restore drill in [backup-restore.md](backup-restore.md). Both are written down and neither has been run, because until now there has been nowhere to run them.
 
