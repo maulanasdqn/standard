@@ -1,15 +1,30 @@
 import http, { type Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { match, P } from "ts-pattern";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { storageCreate } from "./storage.ts";
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import {
+	STORAGE_CONTENT_TYPE,
+	STORAGE_MEGABYTE,
+	STORAGE_REJECTION,
+	isStorageRejection,
+} from "./storage-limits.ts";
+import { type TStorageOptions, storageCreate } from "./storage.ts";
+
+const LARGE_KEY = "large";
+const MISSING_KEY = "missing";
+
+const credentials = {
+	accessKeyId: "test-access-key",
+	secretAccessKey: "test-secret-key",
+	bucket: "test-bucket",
+	maxBytes: STORAGE_MEGABYTE,
+	allowedContentTypes: [STORAGE_CONTENT_TYPE.PDF, STORAGE_CONTENT_TYPE.PNG],
+} as const;
 
 describe("storageCreate.getUrl", () => {
 	it("signs a presigned GET url with the requested expiry", async (): Promise<void> => {
 		const storage = storageCreate({
-			accessKeyId: "test-access-key",
-			secretAccessKey: "test-secret-key",
-			bucket: "test-bucket",
+			...credentials,
 			endpoint: "https://storage.example.com",
 		});
 
@@ -24,17 +39,21 @@ describe("storageCreate.getUrl", () => {
 describe("storageCreate against a local server", () => {
 	let server: Server;
 	let endpoint: string;
+	let requests: string[] = [];
+
+	const options = (): TStorageOptions => ({ ...credentials, endpoint });
 
 	beforeAll(async (): Promise<void> => {
-		server = http.createServer((req, res) => {
+		server = http.createServer((req, res): void => {
+			requests.push(req.url ?? "");
 			match(req.url)
-				.with(
-					P.when((url) => Boolean(url?.includes("missing"))),
-					() => {
-						res.writeHead(404).end();
-					},
-				)
-				.otherwise(() => {
+				.with(P.string.includes(MISSING_KEY), (): void => {
+					res.writeHead(404).end();
+				})
+				.with(P.string.includes(LARGE_KEY), (): void => {
+					res.writeHead(200).end("x".repeat(STORAGE_MEGABYTE + 1));
+				})
+				.otherwise((): void => {
 					res.writeHead(200).end("hello");
 				});
 		});
@@ -45,6 +64,10 @@ describe("storageCreate against a local server", () => {
 		endpoint = `http://127.0.0.1:${address.port}`;
 	});
 
+	beforeEach((): void => {
+		requests = [];
+	});
+
 	afterAll(async (): Promise<void> => {
 		await new Promise<void>((resolve) => {
 			server.close(() => resolve());
@@ -52,26 +75,62 @@ describe("storageCreate against a local server", () => {
 	});
 
 	it("returns null for a 404", async (): Promise<void> => {
-		const storage = storageCreate({
-			accessKeyId: "a",
-			secretAccessKey: "b",
-			bucket: "bucket",
-			endpoint,
-		});
-
-		expect(await storage.get("missing-key")).toBeNull();
+		expect(await storageCreate(options()).get(MISSING_KEY)).toBeNull();
 	});
 
 	it("returns the object bytes for a 200", async (): Promise<void> => {
-		const storage = storageCreate({
-			accessKeyId: "a",
-			secretAccessKey: "b",
-			bucket: "bucket",
-			endpoint,
-		});
-
-		const result = await storage.get("present-key");
+		const result = await storageCreate(options()).get("present-key");
 
 		expect(new TextDecoder().decode(result ?? new Uint8Array())).toBe("hello");
+	});
+
+	it("stores a file that is within both limits", async (): Promise<void> => {
+		await storageCreate(options()).put(
+			"ok.pdf",
+			"hello",
+			STORAGE_CONTENT_TYPE.PDF,
+		);
+
+		expect(requests).toHaveLength(1);
+	});
+
+	it("refuses an oversized upload without contacting the bucket", async (): Promise<void> => {
+		const put = storageCreate(options()).put(
+			"big.pdf",
+			new Uint8Array(STORAGE_MEGABYTE + 1),
+			STORAGE_CONTENT_TYPE.PDF,
+		);
+
+		await expect(put).rejects.toSatisfy(
+			(error: unknown): boolean =>
+				isStorageRejection(error) &&
+				error.rejection === STORAGE_REJECTION.TOO_LARGE,
+		);
+		expect(requests).toHaveLength(0);
+	});
+
+	it("refuses a content type outside the allowlist", async (): Promise<void> => {
+		const put = storageCreate(options()).put(
+			"sheet.csv",
+			"a,b",
+			STORAGE_CONTENT_TYPE.CSV,
+		);
+
+		await expect(put).rejects.toSatisfy(
+			(error: unknown): boolean =>
+				isStorageRejection(error) &&
+				error.rejection === STORAGE_REJECTION.CONTENT_TYPE_NOT_ALLOWED,
+		);
+		expect(requests).toHaveLength(0);
+	});
+
+	it("refuses to read an object larger than the limit", async (): Promise<void> => {
+		const get = storageCreate(options()).get(LARGE_KEY);
+
+		await expect(get).rejects.toSatisfy(
+			(error: unknown): boolean =>
+				isStorageRejection(error) &&
+				error.rejection === STORAGE_REJECTION.TOO_LARGE,
+		);
 	});
 });

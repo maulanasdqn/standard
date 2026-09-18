@@ -1,5 +1,11 @@
 import { AwsClient } from "aws4fetch";
-import { match } from "ts-pattern";
+import { match, P } from "ts-pattern";
+import {
+	type TStorageLimits,
+	type TStorageRejectionError,
+	storagePutRejection,
+	storageReadRejection,
+} from "./storage-limits.ts";
 
 export const STORAGE_TIMEOUT_MS = 10_000;
 export const STORAGE_URL_EXPIRY_SECONDS = 3_600;
@@ -14,12 +20,15 @@ const HTTP_STATUS = {
 } as const;
 
 const CONTENT_TYPE_HEADER = "content-type";
+const CONTENT_LENGTH_HEADER = "content-length";
 
 export type TStorageOptions = {
 	accessKeyId: string;
 	secretAccessKey: string;
 	bucket: string;
 	endpoint: string;
+	maxBytes: number;
+	allowedContentTypes: readonly string[];
 	region?: string;
 	timeoutMs?: number;
 };
@@ -28,7 +37,7 @@ export type TStorage = {
 	put: (
 		key: string,
 		body: Uint8Array | string,
-		contentType?: string,
+		contentType: string,
 	) => Promise<void>;
 	get: (key: string) => Promise<Uint8Array | null>;
 	remove: (key: string) => Promise<void>;
@@ -41,6 +50,16 @@ const objectUrl = (options: TStorageOptions, key: string): string =>
 const failedOn = (action: string, key: string, status: number): Error =>
 	new Error(`storage ${action} failed for "${key}": ${status}`);
 
+const rejectionThrow = (rejection: TStorageRejectionError | null): void =>
+	match(rejection)
+		.with(P.nonNullable, (found): void => {
+			throw found;
+		})
+		.otherwise((): void => undefined);
+
+const declaredByteLength = (response: Response): number =>
+	Number(response.headers.get(CONTENT_LENGTH_HEADER) ?? 0);
+
 export const storageCreate = (options: TStorageOptions): TStorage => {
 	const client = new AwsClient({
 		accessKeyId: options.accessKeyId,
@@ -51,13 +70,20 @@ export const storageCreate = (options: TStorageOptions): TStorage => {
 
 	const timeoutMs = options.timeoutMs ?? STORAGE_TIMEOUT_MS;
 
+	const limits: TStorageLimits = {
+		maxBytes: options.maxBytes,
+		allowedContentTypes: options.allowedContentTypes,
+	};
+
 	const signal = (): AbortSignal => AbortSignal.timeout(timeoutMs);
 
 	const put: TStorage["put"] = async (key, body, contentType) => {
+		rejectionThrow(storagePutRejection(limits, key, body, contentType));
+
 		const response = await client.fetch(objectUrl(options, key), {
 			method: HTTP_METHOD.PUT,
 			body,
-			headers: contentType ? { [CONTENT_TYPE_HEADER]: contentType } : undefined,
+			headers: { [CONTENT_TYPE_HEADER]: contentType },
 			signal: signal(),
 		});
 
@@ -81,10 +107,14 @@ export const storageCreate = (options: TStorageOptions): TStorage => {
 			.with({ ok: false }, (found): Promise<Uint8Array | null> => {
 				throw failedOn("get", key, found.status);
 			})
-			.otherwise(
-				async (found): Promise<Uint8Array | null> =>
-					new Uint8Array(await found.arrayBuffer()),
-			);
+			.otherwise(async (found): Promise<Uint8Array | null> => {
+				rejectionThrow(
+					storageReadRejection(limits, key, declaredByteLength(found)),
+				);
+				const bytes = new Uint8Array(await found.arrayBuffer());
+				rejectionThrow(storageReadRejection(limits, key, bytes.byteLength));
+				return bytes;
+			});
 	};
 
 	const remove: TStorage["remove"] = async (key) => {
