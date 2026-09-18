@@ -1,6 +1,7 @@
 import "#/bootstrap/polyfill.ts";
 
 import { jobWorkerCreate } from "@app/queue";
+import { activityModule } from "#/activity/index.ts";
 import { Effect } from "effect";
 import { runtime } from "#/bootstrap/compose.ts";
 import { CacheService } from "#/platform/cache/redis.ts";
@@ -15,6 +16,7 @@ import {
 } from "#/worker/job-handler.ts";
 
 const EXIT_FAILURE = 1;
+const PRUNE_INTERVAL_MS = 86_400_000;
 
 const queue = await runtime.runPromise(
 	QueueService.use((service) => Effect.succeed(service)),
@@ -41,3 +43,22 @@ await jobWorkerCreate<TExampleJobPayload>({
 });
 
 logger.info({ env: env.NODE_ENV }, "worker started");
+
+const prune = async (): Promise<void> => {
+	const removed = await runtime
+		.runPromise(activityModule.prune(env.ACTIVITY_RETENTION_DAYS))
+		.catch((cause: unknown): number => {
+			logger.error({ err: cause }, "activity prune failed");
+			return 0;
+		});
+
+	logger.info(
+		{ removed, retentionDays: env.ACTIVITY_RETENTION_DAYS },
+		"activity prune finished",
+	);
+};
+
+await prune();
+setInterval((): void => {
+	void prune();
+}, PRUNE_INTERVAL_MS).unref();

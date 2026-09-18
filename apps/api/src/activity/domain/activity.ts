@@ -21,6 +21,20 @@ export type TActivityReader = {
 	) => Effect.Effect<TRowPage<TActivityRow>, EDatabase>;
 };
 
+export type TActivityPruner = {
+	deleteOlderThan: (
+		cutoff: Date,
+		batchSize: number,
+	) => Effect.Effect<number, EDatabase>;
+};
+
+export type TActivityPrunerId = TServiceId<typeof REPO_TAG.ACTIVITY_PRUNER>;
+
+export const ActivityPruner = Context.Service<
+	TActivityPrunerId,
+	TActivityPruner
+>(REPO_TAG.ACTIVITY_PRUNER);
+
 export type TActivityRepoId = TServiceId<typeof REPO_TAG.ACTIVITY>;
 
 export const ActivityRepo = Context.Service<TActivityRepoId, TActivityReader>(

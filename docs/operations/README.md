@@ -9,6 +9,7 @@ What it takes to run this stack somewhere other than a laptop, and what to do wh
 | [runbooks.md](runbooks.md) | What to do when a specific thing breaks |
 | [alerting.md](alerting.md) | What pages someone, at what threshold, and who |
 | [credentials.md](credentials.md) | What each credential actually allows, next to what the application restricts itself to |
+| [retention.md](retention.md) | What is kept, for how long, and what deletes it |
 
 ## Processes
 
