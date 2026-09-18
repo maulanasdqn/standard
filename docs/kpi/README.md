@@ -1,6 +1,6 @@
 # Engineering Standards Compliance Matrix
 
-The external engineering standards this matrix tracks are a **spec-review rubric**, not measured KPIs: they list what every Engineering Spec and every build must already answer. This document splits the rubric into 37 checkable standards, adds 16 the rubric never asks for but this boilerplate already ships, ranks all 53 P0–P3, and records where this repository stands on each.
+The engineering standards this matrix tracks are a **spec-review rubric**, not measured KPIs: they list what every Engineering Spec and every build must already answer. This document splits the rubric into 37 checkable standards, adds 16 the rubric never asks for but this boilerplate already ships, ranks all 53 P0–P3, and records where this repository stands on each.
 
 ## How to read this
 
