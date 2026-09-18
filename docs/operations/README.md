@@ -8,6 +8,7 @@ What it takes to run this stack somewhere other than a laptop, and what to do wh
 | [backup-restore.md](backup-restore.md) | What is backed up, how often, and how a restore is proven to work |
 | [runbooks.md](runbooks.md) | What to do when a specific thing breaks |
 | [alerting.md](alerting.md) | What pages someone, at what threshold, and who |
+| [credentials.md](credentials.md) | What each credential actually allows, next to what the application restricts itself to |
 
 ## Processes
 
