@@ -13,6 +13,7 @@ So every credential below is described twice: what the provider actually grants,
 | `RABBITMQ_URL` | Full access to the virtual host | The queues named in `QUEUE_NAME` plus their `.retry` and `.dlq` siblings | On exposure |
 | `SMTP_URL` | Send as the configured account | Outbound mail only, from `MAIL_FROM` | On exposure |
 | `BETTER_AUTH_SECRET` | Signs and verifies every session | Session tokens only. Refused at boot below 32 characters | On exposure, which invalidates every session |
+| `METRICS_TOKEN` | Reads `/metrics` on the api: request counts and durations by route and status, plus process memory, CPU and event loop figures | Nothing else. It authorises no application route and carries no session | On exposure. Rotating it only interrupts scraping |
 
 Object storage has no entry because **no object storage credential exists yet**. `@app/storage` is written and tested but imported by nothing, and there is no S3 environment variable in `apps/api/.env.example` or `env-schema.ts`.
 

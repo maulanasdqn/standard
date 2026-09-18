@@ -31,6 +31,10 @@ The backup alert fires at 26 hours rather than 24 so that a nightly job which me
 
 ## What is not wired yet
 
-There is no metrics pipeline. `apps/api/src/main.ts` emits structured request logs through pino with `reqId`, method, path, status and duration, and that is the only signal the application produces today. Every alert above therefore has to be driven by either an external HTTP probe against `/healthz` and `/ready`, log-based rules over the request lines, or the broker's and database's own metrics.
+The error rate and latency alerts now have a source. `GET /metrics` serves `http_requests_total` and `http_request_duration_seconds` labelled by method, matched route and status, so the 2% threshold above is a query rather than a log search. See [metrics.md](metrics.md) for what is exposed and the token that guards it. What is still missing is a Prometheus that scrapes it, which is a hosting decision rather than code.
 
-Error rate and latency alerts need the request logs shipped somewhere queryable. That is the dependency to close first, and it is tracked as the `Monitoring beyond logs` row in [../kpi/README.md](../kpi/README.md).
+Readiness and liveness alerts stay HTTP probes against `/ready` and `/healthz`, because a process too sick to answer a probe is also too sick to be scraped.
+
+Queue depth, dead letter depth and backup age are not application metrics and are not exposed here. They come from the broker's own metrics and from whatever runs the backup. The mail alert stays a log rule, because `mail.send.failed` carries the template that failed and a counter would lose it.
+
+There is still no tracing, so a slow request can be seen but not followed. That is what keeps the `Monitoring beyond logs` row in [../kpi/README.md](../kpi/README.md) open.

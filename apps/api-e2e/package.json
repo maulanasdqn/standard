@@ -9,6 +9,7 @@
 	},
 	"devDependencies": {
 		"@app/api": "workspace:*",
+		"@app/metrics": "workspace:*",
 		"@app/permissions": "workspace:*",
 		"@app/queue": "workspace:*",
 		"@app/schemas": "workspace:*",

@@ -71,6 +71,7 @@ The root `package.json` version is the single source of truth for the workspace.
 | `GET /healthz` | `{ status, version }`, liveness only: the process answers, nothing is probed |
 | `GET /ready` | `{ status, version, dependencies }`, and **503** when any dependency is down |
 | `/health` on the web (no auth) | its own version next to the API's |
+| `GET /metrics` | Prometheus text: request counts and durations by method, matched route and status, plus process figures. Guarded by `METRICS_TOKEN`, and required to be in production. See [docs/operations/metrics.md](docs/operations/metrics.md) |
 
 The shape is `healthSchema` in `@app/schemas`, so the web page is typed against what the API returns; the two versions differing means web and API are deployed out of step.
 

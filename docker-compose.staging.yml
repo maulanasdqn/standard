@@ -25,6 +25,8 @@ services:
       LOG_LEVEL: ${LOG_LEVEL:-info}
       LOG_TRANSPORT_TARGET: ${LOG_TRANSPORT_TARGET}
       LOG_TRANSPORT_OPTIONS: ${LOG_TRANSPORT_OPTIONS}
+      METRICS_ENABLED: ${METRICS_ENABLED:-true}
+      METRICS_TOKEN: ${METRICS_TOKEN}
     ports:
       - "127.0.0.1:3001:3001"
     healthcheck:
@@ -53,6 +55,7 @@ services:
       WEB_ORIGIN: ${WEB_ORIGIN}
       ACTIVITY_RETENTION_DAYS: ${ACTIVITY_RETENTION_DAYS:-90}
       LOG_LEVEL: ${LOG_LEVEL:-info}
+      METRICS_ENABLED: "false"
 
   postgres:
     image: postgres:17-alpine

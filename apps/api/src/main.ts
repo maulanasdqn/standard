@@ -1,6 +1,7 @@
 import "#/bootstrap/polyfill.ts";
 
 import { serve } from "@hono/node-server";
+import { metricsRouteNormalise } from "@app/metrics";
 import { Effect } from "effect";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
@@ -10,9 +11,11 @@ import { AuthService } from "#/auth/infrastructure/auth-service.ts";
 import { CacheService } from "#/platform/cache/redis.ts";
 import { env } from "#/platform/config/env.ts";
 import { logger } from "#/platform/observability/logger.ts";
+import { metrics } from "#/platform/observability/metrics.ts";
 import { authMount } from "#/auth/presentation/mount-auth.ts";
 import { healthModule, healthMount } from "#/health/index.ts";
 import { orpcMount } from "#/platform/http/mount-orpc.ts";
+import { metricsMount } from "#/platform/http/mount-metrics.ts";
 import { rateLimitMount } from "#/platform/http/mount-rate-limit.ts";
 import { webDistMount } from "#/platform/http/mount-web-dist.ts";
 import type { TORPCContext } from "#/platform/orpc/context.ts";
@@ -50,15 +53,24 @@ app.use("*", async (context, next): Promise<void> => {
 	const reqId = context.get("requestId");
 	const start = Date.now();
 	await next();
+	const durMs = Date.now() - start;
+
 	logger.info(
 		{
 			reqId,
 			method: context.req.method,
 			path: context.req.path,
 			status: context.res.status,
-			durMs: Date.now() - start,
+			durMs,
 		},
 		"request",
+	);
+
+	metrics.requestObserve(
+		context.req.method,
+		metricsRouteNormalise(context.req.routePath),
+		context.res.status,
+		durMs,
 	);
 });
 
@@ -74,6 +86,11 @@ app.use(
 
 healthMount(app, {
 	readiness: () => runtime.runPromise(healthModule.readiness()),
+});
+metricsMount(app, {
+	metrics,
+	enabled: env.METRICS_ENABLED,
+	token: env.METRICS_TOKEN,
 });
 rateLimitMount(app, cacheClient);
 authMount(app, auth);
