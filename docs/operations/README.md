@@ -27,7 +27,7 @@ The worker is not optional. Without it, published jobs accumulate in their queue
 |---|---|---|
 | Postgres | Both | Total outage. Readiness fails and the API stops accepting traffic |
 | Redis | API | Rate limiting fails closed and job de-duplication stops, so requests are rejected rather than served wrongly |
-| RabbitMQ | Both | Job publishing fails. HTTP requests that do not publish jobs keep working |
+| RabbitMQ | Worker, and the api only when it publishes | The api starts and serves HTTP without it, because the connection is opened on first use rather than at boot. Publishing fails with a queue error and reconnects on the next attempt. The worker waits for the broker at startup |
 | SMTP | API | Mail silently stops. Nothing else is affected |
 
 ## Environments
