@@ -10,7 +10,11 @@ import { env } from "#/platform/config/env.ts";
 import { logger } from "#/platform/observability/logger.ts";
 import { jobDedupeCreate } from "#/platform/queue/job-dedupe.ts";
 import { QUEUE_NAME } from "#/platform/queue/queue-names.ts";
-import { QueueService, queueChannelAwait } from "#/platform/queue/rabbitmq.ts";
+import {
+	QueueService,
+	queueConnectionAwait,
+	queueConnectionWatch,
+} from "#/platform/queue/rabbitmq.ts";
 import {
 	exampleJobProcess,
 	type TExampleJobPayload,
@@ -32,16 +36,21 @@ logger.info(
 	"worker waiting for the broker",
 );
 
-const channel = await runtime
-	.runPromise(queueChannelAwait(queue))
+const connection = await runtime
+	.runPromise(queueConnectionAwait(queue))
 	.catch((cause: unknown): never => {
 		logger.error({ err: cause }, "worker gave up waiting for the broker");
 		process.exit(EXIT_FAILURE);
 	});
 
+queueConnectionWatch(connection.model, (reason, cause): void => {
+	logger.error({ err: cause, reason }, "worker.broker.lost");
+	process.exit(EXIT_FAILURE);
+});
+
 await jobWorkerCreate<TExampleJobPayload>({
 	name: QUEUE_NAME.EXAMPLE,
-	channel,
+	channel: connection.channel,
 	handler: exampleJobProcess,
 	dedupe: jobDedupeCreate(client),
 	onError: (cause, message): void => {
