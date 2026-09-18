@@ -53,6 +53,17 @@ Staging is where the things that are currently unrehearsed get rehearsed: a roll
 
 Point the orchestrator's liveness probe at `/healthz` and its readiness probe at `/ready`. Wiring liveness to `/ready` causes a restart loop during any dependency blip.
 
+## Object storage
+
+The api refuses to start without `STORAGE_ENDPOINT`, `STORAGE_BUCKET` and a key pair, the same way it refuses to start without a database. Note attachments are written through it, and a build that cannot reach a bucket would accept an upload it cannot keep.
+
+Two rules the environment has to satisfy:
+
+- **The endpoint is HTTPS in production.** `envSchema` refuses to start otherwise, because the request carries a signed credential. A store running inside the cluster is fine, but it terminates TLS like anything else
+- **The bucket is private.** Objects reach the browser through presigned links that expire after `STORAGE_URL_EXPIRY_SECONDS`, never through public read
+
+Storage is deliberately **not** part of `/ready`. A bucket outage stops image uploads and leaves every other route working, so taking the instance out of rotation for it would turn a degraded feature into an outage. The failure surfaces as a `storage` error in the logs and as a message to the person uploading.
+
 ## Rollback
 
 Roll back by deploying the previous image tag. Confirm with `/health`, which reports the version that is actually running.

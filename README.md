@@ -12,6 +12,7 @@ Full-stack TypeScript boilerplate: moon + pnpm workspaces, Hono + oRPC, Drizzle,
 | Auth | better-auth, one role per user |
 | Jobs | RabbitMQ + Redis |
 | Mail | nodemailer over SMTP, mailpit in dev |
+| Files | S3 compatible object storage through `@app/storage`, MinIO in dev |
 | Web | React 19, TanStack (Router, Query, Form, Store), Vite, Tailwind v4, shadcn/ui |
 | Quality | Biome, Vitest, Playwright |
 
@@ -64,6 +65,8 @@ Seed logins: `admin@test.app` / `Password123`, `member@test.app` / `Password123`
 
 Mail sent in development is caught by mailpit, read it at `http://localhost:8025`.
 
+Uploaded images go to MinIO, whose console is at `http://localhost:9101` with the same credentials as the api.
+
 ## Version and Health
 
 The root `package.json` version is the single source of truth for the workspace. `@app/version` re-exports it as `APP_VERSION` (a plain JSON import, no build step and no generated file), and both sides serve it:
@@ -87,7 +90,7 @@ Every command goes through `make` or `moon`; nothing shells into a package direc
 ```sh
 make help                             # every target, with a one-line description
 make setup                            # services + migrate + seed
-make services | services-stop         # docker: postgres, redis, rabbitmq, mailpit
+make services | services-stop         # docker: postgres, redis, rabbitmq, mailpit, minio
 make api | web | worker               # run one process
 make db-migrate | db-seed | db-studio # database
 make check | lint | test | build      # quality gates

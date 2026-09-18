@@ -15,6 +15,7 @@ const ENV_KEY = {
 	BETTER_AUTH_URL: "BETTER_AUTH_URL",
 	WEB_ORIGIN: "WEB_ORIGIN",
 	METRICS_TOKEN: "METRICS_TOKEN",
+	STORAGE_ENDPOINT: "STORAGE_ENDPOINT",
 } as const;
 
 const ENV_VALIDATION_MESSAGE = {
@@ -95,6 +96,13 @@ export const envSchema = z
 		DATABASE_URL: z.string().min(1),
 		REDIS_URL: z.string().min(1),
 		RABBITMQ_URL: z.string().min(1),
+		STORAGE_ENDPOINT: z.url(),
+		STORAGE_BUCKET: z.string().min(1),
+		STORAGE_ACCESS_KEY_ID: z.string().min(1),
+		STORAGE_SECRET_ACCESS_KEY: z.string().min(1),
+		STORAGE_REGION: z.string().min(1).default("auto"),
+		STORAGE_MAX_BYTES: z.coerce.number().int().positive().default(5_242_880),
+		STORAGE_URL_EXPIRY_SECONDS: z.coerce.number().int().positive().default(900),
 		SMTP_URL: z.string().min(1).default("smtp://localhost:1025"),
 		MAIL_FROM: z.string().min(1).default("Standard <no-reply@standard.test>"),
 		BETTER_AUTH_URL: z.url(),
@@ -140,6 +148,15 @@ export const envSchema = z
 						context.addIssue({
 							code: "custom",
 							path: [ENV_KEY.WEB_ORIGIN],
+							message: ENV_VALIDATION_MESSAGE.HTTPS_REQUIRED,
+						});
+					});
+				match(new URL(env.STORAGE_ENDPOINT).protocol)
+					.with(URL_PROTOCOL.HTTPS, (): void => undefined)
+					.otherwise((): void => {
+						context.addIssue({
+							code: "custom",
+							path: [ENV_KEY.STORAGE_ENDPOINT],
 							message: ENV_VALIDATION_MESSAGE.HTTPS_REQUIRED,
 						});
 					});

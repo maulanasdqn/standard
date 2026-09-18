@@ -9,12 +9,20 @@ export const STORAGE_CONTENT_TYPE = {
 	PNG: "image/png",
 	JPEG: "image/jpeg",
 	WEBP: "image/webp",
+	GIF: "image/gif",
 	CSV: "text/csv",
 	PLAIN_TEXT: "text/plain",
 } as const;
 
 export type TStorageContentType =
 	(typeof STORAGE_CONTENT_TYPE)[keyof typeof STORAGE_CONTENT_TYPE];
+
+export const STORAGE_IMAGE_CONTENT_TYPES: readonly TStorageContentType[] = [
+	STORAGE_CONTENT_TYPE.PNG,
+	STORAGE_CONTENT_TYPE.JPEG,
+	STORAGE_CONTENT_TYPE.WEBP,
+	STORAGE_CONTENT_TYPE.GIF,
+];
 
 export const STORAGE_REJECTION = {
 	TOO_LARGE: "too-large",

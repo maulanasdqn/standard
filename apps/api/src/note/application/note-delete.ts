@@ -7,6 +7,10 @@ import {
 	ActivityRecorder,
 	type TActivityRecorderId,
 } from "#/shared/activity-recorder.ts";
+import {
+	NoteAttachmentRepo,
+	type TNoteAttachmentRepoId,
+} from "#/note/domain/note-attachment.ts";
 import { NoteRepo, type TNoteRepoId } from "#/note/domain/note.ts";
 import type { TOwnershipActor } from "#/shared/authorization/owned-entity.ts";
 
@@ -16,10 +20,14 @@ export const noteDelete = Effect.fn("noteDelete")(function* (
 ): Effect.fn.Return<
 	{ id: string },
 	ENotFound | EDatabase,
-	TNoteRepoId | TActivityRecorderId
+	TNoteRepoId | TNoteAttachmentRepoId | TActivityRecorderId
 > {
 	const noteRepo = yield* NoteRepo;
+	const attachmentRepo = yield* NoteAttachmentRepo;
 	const activityRepo = yield* ActivityRecorder;
+
+	yield* attachmentRepo.reapClaimForNote(id, new Date());
+
 	const removed = yield* noteRepo.remove(id, actor);
 
 	if (!removed) {

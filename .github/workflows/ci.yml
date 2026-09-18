@@ -94,12 +94,19 @@ jobs:
       DATABASE_URL: postgres://app:app@localhost:5432/app
       REDIS_URL: redis://localhost:6379
       RABBITMQ_URL: amqp://app:app@localhost:5672
+      STORAGE_ENDPOINT: http://localhost:9100
+      STORAGE_BUCKET: standard
+      STORAGE_ACCESS_KEY_ID: app
+      STORAGE_SECRET_ACCESS_KEY: appsecret
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - uses: ./.github/actions/setup-workspace
+
+      - name: Start object storage
+        run: ./.github/scripts/storage-up.sh
 
       - run: moon run api-e2e:e2e
 
@@ -147,12 +154,19 @@ jobs:
       DATABASE_URL: postgres://app:app@localhost:5432/app
       REDIS_URL: redis://localhost:6379
       RABBITMQ_URL: amqp://app:app@localhost:5672
+      STORAGE_ENDPOINT: http://localhost:9100
+      STORAGE_BUCKET: standard
+      STORAGE_ACCESS_KEY_ID: app
+      STORAGE_SECRET_ACCESS_KEY: appsecret
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - uses: ./.github/actions/setup-workspace
+
+      - name: Start object storage
+        run: ./.github/scripts/storage-up.sh
 
       - name: Restore Playwright browsers
         id: playwright-cache

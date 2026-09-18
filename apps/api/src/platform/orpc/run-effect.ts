@@ -1,3 +1,4 @@
+import { ERROR_MESSAGE } from "@app/messages";
 import { ORPCError } from "@orpc/server";
 import { Effect } from "effect";
 import { match } from "ts-pattern";
@@ -42,6 +43,13 @@ const toORPCError = (error: TDomainError): ORPCError<string, undefined> =>
 			{ _tag: ERROR_TAG.AUTH },
 			(): ORPCError<string, undefined> =>
 				new ORPCError("INTERNAL_SERVER_ERROR", { message: "Auth error" }),
+		)
+		.with(
+			{ _tag: ERROR_TAG.STORAGE },
+			(): ORPCError<string, undefined> =>
+				new ORPCError("INTERNAL_SERVER_ERROR", {
+					message: ERROR_MESSAGE.STORAGE,
+				}),
 		)
 		.with(
 			{ _tag: ERROR_TAG.QUEUE },

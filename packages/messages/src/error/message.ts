@@ -5,6 +5,7 @@ export const ERROR_MESSAGE = {
 	SERVER_UNREACHABLE_NEXT:
 		"Your session is still valid. Try again once the connection is back.",
 	INTERNAL: "Something went wrong on our side. The failure has been logged.",
+	STORAGE: "The file store could not be reached. Nothing was changed.",
 	UNEXPECTED_TITLE: "Something went wrong",
 	UNEXPECTED_BODY: "This page could not be loaded.",
 	UNEXPECTED_NEXT: "Nothing was saved or lost. Try again.",
