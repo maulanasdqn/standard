@@ -14,6 +14,7 @@ An alert without a named owner is a notification nobody acts on, so every alert 
 | Dead letter queue non-empty | `<queue>.dlq` depth above 0 for 15 minutes | Ticket | [Jobs are piling up](runbooks.md#jobs-are-piling-up-in-the-dead-letter-queue) | fradotech |
 | Queue backlog | Main queue depth above 1000, or rising for 30 minutes | Ticket | [Jobs are not being processed](runbooks.md#jobs-are-not-being-processed-at-all) | fradotech |
 | Mail send failures | Any `mail.send.failed` log event in 15 minutes | Ticket | [Password reset emails are not arriving](runbooks.md#password-reset-emails-are-not-arriving) | fradotech |
+| Job consumer failures | Any `job.consume.failed` log event in 15 minutes | Ticket | [A job could not be consumed at all](runbooks.md#a-job-could-not-be-consumed-at-all) | fradotech |
 | Backup missing | No successful dump in 26 hours | Ticket | [backup-restore.md](backup-restore.md) | fradotech |
 | Restore drill overdue | No recorded drill in 100 days | Ticket | [The drill](backup-restore.md#the-drill) | fradotech |
 

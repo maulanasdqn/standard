@@ -1,4 +1,5 @@
 import type { Channel, ConsumeMessage, Options } from "amqplib";
+import { match, P } from "ts-pattern";
 import { describe, expect, it, vi } from "vitest";
 import { jobDedupeFake } from "./job-dedupe.ts";
 import { deadLetterQueueNameOf, retryQueueNameOf } from "./job-names.ts";
@@ -26,6 +27,7 @@ type TChannelFake = {
 	asserted: string[];
 	acked: ConsumeMessage[];
 	deliver: (message: ConsumeMessage) => Promise<void>;
+	failAck: (reason: string) => void;
 };
 
 const flush = async (): Promise<void> => {
@@ -41,6 +43,11 @@ const channelFake = (): TChannelFake => {
 	const asserted: string[] = [];
 	const acked: ConsumeMessage[] = [];
 	let consumer: ((message: ConsumeMessage | null) => void) | null = null;
+	let ackFailure: string | null = null;
+
+	const failAck = (reason: string): void => {
+		ackFailure = reason;
+	};
 
 	const channel = {
 		assertQueue: async (queue: string): Promise<unknown> => {
@@ -64,7 +71,13 @@ const channelFake = (): TChannelFake => {
 			return true;
 		},
 		ack: (message: ConsumeMessage): void => {
-			acked.push(message);
+			match(ackFailure)
+				.with(P.nullish, (): void => {
+					acked.push(message);
+				})
+				.otherwise((reason): void => {
+					throw new Error(reason);
+				});
 		},
 		nack: (): void => undefined,
 	} as unknown as Channel;
@@ -74,8 +87,15 @@ const channelFake = (): TChannelFake => {
 		await flush();
 	};
 
-	return { channel, sent, asserted, acked, deliver };
+	return { channel, sent, asserted, acked, deliver, failAck };
 };
+
+const malformedMessage = (): ConsumeMessage =>
+	({
+		content: Buffer.from("{ this is not json"),
+		fields: { routingKey: QUEUE },
+		properties: { messageId: MESSAGE_ID, headers: {} },
+	}) as unknown as ConsumeMessage;
 
 const messageOf = (attempt?: number): ConsumeMessage =>
 	({
@@ -162,6 +182,98 @@ describe("jobWorkerCreate", () => {
 		expect(fake.sent).toHaveLength(1);
 		expect(fake.sent[0]?.queue).toBe(deadLetterQueueNameOf(QUEUE));
 		expect(fake.acked).toHaveLength(1);
+	});
+
+	it("dead letters a malformed payload instead of leaving it unacked", async () => {
+		const fake = channelFake();
+		const handler = vi.fn(async (): Promise<void> => undefined);
+		const onError = vi.fn();
+
+		await jobWorkerCreate({
+			name: QUEUE,
+			channel: fake.channel,
+			handler,
+			dedupe: jobDedupeFake(),
+			retry: RETRY_POLICY,
+			onError,
+		});
+		await fake.deliver(malformedMessage());
+
+		expect(handler).not.toHaveBeenCalled();
+		expect(fake.sent).toHaveLength(1);
+		expect(fake.sent[0]?.queue).toBe(deadLetterQueueNameOf(QUEUE));
+		expect(fake.acked).toHaveLength(1);
+		expect(onError).not.toHaveBeenCalled();
+	});
+
+	it("retries rather than dead letters when the dedupe claim itself fails", async () => {
+		const fake = channelFake();
+		const onError = vi.fn();
+		const dedupe = {
+			claim: async (): Promise<boolean> => {
+				throw new Error("cache unreachable");
+			},
+			release: async (): Promise<void> => undefined,
+		};
+
+		await jobWorkerCreate({
+			name: QUEUE,
+			channel: fake.channel,
+			handler: async (): Promise<void> => undefined,
+			dedupe,
+			retry: RETRY_POLICY,
+			onError,
+		});
+		await fake.deliver(messageOf());
+
+		expect(fake.sent).toHaveLength(1);
+		expect(fake.sent[0]?.queue).toBe(retryQueueNameOf(QUEUE));
+		expect(fake.acked).toHaveLength(1);
+		expect(onError).toHaveBeenCalledTimes(1);
+	});
+
+	it("still retries and acks when releasing the claim fails", async () => {
+		const fake = channelFake();
+		const dedupe = {
+			claim: async (): Promise<boolean> => true,
+			release: async (): Promise<void> => {
+				throw new Error("cache unreachable");
+			},
+		};
+
+		await jobWorkerCreate({
+			name: QUEUE,
+			channel: fake.channel,
+			handler: async (): Promise<void> => {
+				throw new Error("boom");
+			},
+			dedupe,
+			retry: RETRY_POLICY,
+		});
+		await fake.deliver(messageOf());
+
+		expect(fake.sent).toHaveLength(1);
+		expect(fake.sent[0]?.queue).toBe(retryQueueNameOf(QUEUE));
+		expect(fake.acked).toHaveLength(1);
+	});
+
+	it("reports rather than rejects when the channel itself fails", async () => {
+		const fake = channelFake();
+		const onError = vi.fn();
+
+		fake.failAck("channel closed");
+
+		await jobWorkerCreate({
+			name: QUEUE,
+			channel: fake.channel,
+			handler: async (): Promise<void> => undefined,
+			dedupe: jobDedupeFake(),
+			onError,
+		});
+		await fake.deliver(messageOf());
+
+		expect(onError).toHaveBeenCalledTimes(1);
+		expect(onError.mock.calls[0]?.[0]).toBeInstanceOf(Error);
 	});
 
 	it("processes a repeated message id only once", async () => {

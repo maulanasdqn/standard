@@ -44,6 +44,16 @@ await jobWorkerCreate<TExampleJobPayload>({
 	channel,
 	handler: exampleJobProcess,
 	dedupe: jobDedupeCreate(client),
+	onError: (cause, message): void => {
+		logger.error(
+			{
+				err: cause,
+				queue: QUEUE_NAME.EXAMPLE,
+				messageId: message.properties.messageId,
+			},
+			"job.consume.failed",
+		);
+	},
 });
 
 logger.info({ env: env.NODE_ENV }, "worker started");

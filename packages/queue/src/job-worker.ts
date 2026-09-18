@@ -33,7 +33,21 @@ export type TJobWorkerOptions<TPayload> = {
 	handler: TJobHandler<TPayload>;
 	dedupe: TJobDedupe;
 	retry?: TJobRetryPolicy;
+	onError?: TJobErrorReporter;
 };
+
+export type TJobErrorReporter = (
+	error: unknown,
+	message: ConsumeMessage,
+) => void;
+
+type TPayloadDecoded<TPayload> =
+	| { ok: true; payload: TPayload }
+	| { ok: false };
+
+type TClaimOutcome =
+	| { ok: true; claimed: boolean }
+	| { ok: false; error: unknown };
 
 const messageIdOf = (message: ConsumeMessage): string | undefined =>
 	message.properties.messageId ?? undefined;
@@ -91,9 +105,12 @@ export const jobWorkerCreate = async <TPayload>(
 		});
 	};
 
+	const releaseSafe = (message: ConsumeMessage): Promise<void> =>
+		releaseFor(message).catch((): void => undefined);
+
 	const onFailure = async (message: ConsumeMessage): Promise<void> => {
 		const attempt = attemptOf(message);
-		await releaseFor(message);
+		await releaseSafe(message);
 
 		match(attempt >= policy.maxAttempts)
 			.with(true, (): void => publishDeadLetter(message))
@@ -102,23 +119,68 @@ export const jobWorkerCreate = async <TPayload>(
 		channel.ack(message);
 	};
 
+	const onPoison = async (message: ConsumeMessage): Promise<void> => {
+		await releaseSafe(message);
+		publishDeadLetter(message);
+		channel.ack(message);
+	};
+
+	const payloadDecode = (
+		message: ConsumeMessage,
+	): TPayloadDecoded<TPayload> => {
+		try {
+			return {
+				ok: true,
+				payload: JSON.parse(message.content.toString()) as TPayload,
+			};
+		} catch {
+			return { ok: false };
+		}
+	};
+
+	const runHandler = (
+		message: ConsumeMessage,
+		payload: TPayload,
+	): Promise<void> =>
+		handler(payload, message)
+			.then((): void => channel.ack(message))
+			.catch((): Promise<void> => onFailure(message));
+
+	const claimOutcome = async (
+		message: ConsumeMessage,
+	): Promise<TClaimOutcome> => {
+		try {
+			return { ok: true, claimed: await claimFor(message) };
+		} catch (error) {
+			return { ok: false, error };
+		}
+	};
+
 	const processMessage = async (message: ConsumeMessage): Promise<void> =>
-		match(await claimFor(message))
-			.with(false, async (): Promise<void> => {
+		match(await claimOutcome(message))
+			.with({ ok: false }, ({ error }): Promise<void> => {
+				options.onError?.(error, message);
+				return onFailure(message);
+			})
+			.with({ claimed: false }, async (): Promise<void> => {
 				channel.ack(message);
 			})
-			.otherwise(async (): Promise<void> => {
-				const payload = JSON.parse(message.content.toString()) as TPayload;
-				return handler(payload, message)
-					.then((): void => channel.ack(message))
-					.catch((): Promise<void> => onFailure(message));
-			});
+			.otherwise(
+				(): Promise<void> =>
+					match(payloadDecode(message))
+						.with({ ok: false }, (): Promise<void> => onPoison(message))
+						.otherwise(
+							({ payload }): Promise<void> => runHandler(message, payload),
+						),
+			);
 
 	await channel.consume(name, (message): void => {
 		match(message)
 			.with(P.nullish, (): void => undefined)
 			.otherwise((found): void => {
-				void processMessage(found);
+				void processMessage(found).catch((error): void => {
+					options.onError?.(error, found);
+				});
 			});
 	});
 };
