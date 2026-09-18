@@ -36,6 +36,16 @@ Logs that stay on one machine are one thing. Logs shipped to a service other peo
 
 That last one exists because of a decision made elsewhere: unexpected errors deliberately keep their cause for the logs while hiding it from the client. That only stays safe if the cause is scrubbed on its way into the log.
 
+### Connection URLs are a special case
+
+A connection URL carries its password in the middle of a string, so no field-path rule can censor it: redacting a field named `url` would blind every legitimate use of that name, and the credential can arrive under any name at all. Pass one through `connectionUrlRedact` from `@app/logger` instead, which replaces the user and password while leaving the host and port readable.
+
+```ts
+logger.info({ broker: connectionUrlRedact(env.RABBITMQ_URL) }, "worker waiting for the broker");
+```
+
+Anything that does not parse as a URL is censored entirely rather than passed through, because a value that was expected to be a URL and is not is exactly the case where guessing is wrong.
+
 Redaction is not a substitute for not logging a secret. It covers the paths that are known to carry one, and a new field with a new name will not be covered until someone adds it here.
 
 ## What is not here

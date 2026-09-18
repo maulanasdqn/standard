@@ -1,7 +1,11 @@
 import { Writable } from "node:stream";
 import pino from "pino";
 import { describe, expect, it } from "vitest";
-import { REDACT_PLACEHOLDER, loggerOptionsFor } from "./logger.ts";
+import {
+	REDACT_PLACEHOLDER,
+	connectionUrlRedact,
+	loggerOptionsFor,
+} from "./logger.ts";
 
 const SERVICE = "api";
 const PRODUCTION = "production";
@@ -94,5 +98,43 @@ describe("redaction", () => {
 		const line = logged({ err: { cause: { connectionString: SECRET } } });
 
 		expect(JSON.stringify(line)).not.toContain("hunter2");
+	});
+});
+
+describe("connectionUrlRedact", () => {
+	it("hides the credentials in a broker url while keeping the host readable", (): void => {
+		const redacted = connectionUrlRedact(
+			"amqp://app:s3cret@broker.internal:5672",
+		);
+
+		expect(redacted).not.toContain("s3cret");
+		expect(redacted).toContain("broker.internal:5672");
+	});
+
+	it("hides the password in a postgres url", (): void => {
+		const redacted = connectionUrlRedact(
+			"postgres://app:hunter2@10.0.0.4:5432/app",
+		);
+
+		expect(redacted).not.toContain("hunter2");
+		expect(redacted).toContain("10.0.0.4:5432");
+	});
+
+	it("leaves a url without credentials alone", (): void => {
+		const plain = "redis://localhost:6379";
+
+		expect(connectionUrlRedact(plain)).toBe(plain);
+	});
+
+	it("censors anything that is not a url rather than passing it through", (): void => {
+		expect(connectionUrlRedact("not a url at all")).toBe(REDACT_PLACEHOLDER);
+	});
+
+	it("survives a redacted broker url reaching the log", (): void => {
+		const line = logged({
+			broker: connectionUrlRedact("amqp://app:s3cret@broker.internal:5672"),
+		});
+
+		expect(JSON.stringify(line)).not.toContain("s3cret");
 	});
 });

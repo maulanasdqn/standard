@@ -3,7 +3,25 @@ import { match, P } from "ts-pattern";
 
 const NODE_ENV = { PRODUCTION: "production" } as const;
 
-const LEVEL = { INFO: "info", DEBUG: "debug" } as const;
+export const LOGGER_LEVEL = {
+	FATAL: "fatal",
+	ERROR: "error",
+	WARN: "warn",
+	INFO: "info",
+	DEBUG: "debug",
+	TRACE: "trace",
+} as const;
+
+export type TLoggerLevel = (typeof LOGGER_LEVEL)[keyof typeof LOGGER_LEVEL];
+
+export const LOGGER_LEVELS: readonly TLoggerLevel[] = [
+	LOGGER_LEVEL.FATAL,
+	LOGGER_LEVEL.ERROR,
+	LOGGER_LEVEL.WARN,
+	LOGGER_LEVEL.INFO,
+	LOGGER_LEVEL.DEBUG,
+	LOGGER_LEVEL.TRACE,
+];
 
 const PRETTY_TARGET = "pino-pretty";
 
@@ -32,14 +50,32 @@ export type TLoggerTransport = {
 export type TLoggerOptionsInput = {
 	service: string;
 	env: string;
-	level?: string;
+	level?: TLoggerLevel;
 	transport?: TLoggerTransport;
 };
 
-const defaultLevelFor = (env: string): string =>
+const defaultLevelFor = (env: string): TLoggerLevel =>
 	match(env)
-		.with(NODE_ENV.PRODUCTION, (): string => LEVEL.INFO)
-		.otherwise((): string => LEVEL.DEBUG);
+		.with(NODE_ENV.PRODUCTION, (): TLoggerLevel => LOGGER_LEVEL.INFO)
+		.otherwise((): TLoggerLevel => LOGGER_LEVEL.DEBUG);
+
+const CREDENTIALS_HIDDEN = "***";
+
+export const connectionUrlRedact = (value: string): string => {
+	try {
+		const url = new URL(value);
+
+		return match(url.username === "" && url.password === "")
+			.with(true, (): string => value)
+			.otherwise((): string => {
+				url.username = CREDENTIALS_HIDDEN;
+				url.password = CREDENTIALS_HIDDEN;
+				return url.toString();
+			});
+	} catch {
+		return REDACT_PLACEHOLDER;
+	}
+};
 
 const transportFor = (
 	env: string,

@@ -1,5 +1,6 @@
 import "#/bootstrap/polyfill.ts";
 
+import { connectionUrlRedact } from "@app/logger";
 import { jobWorkerCreate } from "@app/queue";
 import { activityModule } from "#/activity/index.ts";
 import { Effect } from "effect";
@@ -26,7 +27,10 @@ const { client } = await runtime.runPromise(
 	CacheService.use((service) => Effect.succeed(service)),
 );
 
-logger.info({ url: env.RABBITMQ_URL }, "worker waiting for the broker");
+logger.info(
+	{ broker: connectionUrlRedact(env.RABBITMQ_URL) },
+	"worker waiting for the broker",
+);
 
 const channel = await runtime
 	.runPromise(queueChannelAwait(queue))
