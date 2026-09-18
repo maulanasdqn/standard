@@ -10,6 +10,8 @@ const ENV = {
 	WEB_ORIGIN: "https://standard.test",
 } as const;
 
+const METRICS_TOKEN = "a-32-character-metrics-scrape-tok";
+
 describe("envSchema security", () => {
 	it("requires a 32-character authentication secret", () => {
 		expect(
@@ -39,8 +41,44 @@ describe("envSchema security", () => {
 
 	it("accepts HTTPS URLs in production", () => {
 		expect(
-			envSchema.safeParse({ ...ENV, NODE_ENV: "production" }).success,
+			envSchema.safeParse({
+				...ENV,
+				NODE_ENV: "production",
+				METRICS_TOKEN,
+			}).success,
 		).toBe(true);
+	});
+
+	it("refuses to start in production with metrics enabled and no token", () => {
+		const result = envSchema.safeParse({ ...ENV, NODE_ENV: "production" });
+
+		expect(result.success).toBe(false);
+	});
+
+	it("accepts production metrics behind a token", () => {
+		const result = envSchema.safeParse({
+			...ENV,
+			NODE_ENV: "production",
+			METRICS_TOKEN,
+		});
+
+		expect(result.success).toBe(true);
+	});
+
+	it("accepts production with metrics switched off", () => {
+		const result = envSchema.safeParse({
+			...ENV,
+			NODE_ENV: "production",
+			METRICS_ENABLED: "false",
+		});
+
+		expect(result.success).toBe(true);
+	});
+
+	it("rejects a metrics token that is too short to be a secret", () => {
+		const result = envSchema.safeParse({ ...ENV, METRICS_TOKEN: "short" });
+
+		expect(result.success).toBe(false);
 	});
 
 	it("rejects LOG_TRANSPORT_OPTIONS that is not valid JSON", () => {

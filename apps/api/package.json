@@ -29,6 +29,7 @@
 		"@app/logger": "workspace:*",
 		"@app/mail": "workspace:*",
 		"@app/messages": "workspace:*",
+		"@app/metrics": "workspace:*",
 		"@app/migrations": "workspace:*",
 		"@app/permissions": "workspace:*",
 		"@app/queue": "workspace:*",

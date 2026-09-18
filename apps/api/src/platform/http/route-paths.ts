@@ -8,6 +8,7 @@ export const ROUTE_PATH = {
 	HEALTH: "/health",
 	HEALTHZ: "/healthz",
 	READY: "/ready",
+	METRICS: "/metrics",
 	ME: "/me",
 	PERMISSIONS: "/permissions",
 	ACTIVITY: "/activity",

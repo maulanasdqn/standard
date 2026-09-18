@@ -14,6 +14,7 @@ const URL_PROTOCOL = {
 const ENV_KEY = {
 	BETTER_AUTH_URL: "BETTER_AUTH_URL",
 	WEB_ORIGIN: "WEB_ORIGIN",
+	METRICS_TOKEN: "METRICS_TOKEN",
 } as const;
 
 const ENV_VALIDATION_MESSAGE = {
@@ -21,6 +22,8 @@ const ENV_VALIDATION_MESSAGE = {
 	TRANSPORT_OPTIONS_INVALID_JSON: "LOG_TRANSPORT_OPTIONS must be valid JSON.",
 	TRANSPORT_OPTIONS_NOT_OBJECT:
 		"LOG_TRANSPORT_OPTIONS must be a JSON object, not an array, a string, or null.",
+	METRICS_TOKEN_REQUIRED:
+		"METRICS_TOKEN is required in production while METRICS_ENABLED is true, because /metrics is served on the same origin as the application.",
 } as const;
 
 const blankAsUndefined = (value: unknown): unknown =>
@@ -111,6 +114,14 @@ export const envSchema = z
 			.string()
 			.default("")
 			.transform(stringListParse),
+		METRICS_ENABLED: z.preprocess(
+			blankAsUndefined,
+			z.stringbool().default(true),
+		),
+		METRICS_TOKEN: z.preprocess(
+			blankAsUndefined,
+			z.string().min(32).optional(),
+		),
 	})
 	.superRefine((env, context): void => {
 		match(env.NODE_ENV)
@@ -133,6 +144,15 @@ export const envSchema = z
 							message: ENV_VALIDATION_MESSAGE.HTTPS_REQUIRED,
 						});
 					});
+				match({ enabled: env.METRICS_ENABLED, token: env.METRICS_TOKEN })
+					.with({ enabled: true, token: P.nullish }, (): void => {
+						context.addIssue({
+							code: "custom",
+							path: [ENV_KEY.METRICS_TOKEN],
+							message: ENV_VALIDATION_MESSAGE.METRICS_TOKEN_REQUIRED,
+						});
+					})
+					.otherwise((): void => undefined);
 			})
 			.otherwise((): void => undefined);
 	});
