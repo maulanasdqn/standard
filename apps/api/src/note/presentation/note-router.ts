@@ -14,7 +14,10 @@ import { noteGet } from "#/note/application/note-get.ts";
 import { noteList } from "#/note/application/note-list.ts";
 import { noteUpdate } from "#/note/application/note-update.ts";
 import { permissionRequire } from "#/platform/orpc/middleware.ts";
-import { effectRun } from "#/platform/orpc/run-effect.ts";
+import {
+	effectRun,
+	effectRunTransactional,
+} from "#/platform/orpc/run-effect.ts";
 import { HTTP_METHOD } from "#/platform/http/http-methods.ts";
 import { ROUTE_PATH } from "#/platform/http/route-paths.ts";
 
@@ -40,7 +43,10 @@ const noteRouterCreate = () => ({
 		.input(noteCreateInputSchema)
 		.output(noteSchema)
 		.handler(({ input, context }) =>
-			effectRun(context.runtime, noteCreate(input, context.session!.user)),
+			effectRunTransactional(
+				context.runtime,
+				noteCreate(input, context.session!.user),
+			),
 		),
 
 	update: permissionRequire(PERMISSION.NOTE_WRITE)
@@ -48,7 +54,10 @@ const noteRouterCreate = () => ({
 		.input(noteUpdateInputSchema)
 		.output(noteSchema)
 		.handler(({ input, context }) =>
-			effectRun(context.runtime, noteUpdate(input, context.session!.user)),
+			effectRunTransactional(
+				context.runtime,
+				noteUpdate(input, context.session!.user),
+			),
 		),
 
 	remove: permissionRequire(PERMISSION.NOTE_DELETE)
@@ -56,7 +65,10 @@ const noteRouterCreate = () => ({
 		.input(noteIdInputSchema)
 		.output(z.object({ id: z.uuid() }))
 		.handler(({ input, context }) =>
-			effectRun(context.runtime, noteDelete(input, context.session!.user)),
+			effectRunTransactional(
+				context.runtime,
+				noteDelete(input, context.session!.user),
+			),
 		),
 });
 

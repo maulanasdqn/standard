@@ -13,7 +13,10 @@ import { roleGet } from "#/role/application/role-get.ts";
 import { roleList } from "#/role/application/role-list.ts";
 import { roleUpdate } from "#/role/application/role-update.ts";
 import { permissionRequire } from "#/platform/orpc/middleware.ts";
-import { effectRun } from "#/platform/orpc/run-effect.ts";
+import {
+	effectRun,
+	effectRunTransactional,
+} from "#/platform/orpc/run-effect.ts";
 import { HTTP_METHOD } from "#/platform/http/http-methods.ts";
 import { ROUTE_PATH } from "#/platform/http/route-paths.ts";
 
@@ -36,7 +39,10 @@ const roleRouterCreate = () => ({
 		.input(roleCreateInputSchema)
 		.output(roleSchema)
 		.handler(({ input, context }) =>
-			effectRun(context.runtime, roleCreate(input, context.session!.user.id)),
+			effectRunTransactional(
+				context.runtime,
+				roleCreate(input, context.session!.user.id),
+			),
 		),
 
 	update: permissionRequire(PERMISSION.USER_MANAGE)
@@ -44,7 +50,10 @@ const roleRouterCreate = () => ({
 		.input(roleUpdateInputSchema)
 		.output(roleSchema)
 		.handler(({ input, context }) =>
-			effectRun(context.runtime, roleUpdate(input, context.session!.user.id)),
+			effectRunTransactional(
+				context.runtime,
+				roleUpdate(input, context.session!.user.id),
+			),
 		),
 
 	remove: permissionRequire(PERMISSION.USER_MANAGE)
@@ -52,7 +61,10 @@ const roleRouterCreate = () => ({
 		.input(roleKeyInputSchema)
 		.output(z.object({ key: z.string() }))
 		.handler(({ input, context }) =>
-			effectRun(context.runtime, roleDelete(input, context.session!.user.id)),
+			effectRunTransactional(
+				context.runtime,
+				roleDelete(input, context.session!.user.id),
+			),
 		),
 });
 

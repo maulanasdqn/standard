@@ -9,6 +9,7 @@ import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { UserRepo, type TUserRepo, type TUserRow } from "#/user/domain/user.ts";
 import { AuthService, authServiceLayer } from "#/auth/index.ts";
 import { DbService, dbServiceLayer } from "#/platform/db/db-service.ts";
+import { dbActive } from "#/platform/db/transaction.ts";
 import { session, user } from "#/platform/db/tables/auth.ts";
 
 const CREDENTIAL_PROVIDER_ID = "credential";
@@ -52,14 +53,14 @@ export const userRepoLayer = Layer.effect(
 			return Effect.tryPromise({
 				try: async () => {
 					const [items, [{ value: total }]] = await Promise.all([
-						db
+						dbActive(db)
 							.select()
 							.from(user)
 							.where(where)
 							.limit(pageSize)
 							.offset(offsetFor({ page, pageSize }))
 							.orderBy(orderFor(SORT_COLUMN[sortBy], sortDir)),
-						db.select({ value: count() }).from(user).where(where),
+						dbActive(db).select({ value: count() }).from(user).where(where),
 					]);
 					return { items, total };
 				},
@@ -70,7 +71,7 @@ export const userRepoLayer = Layer.effect(
 		const findById: TUserRepo["findById"] = (id) =>
 			Effect.tryPromise({
 				try: async () => {
-					const [row] = await db
+					const [row] = await dbActive(db)
 						.select()
 						.from(user)
 						.where(eq(user.id, id))
@@ -83,7 +84,7 @@ export const userRepoLayer = Layer.effect(
 		const findByEmail: TUserRepo["findByEmail"] = (email) =>
 			Effect.tryPromise({
 				try: async () => {
-					const [row] = await db
+					const [row] = await dbActive(db)
 						.select()
 						.from(user)
 						.where(eq(user.email, email.toLowerCase()))
@@ -108,7 +109,7 @@ export const userRepoLayer = Layer.effect(
 						userId: created.id,
 						password: hashed,
 					});
-					const [row] = await db
+					const [row] = await dbActive(db)
 						.select()
 						.from(user)
 						.where(eq(user.id, created.id))
@@ -121,7 +122,7 @@ export const userRepoLayer = Layer.effect(
 		const update: TUserRepo["update"] = ({ id, ...patch }) =>
 			Effect.tryPromise({
 				try: async () => {
-					const [row] = await db
+					const [row] = await dbActive(db)
 						.update(user)
 						.set(D.merge(patch, { updatedAt: new Date() }))
 						.where(eq(user.id, id))
@@ -134,7 +135,7 @@ export const userRepoLayer = Layer.effect(
 		const remove: TUserRepo["remove"] = (id) =>
 			Effect.tryPromise({
 				try: async () => {
-					const result = await db
+					const result = await dbActive(db)
 						.delete(user)
 						.where(eq(user.id, id))
 						.returning({ id: user.id });
@@ -149,7 +150,7 @@ export const userRepoLayer = Layer.effect(
 					const ctx = await auth.$context;
 					const hashed = await ctx.password.hash(password);
 					await ctx.internalAdapter.updatePassword(id, hashed);
-					await db.delete(session).where(eq(session.userId, id));
+					await dbActive(db).delete(session).where(eq(session.userId, id));
 				},
 				catch: (cause) => new EAuth({ cause }),
 			});
