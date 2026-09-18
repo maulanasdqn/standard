@@ -16,7 +16,10 @@ import { userList } from "#/user/application/user-list.ts";
 import { userPasswordReset } from "#/user/application/user-password-reset.ts";
 import { userUpdate } from "#/user/application/user-update.ts";
 import { permissionRequire } from "#/platform/orpc/middleware.ts";
-import { effectRun } from "#/platform/orpc/run-effect.ts";
+import {
+	effectRun,
+	effectRunTransactional,
+} from "#/platform/orpc/run-effect.ts";
 import { HTTP_METHOD } from "#/platform/http/http-methods.ts";
 import { ROUTE_PATH } from "#/platform/http/route-paths.ts";
 
@@ -42,7 +45,10 @@ const userRouterCreate = () => ({
 		.input(userCreateInputSchema)
 		.output(userSchema)
 		.handler(({ input, context }) =>
-			effectRun(context.runtime, userCreate(input, context.session!.user.id)),
+			effectRunTransactional(
+				context.runtime,
+				userCreate(input, context.session!.user.id),
+			),
 		),
 
 	update: permissionRequire(PERMISSION.USER_MANAGE)
@@ -50,7 +56,10 @@ const userRouterCreate = () => ({
 		.input(userUpdateInputSchema)
 		.output(userSchema)
 		.handler(({ input, context }) =>
-			effectRun(context.runtime, userUpdate(input, context.session!.user.id)),
+			effectRunTransactional(
+				context.runtime,
+				userUpdate(input, context.session!.user.id),
+			),
 		),
 
 	remove: permissionRequire(PERMISSION.USER_MANAGE)
@@ -58,7 +67,10 @@ const userRouterCreate = () => ({
 		.input(userIdInputSchema)
 		.output(z.object({ id: z.uuid() }))
 		.handler(({ input, context }) =>
-			effectRun(context.runtime, userDelete(input, context.session!.user.id)),
+			effectRunTransactional(
+				context.runtime,
+				userDelete(input, context.session!.user.id),
+			),
 		),
 
 	resetPassword: permissionRequire(PERMISSION.USER_MANAGE)
@@ -66,7 +78,7 @@ const userRouterCreate = () => ({
 		.input(userPasswordResetInputSchema)
 		.output(z.object({ id: z.uuid() }))
 		.handler(({ input, context }) =>
-			effectRun(
+			effectRunTransactional(
 				context.runtime,
 				userPasswordReset(input, context.session!.user.id),
 			),

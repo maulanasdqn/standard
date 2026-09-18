@@ -16,18 +16,21 @@ import { offsetFor, orderFor } from "#/shared/pagination.ts";
 import { ACTIVITY_SORT, type TActivitySort } from "@app/schemas";
 import type { TDb } from "#/platform/db/client.ts";
 import { DbService, dbServiceLayer } from "#/platform/db/db-service.ts";
+import { dbActive } from "#/platform/db/transaction.ts";
 import { activityLog } from "#/platform/db/tables/activity.ts";
 import { user } from "#/platform/db/tables/auth.ts";
 
 export const activityRepositoryCreate = (db: TDb): TActivityRepo => ({
 	insert: async (entry: TActivityEntry): Promise<void> => {
-		await db.insert(activityLog).values({
-			actorId: entry.actorId,
-			action: entry.action,
-			resourceType: entry.resourceType,
-			resourceId: entry.resourceId,
-			metadata: entry.metadata ?? null,
-		});
+		await dbActive(db)
+			.insert(activityLog)
+			.values({
+				actorId: entry.actorId,
+				action: entry.action,
+				resourceType: entry.resourceType,
+				resourceId: entry.resourceId,
+				metadata: entry.metadata ?? null,
+			});
 	},
 });
 
@@ -83,7 +86,7 @@ export const activityRepoLayer = Layer.effect(
 			return Effect.tryPromise({
 				try: async () => {
 					const [items, [{ value: total }]] = await Promise.all([
-						db
+						dbActive(db)
 							.select({
 								id: activityLog.id,
 								actorId: activityLog.actorId,
@@ -100,7 +103,10 @@ export const activityRepoLayer = Layer.effect(
 							.orderBy(orderFor(SORT_COLUMN[sortBy], sortDir))
 							.limit(pageSize)
 							.offset(offsetFor({ page, pageSize })),
-						db.select({ value: count() }).from(activityLog).where(where),
+						dbActive(db)
+							.select({ value: count() })
+							.from(activityLog)
+							.where(where),
 					]);
 					return { items, total };
 				},

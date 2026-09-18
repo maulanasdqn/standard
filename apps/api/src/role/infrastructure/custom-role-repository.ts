@@ -8,6 +8,7 @@ import {
 	type TCustomRoleRow,
 } from "#/role/domain/custom-role.ts";
 import { DbService, dbServiceLayer } from "#/platform/db/db-service.ts";
+import { dbActive } from "#/platform/db/transaction.ts";
 import { customRole } from "#/platform/db/tables/custom-role.ts";
 import { user } from "#/platform/db/tables/auth.ts";
 
@@ -19,7 +20,7 @@ export const customRoleRepoLayer = Layer.effect(
 		const memberCounts: TCustomRoleRepo["memberCounts"] = () =>
 			Effect.tryPromise({
 				try: async () => {
-					const rows = await db
+					const rows = await dbActive(db)
 						.select({ role: user.role, value: count() })
 						.from(user)
 						.groupBy(user.role);
@@ -32,14 +33,15 @@ export const customRoleRepoLayer = Layer.effect(
 
 		const list: TCustomRoleRepo["list"] = () =>
 			Effect.tryPromise({
-				try: () => db.select().from(customRole).orderBy(customRole.label),
+				try: () =>
+					dbActive(db).select().from(customRole).orderBy(customRole.label),
 				catch: (cause) => new EDatabase({ cause }),
 			});
 
 		const findByKey: TCustomRoleRepo["findByKey"] = (key) =>
 			Effect.tryPromise({
 				try: async () => {
-					const [row] = await db
+					const [row] = await dbActive(db)
 						.select()
 						.from(customRole)
 						.where(eq(customRole.key, key))
@@ -55,7 +57,7 @@ export const customRoleRepoLayer = Layer.effect(
 		) =>
 			Effect.tryPromise({
 				try: async () => {
-					const [row] = await db
+					const [row] = await dbActive(db)
 						.insert(customRole)
 						.values({
 							key,
@@ -73,7 +75,7 @@ export const customRoleRepoLayer = Layer.effect(
 		const update: TCustomRoleRepo["update"] = ({ key, ...patch }) =>
 			Effect.tryPromise({
 				try: async () => {
-					const [row] = await db
+					const [row] = await dbActive(db)
 						.update(customRole)
 						.set(D.merge(patch, { updatedAt: new Date() }))
 						.where(eq(customRole.key, key))
@@ -86,7 +88,7 @@ export const customRoleRepoLayer = Layer.effect(
 		const remove: TCustomRoleRepo["remove"] = (key) =>
 			Effect.tryPromise({
 				try: async () => {
-					const result = await db
+					const result = await dbActive(db)
 						.delete(customRole)
 						.where(eq(customRole.key, key))
 						.returning({ id: customRole.id });

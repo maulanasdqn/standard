@@ -8,6 +8,7 @@ import { offsetFor, orderFor } from "#/shared/pagination.ts";
 import { NOTE_SORT, type TNoteSort } from "@app/schemas";
 import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { DbService, dbServiceLayer } from "#/platform/db/db-service.ts";
+import { dbActive } from "#/platform/db/transaction.ts";
 import { ownershipWhere } from "#/platform/db/ownership.ts";
 import { note } from "#/platform/db/tables/note.ts";
 
@@ -41,14 +42,14 @@ export const noteRepoLayer = Layer.effect(
 			return Effect.tryPromise({
 				try: async () => {
 					const [items, [{ value: total }]] = await Promise.all([
-						db
+						dbActive(db)
 							.select()
 							.from(note)
 							.where(where)
 							.limit(pageSize)
 							.offset(offsetFor({ page, pageSize }))
 							.orderBy(orderFor(SORT_COLUMN[sortBy], sortDir)),
-						db.select({ value: count() }).from(note).where(where),
+						dbActive(db).select({ value: count() }).from(note).where(where),
 					]);
 					return { items, total };
 				},
@@ -59,7 +60,7 @@ export const noteRepoLayer = Layer.effect(
 		const findById: TNoteRepo["findById"] = (id: string, actor) =>
 			Effect.tryPromise({
 				try: async () => {
-					const [row] = await db
+					const [row] = await dbActive(db)
 						.select()
 						.from(note)
 						.where(and(eq(note.id, id), ownershipWhere(actor, note.authorId)))
@@ -72,7 +73,7 @@ export const noteRepoLayer = Layer.effect(
 		const create: TNoteRepo["create"] = ({ title, body }, authorId) =>
 			Effect.tryPromise({
 				try: async () => {
-					const [row] = await db
+					const [row] = await dbActive(db)
 						.insert(note)
 						.values({ title, body, authorId })
 						.returning();
@@ -84,7 +85,7 @@ export const noteRepoLayer = Layer.effect(
 		const update: TNoteRepo["update"] = ({ id, version, ...patch }, actor) =>
 			Effect.tryPromise({
 				try: async () => {
-					const [row] = await db
+					const [row] = await dbActive(db)
 						.update(note)
 						.set(
 							D.merge(patch, {
@@ -108,7 +109,7 @@ export const noteRepoLayer = Layer.effect(
 		const remove: TNoteRepo["remove"] = (id: string, actor) =>
 			Effect.tryPromise({
 				try: async () => {
-					const result = await db
+					const result = await dbActive(db)
 						.delete(note)
 						.where(and(eq(note.id, id), ownershipWhere(actor, note.authorId)))
 						.returning({ id: note.id });

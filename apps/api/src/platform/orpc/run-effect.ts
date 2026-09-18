@@ -3,6 +3,7 @@ import { Effect } from "effect";
 import { match } from "ts-pattern";
 import { ERROR_TAG } from "#/shared/error-tags.ts";
 import type { TDomainError } from "#/shared/errors.ts";
+import { transactional } from "#/platform/db/transaction.ts";
 import type { TAppRuntime, TAppRuntimeServices } from "#/bootstrap/compose.ts";
 
 const toORPCError = (error: TDomainError): ORPCError<string, undefined> =>
@@ -74,3 +75,8 @@ export const effectRun = async <A>(
 		})
 		.exhaustive();
 };
+
+export const effectRunTransactional = async <A>(
+	runtime: TAppRuntime,
+	effect: Effect.Effect<A, TDomainError, TAppRuntimeServices>,
+): Promise<A> => effectRun(runtime, transactional(effect));

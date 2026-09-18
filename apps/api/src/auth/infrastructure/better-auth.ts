@@ -6,6 +6,7 @@ import { MAIL_MESSAGE } from "@app/messages";
 import { ROLE } from "@app/permissions";
 import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
 import type { TDb } from "#/platform/db/client.ts";
+import { dbActiveProxy } from "#/platform/db/transaction.ts";
 import { env } from "#/platform/config/env.ts";
 import { logger } from "#/platform/observability/logger.ts";
 
@@ -20,7 +21,7 @@ export const authCreate = ({ db, activityRepo, mailer }: TCreateAuthOptions) =>
 		baseURL: env.BETTER_AUTH_URL,
 		secret: env.BETTER_AUTH_SECRET,
 		trustedOrigins: [env.WEB_ORIGIN],
-		database: drizzleAdapter(db, { provider: "pg" }),
+		database: drizzleAdapter(dbActiveProxy(db), { provider: "pg" }),
 		advanced: { database: { generateId: (): string => crypto.randomUUID() } },
 		emailAndPassword: {
 			enabled: true,
