@@ -59,6 +59,19 @@ Do not purge the dead-letter queue to make the number go down. It is the only co
 2. Check RabbitMQ is reachable from the worker. A worker started while the broker is down waits and retries for about a minute before giving up and exiting, so the orchestrator restarts it; a worker that exits repeatedly means the broker has been unreachable for longer than that.
 3. Confirm the worker is consuming: the main queue should show a consumer count above zero.
 
+## Password reset emails are not arriving
+
+**You know because** `mail.send.failed` appears in the logs. You will not hear it from the product: the reset endpoint answers success whether or not the mail went out, deliberately, so that nobody can use it to discover which addresses are registered.
+
+**Impact** Anyone who has forgotten their password is locked out, and believes a link is on its way.
+
+1. Confirm the credentials still work from outside the app: `swaks --to you@example.com --server "$SMTP_URL"`, or any SMTP client.
+2. An `EAUTH` error means the credentials were rejected. They have expired or been rotated. Update `SMTP_URL` and restart.
+3. A connection error means the host is unreachable. Check the provider's status and any egress rules on port 465 or 587.
+4. Once mail works again, tell affected users to request a new link rather than replaying the old ones. Reset links expire in one hour, so the ones issued during the outage are probably already dead.
+
+Do not make the reset endpoint fail when mail fails. Answering success regardless is what keeps the endpoint from becoming an account-enumeration oracle, and it is the reason this alert exists instead.
+
 ## A deploy made things worse
 
 1. Confirm which build is live: `curl -s https://<host>/health | jq .version`. The two versions on `/health`, web and API, differing means they were deployed out of step.
