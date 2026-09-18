@@ -81,6 +81,18 @@ export const placeOf = (path: string): TPlace => {
 		);
 };
 
+const MODULE_ROOT_DEPTH = 2;
+
+const isModuleSurface = (file: string): boolean => {
+	const segments = file.split("/");
+	return (
+		segments.length === MODULE_ROOT_DEPTH && segments[1] === MODULE_SURFACE
+	);
+};
+
+const surfaceViolation = (from: TPlace, file: string): boolean =>
+	from.kind === "module" && from.layer === null && !isModuleSurface(file);
+
 const layerViolation = (from: TPlace, to: TPlace): boolean =>
 	from.kind === "module" &&
 	to.kind === "module" &&
@@ -124,6 +136,19 @@ export const violationsFor = (
 					},
 				]
 			: [];
+
+	const surface: readonly TViolation[] = surfaceViolation(from, file)
+		? [
+				{
+					file,
+					line: 1,
+					rule: "module-layer",
+					edge: from.name,
+					specifier: file,
+					remedy: `every file in "${from.name}" belongs to one of ${A.join(LAYERS, ", ")}; only "${from.name}/${MODULE_SURFACE}" may sit at the module root`,
+				},
+			]
+		: [];
 
 	const edges = A.filterMap(importsOf(source), ({ line, target }) => {
 		const to = placeOf(target);
@@ -173,5 +198,5 @@ export const violationsFor = (
 			: undefined,
 	);
 
-	return [...unknown, ...edges, ...escapes];
+	return [...unknown, ...surface, ...edges, ...escapes];
 };
