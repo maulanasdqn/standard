@@ -74,7 +74,7 @@ Every ★ row but one is a Yes, because the standards this boilerplate sets beyo
 | ★ Conventions are enforced by tooling, not by reviewers | Style and architecture violations fail a command, not a conversation | P1 | Done | Yes | Biome for format and lint, `moon run api:arch` for module edges as an `api:build` dependency, lefthook pre-push running `:check` and `:build :test`, and `.claude/skills/ts-conventions/SKILL.md` as the written ruleset |
 | ★ The client degrades when the API is down | An unreachable server is a handled state in the UI, not a blank screen | P1 | Done | Yes | `apps/web/src/libs/auth/server-unreachable.ts` and `session-reach.ts` with tests; loading and empty states driven by the router lifecycle, with shared `empty-state` and `data-table` primitives |
 | ★ Releases prove what they contain | A release cannot be cut from an unverified commit or a mislabeled version | P1 | Done | Yes | `.github/workflows/release.yml` verifies the tag matches `package.json`, polls until all three required checks are green on that exact SHA, and builds notes from conventional commits |
-| Every module defines its full contract | Trigger, inputs, validation, processing, outputs, saved state, external actions, failure path | P1 | Partial | Partial | The layering (`domain` / `application` / `infrastructure` / `presentation`), zod input validation, and the tagged errors in `apps/api/src/shared/errors.ts` cover inputs, validation, and the error vocabulary. No module states its trigger, its saved state, or its external actions anywhere |
+| Every module defines its full contract | Trigger, inputs, validation, processing, outputs, saved state, external actions, failure path | P1 | Partial | Partial | The layering, zod input validation and the tagged errors in `apps/api/src/shared/errors.ts` cover inputs, validation, processing and the error vocabulary, and `moon run api:arch` enforces the module boundary rather than describing it. Trigger, saved state and external actions are still unwritten. **Deliberately left here**, see [Deliberately not done](#deliberately-not-done) |
 | Unavailable services are handled deliberately | Each dependency has a defined behavior when it is down | P1 | Done | Yes | Each dependency has a stated behaviour. The rate limiter fails closed on a Redis error, readiness answers 503 on a dead Postgres or Redis, the web handles an unreachable api, and the broker connection is opened on first use rather than at boot, so the api starts and serves without RabbitMQ while a publish fails with `EQueue` and reconnects on the next attempt. The worker waits for the broker instead of dying silently |
 | Health and readiness reflect real dependency state | A readiness probe that cannot fail is not a readiness probe | P1 | Done | Yes | `GET /ready` probes Postgres and Redis on a bounded timeout, reports each by name, and answers 503 when either is down. `GET /healthz` stays unconditional on purpose, because it answers liveness and restarting a process does not fix a dead database. Covered by unit tests on the aggregation and end to end against a real stack |
 | Environments are specified | Named environments with their own configuration and guardrails | P1 | Partial | Partial | `envSchema` enumerates `development` / `test` / `production` and enforces production HTTPS. There is no staging environment and no non-dev compose file or manifest: `docker-compose.dev.yml` is the only one |
@@ -111,6 +111,34 @@ The optimistic version on notes is **scoped on purpose, and is not a pattern to 
 That trade is worth making where concurrent editing is realistic and a silent overwrite either destroys work or produces a wrong decision. It is not worth making on a record that one administrator edits occasionally, or where the last write genuinely is the intended answer. Notes qualified because they are the module with a real editing surface; roles and users deliberately keep their simpler updates.
 
 So a module that still uses a last-write-wins update is not automatically carrying a defect. Read this rubric row as satisfied by protecting what matters, never by adding a version column everywhere.
+
+## Deliberately not done
+
+Some rows are open because nobody has got to them. These are open because someone decided not to, which is a different thing, and the difference is worth recording so the next reader does not treat the list as a backlog.
+
+### Every module defines its full contract (P1)
+
+Seven modules, each needing a table naming its trigger, its saved state and the external systems it touches. The other five things the rubric asks for are already carried by the code: zod validates the inputs, the layering is the processing, the tagged errors are the failure path, and `moon run api:arch` enforces the boundary rather than merely describing it.
+
+So the work is seven prose tables, and prose is the part that rots. A contract document that has drifted from the code is worse than none, because it is believed. The payoff is a reader knowing the blast radius of a change without reading the module, which is real but modest in a codebase this size, where the module is a few hundred lines and the answer is a `grep` away.
+
+Worth revisiting when a module grows past what someone can hold in their head, or when someone outside the team has to change one. Neither is true yet.
+
+### Explicit intermediate state, and uncertain results reconciled by a rule (P1)
+
+Both describe a workflow that pauses: something approved but not yet filed, something a model was unsure about. Nothing in this codebase pauses. Adding a lifecycle column and a review queue now means inventing a requirement and then designing against the invention, which is how you end up with the wrong abstraction defended by tests.
+
+These are the two rows most likely to become urgent the moment a real workflow lands, and they should be designed with that workflow in front of you, not before it.
+
+### Staged rollout (P2)
+
+Every deploy is all or nothing. That is survivable here because the things that make a bad deploy unrecoverable are already closed: rollback is defined, migrations are gated by a check that fails the build, readiness pulls a sick instance out of rotation, and the previous image tag is always one command away.
+
+Feature flags are worth their weight when a release is too big to reverse or has to reach a slice of users first. Neither is true of this codebase today, and a flag system with nothing to flag is cost without benefit.
+
+### Infrastructure behind swappable ports (P1)
+
+`@app/storage` and `@app/grpc` are written and tested but imported by nothing. Deleting them would close the row immediately, which is exactly why closing it that way would be dishonest: the row would go green because the evidence was removed. gRPC is expected to be used, so both stay and the row stays Partial, which is the true state.
 
 ## Suggested order of work
 
