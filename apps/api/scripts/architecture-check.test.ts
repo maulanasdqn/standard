@@ -139,6 +139,12 @@ describe("area boundaries", () => {
 			rulesOf("bootstrap/compose.ts", 'import { a } from "#/note/index.ts";'),
 		).toEqual([]);
 	});
+
+	it("rejects a bootstrap file outside the composition root reaching into a module", () => {
+		expect(
+			rulesOf("bootstrap/tracing.ts", 'import { a } from "#/note/index.ts";'),
+		).toEqual(["area-boundary"]);
+	});
 });
 
 describe("fail-closed behaviour", () => {
