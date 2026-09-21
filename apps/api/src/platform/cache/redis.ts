@@ -2,6 +2,7 @@ import { cacheCreate, type TCache, type TCacheClient } from "@app/cache";
 import { Context, Effect, Layer } from "effect";
 import { Redis } from "ioredis";
 import { env } from "#/platform/config/env.ts";
+import { closeQuietly } from "#/platform/resource-close.ts";
 import type { TServiceId } from "#/shared/service-id.ts";
 import { SERVICE_TAG } from "#/platform/service-tags.ts";
 
@@ -58,10 +59,18 @@ export const CacheService = Context.Service<TCacheServiceId, TCacheService>(
 
 export const cacheServiceLayer = Layer.effect(
 	CacheService,
-	Effect.sync(() => {
-		const redis = cacheClientCreate(env.REDIS_URL);
-		redis.on("error", (): void => undefined);
+	Effect.gen(function* () {
+		const redis = yield* Effect.acquireRelease(
+			Effect.sync((): Redis => {
+				const created = cacheClientCreate(env.REDIS_URL);
+				created.on("error", (): void => undefined);
+				return created;
+			}),
+			(found): Effect.Effect<void> => closeQuietly(() => found.quit()),
+		);
+
 		const client = cacheClientOf(redis);
+
 		return CacheService.of({ client, cache: cacheCreate(client) });
 	}),
 );

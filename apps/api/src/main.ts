@@ -8,6 +8,12 @@ import { cors } from "hono/cors";
 import { requestId } from "hono/request-id";
 import { runtime } from "#/bootstrap/compose.ts";
 import { tracing } from "#/bootstrap/tracing.ts";
+import {
+	SHUTDOWN_SIGNAL,
+	SHUTDOWN_STEP,
+	shutdownOn,
+	shutdownRun,
+} from "#/platform/shutdown.ts";
 import { AuthService } from "#/auth/infrastructure/auth-service.ts";
 import { CacheService } from "#/platform/cache/redis.ts";
 import { env } from "#/platform/config/env.ts";
@@ -87,6 +93,9 @@ const buildContext = async (headers: Headers): Promise<TORPCContext> => {
 	};
 };
 
+const EXIT_OK = 0;
+const EXIT_FAILURE = 1;
+
 const app = new Hono();
 
 app.use("*", requestId());
@@ -116,6 +125,35 @@ authMount(app, auth);
 orpcMount({ app, router, logger, buildContext });
 webDistMount(app, env.WEB_DIST_PATH);
 
-serve({ fetch: app.fetch, port: env.PORT }, (info): void => {
+const server = serve({ fetch: app.fetch, port: env.PORT }, (info): void => {
 	logger.info({ port: info.port }, "api listening");
 });
+
+const serverClose = (): Promise<void> =>
+	new Promise((resolve): void => {
+		server.close((): void => resolve());
+	});
+
+shutdownOn(
+	[SHUTDOWN_SIGNAL.TERM, SHUTDOWN_SIGNAL.INT],
+	async (signal): Promise<void> => {
+		logger.info({ signal }, "api stopping");
+
+		const drained = await shutdownRun({
+			logger,
+			steps: [
+				{ name: SHUTDOWN_STEP.HTTP, close: serverClose },
+				{
+					name: SHUTDOWN_STEP.RUNTIME,
+					close: (): Promise<void> => runtime.dispose(),
+				},
+				{
+					name: SHUTDOWN_STEP.TRACING,
+					close: (): Promise<void> => tracing.shutdown(),
+				},
+			],
+		});
+
+		process.exit(drained ? EXIT_OK : EXIT_FAILURE);
+	},
+);

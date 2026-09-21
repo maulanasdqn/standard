@@ -12,7 +12,7 @@ export type TMailLogger = {
 };
 
 export const mailSendSafe = (
-	mailer: TMailer,
+	mailer: Pick<TMailer, "send">,
 	logger: TMailLogger,
 	template: TMailTemplate,
 	message: TMailMessage,
