@@ -1,6 +1,7 @@
+import { ERROR_MESSAGE } from "@app/messages";
 import { ORPCError } from "@orpc/server";
 import { Effect } from "effect";
-import { match } from "ts-pattern";
+import { match, P } from "ts-pattern";
 import { ERROR_TAG } from "#/shared/error-tags.ts";
 import type { TDomainError } from "#/shared/errors.ts";
 import { transactional } from "#/platform/db/transaction.ts";
@@ -34,19 +35,13 @@ const toORPCError = (error: TDomainError): ORPCError<string, undefined> =>
 				new ORPCError("BAD_REQUEST", { message: e.message }),
 		)
 		.with(
-			{ _tag: ERROR_TAG.DATABASE },
+			{
+				_tag: P.union(ERROR_TAG.DATABASE, ERROR_TAG.AUTH, ERROR_TAG.QUEUE),
+			},
 			(): ORPCError<string, undefined> =>
-				new ORPCError("INTERNAL_SERVER_ERROR", { message: "Database error" }),
-		)
-		.with(
-			{ _tag: ERROR_TAG.AUTH },
-			(): ORPCError<string, undefined> =>
-				new ORPCError("INTERNAL_SERVER_ERROR", { message: "Auth error" }),
-		)
-		.with(
-			{ _tag: ERROR_TAG.QUEUE },
-			(): ORPCError<string, undefined> =>
-				new ORPCError("INTERNAL_SERVER_ERROR", { message: "Queue error" }),
+				new ORPCError("INTERNAL_SERVER_ERROR", {
+					message: ERROR_MESSAGE.INTERNAL,
+				}),
 		)
 		.exhaustive();
 

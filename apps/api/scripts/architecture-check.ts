@@ -111,8 +111,9 @@ const moduleViolation = (from: TPlace, to: TPlace, target: string): boolean =>
 const areaViolation = (from: TPlace, to: TPlace, file: string): boolean =>
 	match({ from: from.name, toModule: to.kind === "module" })
 		.with({ from: AREA.SHARED }, () => to.name !== AREA.SHARED)
+		.with({ from: AREA.PLATFORM, toModule: true }, () => true)
 		.with(
-			{ from: AREA.PLATFORM, toModule: true },
+			{ from: AREA.BOOTSTRAP, toModule: true },
 			() => !A.includes(COMPOSITION_ROOT, file),
 		)
 		.otherwise(() => false);

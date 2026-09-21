@@ -11,6 +11,8 @@ import { match } from "ts-pattern";
 import { HTTP_STATUS } from "#/platform/http/http-status.ts";
 import { ROUTE_PATH } from "#/platform/http/route-paths.ts";
 
+const REQUEST_EVENT = "request";
+
 const PROBE_PATH: readonly string[] = [
 	ROUTE_PATH.HEALTHZ,
 	ROUTE_PATH.READY,
@@ -50,22 +52,22 @@ export const observabilityMount = (
 					const durMs = Date.now() - start;
 					const route = metricsRouteNormalise(context.req.routePath);
 
-					deps.logger.info(
-						{
-							reqId,
-							traceId: ids.traceId,
-							spanId: ids.spanId,
-							method,
-							path,
-							status,
-							durMs,
-						},
-						"request",
-					);
+					const line = {
+						reqId,
+						traceId: ids.traceId,
+						spanId: ids.spanId,
+						method,
+						path,
+						status,
+						durMs,
+					};
 
 					match(A.includes(PROBE_PATH, path))
-						.with(true, (): void => undefined)
+						.with(true, (): void => {
+							deps.logger.debug(line, REQUEST_EVENT);
+						})
 						.otherwise((): void => {
+							deps.logger.info(line, REQUEST_EVENT);
 							deps.metrics.requestObserve(method, route, status, durMs);
 						});
 				}
