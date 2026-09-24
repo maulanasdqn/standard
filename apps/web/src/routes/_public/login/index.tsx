@@ -1,3 +1,4 @@
+import { loginSearchSchema } from "@app/schemas";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { GalleryVerticalEnd } from "lucide-react";
 import type { FC, ReactElement } from "react";
@@ -31,5 +32,6 @@ const LoginPage: FC = (): ReactElement => {
 };
 
 export const Route = createFileRoute("/_public/login/")({
+	validateSearch: loginSearchSchema,
 	component: LoginPage,
 });

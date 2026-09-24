@@ -34,3 +34,8 @@ export const loginInputSchema = z.object({
 	password: z.string().min(1, "Enter your password."),
 });
 export type TLoginInput = z.infer<typeof loginInputSchema>;
+
+export const loginSearchSchema = z.object({
+	redirect: z.string().optional(),
+});
+export type TLoginSearch = z.infer<typeof loginSearchSchema>;

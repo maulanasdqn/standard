@@ -22,7 +22,7 @@ export const QuickActions: FC = (): ReactElement => (
 		<CardContent className="flex flex-col gap-2">
 			<Guard permissions={[PERMISSION.NOTE_WRITE]}>
 				<Button variant="outline" size="sm" className="justify-start" asChild>
-					<Link to="/notes">
+					<Link to="/notes/create">
 						<Plus className="size-4" />
 						{DASHBOARD_MESSAGE.CREATE_NOTE}
 					</Link>

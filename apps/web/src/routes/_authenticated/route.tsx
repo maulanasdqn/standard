@@ -29,13 +29,13 @@ const AuthenticatedLayout: FC = (): ReactElement => (
 );
 
 export const Route = createFileRoute("/_authenticated")({
-	beforeLoad: ({ context }) => {
+	beforeLoad: ({ context, location }) => {
 		match(context)
 			.with({ reach: SESSION_REACH.UNREACHABLE }, () => {
 				throw new EServerUnreachable();
 			})
 			.with({ session: P.nullish }, () => {
-				throw redirect({ to: "/login" });
+				throw redirect({ to: "/login", search: { redirect: location.href } });
 			})
 			.otherwise(() => undefined);
 	},

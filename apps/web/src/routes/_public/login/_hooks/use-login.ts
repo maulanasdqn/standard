@@ -1,19 +1,24 @@
 import { AUTH_MESSAGE } from "@app/messages";
 import { loginInputSchema, type TLoginInput } from "@app/schemas";
 import { useForm } from "@tanstack/react-form";
-import { useNavigate } from "@tanstack/react-router";
+import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import { useSelector } from "@tanstack/react-store";
 import type { FormEvent } from "react";
 import { match, P } from "ts-pattern";
+import { signInErrorMessage } from "#/libs/auth/auth-error.ts";
 import { authClient } from "#/libs/auth/client.ts";
+import { returnToResolve } from "#/libs/auth/return-to.ts";
 import { SESSION_REACH } from "#/libs/auth/session-reach.ts";
 import { sessionRefresh } from "#/libs/auth/session.ts";
 import { loginError } from "#/routes/_public/login/_stores/login-error-store.ts";
 
 const DEFAULT_VALUES: TLoginInput = { email: "", password: "" };
 
+const loginRouteApi = getRouteApi("/_public/login/");
+
 export const useLoginForm = () => {
 	const navigate = useNavigate();
+	const { redirect } = loginRouteApi.useSearch();
 	const serverError = useSelector(loginError.store);
 
 	const form = useForm({
@@ -38,11 +43,11 @@ export const useLoginForm = () => {
 							loginError.set(AUTH_MESSAGE.SESSION_UNVERIFIED);
 						})
 						.otherwise(async () => {
-							await navigate({ to: "/dashboard" });
+							await navigate({ href: returnToResolve(redirect) });
 						});
 				})
 				.otherwise(async (found) => {
-					loginError.set(found.message ?? AUTH_MESSAGE.INVALID_CREDENTIALS);
+					loginError.set(signInErrorMessage(found));
 				});
 		},
 	});
