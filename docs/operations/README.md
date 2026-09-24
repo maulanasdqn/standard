@@ -44,3 +44,5 @@ The worker is not optional. Without it, published jobs accumulate in their queue
 | Production | `production` | `envSchema` refuses to start unless `WEB_ORIGIN` and `BETTER_AUTH_URL` are HTTPS and `BETTER_AUTH_SECRET` is at least 32 characters |
 
 Configuration is environment variables only, validated at boot by `apps/api/src/platform/config/env-schema.ts`. `apps/api/.env.example` is the full list. A missing or malformed variable stops the process at startup rather than failing later in a request.
+
+The API reference UI at `/api`, with its OpenAPI document at `/api/spec.json`, is served outside production and hidden in production, so a public deployment does not describe its own surface by default. `API_REFERENCE_ENABLED` overrides that in either direction.
