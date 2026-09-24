@@ -12,12 +12,12 @@
 	},
 	"dependencies": {
 		"@app/logger": "workspace:*",
-		"drizzle-orm": "^0.45.1",
+		"drizzle-orm": "^0.45.3",
 		"pg": "^8.16.3"
 	},
 	"devDependencies": {
 		"@types/pg": "^8.15.6",
 		"typescript": "^7.0.2",
-		"vitest": "^5.0.0"
+		"vitest": "^5.0.1"
 	}
 }
