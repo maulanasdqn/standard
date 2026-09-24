@@ -9,31 +9,31 @@ import {
 	AuthService,
 	type TAuthServiceId,
 } from "#/auth/infrastructure/auth-service.ts";
+import { env } from "#/platform/config/env.ts";
 import { DbService, type TDbServiceId } from "#/platform/db/db-service.ts";
 import { user } from "#/platform/db/tables/auth.ts";
 import { note } from "#/platform/db/tables/note.ts";
 import { logger } from "#/platform/observability/logger.ts";
+import { seedPlanFor, type TSeedPlan } from "#/scripts/seed-plan.ts";
 
-const ADMIN_USER: TUserCreateInput = {
-	name: "Admin",
-	email: "admin@test.app",
-	password: "Password123",
-	role: ROLE.ADMIN,
+const EXIT_OK = 0;
+const EXIT_FAILURE = 1;
+
+const WELCOME_NOTE = {
+	title: "Welcome",
+	body: "This is a seeded note. Sign in as admin@test.app to see it.",
 };
 
-const EXTRA_USERS: readonly TUserCreateInput[] = [
-	{
-		name: "Member",
-		email: "member@test.app",
-		password: "Password123",
-		role: ROLE.MEMBER,
-	},
-	{
-		name: "Viewer",
-		email: "viewer@test.app",
-		password: "Password123",
-		role: ROLE.VIEWER,
-	},
+const adminUserFor = (password: string): TUserCreateInput => ({
+	name: "Admin",
+	email: "admin@test.app",
+	password,
+	role: ROLE.ADMIN,
+});
+
+const demoUsersFor = (password: string): readonly TUserCreateInput[] => [
+	{ name: "Member", email: "member@test.app", password, role: ROLE.MEMBER },
+	{ name: "Viewer", email: "viewer@test.app", password, role: ROLE.VIEWER },
 ];
 
 const userEnsure = (
@@ -67,31 +67,54 @@ const userEnsure = (
 			);
 	});
 
-const seed = Effect.gen(function* () {
-	const { db } = yield* DbService;
+const demoSeed = (
+	adminId: string,
+	password: string,
+): Effect.Effect<void, never, TDbServiceId | TAuthServiceId> =>
+	Effect.gen(function* () {
+		const { db } = yield* DbService;
 
-	const adminId = yield* userEnsure(ADMIN_USER);
-	yield* Effect.forEach(EXTRA_USERS, userEnsure);
+		yield* Effect.forEach(demoUsersFor(password), userEnsure);
+		yield* Effect.promise(() =>
+			db.insert(note).values({ ...WELCOME_NOTE, authorId: adminId }),
+		);
+	});
 
-	yield* Effect.promise(() =>
-		db.insert(note).values({
-			title: "Welcome",
-			body: "This is a seeded note. Sign in as admin@test.app to see it.",
-			authorId: adminId,
-		}),
-	);
+const seedRun = (
+	plan: TSeedPlan,
+): Effect.Effect<void, never, TDbServiceId | TAuthServiceId> =>
+	Effect.gen(function* () {
+		const admin = adminUserFor(plan.password);
+		const adminId = yield* userEnsure(admin);
 
-	logger.info(
-		{
-			users: A.map([ADMIN_USER, ...EXTRA_USERS], (seedUser) => ({
-				email: seedUser.email,
-				password: seedUser.password,
-				role: seedUser.role,
-			})),
-		},
-		"seeded users",
-	);
-});
+		yield* match(plan.demoData)
+			.with(true, () => demoSeed(adminId, plan.password))
+			.otherwise(() => Effect.void);
 
-await runtime.runPromise(seed);
-process.exit(0);
+		const seeded = match(plan.demoData)
+			.with(true, () => [admin, ...demoUsersFor(plan.password)])
+			.otherwise(() => [admin]);
+
+		logger.info(
+			{
+				users: A.map(seeded, (seedUser) => ({
+					email: seedUser.email,
+					role: seedUser.role,
+				})),
+				demoData: plan.demoData,
+			},
+			"seeded users",
+		);
+	});
+
+await match(seedPlanFor(env))
+	.with(P.nullish, (): Promise<void> => {
+		logger.error(
+			{ env: env.NODE_ENV },
+			"seed refused: SEED_PASSWORD is required to seed a production database",
+		);
+		process.exit(EXIT_FAILURE);
+	})
+	.otherwise((plan): Promise<void> => runtime.runPromise(seedRun(plan)));
+
+process.exit(EXIT_OK);
