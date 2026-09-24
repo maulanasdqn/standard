@@ -1,5 +1,5 @@
 import { loggerCreate } from "@app/logger";
-import { metricsFake } from "@app/metrics";
+import { metricsFake } from "@app/metrics/testing";
 import { type TTracingMemory, tracingMemory, tracingOff } from "@app/tracing";
 import { Hono } from "hono";
 import { requestId } from "hono/request-id";

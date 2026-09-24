@@ -1,7 +1,7 @@
 import type { Channel, ConsumeMessage, Options } from "amqplib";
 import { match, P } from "ts-pattern";
 import { describe, expect, it, vi } from "vitest";
-import { jobDedupeFake } from "./job-dedupe.ts";
+import { jobDedupeFake } from "./job-dedupe-fake.ts";
 import { deadLetterQueueNameOf, retryQueueNameOf } from "./job-names.ts";
 import { ATTEMPT_HEADER, jobWorkerCreate } from "./job-worker.ts";
 
