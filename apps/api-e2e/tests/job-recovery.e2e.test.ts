@@ -5,7 +5,7 @@ import {
 	jobWorkerCreate,
 	retryQueueNameOf,
 } from "@app/queue";
-import { connect, type Channel, type ChannelModel } from "amqplib";
+import { connect, type ChannelModel, type ConfirmChannel } from "amqplib";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { RABBITMQ_URL } from "../support/services.ts";
 
@@ -15,7 +15,7 @@ const RETRY = { maxAttempts: 2, backoffBaseMs: 50, backoffFactor: 1 };
 const SETTLE_MS = 2_000;
 
 let model: ChannelModel;
-let channel: Channel;
+let channel: ConfirmChannel;
 
 const settle = (): Promise<void> =>
 	new Promise((resolve) => setTimeout(resolve, SETTLE_MS));
@@ -26,7 +26,7 @@ const purge = async (name: string): Promise<void> => {
 
 beforeAll(async (): Promise<void> => {
 	model = await connect(RABBITMQ_URL);
-	channel = await model.createChannel();
+	channel = await model.createConfirmChannel();
 });
 
 afterAll(async (): Promise<void> => {
@@ -52,7 +52,8 @@ describe("job failure and recovery against a real broker", () => {
 			},
 		});
 
-		await jobPublisherCreate<typeof PAYLOAD>(QUEUE, channel).add(PAYLOAD);
+		const publisher = await jobPublisherCreate<typeof PAYLOAD>(QUEUE, channel);
+		await publisher.add(PAYLOAD);
 		await settle();
 
 		expect(attempts.length).toBe(RETRY.maxAttempts);
@@ -78,12 +79,26 @@ describe("job failure and recovery against a real broker", () => {
 			},
 		});
 
-		const publisher = jobPublisherCreate<typeof PAYLOAD>(name, channel);
+		const publisher = await jobPublisherCreate<typeof PAYLOAD>(name, channel);
 		await publisher.add(PAYLOAD);
 		await publisher.add(PAYLOAD);
 		await settle();
 
 		expect(handled.length).toBe(1);
+
+		await purge(name);
+		await purge(retryQueueNameOf(name));
+		await purge(deadLetterQueueNameOf(name));
+	});
+
+	it("resolves a publish only once the broker holds the message", async (): Promise<void> => {
+		const name = `${QUEUE}-confirm`;
+
+		const publisher = await jobPublisherCreate<typeof PAYLOAD>(name, channel);
+		await publisher.add(PAYLOAD);
+
+		const main = await channel.checkQueue(name);
+		expect(main.messageCount).toBe(1);
 
 		await purge(name);
 		await purge(retryQueueNameOf(name));

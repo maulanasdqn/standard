@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
-import type { Channel } from "amqplib";
+import type { ConfirmChannel } from "amqplib";
+import { match, P } from "ts-pattern";
 import { jobTopologyAssert } from "./job-topology.ts";
 
 const idempotencyMessageId = (name: string, payload: unknown): string =>
@@ -8,18 +9,41 @@ const idempotencyMessageId = (name: string, payload: unknown): string =>
 		.digest("hex");
 
 export type TJobQueue<TPayload> = {
-	add: (payload: TPayload) => Promise<boolean>;
+	add: (payload: TPayload) => Promise<void>;
 };
 
-export const jobPublisherCreate = <TPayload>(
+const publishConfirmed = (
+	channel: ConfirmChannel,
 	name: string,
-	channel: Channel,
-): TJobQueue<TPayload> => ({
-	add: async (payload: TPayload): Promise<boolean> => {
-		await jobTopologyAssert(name, channel);
-		return channel.sendToQueue(name, Buffer.from(JSON.stringify(payload)), {
-			persistent: true,
-			messageId: idempotencyMessageId(name, payload),
-		});
-	},
-});
+	content: Buffer,
+	messageId: string,
+): Promise<void> =>
+	new Promise((resolve, reject): void => {
+		channel.sendToQueue(
+			name,
+			content,
+			{ persistent: true, messageId },
+			(error: unknown): void => {
+				match(error)
+					.with(P.nullish, (): void => resolve())
+					.otherwise((found): void => reject(found));
+			},
+		);
+	});
+
+export const jobPublisherCreate = async <TPayload>(
+	name: string,
+	channel: ConfirmChannel,
+): Promise<TJobQueue<TPayload>> => {
+	await jobTopologyAssert(name, channel);
+
+	return {
+		add: (payload: TPayload): Promise<void> =>
+			publishConfirmed(
+				channel,
+				name,
+				Buffer.from(JSON.stringify(payload)),
+				idempotencyMessageId(name, payload),
+			),
+	};
+};

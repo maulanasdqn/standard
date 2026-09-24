@@ -1,4 +1,4 @@
-import { connect, type Channel, type ChannelModel } from "amqplib";
+import { connect, type ChannelModel, type ConfirmChannel } from "amqplib";
 import { Context, Effect, Layer } from "effect";
 import { match } from "ts-pattern";
 import { EQueue } from "#/shared/errors.ts";
@@ -15,20 +15,20 @@ const ONE_ATTEMPT = 1;
 
 export type TQueueConnection = {
 	model: ChannelModel;
-	channel: Channel;
+	channel: ConfirmChannel;
 };
 
 export const queueConnectionCreate = async (
 	rabbitmqUrl: string,
 ): Promise<TQueueConnection> => {
 	const model = await connect(rabbitmqUrl);
-	const channel = await model.createChannel();
+	const channel = await model.createConfirmChannel();
 	return { model, channel };
 };
 
 export type TQueueService = {
 	readonly connection: () => Effect.Effect<TQueueConnection, EQueue>;
-	readonly channel: () => Effect.Effect<Channel, EQueue>;
+	readonly channel: () => Effect.Effect<ConfirmChannel, EQueue>;
 	readonly close: () => Promise<void>;
 };
 
@@ -99,8 +99,8 @@ export const queueServiceCreate = (
 			},
 		});
 
-	const channel = (): Effect.Effect<Channel, EQueue> =>
-		connection().pipe(Effect.map((found): Channel => found.channel));
+	const channel = (): Effect.Effect<ConfirmChannel, EQueue> =>
+		connection().pipe(Effect.map((found): ConfirmChannel => found.channel));
 
 	const close = async (): Promise<void> => {
 		const current = state.current;
@@ -182,7 +182,7 @@ export const queueChannelAwait = (
 	service: TQueueService,
 	attempts: number = QUEUE_CONNECT_ATTEMPTS,
 	delayMs: number = QUEUE_CONNECT_DELAY_MS,
-): Effect.Effect<Channel, EQueue> =>
+): Effect.Effect<ConfirmChannel, EQueue> =>
 	queueConnectionAwait(service, attempts, delayMs).pipe(
-		Effect.map((found): Channel => found.channel),
+		Effect.map((found): ConfirmChannel => found.channel),
 	);
