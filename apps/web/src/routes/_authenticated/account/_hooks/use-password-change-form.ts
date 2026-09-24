@@ -1,11 +1,13 @@
 import { AUTH_MESSAGE } from "@app/messages";
 import { passwordChangeInputSchema } from "@app/schemas";
 import { useForm } from "@tanstack/react-form";
+import { useMutation } from "@tanstack/react-query";
 import { useSelector } from "@tanstack/react-store";
 import type { FormEvent } from "react";
 import { toast } from "sonner";
 import { match, P } from "ts-pattern";
 import { z } from "zod";
+import { passwordChangeErrorMessage } from "#/libs/auth/auth-error.ts";
 import { authClient } from "#/libs/auth/client.ts";
 import { passwordChangeError } from "#/routes/_authenticated/account/_stores/password-change-error-store.ts";
 import { useConfirmedAction } from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
@@ -28,30 +30,31 @@ const DEFAULT_VALUES: TPasswordChangeFormValues = {
 export const usePasswordChangeForm = () => {
 	const serverError = useSelector(passwordChangeError.store);
 
-	const passwordChange = async (
-		value: TPasswordChangeFormValues,
-	): Promise<void> => {
-		passwordChangeError.clear();
-		const { error } = await authClient.changePassword({
-			currentPassword: value.currentPassword,
-			newPassword: value.newPassword,
-			revokeOtherSessions: true,
-		});
+	const passwordChange = useMutation({
+		mutationFn: (value: TPasswordChangeFormValues) =>
+			authClient.changePassword({
+				currentPassword: value.currentPassword,
+				newPassword: value.newPassword,
+				revokeOtherSessions: true,
+			}),
+		onMutate: (): void => passwordChangeError.clear(),
+		onSuccess: ({ error }): void => {
+			match(error)
+				.with(P.nullish, (): void => {
+					toast.success(AUTH_MESSAGE.PASSWORD_CHANGED);
+					form.reset();
+				})
+				.otherwise((found): void => {
+					passwordChangeError.set(passwordChangeErrorMessage(found));
+				});
+		},
+		onError: (): void => {
+			passwordChangeError.set(AUTH_MESSAGE.PASSWORD_CHANGE_FAILED);
+		},
+	});
 
-		match(error)
-			.with(P.nullish, () => {
-				toast.success(AUTH_MESSAGE.PASSWORD_CHANGED);
-				form.reset();
-			})
-			.otherwise((found) => {
-				passwordChangeError.set(
-					found.message ?? AUTH_MESSAGE.PASSWORD_CHANGE_FAILED,
-				);
-			});
-	};
-
-	const confirm = useConfirmedAction<TPasswordChangeFormValues>(
-		(value) => void passwordChange(value),
+	const confirm = useConfirmedAction<TPasswordChangeFormValues>((value) =>
+		passwordChange.mutate(value),
 	);
 
 	const form = useForm({
@@ -65,5 +68,11 @@ export const usePasswordChangeForm = () => {
 		void form.handleSubmit();
 	};
 
-	return { form, serverError, onSubmit, confirm };
+	return {
+		form,
+		serverError,
+		onSubmit,
+		confirm,
+		isPending: passwordChange.isPending,
+	};
 };

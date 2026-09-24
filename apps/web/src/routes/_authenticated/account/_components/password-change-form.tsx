@@ -9,7 +9,8 @@ import { AUTH_MESSAGE } from "@app/messages";
 import { ConfirmDialog } from "#/routes/_authenticated/_components/confirm-dialog.tsx";
 
 export const PasswordChangeForm: FC = (): ReactElement => {
-	const { form, serverError, onSubmit, confirm } = usePasswordChangeForm();
+	const { form, serverError, onSubmit, confirm, isPending } =
+		usePasswordChangeForm();
 
 	return (
 		<Card>
@@ -68,17 +69,11 @@ export const PasswordChangeForm: FC = (): ReactElement => {
 						)}
 					</form.Field>
 					<FieldError errors={serverError ? [{ message: serverError }] : []} />
-					<form.Subscribe selector={(state) => state.isSubmitting}>
-						{(isSubmitting) => (
-							<Button
-								type="submit"
-								disabled={isSubmitting}
-								className="self-start"
-							>
-								{isSubmitting ? "Updating…" : "Update password"}
-							</Button>
-						)}
-					</form.Subscribe>
+					<Button type="submit" disabled={isPending} className="self-start">
+						{isPending
+							? AUTH_MESSAGE.PASSWORD_UPDATING
+							: AUTH_MESSAGE.PASSWORD_UPDATE}
+					</Button>
 				</form>
 				<ConfirmDialog
 					open={confirm.open}

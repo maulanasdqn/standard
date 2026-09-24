@@ -6,8 +6,12 @@ export const AUTH_MESSAGE = {
 		"We could not check your session just now. You have not been signed out, so try again in a moment.",
 	FORBIDDEN: "You don't have permission to perform this action.",
 	INVALID_CREDENTIALS: "That email or password is incorrect.",
+	SIGN_IN_FAILED: "Could not sign you in just now. Please try again.",
 	PASSWORD_CHANGED: "Password updated. Your other sessions were signed out.",
 	PASSWORD_CHANGE_FAILED: "Could not change your password.",
+	CURRENT_PASSWORD_INCORRECT: "Your current password is incorrect.",
+	PASSWORD_UPDATE: "Update password",
+	PASSWORD_UPDATING: "Updating…",
 	PASSWORD_CHANGE_CONFIRM_TITLE: "Change your password?",
 	PASSWORD_CHANGE_CONFIRM_DESCRIPTION:
 		"Your other sessions will be signed out.",
