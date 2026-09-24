@@ -2,6 +2,7 @@ import { userListInputSchema } from "@app/schemas";
 import { useForm } from "@tanstack/react-form";
 import type { FormEvent } from "react";
 import type { z } from "zod";
+import type { TFormHook, TValidatedForm } from "#/libs/forms/form-hook.ts";
 import { SEARCH_DEBOUNCE_MS } from "#/libs/forms/search-debounce.ts";
 import { useUserSearch } from "#/routes/_authenticated/users/_hooks/use-users.ts";
 
@@ -9,7 +10,11 @@ const userSearchFormSchema = userListInputSchema.pick({ search: true });
 
 type TUserSearchFormValues = z.input<typeof userSearchFormSchema>;
 
-export const useUserSearchForm = () => {
+type TUserSearchForm = TFormHook<
+	TValidatedForm<TUserSearchFormValues, typeof userSearchFormSchema>
+>;
+
+export const useUserSearchForm = (): TUserSearchForm => {
 	const { value, onChange } = useUserSearch();
 	const defaultValues: TUserSearchFormValues = { search: value };
 

@@ -2,6 +2,7 @@ import { noteListInputSchema } from "@app/schemas";
 import { useForm } from "@tanstack/react-form";
 import type { FormEvent } from "react";
 import type { z } from "zod";
+import type { TFormHook, TValidatedForm } from "#/libs/forms/form-hook.ts";
 import { SEARCH_DEBOUNCE_MS } from "#/libs/forms/search-debounce.ts";
 import { useNoteSearch } from "#/routes/_authenticated/notes/_hooks/use-notes.ts";
 
@@ -9,7 +10,11 @@ const noteSearchFormSchema = noteListInputSchema.pick({ search: true });
 
 type TNoteSearchFormValues = z.input<typeof noteSearchFormSchema>;
 
-export const useNoteSearchForm = () => {
+type TNoteSearchForm = TFormHook<
+	TValidatedForm<TNoteSearchFormValues, typeof noteSearchFormSchema>
+>;
+
+export const useNoteSearchForm = (): TNoteSearchForm => {
 	const { value, onChange } = useNoteSearch();
 	const defaultValues: TNoteSearchFormValues = { search: value };
 

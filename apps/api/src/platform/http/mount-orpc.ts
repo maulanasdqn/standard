@@ -46,13 +46,8 @@ const openApiPluginsFor = (referenceEnabled: boolean): TOpenApiPlugins => {
 		);
 };
 
-export const orpcMount = ({
-	app,
-	router,
-	logger,
-	referenceEnabled,
-	buildContext,
-}: TDeps): void => {
+export const orpcMount = (deps: TDeps): void => {
+	const { app, router, logger, referenceEnabled, buildContext } = deps;
 	const rpcHandler = new RPCHandler(router, {
 		interceptors: [
 			onError((error) => logger.error({ err: error }, "orpc rpc error")),

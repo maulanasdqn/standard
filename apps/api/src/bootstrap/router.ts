@@ -6,7 +6,7 @@ import { permissionModule } from "#/permission/index.ts";
 import { roleModule } from "#/role/index.ts";
 import { userModule } from "#/user/index.ts";
 
-const routerCreate = () => ({
+const appRouter = {
 	health: healthModule.routerBuild(),
 	me: authModule.routerBuild(),
 	note: noteModule.routerBuild(),
@@ -14,8 +14,8 @@ const routerCreate = () => ({
 	role: roleModule.routerBuild(),
 	permission: permissionModule.routerBuild(),
 	activity: activityModule.routerBuild(),
-});
+};
 
-export type TAppRouter = ReturnType<typeof routerCreate>;
+export type TAppRouter = typeof appRouter;
 
-export const routerBuild = (): TAppRouter => routerCreate();
+export const routerBuild = (): TAppRouter => appRouter;

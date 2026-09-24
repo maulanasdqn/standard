@@ -20,7 +20,7 @@ import {
 import { HTTP_METHOD } from "#/platform/http/http-methods.ts";
 import { ROUTE_PATH } from "#/platform/http/route-paths.ts";
 
-const roleRouterCreate = () => ({
+const roleRouter = {
 	list: permissionRequire(PERMISSION.USER_MANAGE)
 		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.ROLES })
 		.output(roleListSchema)
@@ -66,8 +66,8 @@ const roleRouterCreate = () => ({
 				roleDelete(input, context.session!.user.id),
 			),
 		),
-});
+};
 
-export type TRoleRouter = ReturnType<typeof roleRouterCreate>;
+export type TRoleRouter = typeof roleRouter;
 
-export const roleRouterBuild = (): TRoleRouter => roleRouterCreate();
+export const roleRouterBuild = (): TRoleRouter => roleRouter;

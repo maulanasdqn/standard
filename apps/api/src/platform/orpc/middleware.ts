@@ -35,11 +35,15 @@ export const protectedProcedure = publicProcedure.use(
 			),
 );
 
-export const permissionRequire = (...required: TPermission[]) =>
+type TProtectedProcedure = typeof protectedProcedure;
+
+export const permissionRequire = (
+	...required: TPermission[]
+): TProtectedProcedure =>
 	protectedProcedure.use(async ({ context, next }) =>
 		match(canAll(context.permissions, required))
 			.with(false, () => {
 				throw new ORPCError("FORBIDDEN", { message: AUTH_MESSAGE.FORBIDDEN });
 			})
-			.otherwise(() => next()),
+			.otherwise(() => next({ context })),
 	);

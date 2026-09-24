@@ -5,7 +5,11 @@ import { useNavigate } from "@tanstack/react-router";
 import type { FormEvent } from "react";
 import type { z } from "zod";
 import { useUserCreate } from "#/routes/_authenticated/users/_hooks/use-users.ts";
-import { useConfirmedAction } from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
+import type { TFormHook, TValidatedForm } from "#/libs/forms/form-hook.ts";
+import {
+	type TConfirmedAction,
+	useConfirmedAction,
+} from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
 
 type TUserCreateFormValues = z.input<typeof userCreateInputSchema>;
 
@@ -16,7 +20,14 @@ const DEFAULT_VALUES: TUserCreateFormValues = {
 	role: ROLE.VIEWER,
 };
 
-export const useUserCreateForm = () => {
+type TUserCreateForm = TFormHook<
+	TValidatedForm<TUserCreateFormValues, typeof userCreateInputSchema>
+> & {
+	confirm: TConfirmedAction<TUserCreateFormValues>;
+	isPending: boolean;
+};
+
+export const useUserCreateForm = (): TUserCreateForm => {
 	const navigate = useNavigate();
 	const userCreate = useUserCreate();
 

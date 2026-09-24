@@ -6,13 +6,25 @@ import type { FormEvent } from "react";
 import { match } from "ts-pattern";
 import type { z } from "zod";
 import { useRoleUpdate } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
-import { useConfirmedAction } from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
+import type { TFormHook, TValidatedForm } from "#/libs/forms/form-hook.ts";
+import {
+	type TConfirmedAction,
+	useConfirmedAction,
+} from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
 
 const roleEditFormSchema = roleUpdateInputSchema.omit({ key: true }).required();
 
 type TRoleEditFormValues = z.input<typeof roleEditFormSchema>;
 
-export const useRoleEditForm = (role: TRoleDto) => {
+type TRoleEditForm = TFormHook<
+	TValidatedForm<TRoleEditFormValues, typeof roleEditFormSchema>
+> & {
+	confirm: TConfirmedAction<TRoleEditFormValues>;
+	isPending: boolean;
+	isFixed: boolean;
+};
+
+export const useRoleEditForm = (role: TRoleDto): TRoleEditForm => {
 	const navigate = useNavigate();
 	const roleUpdate = useRoleUpdate();
 

@@ -3,7 +3,11 @@ import { useForm } from "@tanstack/react-form";
 import type { FormEvent } from "react";
 import type { z } from "zod";
 import { useUserPasswordReset } from "#/routes/_authenticated/users/_hooks/use-users.ts";
-import { useConfirmedAction } from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
+import type { TFormHook, TValidatedForm } from "#/libs/forms/form-hook.ts";
+import {
+	type TConfirmedAction,
+	useConfirmedAction,
+} from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
 
 const userPasswordResetFormSchema = userPasswordResetInputSchema.pick({
 	password: true,
@@ -13,7 +17,19 @@ type TUserPasswordResetFormValues = z.input<typeof userPasswordResetFormSchema>;
 
 const DEFAULT_VALUES: TUserPasswordResetFormValues = { password: "" };
 
-export const useUserPasswordResetForm = (user: TUser) => {
+type TUserPasswordResetForm = TFormHook<
+	TValidatedForm<
+		TUserPasswordResetFormValues,
+		typeof userPasswordResetFormSchema
+	>
+> & {
+	confirm: TConfirmedAction<TUserPasswordResetFormValues>;
+	isPending: boolean;
+};
+
+export const useUserPasswordResetForm = (
+	user: TUser,
+): TUserPasswordResetForm => {
 	const passwordReset = useUserPasswordReset();
 
 	const confirm = useConfirmedAction<TUserPasswordResetFormValues>((value) =>

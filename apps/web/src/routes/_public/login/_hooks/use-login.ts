@@ -6,6 +6,11 @@ import { useSelector } from "@tanstack/react-store";
 import type { FormEvent } from "react";
 import { match, P } from "ts-pattern";
 import { signInErrorMessage } from "#/libs/auth/auth-error.ts";
+import type {
+	TFormHook,
+	TFormValidator,
+	TValidatedForm,
+} from "#/libs/forms/form-hook.ts";
 import { authClient } from "#/libs/auth/client.ts";
 import { returnToResolve } from "#/libs/auth/return-to.ts";
 import { SESSION_REACH } from "#/libs/auth/session-reach.ts";
@@ -16,7 +21,18 @@ const DEFAULT_VALUES: TLoginInput = { email: "", password: "" };
 
 const loginRouteApi = getRouteApi("/_public/login/");
 
-export const useLoginForm = () => {
+type TLoginForm = TFormHook<
+	TValidatedForm<
+		TLoginInput,
+		TFormValidator<TLoginInput>,
+		typeof loginInputSchema,
+		typeof loginInputSchema
+	>
+> & {
+	serverError: string | null;
+};
+
+export const useLoginForm = (): TLoginForm => {
 	const navigate = useNavigate();
 	const { redirect } = loginRouteApi.useSearch();
 	const serverError = useSelector(loginError.store);
