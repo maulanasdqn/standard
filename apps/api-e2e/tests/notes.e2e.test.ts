@@ -109,4 +109,27 @@ describe("notes REST endpoints", () => {
 		});
 		expect(staleResponse.status).toBe(409);
 	});
+
+	it("treats a wildcard in the search text as a literal character", async (): Promise<void> => {
+		const createWith = (title: string): Promise<Response> =>
+			fetch(`${BASE_URL}/api/notes`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json", cookie },
+				body: JSON.stringify({ title, body: "search" }),
+			});
+		await createWith("Discount 50%");
+		await createWith("Discount 500");
+
+		const searchResponse = await fetch(
+			`${BASE_URL}/api/notes?page=1&pageSize=20&search=${encodeURIComponent("50%")}`,
+			{ headers: { cookie } },
+		);
+		const found = (await searchResponse.json()) as {
+			items: { title: string }[];
+		};
+		const titles = A.map(found.items, (item) => item.title);
+
+		expect(titles).toContain("Discount 50%");
+		expect(titles).not.toContain("Discount 500");
+	});
 });

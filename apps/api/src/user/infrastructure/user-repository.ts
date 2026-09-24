@@ -1,5 +1,5 @@
 import { D } from "@mobily/ts-belt";
-import { and, count, eq, ilike, or, type SQL } from "drizzle-orm";
+import { and, count, eq, or, type SQL } from "drizzle-orm";
 import { Effect, Layer } from "effect";
 import { match, P } from "ts-pattern";
 import { EAuth, EDatabase } from "#/shared/errors.ts";
@@ -9,6 +9,7 @@ import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { UserRepo, type TUserRepo, type TUserRow } from "#/user/domain/user.ts";
 import { AuthService, authServiceLayer } from "#/auth/index.ts";
 import { DbService, dbServiceLayer } from "#/platform/db/db-service.ts";
+import { containsWhere } from "#/platform/db/search.ts";
 import { dbActive } from "#/platform/db/transaction.ts";
 import { session, user } from "#/platform/db/tables/auth.ts";
 
@@ -25,7 +26,7 @@ const SORT_COLUMN: Record<TUserSort, AnyPgColumn> = {
 const searchWhere = (search: string | undefined): SQL | undefined =>
 	match(search)
 		.with(P.nonNullable, (value) =>
-			or(ilike(user.name, `%${value}%`), ilike(user.email, `%${value}%`)),
+			or(containsWhere(user.name, value), containsWhere(user.email, value)),
 		)
 		.otherwise(() => undefined);
 
