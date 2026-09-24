@@ -20,18 +20,18 @@ type TCreateAuthOptions = {
 	mailer: TMailer;
 };
 
-export const authCreate = ({ db, activityRepo, mailer }: TCreateAuthOptions) =>
+export const authCreate = (deps: TCreateAuthOptions) =>
 	betterAuth({
 		baseURL: env.BETTER_AUTH_URL,
 		secret: env.BETTER_AUTH_SECRET,
 		trustedOrigins: [env.WEB_ORIGIN],
-		database: drizzleAdapter(dbActiveProxy(db), { provider: "pg" }),
+		database: drizzleAdapter(dbActiveProxy(deps.db), { provider: "pg" }),
 		advanced: { database: { generateId: (): string => crypto.randomUUID() } },
 		emailAndPassword: {
 			enabled: true,
 			sendResetPassword: async ({ user, url }): Promise<void> => {
 				await mailSendSafe(
-					mailer,
+					deps.mailer,
 					logger,
 					MAIL_TEMPLATE.PASSWORD_RESET,
 					passwordResetMailBuild({ to: user.email, name: user.name, url }),
@@ -47,7 +47,7 @@ export const authCreate = ({ db, activityRepo, mailer }: TCreateAuthOptions) =>
 			session: {
 				create: {
 					after: async (session) => {
-						await activityRepo.insert({
+						await deps.activityRepo.insert({
 							actorId: session.userId,
 							action: ACTIVITY_ACTION.SESSION_CREATE,
 							resourceType: ACTIVITY_RESOURCE_TYPE.SESSION,

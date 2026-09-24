@@ -6,7 +6,7 @@ import { effectRun } from "#/platform/orpc/run-effect.ts";
 import { HTTP_METHOD } from "#/platform/http/http-methods.ts";
 import { ROUTE_PATH } from "#/platform/http/route-paths.ts";
 
-const activityRouterCreate = () => ({
+const activityRouter = {
 	list: permissionRequire(PERMISSION.ACTIVITY_READ)
 		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.ACTIVITY })
 		.input(activityListInputSchema)
@@ -14,9 +14,8 @@ const activityRouterCreate = () => ({
 		.handler(({ input, context }) =>
 			effectRun(context.runtime, activityList(input)),
 		),
-});
+};
 
-export type TActivityRouter = ReturnType<typeof activityRouterCreate>;
+export type TActivityRouter = typeof activityRouter;
 
-export const activityRouterBuild = (): TActivityRouter =>
-	activityRouterCreate();
+export const activityRouterBuild = (): TActivityRouter => activityRouter;

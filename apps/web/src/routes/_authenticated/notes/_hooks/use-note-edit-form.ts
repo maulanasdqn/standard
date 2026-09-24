@@ -4,7 +4,11 @@ import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
 import type { FormEvent } from "react";
 import type { z } from "zod";
-import { useConfirmedAction } from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
+import type { TFormHook, TValidatedForm } from "#/libs/forms/form-hook.ts";
+import {
+	type TConfirmedAction,
+	useConfirmedAction,
+} from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
 import { useNoteUpdate } from "#/routes/_authenticated/notes/_hooks/use-notes.ts";
 
 const noteEditFormSchema = noteUpdateInputSchema
@@ -13,7 +17,14 @@ const noteEditFormSchema = noteUpdateInputSchema
 
 type TNoteEditFormValues = z.input<typeof noteEditFormSchema>;
 
-export const useNoteEditForm = (note: TNote) => {
+type TNoteEditForm = TFormHook<
+	TValidatedForm<TNoteEditFormValues, typeof noteEditFormSchema>
+> & {
+	confirm: TConfirmedAction<TNoteEditFormValues>;
+	isPending: boolean;
+};
+
+export const useNoteEditForm = (note: TNote): TNoteEditForm => {
 	const navigate = useNavigate();
 	const noteUpdate = useNoteUpdate();
 

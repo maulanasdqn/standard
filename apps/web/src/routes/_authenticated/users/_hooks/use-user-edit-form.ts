@@ -8,7 +8,11 @@ import {
 	useIsSelf,
 	useUserUpdate,
 } from "#/routes/_authenticated/users/_hooks/use-users.ts";
-import { useConfirmedAction } from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
+import type { TFormHook, TValidatedForm } from "#/libs/forms/form-hook.ts";
+import {
+	type TConfirmedAction,
+	useConfirmedAction,
+} from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
 
 const userEditFormSchema = userUpdateInputSchema
 	.pick({ name: true, role: true })
@@ -16,7 +20,15 @@ const userEditFormSchema = userUpdateInputSchema
 
 type TUserEditFormValues = z.input<typeof userEditFormSchema>;
 
-export const useUserEditForm = (user: TUser) => {
+type TUserEditForm = TFormHook<
+	TValidatedForm<TUserEditFormValues, typeof userEditFormSchema>
+> & {
+	confirm: TConfirmedAction<TUserEditFormValues>;
+	isPending: boolean;
+	isSelf: boolean;
+};
+
+export const useUserEditForm = (user: TUser): TUserEditForm => {
 	const navigate = useNavigate();
 	const userUpdate = useUserUpdate();
 	const isSelf = useIsSelf()(user.id);

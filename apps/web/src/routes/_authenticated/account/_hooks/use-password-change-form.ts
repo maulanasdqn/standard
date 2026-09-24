@@ -10,7 +10,11 @@ import { z } from "zod";
 import { passwordChangeErrorMessage } from "#/libs/auth/auth-error.ts";
 import { authClient } from "#/libs/auth/client.ts";
 import { passwordChangeError } from "#/routes/_authenticated/account/_stores/password-change-error-store.ts";
-import { useConfirmedAction } from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
+import type { TFormHook, TValidatedForm } from "#/libs/forms/form-hook.ts";
+import {
+	type TConfirmedAction,
+	useConfirmedAction,
+} from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
 
 const passwordChangeFormSchema = passwordChangeInputSchema
 	.extend({ confirmPassword: z.string() })
@@ -27,7 +31,15 @@ const DEFAULT_VALUES: TPasswordChangeFormValues = {
 	confirmPassword: "",
 };
 
-export const usePasswordChangeForm = () => {
+type TPasswordChangeForm = TFormHook<
+	TValidatedForm<TPasswordChangeFormValues, typeof passwordChangeFormSchema>
+> & {
+	serverError: string | null;
+	confirm: TConfirmedAction<TPasswordChangeFormValues>;
+	isPending: boolean;
+};
+
+export const usePasswordChangeForm = (): TPasswordChangeForm => {
 	const serverError = useSelector(passwordChangeError.store);
 
 	const passwordChange = useMutation({

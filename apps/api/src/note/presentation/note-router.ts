@@ -21,7 +21,7 @@ import {
 import { HTTP_METHOD } from "#/platform/http/http-methods.ts";
 import { ROUTE_PATH } from "#/platform/http/route-paths.ts";
 
-const noteRouterCreate = () => ({
+const noteRouter = {
 	list: permissionRequire(PERMISSION.NOTE_READ)
 		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.NOTES })
 		.input(noteListInputSchema)
@@ -70,8 +70,8 @@ const noteRouterCreate = () => ({
 				noteDelete(input, context.session!.user),
 			),
 		),
-});
+};
 
-export type TNoteRouter = ReturnType<typeof noteRouterCreate>;
+export type TNoteRouter = typeof noteRouter;
 
-export const noteRouterBuild = (): TNoteRouter => noteRouterCreate();
+export const noteRouterBuild = (): TNoteRouter => noteRouter;

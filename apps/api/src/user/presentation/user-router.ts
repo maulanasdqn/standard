@@ -23,7 +23,7 @@ import {
 import { HTTP_METHOD } from "#/platform/http/http-methods.ts";
 import { ROUTE_PATH } from "#/platform/http/route-paths.ts";
 
-const userRouterCreate = () => ({
+const userRouter = {
 	list: permissionRequire(PERMISSION.USER_MANAGE)
 		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.USERS })
 		.input(userListInputSchema)
@@ -83,8 +83,8 @@ const userRouterCreate = () => ({
 				userPasswordReset(input, context.session!.user.id),
 			),
 		),
-});
+};
 
-export type TUserRouter = ReturnType<typeof userRouterCreate>;
+export type TUserRouter = typeof userRouter;
 
-export const userRouterBuild = (): TUserRouter => userRouterCreate();
+export const userRouterBuild = (): TUserRouter => userRouter;

@@ -12,8 +12,8 @@ export type TRowPage<TRow> = {
 	total: number;
 };
 
-export const offsetFor = ({ page, pageSize }: TPagination): number =>
-	(page - 1) * pageSize;
+export const offsetFor = (pagination: TPagination): number =>
+	(pagination.page - 1) * pagination.pageSize;
 
 export const orderFor = (column: AnyPgColumn, direction: TSortDirection): SQL =>
 	match(direction)
