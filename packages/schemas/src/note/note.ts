@@ -2,6 +2,7 @@ import { z } from "zod";
 import { userIdSchema } from "../auth/auth.ts";
 import { baseSchema, type TEntityOf } from "../shared/base-schema.ts";
 import { paginated, paginationSchema } from "../shared/pagination.ts";
+import { searchQuerySchema } from "../shared/search.ts";
 import { SORT_DIRECTION, sortDirectionSchema } from "../shared/sort.ts";
 
 export const NOTE_TITLE_MAX = 200;
@@ -43,7 +44,7 @@ export const NOTE_SORT = {
 export type TNoteSort = (typeof NOTE_SORT)[keyof typeof NOTE_SORT];
 
 export const noteListInputSchema = paginationSchema.extend({
-	search: z.string().optional(),
+	search: searchQuerySchema.optional(),
 	sortBy: z
 		.enum([NOTE_SORT.TITLE, NOTE_SORT.CREATED_AT, NOTE_SORT.UPDATED_AT])
 		.default(NOTE_SORT.CREATED_AT),

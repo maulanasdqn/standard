@@ -1,5 +1,5 @@
 import { D } from "@mobily/ts-belt";
-import { and, count, eq, ilike, type SQL } from "drizzle-orm";
+import { and, count, eq, type SQL } from "drizzle-orm";
 import { Effect, Layer } from "effect";
 import { match, P } from "ts-pattern";
 import { EDatabase } from "#/shared/errors.ts";
@@ -10,6 +10,7 @@ import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { DbService, dbServiceLayer } from "#/platform/db/db-service.ts";
 import { dbActive } from "#/platform/db/transaction.ts";
 import { ownershipWhere } from "#/platform/db/ownership.ts";
+import { containsWhere } from "#/platform/db/search.ts";
 import { note } from "#/platform/db/tables/note.ts";
 
 const VERSION_STEP = 1;
@@ -22,7 +23,7 @@ const SORT_COLUMN: Record<TNoteSort, AnyPgColumn> = {
 
 const searchWhere = (search: string | undefined): SQL | undefined =>
 	match(search)
-		.with(P.nonNullable, (value) => ilike(note.title, `%${value}%`))
+		.with(P.nonNullable, (value) => containsWhere(note.title, value))
 		.otherwise(() => undefined);
 
 export const noteRepoLayer = Layer.effect(
