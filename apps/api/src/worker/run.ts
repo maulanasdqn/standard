@@ -4,6 +4,7 @@ import { connectionUrlRedact } from "@app/logger";
 import { jobWorkerCreate } from "@app/queue";
 import { activityModule } from "#/activity/index.ts";
 import { Effect } from "effect";
+import { match } from "ts-pattern";
 import { runtime } from "#/bootstrap/compose.ts";
 import { CacheService } from "#/platform/cache/redis.ts";
 import { env } from "#/platform/config/env.ts";
@@ -16,10 +17,17 @@ import {
 	queueConnectionWatch,
 } from "#/platform/queue/rabbitmq.ts";
 import {
+	SHUTDOWN_SIGNAL,
+	SHUTDOWN_STEP,
+	shutdownOn,
+	shutdownRun,
+} from "#/platform/shutdown.ts";
+import {
 	exampleJobProcess,
 	type TExampleJobPayload,
 } from "#/worker/job-handler.ts";
 
+const EXIT_OK = 0;
 const EXIT_FAILURE = 1;
 const PRUNE_INTERVAL_MS = 86_400_000;
 
@@ -43,10 +51,36 @@ const connection = await runtime
 		process.exit(EXIT_FAILURE);
 	});
 
+const stopping = { started: false };
+
 queueConnectionWatch(connection.model, (reason, cause): void => {
-	logger.error({ err: cause, reason }, "worker.broker.lost");
-	process.exit(EXIT_FAILURE);
+	match(stopping.started)
+		.with(true, (): void => undefined)
+		.otherwise((): void => {
+			logger.error({ err: cause, reason }, "worker.broker.lost");
+			process.exit(EXIT_FAILURE);
+		});
 });
+
+shutdownOn(
+	[SHUTDOWN_SIGNAL.TERM, SHUTDOWN_SIGNAL.INT],
+	async (signal): Promise<void> => {
+		stopping.started = true;
+		logger.info({ signal }, "worker stopping");
+
+		const drained = await shutdownRun({
+			logger,
+			steps: [
+				{
+					name: SHUTDOWN_STEP.RUNTIME,
+					close: (): Promise<void> => runtime.dispose(),
+				},
+			],
+		});
+
+		process.exit(drained ? EXIT_OK : EXIT_FAILURE);
+	},
+);
 
 await jobWorkerCreate<TExampleJobPayload>({
 	name: QUEUE_NAME.EXAMPLE,

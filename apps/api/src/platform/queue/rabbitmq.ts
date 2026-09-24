@@ -3,6 +3,7 @@ import { Context, Effect, Layer } from "effect";
 import { match } from "ts-pattern";
 import { EQueue } from "#/shared/errors.ts";
 import { env } from "#/platform/config/env.ts";
+import { closeQuietly } from "#/platform/resource-close.ts";
 import type { TServiceId } from "#/shared/service-id.ts";
 import { SERVICE_TAG } from "#/platform/service-tags.ts";
 
@@ -28,6 +29,7 @@ export const queueConnectionCreate = async (
 export type TQueueService = {
 	readonly connection: () => Effect.Effect<TQueueConnection, EQueue>;
 	readonly channel: () => Effect.Effect<Channel, EQueue>;
+	readonly close: () => Promise<void>;
 };
 
 export const QUEUE_LOST_REASON = {
@@ -100,7 +102,16 @@ export const queueServiceCreate = (
 	const channel = (): Effect.Effect<Channel, EQueue> =>
 		connection().pipe(Effect.map((found): Channel => found.channel));
 
-	return { connection, channel };
+	const close = async (): Promise<void> => {
+		const current = state.current;
+		forget();
+
+		await match(current)
+			.with(null, (): Promise<void> => Promise.resolve())
+			.otherwise((found): Promise<void> => found.model.close());
+	};
+
+	return { connection, channel, close };
 };
 
 export const queueConnectionWatch = (
@@ -129,7 +140,14 @@ export const queueConnectionWatch = (
 
 export const queueServiceLayer = Layer.effect(
 	QueueService,
-	Effect.sync(() => QueueService.of(queueServiceCreate(env.RABBITMQ_URL))),
+	Effect.gen(function* () {
+		const service = yield* Effect.acquireRelease(
+			Effect.sync(() => queueServiceCreate(env.RABBITMQ_URL)),
+			(found): Effect.Effect<void> => closeQuietly(() => found.close()),
+		);
+
+		return QueueService.of(service);
+	}),
 );
 
 export const queueConnectionAwait = (

@@ -4,6 +4,7 @@ services:
   api:
     image: ${STANDARD_IMAGE:-standard:latest}
     restart: unless-stopped
+    stop_grace_period: 30s
     depends_on:
       postgres: { condition: service_healthy }
       redis: { condition: service_healthy }
@@ -41,6 +42,7 @@ services:
   worker:
     image: ${STANDARD_IMAGE:-standard:latest}
     restart: unless-stopped
+    stop_grace_period: 30s
     command: ["pnpm", "--filter", "@app/api", "worker"]
     depends_on:
       postgres: { condition: service_healthy }

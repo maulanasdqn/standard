@@ -13,6 +13,7 @@ export type TMailMessage = {
 
 export type TMailer = {
 	send: (message: TMailMessage) => Promise<void>;
+	close: () => void;
 };
 
 export type TMailerOptions = {
@@ -38,5 +39,9 @@ export const mailerCreate = (options: TMailerOptions): TMailer => {
 		});
 	};
 
-	return { send };
+	const close = (): void => {
+		transport.close();
+	};
+
+	return { send, close };
 };
