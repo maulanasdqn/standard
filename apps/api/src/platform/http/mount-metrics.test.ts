@@ -1,4 +1,4 @@
-import { metricsFake } from "@app/metrics";
+import { metricsFake } from "@app/metrics/testing";
 import { Hono } from "hono";
 import { describe, expect, it } from "vitest";
 import { HTTP_STATUS } from "#/platform/http/http-status.ts";

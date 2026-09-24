@@ -1,10 +1,10 @@
 import {
 	deadLetterQueueNameOf,
-	jobDedupeFake,
 	jobPublisherCreate,
 	jobWorkerCreate,
 	retryQueueNameOf,
 } from "@app/queue";
+import { jobDedupeFake } from "@app/queue/testing";
 import { connect, type ChannelModel, type ConfirmChannel } from "amqplib";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { RABBITMQ_URL } from "../support/services.ts";

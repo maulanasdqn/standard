@@ -1,16 +1,3 @@
-import type {
-	TUser,
-	TUserCreateInput,
-	TUserIdInput,
-	TUserList,
-	TUserListInput,
-	TUserPasswordResetInput,
-	TUserUpdateInput,
-} from "@app/schemas";
-import type {
-	TApplicationEffect,
-	TBaseApplication,
-} from "#/shared/base-application.ts";
 import { userCreate } from "#/user/application/user-create.ts";
 import { userDelete } from "#/user/application/user-delete.ts";
 import { userGet } from "#/user/application/user-get.ts";
@@ -25,20 +12,4 @@ export const userApplication = {
 	update: userUpdate,
 	remove: userDelete,
 	resetPassword: userPasswordReset,
-} satisfies TBaseApplication<
-	TUser,
-	TUserList,
-	TUserIdInput,
-	{
-		list: TUserListInput;
-		get: TUserIdInput;
-		create: TUserCreateInput;
-		update: TUserUpdateInput;
-		remove: TUserIdInput;
-	}
-> & {
-	readonly resetPassword: (
-		input: TUserPasswordResetInput,
-		actorId: string,
-	) => TApplicationEffect<TUserIdInput>;
 };

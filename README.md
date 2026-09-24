@@ -51,7 +51,7 @@ make setup                            # docker services, migrate and seed
 make up                               # start api + web together
 ```
 
-The example files already match what `docker-compose.dev.yml` brings up, so they work unedited for local development. `apps/api/.env.example` is the full list of variables the API accepts, and `envSchema` rejects a missing or malformed one at boot rather than failing later in a request.
+The example files already match what `docker-compose.dev.yml` brings up, so they work unedited for local development. In development the web app reaches the API through Vite's same-origin proxy rather than `VITE_API_URL`, so the session cookie stays first-party even when the API is on another localhost host or port. `apps/api/.env.example` is the full list of variables the API accepts, and `envSchema` rejects a missing or malformed one at boot rather than failing later in a request.
 
 Or run them separately:
 

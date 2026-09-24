@@ -4,8 +4,6 @@ import { createORPCClient } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";
 import { createTanstackQueryUtils } from "@orpc/tanstack-query";
 
-// Match the auth client: use Vite's same-origin proxy during development so
-// the browser sends the session cookie on the subsequent /rpc/me request.
 const API_BASE = import.meta.env.DEV
 	? window.location.origin
 	: (import.meta.env.VITE_API_URL ?? window.location.origin);
