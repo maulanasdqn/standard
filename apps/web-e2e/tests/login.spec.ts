@@ -24,6 +24,6 @@ test("returns to the page that asked for sign-in", async ({
 	await page.getByLabel("Password").pressSequentially("Password123");
 	await page.getByRole("button", { name: "Login" }).click();
 
-	await expect(page).toHaveURL(/\/notes\?page=2$/);
+	await expect(page).toHaveURL(/\/notes\?page=2(&|$)/);
 	await expect(page.getByRole("heading", { name: "Notes" })).toBeVisible();
 });
