@@ -1,9 +1,10 @@
 import { LOGGER_LEVELS } from "@app/logger";
+import { userCreateInputSchema } from "@app/schemas";
 import { z } from "zod";
 import { A } from "@mobily/ts-belt";
 import { match, P } from "ts-pattern";
 
-const NODE_ENV = {
+export const NODE_ENV = {
 	PRODUCTION: "production",
 } as const;
 
@@ -103,6 +104,10 @@ export const envSchema = z
 		MAIL_FROM: z.string().min(1).default("Standard <no-reply@standard.test>"),
 		BETTER_AUTH_URL: z.url(),
 		BETTER_AUTH_SECRET: z.string().min(32),
+		SEED_PASSWORD: z.preprocess(
+			blankAsUndefined,
+			userCreateInputSchema.shape.password.optional(),
+		),
 		LOG_LEVEL: z.preprocess(blankAsUndefined, z.enum(LOGGER_LEVELS).optional()),
 		LOG_TRANSPORT_TARGET: z.preprocess(
 			blankAsUndefined,

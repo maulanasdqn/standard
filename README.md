@@ -60,7 +60,7 @@ make api                              # api on :3001
 make web                              # web on :5173
 ```
 
-Seed logins: `admin@test.app` / `Password123`, `member@test.app` / `Password123`, `viewer@test.app` / `Password123`.
+Seed logins: `admin@test.app` / `Password123`, `member@test.app` / `Password123`, `viewer@test.app` / `Password123`. That password is the default outside production only. With `NODE_ENV=production` the seed refuses to run unless `SEED_PASSWORD` is set, and then it creates the admin alone, with that password and no demo users or notes.
 
 Mail sent in development is caught by mailpit, read it at `http://localhost:8025`.
 
