@@ -92,6 +92,10 @@ export const envSchema = z
 		PORT: z.coerce.number().int().default(3001),
 		WEB_ORIGIN: z.url().default("http://localhost:5173"),
 		WEB_DIST_PATH: z.string().optional(),
+		API_REFERENCE_ENABLED: z.preprocess(
+			blankAsUndefined,
+			z.stringbool().optional(),
+		),
 		DATABASE_URL: z.string().min(1),
 		REDIS_URL: z.string().min(1),
 		RABBITMQ_URL: z.string().min(1),
@@ -166,3 +170,6 @@ export const envSchema = z
 	});
 
 export type TEnv = z.infer<typeof envSchema>;
+
+export const apiReferenceEnabledOf = (env: TEnv): boolean =>
+	env.API_REFERENCE_ENABLED ?? env.NODE_ENV !== NODE_ENV.PRODUCTION;

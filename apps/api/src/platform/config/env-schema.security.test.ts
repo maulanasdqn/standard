@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { envSchema } from "#/platform/config/env-schema.ts";
+import {
+	apiReferenceEnabledOf,
+	envSchema,
+} from "#/platform/config/env-schema.ts";
 
 const ENV = {
 	BETTER_AUTH_SECRET: "a-32-character-production-secret!",
@@ -137,5 +140,27 @@ describe("envSchema security", () => {
 		expect(envSchema.safeParse({ ...ENV, LOG_LEVEL: "verbose" }).success).toBe(
 			false,
 		);
+	});
+});
+
+describe("apiReferenceEnabledOf", () => {
+	it("serves the API reference outside production unless told otherwise", () => {
+		expect(apiReferenceEnabledOf(envSchema.parse(ENV))).toBe(true);
+		expect(
+			apiReferenceEnabledOf(
+				envSchema.parse({ ...ENV, API_REFERENCE_ENABLED: "false" }),
+			),
+		).toBe(false);
+	});
+
+	it("hides the API reference in production unless told otherwise", () => {
+		const production = { ...ENV, NODE_ENV: "production", METRICS_TOKEN };
+
+		expect(apiReferenceEnabledOf(envSchema.parse(production))).toBe(false);
+		expect(
+			apiReferenceEnabledOf(
+				envSchema.parse({ ...production, API_REFERENCE_ENABLED: "true" }),
+			),
+		).toBe(true);
 	});
 });

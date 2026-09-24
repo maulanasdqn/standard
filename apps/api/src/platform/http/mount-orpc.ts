@@ -3,6 +3,7 @@ import { OpenAPIHandler } from "@orpc/openapi/fetch";
 import { OpenAPIReferencePlugin } from "@orpc/openapi/plugins";
 import { onError } from "@orpc/server";
 import { RPCHandler } from "@orpc/server/fetch";
+import type { StandardHandlerPlugin } from "@orpc/server/standard";
 import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
 import type { Hono } from "hono";
 import { match, P } from "ts-pattern";
@@ -19,13 +20,37 @@ type TDeps = {
 	app: Hono;
 	router: TAppRouter;
 	logger: TLogger;
+	referenceEnabled: boolean;
 	buildContext: (headers: Headers) => Promise<TORPCContext>;
+};
+
+type TOpenApiPlugins = StandardHandlerPlugin<TORPCContext>[];
+
+const openApiPluginsFor = (referenceEnabled: boolean): TOpenApiPlugins => {
+	const coercion = new SmartCoercionPlugin({
+		schemaConverters: [new ZodToJsonSchemaConverter()],
+	});
+
+	return match(referenceEnabled)
+		.with(false, (): TOpenApiPlugins => [coercion])
+		.otherwise(
+			(): TOpenApiPlugins => [
+				coercion,
+				new OpenAPIReferencePlugin({
+					schemaConverters: [new ZodToJsonSchemaConverter()],
+					specGenerateOptions: {
+						info: { title: API_TITLE, version: APP_VERSION },
+					},
+				}),
+			],
+		);
 };
 
 export const orpcMount = ({
 	app,
 	router,
 	logger,
+	referenceEnabled,
 	buildContext,
 }: TDeps): void => {
 	const rpcHandler = new RPCHandler(router, {
@@ -51,17 +76,7 @@ export const orpcMount = ({
 		interceptors: [
 			onError((error) => logger.error({ err: error }, "orpc openapi error")),
 		],
-		plugins: [
-			new SmartCoercionPlugin({
-				schemaConverters: [new ZodToJsonSchemaConverter()],
-			}),
-			new OpenAPIReferencePlugin({
-				schemaConverters: [new ZodToJsonSchemaConverter()],
-				specGenerateOptions: {
-					info: { title: API_TITLE, version: APP_VERSION },
-				},
-			}),
-		],
+		plugins: openApiPluginsFor(referenceEnabled),
 	});
 
 	app.all(`${ROUTE_PREFIX.OPENAPI}/*`, async (context) => {

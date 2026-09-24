@@ -17,6 +17,7 @@ import {
 import { AuthService } from "#/auth/infrastructure/auth-service.ts";
 import { CacheService } from "#/platform/cache/redis.ts";
 import { env } from "#/platform/config/env.ts";
+import { apiReferenceEnabledOf } from "#/platform/config/env-schema.ts";
 import { logger } from "#/platform/observability/logger.ts";
 import { metrics } from "#/platform/observability/metrics.ts";
 import { authMount } from "#/auth/presentation/mount-auth.ts";
@@ -122,7 +123,13 @@ metricsMount(app, {
 });
 rateLimitMount(app, cacheClient);
 authMount(app, auth);
-orpcMount({ app, router, logger, buildContext });
+orpcMount({
+	app,
+	router,
+	logger,
+	referenceEnabled: apiReferenceEnabledOf(env),
+	buildContext,
+});
 webDistMount(app, env.WEB_DIST_PATH);
 
 const server = serve({ fetch: app.fetch, port: env.PORT }, (info): void => {
