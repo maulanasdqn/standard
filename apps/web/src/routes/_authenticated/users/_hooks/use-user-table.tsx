@@ -9,7 +9,7 @@ import {
 	type TUserUpdateInput,
 } from "@app/schemas";
 import { createColumnHelper, type ReactTable } from "@tanstack/react-table";
-import type { ReactElement } from "react";
+import { type ReactElement, useMemo } from "react";
 import type { TTableFeatures } from "#/libs/table/features.ts";
 import type { TListChange } from "#/libs/table/list-patch.ts";
 import { useServerTable } from "#/routes/_authenticated/_hooks/use-server-table.ts";
@@ -57,46 +57,50 @@ export const useUserTable = (input: TUserTableInput): TUserTable => {
 		userUpdate.mutate(input),
 	);
 
-	const columns = helper.columns([
-		helper.accessor("name", {
-			header: USER_MESSAGE.COLUMN_NAME,
-			meta: { className: "font-medium" },
-		}),
-		helper.accessor("email", {
-			header: USER_MESSAGE.COLUMN_EMAIL,
-			meta: { className: "text-muted-foreground" },
-		}),
-		helper.accessor("role", {
-			header: USER_MESSAGE.COLUMN_ROLE,
-			cell: (context): ReactElement => (
-				<UserRoleCell
-					user={context.row.original}
-					roleOptions={roleOptions}
-					disabled={isSelf(context.row.original.id) || userUpdate.isPending}
-					onChange={(role) =>
-						roleChange.request({ id: context.row.original.id, role })
-					}
-				/>
-			),
-		}),
-		helper.accessor("createdAt", {
-			header: USER_MESSAGE.COLUMN_CREATED,
-			meta: { className: "text-muted-foreground" },
-			cell: (context): string => formatDateTime(context.getValue()),
-		}),
-		helper.display({
-			id: "actions",
-			header: USER_MESSAGE.COLUMN_ACTIONS,
-			enableHiding: false,
-			meta: { className: "text-right" },
-			cell: (context): ReactElement => (
-				<UserActionsCell
-					user={context.row.original}
-					isSelf={isSelf(context.row.original.id)}
-				/>
-			),
-		}),
-	]);
+	const columns = useMemo(
+		() =>
+			helper.columns([
+				helper.accessor("name", {
+					header: USER_MESSAGE.COLUMN_NAME,
+					meta: { className: "font-medium" },
+				}),
+				helper.accessor("email", {
+					header: USER_MESSAGE.COLUMN_EMAIL,
+					meta: { className: "text-muted-foreground" },
+				}),
+				helper.accessor("role", {
+					header: USER_MESSAGE.COLUMN_ROLE,
+					cell: (context): ReactElement => (
+						<UserRoleCell
+							user={context.row.original}
+							roleOptions={roleOptions}
+							disabled={isSelf(context.row.original.id) || userUpdate.isPending}
+							onChange={(role) =>
+								roleChange.request({ id: context.row.original.id, role })
+							}
+						/>
+					),
+				}),
+				helper.accessor("createdAt", {
+					header: USER_MESSAGE.COLUMN_CREATED,
+					meta: { className: "text-muted-foreground" },
+					cell: (context): string => formatDateTime(context.getValue()),
+				}),
+				helper.display({
+					id: "actions",
+					header: USER_MESSAGE.COLUMN_ACTIONS,
+					enableHiding: false,
+					meta: { className: "text-right" },
+					cell: (context): ReactElement => (
+						<UserActionsCell
+							user={context.row.original}
+							isSelf={isSelf(context.row.original.id)}
+						/>
+					),
+				}),
+			]),
+		[roleOptions, isSelf, userUpdate.isPending, roleChange.request],
+	);
 
 	const table = useServerTable({
 		columns,

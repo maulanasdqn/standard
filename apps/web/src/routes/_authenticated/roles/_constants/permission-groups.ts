@@ -6,7 +6,7 @@ export type TPermissionGroup = {
 	permissions: readonly TPermission[];
 };
 
-export const permissionResource = (permission: TPermission): string =>
+const permissionResource = (permission: TPermission): string =>
 	A.head(S.split(permission, ":")) ?? permission;
 
 const RESOURCES: readonly string[] = A.uniq(

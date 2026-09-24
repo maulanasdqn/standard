@@ -12,7 +12,3 @@ export const permissionsStore = new Store<TPermissionsState>({
 export const setPermissions = (permissions: readonly TPermission[]): void => {
 	permissionsStore.setState(() => ({ permissions }));
 };
-
-export const clearPermissions = (): void => {
-	permissionsStore.setState(() => ({ permissions: [] }));
-};

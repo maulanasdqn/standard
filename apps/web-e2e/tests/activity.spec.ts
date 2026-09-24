@@ -1,5 +1,6 @@
 import { ERROR_MESSAGE } from "@app/messages";
 import { ACTIVITY_ACTION } from "@app/activity";
+import { ACTIVITY_ACTION_LABEL } from "@app/messages";
 import { expect, type Page, test } from "@playwright/test";
 import { SEED_CREDENTIALS } from "../support/credentials.ts";
 import { expectNavHidden, NAV_LABEL } from "../support/nav.ts";
@@ -33,14 +34,14 @@ test.describe("activity log", () => {
 		await selectOption(
 			page,
 			page.getByLabel("Action", { exact: true }),
-			ACTIVITY_ACTION.NOTE_CREATE,
+			ACTIVITY_ACTION_LABEL[ACTIVITY_ACTION.NOTE_CREATE],
 		);
 		await expect(page).toHaveURL(/action=note\.create/);
 
 		const entry = page
 			.getByRole("row")
 			.filter({ hasText: SEED_CREDENTIALS.admin.email })
-			.filter({ hasText: ACTIVITY_ACTION.NOTE_CREATE })
+			.filter({ hasText: ACTIVITY_ACTION_LABEL[ACTIVITY_ACTION.NOTE_CREATE] })
 			.first();
 		await expect(entry).toBeVisible();
 	});

@@ -3,7 +3,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import type { ReactElement } from "react";
 import { afterEach, describe, expect, it } from "vitest";
 import { GUARD_MODE, type TGuardMode, Guard } from "../guard.tsx";
-import { clearPermissions, setPermissions } from "../permissions-store.ts";
+import { setPermissions } from "../permissions-store.ts";
 
 const ALLOWED = "allowed";
 const DENIED = "denied";
@@ -20,7 +20,7 @@ const guardWith = (
 describe("Guard", () => {
 	afterEach((): void => {
 		cleanup();
-		clearPermissions();
+		setPermissions([]);
 	});
 
 	it("renders the fallback when the permission is missing", (): void => {

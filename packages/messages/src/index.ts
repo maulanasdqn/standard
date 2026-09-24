@@ -1,4 +1,8 @@
-export { ACTIVITY_MESSAGE } from "./activity/message.ts";
+export {
+	ACTIVITY_ACTION_LABEL,
+	ACTIVITY_ENTITY_LABEL,
+	ACTIVITY_MESSAGE,
+} from "./activity/message.ts";
 export { APP_MESSAGE } from "./app/message.ts";
 export { DASHBOARD_MESSAGE } from "./dashboard/message.ts";
 export { AUTH_MESSAGE } from "./auth/message.ts";
