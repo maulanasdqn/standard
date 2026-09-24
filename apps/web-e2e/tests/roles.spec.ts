@@ -1,3 +1,4 @@
+import { ERROR_MESSAGE } from "@app/messages";
 import type { TRoleCreateInput, TUserCreateInput } from "@app/schemas";
 import { expect, type Page, test } from "@playwright/test";
 import {
@@ -148,6 +149,9 @@ test.describe("roles admin flow", () => {
 		await createNote(page, "Reviewer note");
 
 		await page.goto("/roles");
-		await expect(page).toHaveURL(/\/dashboard/);
+		await expect(
+			page.getByRole("heading", { name: ERROR_MESSAGE.FORBIDDEN_TITLE }),
+		).toBeVisible();
+		await expect(page).toHaveURL(/\/roles/);
 	});
 });

@@ -8,7 +8,6 @@
 		"./guard/guard": "./src/guard/guard.tsx",
 		"./guard/permissions-store": "./src/guard/permissions-store.ts",
 		"./guard/use-permissions": "./src/guard/use-permissions.ts",
-		"./guard/route-guard": "./src/guard/route-guard.ts",
 		"./hooks/use-mobile": "./src/hooks/use-mobile.ts",
 		"./lib/utils": "./src/lib/utils.ts",
 		"./theme.css": "./theme.css"
@@ -19,12 +18,10 @@
 	},
 	"dependencies": {
 		"@app/permissions": "workspace:*",
-		"@tanstack/react-router": "1.170.34",
 		"@tanstack/react-store": "^0.11.1",
 		"@tanstack/store": "^0.11.1",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
-		"cn": "^0.3.0",
 		"lucide-react": "^1.46.0",
 		"radix-ui": "^1.6.7",
 		"tailwind-merge": "^3.7.0",

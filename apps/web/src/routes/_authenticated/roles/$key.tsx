@@ -1,5 +1,5 @@
 import { Guard } from "@app/components/guard/guard";
-import { checkRoutePermissions } from "@app/components/guard/route-guard";
+import { checkRoutePermissions } from "#/libs/auth/route-guard.ts";
 import { PERMISSION } from "@app/permissions";
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
