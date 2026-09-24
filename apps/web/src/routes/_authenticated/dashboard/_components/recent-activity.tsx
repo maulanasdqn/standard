@@ -5,7 +5,11 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@app/components/ui/card";
-import { DASHBOARD_MESSAGE } from "@app/messages";
+import {
+	ACTIVITY_ACTION_LABEL,
+	ACTIVITY_ENTITY_LABEL,
+	DASHBOARD_MESSAGE,
+} from "@app/messages";
 import { A } from "@mobily/ts-belt";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
@@ -60,7 +64,7 @@ export const RecentActivity: FC<TRecentActivityProps> = (
 			</Link>
 		</CardHeader>
 		<CardContent>
-			{match(A.isEmpty(props.entries as TActivity[]))
+			{match(A.isEmpty(props.entries))
 				.with(true, () => (
 					<p className="text-sm text-muted-foreground">
 						{DASHBOARD_MESSAGE.RECENT_ACTIVITY_EMPTY}
@@ -80,17 +84,14 @@ export const RecentActivity: FC<TRecentActivityProps> = (
 											<span className="font-medium">{entry.actorEmail}</span>
 											<span className="text-muted-foreground">
 												{" "}
-												{entry.action}{" "}
-											</span>
-											<span className="text-muted-foreground">
-												{entry.resourceType}
+												{ACTIVITY_ENTITY_LABEL[entry.resourceType]}
 											</span>
 										</p>
 									</div>
 								</div>
 								<div className="flex shrink-0 items-center gap-2">
 									<Badge variant="outline" className="text-xs">
-										{entry.action}
+										{ACTIVITY_ACTION_LABEL[entry.action]}
 									</Badge>
 									<span className="text-xs text-muted-foreground">
 										{formatTime(entry.createdAt)}

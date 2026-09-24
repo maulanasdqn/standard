@@ -1,4 +1,5 @@
 import { PERMISSION, type TPermission } from "@app/permissions";
+import type { LinkProps } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
 import {
 	Activity,
@@ -11,7 +12,7 @@ import {
 } from "lucide-react";
 
 export type TNavItem = {
-	to: string;
+	to: LinkProps["to"];
 	label: string;
 	permissions: readonly TPermission[];
 	icon: LucideIcon;

@@ -1,4 +1,4 @@
-import { Fragment, type ReactElement } from "react";
+import { type FC, Fragment, type ReactElement } from "react";
 import { match, P } from "ts-pattern";
 
 type TErrorMap = Partial<Record<string, unknown>>;
@@ -26,7 +26,7 @@ export const hasFieldError = (errorMap: TErrorMap): boolean =>
 	firstIssue(errorMap.onBlur) !== undefined ||
 	firstIssue(errorMap.onSubmit) !== undefined;
 
-export const FieldError = (props: TFieldErrorProps): ReactElement =>
+export const FieldError: FC<TFieldErrorProps> = (props): ReactElement =>
 	match(resolve(props))
 		.with({ message: P.string }, (issue) => (
 			<p role="alert" className="text-xs text-destructive">

@@ -19,12 +19,6 @@ type TRoleErr = TClientErrors["role"];
 type TActivityOut = TClientOutputs["activity"];
 type TActivityErr = TClientErrors["activity"];
 
-export type TDashboardStats = {
-	totalUsers: number;
-	totalRoles: number;
-	totalNotes: number;
-};
-
 export type TDashboardHealth = {
 	status: THealthViewStatus;
 	webVersion: string;

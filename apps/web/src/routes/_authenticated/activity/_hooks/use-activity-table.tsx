@@ -1,5 +1,9 @@
 import { formatDateTime, NOT_SET, orDash } from "@app/format";
-import { ACTIVITY_MESSAGE } from "@app/messages";
+import {
+	ACTIVITY_ACTION_LABEL,
+	ACTIVITY_ENTITY_LABEL,
+	ACTIVITY_MESSAGE,
+} from "@app/messages";
 import {
 	ACTIVITY_SORT,
 	type TActivity,
@@ -42,15 +46,15 @@ const columns = helper.columns([
 	}),
 	helper.accessor("action", {
 		header: ACTIVITY_MESSAGE.COLUMN_ACTION,
-		cell: (context): ReactElement => (
-			<code className="text-xs">{context.getValue()}</code>
-		),
+		cell: (context): string => ACTIVITY_ACTION_LABEL[context.getValue()],
 	}),
 	helper.accessor("resourceType", {
 		header: ACTIVITY_MESSAGE.COLUMN_ENTITY,
 		cell: (context): ReactElement => (
 			<>
-				<span className="text-muted-foreground">{context.getValue()}</span>{" "}
+				<span className="text-muted-foreground">
+					{ACTIVITY_ENTITY_LABEL[context.getValue()]}
+				</span>{" "}
 				<code className="text-xs text-muted-foreground">
 					{context.row.original.resourceId}
 				</code>

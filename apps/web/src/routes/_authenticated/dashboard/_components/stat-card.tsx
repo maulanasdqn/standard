@@ -4,7 +4,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@app/components/ui/card";
-import { Link } from "@tanstack/react-router";
+import { Link, type LinkProps } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
 import type { FC, ReactElement } from "react";
 
@@ -12,7 +12,7 @@ type TStatCardProps = {
 	title: string;
 	value: number;
 	icon: LucideIcon;
-	to: string;
+	to: LinkProps["to"];
 };
 
 export const StatCard: FC<TStatCardProps> = (props): ReactElement => (

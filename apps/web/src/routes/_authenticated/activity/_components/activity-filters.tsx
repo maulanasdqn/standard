@@ -7,7 +7,11 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@app/components/ui/select";
-import { ACTIVITY_MESSAGE } from "@app/messages";
+import {
+	ACTIVITY_ACTION_LABEL,
+	ACTIVITY_ENTITY_LABEL,
+	ACTIVITY_MESSAGE,
+} from "@app/messages";
 import { A, D } from "@mobily/ts-belt";
 import type { FC, ReactElement } from "react";
 import { ACTIVITY_FILTER_ALL } from "#/routes/_authenticated/activity/_constants/filter.ts";
@@ -36,7 +40,7 @@ export const ActivityFilters: FC = (): ReactElement => {
 						</SelectItem>
 						{A.map(ACTIONS, (value) => (
 							<SelectItem key={value} value={value}>
-								{value}
+								{ACTIVITY_ACTION_LABEL[value]}
 							</SelectItem>
 						))}
 					</SelectContent>
@@ -56,7 +60,7 @@ export const ActivityFilters: FC = (): ReactElement => {
 						</SelectItem>
 						{A.map(RESOURCE_TYPES, (value) => (
 							<SelectItem key={value} value={value}>
-								{value}
+								{ACTIVITY_ENTITY_LABEL[value]}
 							</SelectItem>
 						))}
 					</SelectContent>

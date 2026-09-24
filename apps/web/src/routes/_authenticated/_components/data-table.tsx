@@ -6,6 +6,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@app/components/ui/table";
+import { SORT_DIRECTION } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
 import {
 	type Column,
@@ -24,6 +25,26 @@ import {
 import { DataTablePagination } from "#/routes/_authenticated/_components/data-table-pagination.tsx";
 import { DataTableSortButton } from "#/routes/_authenticated/_components/data-table-sort-button.tsx";
 import { EmptyState } from "#/routes/_authenticated/_components/empty-state.tsx";
+
+const ARIA_SORT = {
+	ASCENDING: "ascending",
+	DESCENDING: "descending",
+	NONE: "none",
+} as const;
+
+type TAriaSort = (typeof ARIA_SORT)[keyof typeof ARIA_SORT];
+
+const ariaSortFor = <TData extends RowData>(
+	column: Column<TTableFeatures, TData, unknown>,
+): TAriaSort | undefined =>
+	match({ sortable: column.getCanSort(), sorted: column.getIsSorted() })
+		.with({ sortable: false }, (): undefined => undefined)
+		.with({ sorted: SORT_DIRECTION.ASC }, (): TAriaSort => ARIA_SORT.ASCENDING)
+		.with(
+			{ sorted: SORT_DIRECTION.DESC },
+			(): TAriaSort => ARIA_SORT.DESCENDING,
+		)
+		.otherwise((): TAriaSort => ARIA_SORT.NONE);
 
 type TDataTableProps<TData extends RowData> = {
 	table: ReactTable<TTableFeatures, TData>;
@@ -84,6 +105,7 @@ export const DataTable = <TData extends RowData>(
 							{A.map(group.headers, (header) => (
 								<TableHead
 									key={header.id}
+									aria-sort={ariaSortFor(header.column)}
 									className={header.column.columnDef.meta?.className}
 								>
 									{!header.isPlaceholder && headerContent(header)}
