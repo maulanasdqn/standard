@@ -1,3 +1,4 @@
+import { ERROR_MESSAGE } from "@app/messages";
 import { ACTIVITY_ACTION } from "@app/activity";
 import { expect, type Page, test } from "@playwright/test";
 import { SEED_CREDENTIALS } from "../support/credentials.ts";
@@ -51,6 +52,9 @@ test.describe("activity log", () => {
 		await expectNavHidden(page, [NAV_LABEL.ACTIVITY]);
 
 		await page.goto("/activity");
-		await expect(page).toHaveURL(/\/dashboard/);
+		await expect(
+			page.getByRole("heading", { name: ERROR_MESSAGE.FORBIDDEN_TITLE }),
+		).toBeVisible();
+		await expect(page).toHaveURL(/\/activity/);
 	});
 });

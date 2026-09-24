@@ -1,4 +1,4 @@
-import { checkRoutePermissions } from "@app/components/guard/route-guard";
+import { checkRoutePermissions } from "#/libs/auth/route-guard.ts";
 import { ACTIVITY_MESSAGE } from "@app/messages";
 import { PERMISSION } from "@app/permissions";
 import { activityListInputSchema } from "@app/schemas";

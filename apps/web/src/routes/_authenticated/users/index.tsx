@@ -1,5 +1,5 @@
 import { Guard } from "@app/components/guard/guard";
-import { checkRoutePermissions } from "@app/components/guard/route-guard";
+import { checkRoutePermissions } from "#/libs/auth/route-guard.ts";
 import { Button } from "@app/components/ui/button";
 import { USER_MESSAGE } from "@app/messages";
 import { PERMISSION } from "@app/permissions";
