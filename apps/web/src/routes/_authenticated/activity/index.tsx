@@ -4,12 +4,15 @@ import { PERMISSION } from "@app/permissions";
 import { activityListInputSchema } from "@app/schemas";
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
+import { searchLenient } from "#/libs/table/search-lenient.ts";
 import { ActivityTable } from "#/routes/_authenticated/activity/_components/activity-table.tsx";
 import {
 	activityListOptions,
 	useActivityList,
 	useActivityListChange,
 } from "#/routes/_authenticated/activity/_hooks/use-activity.ts";
+
+const activitySearchValidate = searchLenient(activityListInputSchema);
 
 const ActivityPage: FC = (): ReactElement => {
 	const { data } = useActivityList();
@@ -30,7 +33,7 @@ const ActivityPage: FC = (): ReactElement => {
 };
 
 export const Route = createFileRoute("/_authenticated/activity/")({
-	validateSearch: activityListInputSchema,
+	validateSearch: activitySearchValidate,
 	beforeLoad: checkRoutePermissions({
 		permissions: [PERMISSION.ACTIVITY_READ],
 	}),

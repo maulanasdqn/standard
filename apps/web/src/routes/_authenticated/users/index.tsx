@@ -7,6 +7,7 @@ import { userListInputSchema } from "@app/schemas";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import type { FC, ReactElement } from "react";
+import { searchLenient } from "#/libs/table/search-lenient.ts";
 import { roleListOptions } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
 import { UserTable } from "#/routes/_authenticated/users/_components/user-table.tsx";
 import { useRoleOptions } from "#/routes/_authenticated/users/_hooks/use-role-options.ts";
@@ -15,6 +16,8 @@ import {
 	useUserList,
 	useUserListChange,
 } from "#/routes/_authenticated/users/_hooks/use-users.ts";
+
+const userSearchValidate = searchLenient(userListInputSchema);
 
 const UsersPage: FC = (): ReactElement => {
 	const { data } = useUserList();
@@ -47,7 +50,7 @@ const UsersPage: FC = (): ReactElement => {
 };
 
 export const Route = createFileRoute("/_authenticated/users/")({
-	validateSearch: userListInputSchema,
+	validateSearch: userSearchValidate,
 	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
 	loaderDeps: ({ search }) => ({ search }),
 	loader: ({ context, deps }) =>

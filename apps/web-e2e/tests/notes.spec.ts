@@ -1,3 +1,4 @@
+import { NOTE_MESSAGE } from "@app/messages";
 import { expect, type Page, test } from "@playwright/test";
 import { SEED_CREDENTIALS } from "../support/credentials.ts";
 import { signIn } from "../support/sign-in.ts";
@@ -92,5 +93,39 @@ test.describe("editing a note twice in a row", () => {
 
 		await expect(page).toHaveURL(/\/notes(\?|$)/);
 		await expect(page.getByText(EDITED_AGAIN)).toBeVisible();
+	});
+});
+
+test.describe("the list stays usable at its edges", () => {
+	let page: Page;
+
+	test.afterEach(async (): Promise<void> => {
+		await page.close();
+	});
+
+	test("a link with an invalid page or sort falls back to the defaults", async ({
+		browser,
+	}): Promise<void> => {
+		page = await browser.newPage();
+		await signIn(page, SEED_CREDENTIALS.viewer);
+
+		await page.goto("/notes?page=0&sortBy=nonsense");
+
+		await expect(page.getByRole("heading", { name: "Notes" })).toBeVisible();
+		await expect(page).toHaveURL(/\/notes/);
+	});
+
+	test("a search with no result keeps the search box on screen", async ({
+		browser,
+	}): Promise<void> => {
+		page = await browser.newPage();
+		await signIn(page, SEED_CREDENTIALS.viewer);
+
+		await page.goto("/notes?search=nothing-has-this-title-zzz");
+
+		await expect(page.getByText(NOTE_MESSAGE.EMPTY)).toBeVisible();
+		await expect(
+			page.getByLabel(NOTE_MESSAGE.SEARCH_PLACEHOLDER),
+		).toBeVisible();
 	});
 });

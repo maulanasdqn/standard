@@ -7,12 +7,15 @@ import { noteListInputSchema } from "@app/schemas";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import type { FC, ReactElement } from "react";
+import { searchLenient } from "#/libs/table/search-lenient.ts";
 import { NoteTable } from "#/routes/_authenticated/notes/_components/note-table.tsx";
 import {
 	noteListOptions,
 	useNoteList,
 	useNoteListChange,
 } from "#/routes/_authenticated/notes/_hooks/use-notes.ts";
+
+const noteSearchValidate = searchLenient(noteListInputSchema);
 
 const NotesPage: FC = (): ReactElement => {
 	const { data } = useNoteList();
@@ -43,7 +46,7 @@ const NotesPage: FC = (): ReactElement => {
 };
 
 export const Route = createFileRoute("/_authenticated/notes/")({
-	validateSearch: noteListInputSchema,
+	validateSearch: noteSearchValidate,
 	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.NOTE_READ] }),
 	loaderDeps: ({ search }) => ({ search }),
 	loader: ({ context, deps }) =>

@@ -23,9 +23,11 @@ import {
 } from "#/routes/_authenticated/_components/data-table-columns-menu.tsx";
 import { DataTablePagination } from "#/routes/_authenticated/_components/data-table-pagination.tsx";
 import { DataTableSortButton } from "#/routes/_authenticated/_components/data-table-sort-button.tsx";
+import { EmptyState } from "#/routes/_authenticated/_components/empty-state.tsx";
 
 type TDataTableProps<TData extends RowData> = {
 	table: ReactTable<TTableFeatures, TData>;
+	emptyMessage: string;
 	toolbar?: ReactNode;
 	paginated?: boolean;
 };
@@ -91,18 +93,33 @@ export const DataTable = <TData extends RowData>(
 					))}
 				</TableHeader>
 				<TableBody>
-					{A.map(props.table.getRowModel().rows, (row) => (
-						<TableRow key={row.id}>
-							{A.map(row.getVisibleCells(), (cell) => (
+					{match(props.table.getRowModel().rows)
+						.when(A.isEmpty, () => (
+							<TableRow>
 								<TableCell
-									key={cell.id}
-									className={cell.column.columnDef.meta?.className}
+									colSpan={A.length(props.table.getVisibleLeafColumns())}
 								>
-									{flexRender(cell.column.columnDef.cell, cell.getContext())}
+									<EmptyState message={props.emptyMessage} />
 								</TableCell>
-							))}
-						</TableRow>
-					))}
+							</TableRow>
+						))
+						.otherwise((rows) =>
+							A.map(rows, (row) => (
+								<TableRow key={row.id}>
+									{A.map(row.getVisibleCells(), (cell) => (
+										<TableCell
+											key={cell.id}
+											className={cell.column.columnDef.meta?.className}
+										>
+											{flexRender(
+												cell.column.columnDef.cell,
+												cell.getContext(),
+											)}
+										</TableCell>
+									))}
+								</TableRow>
+							)),
+						)}
 				</TableBody>
 			</Table>
 			{paginated && (
