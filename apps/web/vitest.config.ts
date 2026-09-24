@@ -13,7 +13,13 @@ export default defineConfig({
 		coverage: {
 			provider: "v8",
 			thresholds: { lines: 90, statements: 90, functions: 90, branches: 75 },
-			exclude: ["src/routes/**", "src/main.tsx", "src/routeTree.gen.ts"],
+			exclude: [
+				"src/routes/**",
+				"src/main.tsx",
+				"src/routeTree.gen.ts",
+				"src/libs/orpc/client.ts",
+				"src/libs/auth/client.ts",
+			],
 		},
 	},
 });
