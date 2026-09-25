@@ -2,6 +2,10 @@ import * as grpc from "@grpc/grpc-js";
 import { match, P } from "ts-pattern";
 import { getServiceConstructor } from "./proto.ts";
 
+export const GRPC_CALL_ERROR = {
+	METHOD_MISSING: "gRPC method not found on the service client",
+} as const;
+
 export type TGrpcClientOptions = {
 	protoPath: string;
 	packageName: string;
@@ -9,13 +13,34 @@ export type TGrpcClientOptions = {
 	address: string;
 };
 
+export type TResponseDecoder<TResponse> = (value: unknown) => TResponse;
+
 export type TGrpcClient = {
 	call: <TRequest, TResponse>(
 		method: string,
 		request: TRequest,
+		decode: TResponseDecoder<TResponse>,
 	) => Promise<TResponse>;
 	close: () => void;
 };
+
+type TServiceClient = InstanceType<grpc.ServiceClientConstructor>;
+
+type TUnaryMethod = (
+	this: TServiceClient,
+	request: unknown,
+	callback: grpc.requestCallback<unknown>,
+) => grpc.ClientUnaryCall;
+
+const isUnaryMethod = (value: unknown): value is TUnaryMethod =>
+	typeof value === "function";
+
+const unaryMethodOf = (client: TServiceClient, method: string): TUnaryMethod =>
+	match(client[method])
+		.when(isUnaryMethod, (found): TUnaryMethod => found)
+		.otherwise((): never => {
+			throw new Error(`${GRPC_CALL_ERROR.METHOD_MISSING}: ${method}`);
+		});
 
 export const grpcClientCreate = async (
 	options: TGrpcClientOptions,
@@ -30,24 +55,23 @@ export const grpcClientCreate = async (
 		grpc.credentials.createInsecure(),
 	);
 
-	type TUnaryMethod = (
-		request: unknown,
-		callback: grpc.requestCallback<unknown>,
-	) => grpc.ClientUnaryCall;
-
 	const call = <TRequest, TResponse>(
 		method: string,
 		request: TRequest,
+		decode: TResponseDecoder<TResponse>,
 	): Promise<TResponse> =>
 		new Promise((resolve, reject) => {
-			(client as unknown as Record<string, TUnaryMethod>)[method](
-				request,
-				(error, response) => {
-					match(error)
-						.with(P.nullish, () => resolve(response as TResponse))
-						.otherwise((callError) => reject(callError));
-				},
-			);
+			unaryMethodOf(client, method).call(client, request, (error, response) => {
+				match(error)
+					.with(P.nullish, (): void => {
+						try {
+							resolve(decode(response));
+						} catch (decodeError) {
+							reject(decodeError);
+						}
+					})
+					.otherwise((callError): void => reject(callError));
+			});
 		});
 
 	const close = (): void => client.close();

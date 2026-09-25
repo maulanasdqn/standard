@@ -1,8 +1,13 @@
 import { match, P } from "ts-pattern";
 import type { TCacheClient } from "./cache-client.ts";
 
+export type TDecoder<TValue> = (value: unknown) => TValue | null;
+
 export type TCache = {
-	get: <TValue>(key: string) => Promise<TValue | null>;
+	get: <TValue>(
+		key: string,
+		decode: TDecoder<TValue>,
+	) => Promise<TValue | null>;
 	set: <TValue>(
 		key: string,
 		value: TValue,
@@ -11,14 +16,33 @@ export type TCache = {
 	del: (key: string) => Promise<void>;
 };
 
-const decode = <TValue>(raw: string | null): TValue | null =>
+type TParsed = { ok: true; value: unknown } | { ok: false };
+
+const jsonParse = (raw: string): TParsed => {
+	try {
+		return { ok: true, value: JSON.parse(raw) };
+	} catch {
+		return { ok: false };
+	}
+};
+
+const decodeRaw = <TValue>(
+	raw: string | null,
+	decode: TDecoder<TValue>,
+): TValue | null =>
 	match(raw)
 		.with(P.nullish, (): TValue | null => null)
-		.otherwise((found): TValue | null => JSON.parse(found) as TValue);
+		.otherwise((found): TValue | null =>
+			match(jsonParse(found))
+				.with({ ok: true }, ({ value }): TValue | null => decode(value))
+				.otherwise((): TValue | null => null),
+		);
 
 export const cacheCreate = (client: TCacheClient): TCache => {
-	const get = async <TValue>(key: string): Promise<TValue | null> =>
-		decode<TValue>(await client.get(key));
+	const get = async <TValue>(
+		key: string,
+		decode: TDecoder<TValue>,
+	): Promise<TValue | null> => decodeRaw(await client.get(key), decode);
 
 	const set = async <TValue>(
 		key: string,

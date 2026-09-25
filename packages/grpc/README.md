@@ -12,4 +12,4 @@ Both `grpcClientCreate` and `grpcServerCreate` use insecure credentials (`create
 
 ## Using it
 
-`grpcServerCreate` takes the proto path, package and service names, a bind address and a map of handlers; `grpcClientCreate` takes the same contract and an address and exposes a promise-based `call(method, request)`. `grpc.test.ts` is the reference for both.
+`grpcServerCreate` takes the proto path, package and service names, a bind address and a map of handlers; `grpcClientCreate` takes the same contract and an address and exposes a promise-based `call(method, request, decode)`, where `decode` turns the untyped response into the caller's type or throws, so nothing crosses the wire boundary as a bare cast. `grpc.test.ts` is the reference for both.
