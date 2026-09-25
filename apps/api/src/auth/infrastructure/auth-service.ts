@@ -74,10 +74,7 @@ export const authServiceLayer = Layer.effect(
 								(): TSessionEffect => Effect.succeed(null),
 							)
 							.otherwise(({ user }) =>
-								sessionBuild(
-									user,
-									(user as { role?: string }).role ?? ROLE.VIEWER,
-								),
+								sessionBuild(user, user.role ?? ROLE.VIEWER),
 							),
 				),
 			);
