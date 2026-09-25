@@ -92,7 +92,7 @@ That marks the removal as the deliberate second half of an expand and contract, 
 
 ## Several apps on one database
 
-The API owns the `public` schema and drizzle's default migration journal, `drizzle.__drizzle_migrations`. Any other app that shares the database keeps out of both:
+The API owns the `public` schema and drizzle's default migration journal, `drizzle.__drizzle_migrations`, which `apps/api/src/scripts/migrate.ts` names explicitly because `migrationsRun` makes the journal location a required choice. Any other app that shares the database keeps out of both:
 
 - its tables are declared with `pgSchema("<app>")`, never in `public`
 - its `drizzle.config.ts` sets `schemaFilter: ["<app>"]`, so `db:generate` and `db:push` only ever look at its own schema and never report the other app's tables as drift

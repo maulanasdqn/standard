@@ -31,6 +31,8 @@ const OPTIONS = {
 	service: "api",
 	migrationsFolder: "/srv/app/drizzle",
 	databaseUrl: "postgres://app:app@localhost:5432/app",
+	migrationsSchema: "reporting",
+	migrationsTable: "journal",
 };
 
 describe("migrationsRun", () => {
@@ -40,33 +42,17 @@ describe("migrationsRun", () => {
 		poolEnd.mockResolvedValue(undefined);
 	});
 
-	it("applies the migrations from the folder it is given and closes the pool", async (): Promise<void> => {
+	it("applies the folder into the journal schema and table it is given, then closes the pool", async (): Promise<void> => {
 		migrate.mockResolvedValue(undefined);
 
 		await migrationsRun(OPTIONS);
 
 		expect(migrate).toHaveBeenCalledWith(expect.anything(), {
 			migrationsFolder: OPTIONS.migrationsFolder,
-			migrationsSchema: undefined,
-			migrationsTable: undefined,
+			migrationsSchema: OPTIONS.migrationsSchema,
+			migrationsTable: OPTIONS.migrationsTable,
 		});
 		expect(poolEnd).toHaveBeenCalledTimes(1);
-	});
-
-	it("keeps the journal in the schema and table it is given, so two apps on one database never share one", async (): Promise<void> => {
-		migrate.mockResolvedValue(undefined);
-
-		await migrationsRun({
-			...OPTIONS,
-			migrationsSchema: "reporting",
-			migrationsTable: "journal",
-		});
-
-		expect(migrate).toHaveBeenCalledWith(expect.anything(), {
-			migrationsFolder: OPTIONS.migrationsFolder,
-			migrationsSchema: "reporting",
-			migrationsTable: "journal",
-		});
 	});
 
 	it("closes the pool and rethrows when a migration fails", async (): Promise<void> => {
