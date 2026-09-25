@@ -1,8 +1,12 @@
 import { AUTH_MESSAGE } from "@app/messages";
+import { PERMISSION, type TPermission } from "@app/permissions";
 import { type ORPCError, call } from "@orpc/server";
 import { describe, expect, it } from "vitest";
 import type { TORPCContext } from "#/platform/orpc/context.ts";
-import { protectedProcedure } from "#/platform/orpc/middleware.ts";
+import {
+	permissionRequire,
+	protectedProcedure,
+} from "#/platform/orpc/middleware.ts";
 import {
 	SESSION_STATE,
 	type TSession,
@@ -15,6 +19,7 @@ const SESSION: TSession = {
 };
 
 const HTTP_UNAUTHORIZED = 401;
+const HTTP_FORBIDDEN = 403;
 const HTTP_SERVICE_UNAVAILABLE = 503;
 
 const contextOf = (
@@ -86,5 +91,55 @@ describe("protectedProcedure", () => {
 		const anonymous = await errorOf(SESSION_STATE.ANONYMOUS, null);
 
 		expect(outage.status).not.toBe(anonymous.status);
+	});
+});
+
+describe("permissionRequire", () => {
+	const guarded = permissionRequire(PERMISSION.NOTE_WRITE).handler(() => "ok");
+
+	const contextGranting = (permissions: readonly TPermission[]): TORPCContext =>
+		({
+			...contextOf(SESSION_STATE.RESOLVED, SESSION),
+			permissions,
+		}) as TORPCContext;
+
+	const statusOf = (
+		procedure: typeof guarded,
+		context: TORPCContext,
+	): Promise<number | undefined> =>
+		call(procedure, undefined, { context }).then(
+			(): undefined => undefined,
+			(error: ORPCError<string, unknown>): number => error.status,
+		);
+
+	it("runs the handler when the session holds the permission", async (): Promise<void> => {
+		const result = await call(guarded, undefined, {
+			context: contextGranting([PERMISSION.NOTE_WRITE]),
+		});
+
+		expect(result).toBe("ok");
+	});
+
+	it("answers forbidden when the session lacks the permission", async (): Promise<void> => {
+		expect(
+			await statusOf(guarded, contextGranting([PERMISSION.NOTE_READ])),
+		).toBe(HTTP_FORBIDDEN);
+	});
+
+	it("requires every permission listed, not just one of them", async (): Promise<void> => {
+		const both = permissionRequire(
+			PERMISSION.NOTE_READ,
+			PERMISSION.NOTE_WRITE,
+		).handler(() => "ok");
+
+		expect(await statusOf(both, contextGranting([PERMISSION.NOTE_READ]))).toBe(
+			HTTP_FORBIDDEN,
+		);
+	});
+
+	it("checks the session before the permission", async (): Promise<void> => {
+		expect(
+			await statusOf(guarded, contextOf(SESSION_STATE.ANONYMOUS, null)),
+		).toBe(HTTP_UNAUTHORIZED);
 	});
 });
