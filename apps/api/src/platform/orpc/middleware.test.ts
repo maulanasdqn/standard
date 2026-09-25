@@ -57,6 +57,16 @@ describe("protectedProcedure", () => {
 		expect(await callWith(SESSION_STATE.RESOLVED, SESSION)).toBe("ok");
 	});
 
+	it("hands the handler a session it can read without asserting on it", async (): Promise<void> => {
+		const userId = await call(
+			protectedProcedure.handler(({ context }) => context.session.user.id),
+			undefined,
+			{ context: contextOf(SESSION_STATE.RESOLVED, SESSION) },
+		);
+
+		expect(userId).toBe(SESSION.user.id);
+	});
+
 	it("answers unauthorized when nobody is signed in", async (): Promise<void> => {
 		const error = await errorOf(SESSION_STATE.ANONYMOUS, null);
 

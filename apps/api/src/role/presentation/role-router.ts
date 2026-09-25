@@ -41,7 +41,7 @@ const roleRouter = {
 		.handler(({ input, context }) =>
 			effectRunTransactional(
 				context.runtime,
-				roleCreate(input, context.session!.user.id),
+				roleCreate(input, context.session.user.id),
 			),
 		),
 
@@ -52,7 +52,7 @@ const roleRouter = {
 		.handler(({ input, context }) =>
 			effectRunTransactional(
 				context.runtime,
-				roleUpdate(input, context.session!.user.id),
+				roleUpdate(input, context.session.user.id),
 			),
 		),
 
@@ -63,7 +63,7 @@ const roleRouter = {
 		.handler(({ input, context }) =>
 			effectRunTransactional(
 				context.runtime,
-				roleDelete(input, context.session!.user.id),
+				roleDelete(input, context.session.user.id),
 			),
 		),
 };
