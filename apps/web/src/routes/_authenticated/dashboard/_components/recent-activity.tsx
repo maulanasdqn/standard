@@ -16,35 +16,12 @@ import { ArrowRight } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { match } from "ts-pattern";
 import type { TClientOutputs } from "#/libs/orpc/types.ts";
+import { relativeTimeLabel } from "#/routes/_authenticated/dashboard/_utils/relative-time.ts";
 
 type TActivity = TClientOutputs["activity"]["list"]["items"][number];
 
 type TRecentActivityProps = {
 	entries: readonly TActivity[];
-};
-
-const formatTime = (date: string): string => {
-	const d = new Date(date);
-	const now = new Date();
-	const diffMs = now.getTime() - d.getTime();
-	const diffMins = Math.floor(diffMs / 60_000);
-	const diffHours = Math.floor(diffMs / 3_600_000);
-	const diffDays = Math.floor(diffMs / 86_400_000);
-
-	return match({ diffMins, diffHours, diffDays })
-		.when(
-			({ diffMins }) => diffMins < 1,
-			() => "just now",
-		)
-		.when(
-			({ diffMins }) => diffMins < 60,
-			({ diffMins }) => `${String(diffMins)}m ago`,
-		)
-		.when(
-			({ diffHours }) => diffHours < 24,
-			({ diffHours }) => `${String(diffHours)}h ago`,
-		)
-		.otherwise(({ diffDays }) => `${String(diffDays)}d ago`);
 };
 
 export const RecentActivity: FC<TRecentActivityProps> = (
@@ -94,7 +71,7 @@ export const RecentActivity: FC<TRecentActivityProps> = (
 										{ACTIVITY_ACTION_LABEL[entry.action]}
 									</Badge>
 									<span className="text-xs text-muted-foreground">
-										{formatTime(entry.createdAt)}
+										{relativeTimeLabel(entry.createdAt, new Date())}
 									</span>
 								</div>
 							</div>

@@ -1,5 +1,6 @@
 import type * as React from "react";
 import type { FC, ReactElement } from "react";
+import { UI_MESSAGE } from "@app/messages";
 import { match } from "ts-pattern";
 import { cn } from "../lib/utils.ts";
 import {
@@ -78,8 +79,8 @@ const SidebarMobile: FC<TSidebarMobileProps> = (props): ReactElement => {
 				side={side}
 			>
 				<SheetHeader className="sr-only">
-					<SheetTitle>Sidebar</SheetTitle>
-					<SheetDescription>Displays the mobile sidebar.</SheetDescription>
+					<SheetTitle>{UI_MESSAGE.SIDEBAR_TITLE}</SheetTitle>
+					<SheetDescription>{UI_MESSAGE.SIDEBAR_DESCRIPTION}</SheetDescription>
 				</SheetHeader>
 				<div className="flex h-full w-full flex-col">{children}</div>
 			</SheetContent>

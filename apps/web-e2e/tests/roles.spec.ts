@@ -1,4 +1,4 @@
-import { ERROR_MESSAGE } from "@app/messages";
+import { ERROR_MESSAGE, ROLE_MESSAGE } from "@app/messages";
 import type { TRoleCreateInput, TUserCreateInput } from "@app/schemas";
 import { expect, type Page, test } from "@playwright/test";
 import {
@@ -21,8 +21,7 @@ import { confirmAction } from "../support/confirm.ts";
 import { createUser } from "../support/users.ts";
 import { createNote } from "../support/notes.ts";
 
-const FIXED_NOTICE =
-	"Fixed roles are defined in code and can't be changed here.";
+const FIXED_NOTICE = ROLE_MESSAGE.FIXED;
 
 const NEW_ROLE: TRoleCreateInput = {
 	key: "e2e-reviewer",
@@ -72,7 +71,7 @@ test.describe("roles admin flow", () => {
 		await expect(page.getByLabel("Label", { exact: true })).toBeDisabled();
 		await expect(page.getByRole("checkbox").first()).toBeDisabled();
 		await expect(
-			page.getByRole("button", { name: "Save changes" }),
+			page.getByRole("button", { name: ROLE_MESSAGE.SAVE_CHANGES }),
 		).toHaveCount(0);
 	});
 
@@ -89,7 +88,9 @@ test.describe("roles admin flow", () => {
 				name: PERMISSION_LABEL[PERMISSION_KEY.NOTE_READ],
 			})
 			.check();
-		await page.getByRole("button", { name: "Create role" }).click();
+		await page
+			.getByRole("button", { name: ROLE_MESSAGE.CREATE_ACTION })
+			.click();
 		await confirmAction(page);
 
 		const row = rowWithCell(page, NEW_ROLE.key);
@@ -116,7 +117,7 @@ test.describe("roles admin flow", () => {
 				name: PERMISSION_LABEL[PERMISSION_KEY.NOTE_WRITE],
 			})
 			.check();
-		await page.getByRole("button", { name: "Save changes" }).click();
+		await page.getByRole("button", { name: ROLE_MESSAGE.SAVE_CHANGES }).click();
 		await confirmAction(page);
 
 		await expect(page).toHaveURL(/\/roles$/);

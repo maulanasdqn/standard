@@ -1,3 +1,4 @@
+import { NAV_MESSAGE } from "@app/messages";
 import { PERMISSION, type TPermission } from "@app/permissions";
 import type { LinkProps } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
@@ -21,43 +22,43 @@ export type TNavItem = {
 export const NAV_ITEMS: readonly TNavItem[] = [
 	{
 		to: "/dashboard",
-		label: "Dashboard",
+		label: NAV_MESSAGE.DASHBOARD,
 		permissions: [],
 		icon: LayoutDashboard,
 	},
 	{
 		to: "/notes",
-		label: "Notes",
+		label: NAV_MESSAGE.NOTES,
 		permissions: [PERMISSION.NOTE_READ],
 		icon: StickyNote,
 	},
 	{
 		to: "/users",
-		label: "Users",
+		label: NAV_MESSAGE.USERS,
 		permissions: [PERMISSION.USER_MANAGE],
 		icon: Users,
 	},
 	{
 		to: "/roles",
-		label: "Roles",
+		label: NAV_MESSAGE.ROLES,
 		permissions: [PERMISSION.USER_MANAGE],
 		icon: Shield,
 	},
 	{
 		to: "/permissions",
-		label: "Permissions",
+		label: NAV_MESSAGE.PERMISSIONS,
 		permissions: [PERMISSION.USER_MANAGE],
 		icon: KeyRound,
 	},
 	{
 		to: "/activity",
-		label: "Activity",
+		label: NAV_MESSAGE.ACTIVITY,
 		permissions: [PERMISSION.ACTIVITY_READ],
 		icon: Activity,
 	},
 	{
 		to: "/account",
-		label: "Account",
+		label: NAV_MESSAGE.ACCOUNT,
 		permissions: [],
 		icon: CircleUser,
 	},

@@ -1,5 +1,10 @@
-import { PERMISSION, type TPermission } from "./permissions.ts";
-import { isRole, ROLE, type TRole } from "./roles.ts";
+import {
+	isRole,
+	PERMISSION,
+	ROLE,
+	type TPermission,
+	type TRole,
+} from "@app/permissions";
 
 export const PERMISSION_LABEL: Record<TPermission, string> = {
 	[PERMISSION.NOTE_READ]: "View notes",

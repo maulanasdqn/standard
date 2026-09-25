@@ -27,6 +27,7 @@ export const USER_MESSAGE = {
 	PASSWORD_PLACEHOLDER: "At least 8 characters",
 	NEW_PASSWORD_PLACEHOLDER: "At least 8 characters",
 	SEARCH_PLACEHOLDER: "Search by name or email",
+	SEARCH_LABEL: "Search users",
 	BACK_TO_USERS: "Back to users",
 	CREATE_ACTION: "Create user",
 	SAVE_CHANGES: "Save changes",

@@ -6,7 +6,8 @@ import {
 } from "@app/components/ui/card";
 import { Checkbox } from "@app/components/ui/checkbox";
 import { Label } from "@app/components/ui/label";
-import { PERMISSION_LABEL, type TPermission } from "@app/permissions";
+import { PERMISSION_LABEL } from "@app/messages";
+import type { TPermission } from "@app/permissions";
 import { A } from "@mobily/ts-belt";
 import type { FC, ReactElement } from "react";
 import { PERMISSION_GROUPS } from "#/routes/_authenticated/roles/_constants/permission-groups.ts";

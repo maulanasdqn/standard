@@ -10,4 +10,8 @@ export const DASHBOARD_MESSAGE = {
 	CREATE_USER: "New User",
 	SYSTEM_HEALTH: "System",
 	VIEW_ALL: "View all",
+	JUST_NOW: "just now",
+	MINUTES_AGO: "m ago",
+	HOURS_AGO: "h ago",
+	DAYS_AGO: "d ago",
 } as const;

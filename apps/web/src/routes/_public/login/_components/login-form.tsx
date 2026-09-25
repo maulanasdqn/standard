@@ -13,16 +13,16 @@ export const LoginForm: FC = (): ReactElement => {
 	return (
 		<form onSubmit={onSubmit} className="flex flex-col gap-6">
 			<div className="flex flex-col items-center gap-2 text-center">
-				<h1 className="text-2xl font-bold">Login to your account</h1>
+				<h1 className="text-2xl font-bold">{AUTH_MESSAGE.LOGIN_TITLE}</h1>
 				<p className="text-muted-foreground text-sm text-balance">
-					Enter your email below to login to your account
+					{AUTH_MESSAGE.LOGIN_DESCRIPTION}
 				</p>
 			</div>
 			<div className="grid gap-6">
 				<form.Field name="email">
 					{(field) => (
 						<div className="grid gap-1.5">
-							<Label htmlFor={field.name}>Email</Label>
+							<Label htmlFor={field.name}>{AUTH_MESSAGE.FIELD_EMAIL}</Label>
 							<Input
 								id={field.name}
 								type="email"
@@ -39,7 +39,7 @@ export const LoginForm: FC = (): ReactElement => {
 				<form.Field name="password">
 					{(field) => (
 						<div className="grid gap-1.5">
-							<Label htmlFor={field.name}>Password</Label>
+							<Label htmlFor={field.name}>{AUTH_MESSAGE.FIELD_PASSWORD}</Label>
 							<Input
 								id={field.name}
 								type="password"
@@ -58,7 +58,9 @@ export const LoginForm: FC = (): ReactElement => {
 					{(isSubmitting) => (
 						<Button type="submit" className="w-full" disabled={isSubmitting}>
 							{isSubmitting && <Loader2 className="animate-spin" />}
-							{isSubmitting ? "Signing in…" : "Login"}
+							{isSubmitting
+								? AUTH_MESSAGE.SIGNING_IN
+								: AUTH_MESSAGE.LOGIN_ACTION}
 						</Button>
 					)}
 				</form.Subscribe>

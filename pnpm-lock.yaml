@@ -358,6 +358,9 @@ importers:
 
   packages/components:
     dependencies:
+      '@app/messages':
+        specifier: workspace:*
+        version: link:../messages
       '@app/permissions':
         specifier: workspace:*
         version: link:../permissions
@@ -492,6 +495,9 @@ importers:
       '@app/activity':
         specifier: workspace:*
         version: link:../activity
+      '@app/permissions':
+        specifier: workspace:*
+        version: link:../permissions
     devDependencies:
       typescript:
         specifier: ^7.0.2
@@ -581,6 +587,9 @@ importers:
       '@app/activity':
         specifier: workspace:*
         version: link:../activity
+      '@app/messages':
+        specifier: workspace:*
+        version: link:../messages
       '@app/permissions':
         specifier: workspace:*
         version: link:../permissions

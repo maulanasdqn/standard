@@ -1,5 +1,6 @@
 import type * as React from "react";
 import type { FC, ReactElement } from "react";
+import { UI_MESSAGE } from "@app/messages";
 import { PanelLeftIcon } from "lucide-react";
 import { cn } from "../lib/utils.ts";
 import { Button } from "./button";
@@ -25,7 +26,7 @@ export const SidebarTrigger: FC<React.ComponentProps<typeof Button>> = (
 			{...rest}
 		>
 			<PanelLeftIcon />
-			<span className="sr-only">Toggle Sidebar</span>
+			<span className="sr-only">{UI_MESSAGE.SIDEBAR_TOGGLE}</span>
 		</Button>
 	);
 };
@@ -40,10 +41,10 @@ export const SidebarRail: FC<React.ComponentProps<"button">> = (
 		<button
 			data-sidebar="rail"
 			data-slot="sidebar-rail"
-			aria-label="Toggle Sidebar"
+			aria-label={UI_MESSAGE.SIDEBAR_TOGGLE}
 			tabIndex={-1}
 			onClick={toggleSidebar}
-			title="Toggle Sidebar"
+			title={UI_MESSAGE.SIDEBAR_TOGGLE}
 			className={cn(
 				"absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] hover:after:bg-sidebar-border sm:flex",
 				"in-data-[side=left]:cursor-w-resize in-data-[side=right]:cursor-e-resize",

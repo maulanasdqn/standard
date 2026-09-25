@@ -46,7 +46,9 @@ export const AppSidebar: FC = (): ReactElement => {
 									<Command className="size-4" />
 								</div>
 								<div className="grid flex-1 text-left text-sm leading-tight">
-									<span className="truncate font-medium">Standard</span>
+									<span className="truncate font-medium">
+										{APP_MESSAGE.NAME}
+									</span>
 								</div>
 							</Link>
 						</SidebarMenuButton>
@@ -55,7 +57,7 @@ export const AppSidebar: FC = (): ReactElement => {
 			</SidebarHeader>
 			<SidebarContent>
 				<SidebarGroup>
-					<SidebarGroupLabel>Navigation</SidebarGroupLabel>
+					<SidebarGroupLabel>{APP_MESSAGE.NAVIGATION}</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu>
 							{A.map(navItems, (item) => (

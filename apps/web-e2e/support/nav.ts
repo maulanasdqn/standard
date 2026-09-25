@@ -1,14 +1,7 @@
+import { NAV_MESSAGE } from "@app/messages";
 import { expect, type Locator, type Page } from "@playwright/test";
 
-export const NAV_LABEL = {
-	DASHBOARD: "Dashboard",
-	NOTES: "Notes",
-	USERS: "Users",
-	ROLES: "Roles",
-	PERMISSIONS: "Permissions",
-	ACTIVITY: "Activity",
-	ACCOUNT: "Account",
-} as const;
+export const NAV_LABEL = NAV_MESSAGE;
 
 export const ADMIN_NAV_LABELS: readonly string[] = [
 	NAV_LABEL.USERS,

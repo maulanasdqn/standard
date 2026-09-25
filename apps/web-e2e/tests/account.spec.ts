@@ -33,13 +33,17 @@ test.describe("account self-service", () => {
 
 	test("changes the password", async (): Promise<void> => {
 		await page
-			.getByLabel("Current password", { exact: true })
+			.getByLabel(AUTH_MESSAGE.FIELD_CURRENT_PASSWORD, { exact: true })
 			.fill(SEED_CREDENTIALS.member.password);
-		await page.getByLabel("New password", { exact: true }).fill(NEW_PASSWORD);
 		await page
-			.getByLabel("Confirm new password", { exact: true })
+			.getByLabel(AUTH_MESSAGE.FIELD_NEW_PASSWORD, { exact: true })
 			.fill(NEW_PASSWORD);
-		await page.getByRole("button", { name: "Update password" }).click();
+		await page
+			.getByLabel(AUTH_MESSAGE.FIELD_CONFIRM_PASSWORD, { exact: true })
+			.fill(NEW_PASSWORD);
+		await page
+			.getByRole("button", { name: AUTH_MESSAGE.PASSWORD_UPDATE })
+			.click();
 		await confirmAction(page);
 
 		await expect(page.getByText(AUTH_MESSAGE.PASSWORD_CHANGED)).toBeVisible();

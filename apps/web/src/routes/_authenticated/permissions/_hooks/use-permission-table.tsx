@@ -1,9 +1,6 @@
 import { PERMISSION_MESSAGE } from "@app/messages";
-import {
-	ALL_PERMISSIONS,
-	PERMISSION_LABEL,
-	type TPermission,
-} from "@app/permissions";
+import { PERMISSION_LABEL } from "@app/messages";
+import { ALL_PERMISSIONS, type TPermission } from "@app/permissions";
 import type { TRoleDto } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
 import {
