@@ -3,9 +3,6 @@
 	"version": "0.8.0",
 	"private": true,
 	"type": "module",
-	"exports": {
-		".": "./src/bootstrap/index.ts"
-	},
 	"imports": {
 		"#/*": "./src/*"
 	},
@@ -26,6 +23,7 @@
 	"dependencies": {
 		"@app/activity": "workspace:*",
 		"@app/cache": "workspace:*",
+		"@app/contract": "workspace:*",
 		"@app/logger": "workspace:*",
 		"@app/mail": "workspace:*",
 		"@app/messages": "workspace:*",

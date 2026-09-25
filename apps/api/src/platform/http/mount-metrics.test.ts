@@ -3,7 +3,7 @@ import { Hono } from "hono";
 import { describe, expect, it } from "vitest";
 import { HTTP_STATUS } from "#/platform/http/http-status.ts";
 import { metricsMount } from "#/platform/http/mount-metrics.ts";
-import { ROUTE_PATH } from "#/platform/http/route-paths.ts";
+import { ROUTE_PATH } from "@app/contract";
 
 const TOKEN = "a-32-character-metrics-scrape-tok";
 const NOT_FOUND = 404;

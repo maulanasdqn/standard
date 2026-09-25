@@ -6,7 +6,7 @@ import { requestId } from "hono/request-id";
 import { describe, expect, it } from "vitest";
 import { HTTP_STATUS } from "#/platform/http/http-status.ts";
 import { observabilityMount } from "#/platform/http/mount-observability.ts";
-import { ROUTE_PATH } from "#/platform/http/route-paths.ts";
+import { ROUTE_PATH } from "@app/contract";
 
 const URL_BASE = "http://localhost";
 const BOOM = "/boom";

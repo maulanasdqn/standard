@@ -4,7 +4,8 @@ import { describe, expect, it } from "vitest";
 import type { TAppRouter } from "#/bootstrap/router.ts";
 import { HTTP_STATUS } from "#/platform/http/http-status.ts";
 import { orpcMount } from "#/platform/http/mount-orpc.ts";
-import { ROUTE_PATH, ROUTE_PREFIX } from "#/platform/http/route-paths.ts";
+import { ROUTE_PATH } from "@app/contract";
+import { ROUTE_PREFIX } from "#/platform/http/route-paths.ts";
 import type { TORPCContext } from "#/platform/orpc/context.ts";
 import { SESSION_STATE } from "#/shared/session.ts";
 

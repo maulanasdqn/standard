@@ -56,7 +56,6 @@ export const ENTRYPOINT: readonly string[] = [
 export const COMPOSITION_ROOT: readonly string[] = [
 	"bootstrap/compose.ts",
 	"bootstrap/router.ts",
-	"bootstrap/index.ts",
 ];
 
 export const MODULE_SURFACE = "index.ts";
