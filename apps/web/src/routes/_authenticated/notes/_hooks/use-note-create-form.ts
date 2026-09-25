@@ -1,23 +1,20 @@
 import { noteCreateInputSchema } from "@app/schemas";
-import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
-import type { FormEvent } from "react";
 import type { z } from "zod";
-import type { TFormHook, TValidatedForm } from "#/libs/forms/form-hook.ts";
 import {
-	type TConfirmedAction,
-	useConfirmedAction,
-} from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
+	type TConfirmedForm,
+	useConfirmedForm,
+} from "#/routes/_authenticated/_hooks/use-confirmed-form.ts";
 import { useNoteCreate } from "#/routes/_authenticated/notes/_hooks/use-notes.ts";
 
 type TCreateNoteFormValues = z.input<typeof noteCreateInputSchema>;
 
 const DEFAULT_VALUES: TCreateNoteFormValues = { title: "", body: "" };
 
-type TNoteCreateForm = TFormHook<
-	TValidatedForm<TCreateNoteFormValues, typeof noteCreateInputSchema>
+type TNoteCreateForm = TConfirmedForm<
+	TCreateNoteFormValues,
+	typeof noteCreateInputSchema
 > & {
-	confirm: TConfirmedAction<TCreateNoteFormValues>;
 	isPending: boolean;
 };
 
@@ -25,23 +22,15 @@ export const useNoteCreateForm = (): TNoteCreateForm => {
 	const navigate = useNavigate();
 	const noteCreate = useNoteCreate();
 
-	const confirm = useConfirmedAction<TCreateNoteFormValues>((value) =>
-		noteCreate.mutate(
-			{ title: value.title, body: value.body ?? "" },
-			{ onSuccess: () => void navigate({ to: "/notes" }) },
-		),
-	);
-
-	const form = useForm({
+	const confirmed = useConfirmedForm({
 		defaultValues: DEFAULT_VALUES,
-		validators: { onChange: noteCreateInputSchema },
-		onSubmit: ({ value }) => confirm.request(value),
+		schema: noteCreateInputSchema,
+		run: (value): void =>
+			noteCreate.mutate(
+				{ title: value.title, body: value.body ?? "" },
+				{ onSuccess: () => void navigate({ to: "/notes" }) },
+			),
 	});
 
-	const onSubmit = (event: FormEvent): void => {
-		event.preventDefault();
-		void form.handleSubmit();
-	};
-
-	return { form, onSubmit, confirm, isPending: noteCreate.isPending };
+	return { ...confirmed, isPending: noteCreate.isPending };
 };

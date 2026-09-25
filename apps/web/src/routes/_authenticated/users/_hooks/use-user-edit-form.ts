@@ -1,18 +1,15 @@
 import { type TUser, userUpdateInputSchema } from "@app/schemas";
 import { D } from "@mobily/ts-belt";
-import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
-import type { FormEvent } from "react";
 import type { z } from "zod";
+import {
+	type TConfirmedForm,
+	useConfirmedForm,
+} from "#/routes/_authenticated/_hooks/use-confirmed-form.ts";
 import {
 	useIsSelf,
 	useUserUpdate,
 } from "#/routes/_authenticated/users/_hooks/use-users.ts";
-import type { TFormHook, TValidatedForm } from "#/libs/forms/form-hook.ts";
-import {
-	type TConfirmedAction,
-	useConfirmedAction,
-} from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
 
 const userEditFormSchema = userUpdateInputSchema
 	.pick({ name: true, role: true })
@@ -20,10 +17,10 @@ const userEditFormSchema = userUpdateInputSchema
 
 type TUserEditFormValues = z.input<typeof userEditFormSchema>;
 
-type TUserEditForm = TFormHook<
-	TValidatedForm<TUserEditFormValues, typeof userEditFormSchema>
+type TUserEditForm = TConfirmedForm<
+	TUserEditFormValues,
+	typeof userEditFormSchema
 > & {
-	confirm: TConfirmedAction<TUserEditFormValues>;
 	isPending: boolean;
 	isSelf: boolean;
 };
@@ -38,22 +35,14 @@ export const useUserEditForm = (user: TUser): TUserEditForm => {
 		role: user.role,
 	};
 
-	const confirm = useConfirmedAction<TUserEditFormValues>((value) =>
-		userUpdate.mutate(D.merge(value, { id: user.id }), {
-			onSuccess: () => void navigate({ to: "/users" }),
-		}),
-	);
-
-	const form = useForm({
+	const confirmed = useConfirmedForm({
 		defaultValues,
-		validators: { onChange: userEditFormSchema },
-		onSubmit: ({ value }) => confirm.request(value),
+		schema: userEditFormSchema,
+		run: (value): void =>
+			userUpdate.mutate(D.merge(value, { id: user.id }), {
+				onSuccess: () => void navigate({ to: "/users" }),
+			}),
 	});
 
-	const onSubmit = (event: FormEvent): void => {
-		event.preventDefault();
-		void form.handleSubmit();
-	};
-
-	return { form, onSubmit, confirm, isPending: userUpdate.isPending, isSelf };
+	return { ...confirmed, isPending: userUpdate.isPending, isSelf };
 };
