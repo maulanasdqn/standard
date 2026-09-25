@@ -12,12 +12,7 @@ import {
 import { activityRouterBuild } from "#/activity/presentation/activity-router.ts";
 import { Layer } from "effect";
 
-export {
-	ActivityPruner,
-	ActivityRepo,
-	activityRecorderLayer,
-	activityRepoLayer,
-};
+export { ActivityPruner, ActivityRepo };
 export type { TActivityPrunerId, TActivityRepoId };
 
 const activityLayer = Layer.mergeAll(

@@ -10,17 +10,24 @@ import { queueServiceLayer } from "#/platform/queue/rabbitmq.ts";
 import { roleModule } from "#/role/index.ts";
 import { userModule } from "#/user/index.ts";
 
-export const AppLayer = Layer.mergeAll(
+const platformLayer = Layer.mergeAll(
 	dbServiceLayer,
 	cacheServiceLayer,
 	queueServiceLayer,
 	mailServiceLayer,
+);
+
+const moduleLayer = Layer.mergeAll(
 	healthModule.layer,
 	activityModule.layer,
 	noteModule.layer,
 	roleModule.layer,
-	userModule.layer,
-	authModule.layer,
+);
+
+export const AppLayer = userModule.layer.pipe(
+	Layer.provideMerge(authModule.layer),
+	Layer.provideMerge(moduleLayer),
+	Layer.provideMerge(platformLayer),
 );
 
 export const appMemoMap = Layer.makeMemoMapUnsafe();

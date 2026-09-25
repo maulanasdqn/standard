@@ -8,8 +8,8 @@ import { offsetFor, orderFor } from "#/shared/pagination.ts";
 import { USER_SORT, type TUserSort } from "@app/schemas";
 import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { UserRepo, type TUserRepo, type TUserRow } from "#/user/domain/user.ts";
-import { AuthService, authServiceLayer } from "#/auth/index.ts";
-import { DbService, dbServiceLayer } from "#/platform/db/db-service.ts";
+import { AuthService } from "#/auth/index.ts";
+import { DbService } from "#/platform/db/db-service.ts";
 import { containsWhere } from "#/platform/db/search.ts";
 import { dbActive } from "#/platform/db/transaction.ts";
 import { isUniqueViolation } from "#/platform/db/unique-violation.ts";
@@ -171,4 +171,4 @@ export const userRepoLayer = Layer.effect(
 			resetPassword,
 		});
 	}),
-).pipe(Layer.provide(Layer.mergeAll(dbServiceLayer, authServiceLayer)));
+);

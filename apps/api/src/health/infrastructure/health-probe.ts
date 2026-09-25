@@ -7,8 +7,8 @@ import {
 import { sql } from "drizzle-orm";
 import { Effect, Layer } from "effect";
 import { HealthProbe, type THealthProbe } from "#/health/domain/health.ts";
-import { CacheService, cacheServiceLayer } from "#/platform/cache/redis.ts";
-import { DbService, dbServiceLayer } from "#/platform/db/db-service.ts";
+import { CacheService } from "#/platform/cache/redis.ts";
+import { DbService } from "#/platform/db/db-service.ts";
 
 const PROBE_TIMEOUT_MS = 2_000;
 
@@ -44,4 +44,4 @@ export const healthProbeLayer = Layer.effect(
 
 		return HealthProbe.of({ check });
 	}),
-).pipe(Layer.provide(Layer.mergeAll(dbServiceLayer, cacheServiceLayer)));
+);

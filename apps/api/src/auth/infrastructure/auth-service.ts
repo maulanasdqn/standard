@@ -6,13 +6,11 @@ import { permissionsResolve } from "#/role/index.ts";
 import type { TAuthService } from "#/auth/domain/auth-service.ts";
 import type { TSession, TSessionUser } from "#/shared/session.ts";
 import { authCreate, type TAuth } from "#/auth/infrastructure/better-auth.ts";
-import { DbService, dbServiceLayer } from "#/platform/db/db-service.ts";
-import { customRoleRepoLayer } from "#/role/index.ts";
+import { DbService } from "#/platform/db/db-service.ts";
 import type { TActivityEntry, TActivityRepo } from "@app/activity";
-import { activityRecorderLayer } from "#/activity/index.ts";
 import { ActivityRecorder } from "#/shared/activity-recorder.ts";
 import { CustomRoleRepo } from "#/role/index.ts";
-import { MailService, mailServiceLayer } from "#/platform/mail/mailer.ts";
+import { MailService } from "#/platform/mail/mailer.ts";
 import type { TServiceId } from "#/shared/service-id.ts";
 import { SERVICE_TAG } from "#/platform/service-tags.ts";
 
@@ -81,13 +79,4 @@ export const authServiceLayer = Layer.effect(
 
 		return AuthService.of({ auth, getSession });
 	}),
-).pipe(
-	Layer.provide(
-		Layer.mergeAll(
-			dbServiceLayer,
-			customRoleRepoLayer,
-			mailServiceLayer,
-			activityRecorderLayer,
-		),
-	),
 );
