@@ -11,14 +11,29 @@ import { ROLE } from "@app/permissions";
 import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
 import type { TDb } from "#/platform/db/client.ts";
 import { dbActiveProxy } from "#/platform/db/transaction.ts";
+import { match, P } from "ts-pattern";
+import { authPluginsOf } from "#/auth/infrastructure/auth-plugins.ts";
 import { env } from "#/platform/config/env.ts";
+import { originsOf } from "#/platform/http/origins.ts";
 import { logger } from "#/platform/observability/logger.ts";
 
 type TCreateAuthOptions = {
 	db: TDb;
 	activityRepo: TActivityRepo;
 	mailer: TMailer;
+	permissionsFor: (role: string) => Promise<readonly string[]>;
 };
+
+type TCrossSubDomainCookies = { enabled: boolean; domain?: string };
+
+const crossSubDomainCookiesOf = (
+	domain: string | undefined,
+): TCrossSubDomainCookies =>
+	match(domain)
+		.with(P.nullish, (): TCrossSubDomainCookies => ({ enabled: false }))
+		.otherwise(
+			(found): TCrossSubDomainCookies => ({ enabled: true, domain: found }),
+		);
 
 type TAuthOptions = Omit<BetterAuthOptions, "user"> & {
 	user: {
@@ -34,9 +49,16 @@ export const authCreate = (deps: TCreateAuthOptions): TAuth =>
 	betterAuth<TAuthOptions>({
 		baseURL: env.BETTER_AUTH_URL,
 		secret: env.BETTER_AUTH_SECRET,
-		trustedOrigins: [env.WEB_ORIGIN],
+		trustedOrigins: [...originsOf(env.WEB_ORIGIN, env.AUTH_TRUSTED_ORIGINS)],
 		database: drizzleAdapter(dbActiveProxy(deps.db), { provider: "pg" }),
-		advanced: { database: { generateId: (): string => crypto.randomUUID() } },
+		plugins: authPluginsOf({
+			jwtEnabled: env.AUTH_JWT_ENABLED,
+			permissionsFor: deps.permissionsFor,
+		}),
+		advanced: {
+			database: { generateId: (): string => crypto.randomUUID() },
+			crossSubDomainCookies: crossSubDomainCookiesOf(env.AUTH_COOKIE_DOMAIN),
+		},
 		emailAndPassword: {
 			enabled: true,
 			sendResetPassword: async ({ user, url }): Promise<void> => {
