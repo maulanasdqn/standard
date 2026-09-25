@@ -214,6 +214,9 @@ importers:
       '@app/metrics':
         specifier: workspace:*
         version: link:../../packages/metrics
+      '@app/migrations':
+        specifier: workspace:*
+        version: link:../../packages/migrations
       '@app/permissions':
         specifier: workspace:*
         version: link:../../packages/permissions
@@ -229,6 +232,9 @@ importers:
       '@orpc/client':
         specifier: 'catalog:'
         version: 1.15.0(@opentelemetry/api@1.9.1)
+      '@types/pg':
+        specifier: 'catalog:'
+        version: 8.23.1
       amqplib:
         specifier: 'catalog:'
         version: 2.0.1

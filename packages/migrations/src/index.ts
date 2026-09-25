@@ -8,8 +8,8 @@ type TRunMigrationsOptions = {
 	service: string;
 	migrationsFolder: string;
 	databaseUrl: string;
-	migrationsSchema?: string;
-	migrationsTable?: string;
+	migrationsSchema: string;
+	migrationsTable: string;
 };
 
 const migrationConfigOf = (
