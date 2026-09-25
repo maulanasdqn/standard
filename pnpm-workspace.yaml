@@ -35,3 +35,6 @@ allowBuilds:
   lightningcss: true
   msgpackr-extract: true
   protobufjs: true
+
+patchedDependencies:
+  '@mobily/ts-belt@3.13.1': patches/@mobily__ts-belt@3.13.1.patch

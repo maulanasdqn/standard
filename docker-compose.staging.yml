@@ -43,7 +43,9 @@ services:
     image: ${STANDARD_IMAGE:-standard:latest}
     restart: unless-stopped
     stop_grace_period: 30s
-    command: ["pnpm", "--filter", "@app/api", "worker"]
+    command: ["node", "src/worker/run.ts"]
+    healthcheck:
+      disable: true
     depends_on:
       postgres: { condition: service_healthy }
       redis: { condition: service_healthy }

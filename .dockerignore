@@ -6,4 +6,6 @@ dist
 .moon/cache
 .moon/docker
 *.log
-.env
+**/.env
+**/.env.*
+!**/.env.example

@@ -62,7 +62,7 @@ staging-up: ## Start the staging stack from .env.staging
 	docker compose -f docker-compose.staging.yml --env-file .env.staging up -d
 
 staging-migrate: ## Apply migrations against the staging database
-	docker compose -f docker-compose.staging.yml --env-file .env.staging run --rm api pnpm --filter @app/api migrate
+	docker compose -f docker-compose.staging.yml --env-file .env.staging run --rm api node src/scripts/migrate.ts
 
 staging-down: ## Stop the staging stack, keeping its volumes
 	docker compose -f docker-compose.staging.yml --env-file .env.staging down

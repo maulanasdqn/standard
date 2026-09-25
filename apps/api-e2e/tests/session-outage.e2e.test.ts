@@ -47,7 +47,7 @@ describe("session resolution under a database outage", () => {
 	it("answers 503 for a genuinely signed-in caller rather than reporting them signed out", async (): Promise<void> => {
 		apiProcess = spawn(
 			"pnpm",
-			["--filter", "@app/api", "exec", "tsx", "src/main.ts"],
+			["--filter", "@app/api", "exec", "node", "src/main.ts"],
 			{
 				cwd: new URL("../../..", import.meta.url).pathname,
 				env: apiEnv({
