@@ -1,8 +1,9 @@
+import { ROLE_MESSAGE } from "@app/messages";
 import { A, D } from "@mobily/ts-belt";
 import { count, eq } from "drizzle-orm";
 import { Effect, Layer } from "effect";
 import { match, P } from "ts-pattern";
-import { EDatabase } from "#/shared/errors.ts";
+import { EConflict, EDatabase } from "#/shared/errors.ts";
 import {
 	CustomRoleRepo,
 	type TCustomRoleRepo,
@@ -10,6 +11,7 @@ import {
 } from "#/role/domain/custom-role.ts";
 import { DbService, dbServiceLayer } from "#/platform/db/db-service.ts";
 import { dbActive } from "#/platform/db/transaction.ts";
+import { isUniqueViolation } from "#/platform/db/unique-violation.ts";
 import { customRole } from "#/platform/db/tables/custom-role.ts";
 import { user } from "#/platform/db/tables/auth.ts";
 
@@ -74,7 +76,10 @@ export const customRoleRepoLayer = Layer.effect(
 						.returning();
 					return row as TCustomRoleRow;
 				},
-				catch: (cause) => new EDatabase({ cause }),
+				catch: (cause) =>
+					isUniqueViolation(cause)
+						? new EConflict({ message: ROLE_MESSAGE.KEY_TAKEN })
+						: new EDatabase({ cause }),
 			});
 
 		const update: TCustomRoleRepo["update"] = ({ key, ...patch }) =>

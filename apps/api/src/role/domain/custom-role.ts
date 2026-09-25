@@ -2,7 +2,7 @@ import type { TPermission } from "@app/permissions";
 import type { TRoleCreateInput, TRoleUpdateInput } from "@app/schemas";
 import { Context, type Effect } from "effect";
 import type { TBaseRow } from "#/shared/base-row.ts";
-import type { EDatabase } from "#/shared/errors.ts";
+import type { EConflict, EDatabase } from "#/shared/errors.ts";
 import type { TRowLock } from "#/shared/row-lock.ts";
 import type { TServiceId } from "#/shared/service-id.ts";
 import { REPO_TAG } from "#/shared/repo-tags.ts";
@@ -27,7 +27,7 @@ export type TCustomRoleRepo = {
 	create: (
 		input: TRoleCreateInput,
 		createdBy: string,
-	) => Effect.Effect<TCustomRoleRow, EDatabase>;
+	) => Effect.Effect<TCustomRoleRow, EDatabase | EConflict>;
 	update: (
 		input: TRoleUpdateInput,
 	) => Effect.Effect<TCustomRoleRow | null, EDatabase>;

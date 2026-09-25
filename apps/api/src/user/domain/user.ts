@@ -6,7 +6,7 @@ import type {
 } from "@app/schemas";
 import { Context, type Effect } from "effect";
 import type { TBaseRow } from "#/shared/base-row.ts";
-import type { EAuth, EDatabase } from "#/shared/errors.ts";
+import type { EAuth, EConflict, EDatabase } from "#/shared/errors.ts";
 import type { TRowPage } from "#/shared/pagination.ts";
 import type { TServiceId } from "#/shared/service-id.ts";
 import { REPO_TAG } from "#/shared/repo-tags.ts";
@@ -23,7 +23,9 @@ export type TUserRepo = {
 	list: (input: TUserListInput) => Effect.Effect<TRowPage<TUserRow>, EDatabase>;
 	findById: (id: string) => Effect.Effect<TUserRow | null, EDatabase>;
 	findByEmail: (email: string) => Effect.Effect<TUserRow | null, EDatabase>;
-	create: (input: TUserCreateInput) => Effect.Effect<TUserRow, EAuth>;
+	create: (
+		input: TUserCreateInput,
+	) => Effect.Effect<TUserRow, EAuth | EConflict>;
 	update: (
 		input: TUserUpdateInput,
 	) => Effect.Effect<TUserRow | null, EDatabase>;
