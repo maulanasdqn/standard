@@ -17,6 +17,8 @@
 		"typescript": "catalog:"
 	},
 	"dependencies": {
-		"ts-pattern": "catalog:"
+		"ts-pattern": "catalog:",
+		"@app/api": "workspace:*",
+		"@app/web": "workspace:*"
 	}
 }

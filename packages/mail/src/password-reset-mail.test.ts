@@ -1,11 +1,12 @@
-import { MAIL_MESSAGE } from "@app/messages";
 import { describe, expect, it } from "vitest";
+import { MAIL_MESSAGE } from "./mail-messages.ts";
 import { passwordResetMailBuild } from "./password-reset-mail.ts";
 
 const INPUT = {
 	to: "member@test.app",
 	name: "Member",
 	url: "https://standard.test/reset-password?token=abc123",
+	brand: "Acme",
 };
 
 describe("passwordResetMailBuild", () => {
@@ -29,6 +30,17 @@ describe("passwordResetMailBuild", () => {
 	it("greets the recipient by name", () => {
 		expect(passwordResetMailBuild(INPUT).text).toContain(
 			`${MAIL_MESSAGE.GREETING} ${INPUT.name},`,
+		);
+	});
+
+	it("signs with the brand it is given rather than one of its own", () => {
+		const message = passwordResetMailBuild(INPUT);
+
+		expect(message.text).toContain(
+			`${MAIL_MESSAGE.SIGNATURE_PREFIX} ${INPUT.brand}`,
+		);
+		expect(message.html).toContain(
+			`${MAIL_MESSAGE.SIGNATURE_PREFIX} ${INPUT.brand}`,
 		);
 	});
 });

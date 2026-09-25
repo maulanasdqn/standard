@@ -7,6 +7,7 @@ import {
 	passwordResetMailBuild,
 	type TMailer,
 } from "@app/mail";
+import { APP_MESSAGE } from "@app/messages";
 import { ROLE } from "@app/permissions";
 import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
 import type { TDb } from "#/platform/db/client.ts";
@@ -44,7 +45,12 @@ export const authCreate = (deps: TCreateAuthOptions): TAuth =>
 					deps.mailer,
 					logger,
 					MAIL_TEMPLATE.PASSWORD_RESET,
-					passwordResetMailBuild({ to: user.email, name: user.name, url }),
+					passwordResetMailBuild({
+						to: user.email,
+						name: user.name,
+						url,
+						brand: APP_MESSAGE.NAME,
+					}),
 				);
 			},
 		},

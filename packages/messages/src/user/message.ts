@@ -57,5 +57,5 @@ export const USER_MESSAGE = {
 	DELETED: "User deleted.",
 	DELETE_CONFIRM_TITLE: "Delete this user?",
 	DELETE_CONFIRM_DESCRIPTION:
-		"The account and its notes will be removed permanently.",
+		"The account and everything it owns will be removed permanently.",
 } as const;

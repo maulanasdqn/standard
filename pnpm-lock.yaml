@@ -371,6 +371,12 @@ importers:
 
   apps/web-e2e:
     dependencies:
+      '@app/api':
+        specifier: workspace:*
+        version: link:../api
+      '@app/web':
+        specifier: workspace:*
+        version: link:../web
       ts-pattern:
         specifier: 'catalog:'
         version: 5.9.0
@@ -421,9 +427,6 @@ importers:
 
   packages/components:
     dependencies:
-      '@app/messages':
-        specifier: workspace:*
-        version: link:../messages
       '@app/permissions':
         specifier: workspace:*
         version: link:../permissions
@@ -536,9 +539,6 @@ importers:
 
   packages/mail:
     dependencies:
-      '@app/messages':
-        specifier: workspace:*
-        version: link:../messages
       '@mobily/ts-belt':
         specifier: 'catalog:'
         version: 3.13.1(patch_hash=089c2961d9dcaf34a971874c8717d7a961ff3c49d4508968d9c4dd22fab7300a)
@@ -669,9 +669,6 @@ importers:
 
   packages/storage:
     dependencies:
-      '@app/messages':
-        specifier: workspace:*
-        version: link:../messages
       '@mobily/ts-belt':
         specifier: 'catalog:'
         version: 3.13.1(patch_hash=089c2961d9dcaf34a971874c8717d7a961ff3c49d4508968d9c4dd22fab7300a)

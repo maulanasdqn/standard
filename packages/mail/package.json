@@ -11,7 +11,6 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
-		"@app/messages": "workspace:*",
 		"@mobily/ts-belt": "catalog:",
 		"nodemailer": "^10.0.10"
 	},

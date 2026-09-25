@@ -3,6 +3,7 @@ $schema: 'https://moonrepo.dev/schemas/project.json'
 id: 'api-e2e'
 layer: 'automation'
 language: 'typescript'
+tags: ['app']
 stack: 'backend'
 
 dependsOn:
