@@ -14,9 +14,9 @@
 		"@app/permissions": "workspace:*",
 		"@app/schemas": "workspace:*",
 		"@playwright/test": "^1.49.0",
-		"typescript": "^7.0.2"
+		"typescript": "catalog:"
 	},
 	"dependencies": {
-		"ts-pattern": "^5.9.0"
+		"ts-pattern": "catalog:"
 	}
 }

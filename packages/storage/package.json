@@ -12,12 +12,12 @@
 	},
 	"dependencies": {
 		"@app/messages": "workspace:*",
-		"@mobily/ts-belt": "^3.13.1",
+		"@mobily/ts-belt": "catalog:",
 		"aws4fetch": "^1.0.20",
-		"ts-pattern": "^5.9.0"
+		"ts-pattern": "catalog:"
 	},
 	"devDependencies": {
-		"typescript": "^7.0.2",
-		"vitest": "^5.0.0"
+		"typescript": "catalog:",
+		"vitest": "catalog:"
 	}
 }
