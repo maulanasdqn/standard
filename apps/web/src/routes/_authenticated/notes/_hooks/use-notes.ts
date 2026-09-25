@@ -6,15 +6,16 @@ import {
 	type UseMutationResult,
 	type UseSuspenseQueryOptions,
 	type UseSuspenseQueryResult,
-	useMutation,
-	useQueryClient,
 	useSuspenseQuery,
 } from "@tanstack/react-query";
 import { getRouteApi } from "@tanstack/react-router";
-import { toast } from "sonner";
 import { match } from "ts-pattern";
 import { orpc } from "#/libs/orpc/client.ts";
-import { toastError } from "#/libs/orpc/toast-error.ts";
+import {
+	invalidateKeys,
+	useProcedureMutation,
+} from "#/libs/orpc/procedure-mutation.ts";
+import { suspenseQueryOptionsFor } from "#/libs/orpc/procedure-query.ts";
 import type {
 	TClientErrors,
 	TClientInputs,
@@ -34,24 +35,20 @@ export type TNoteSearch = {
 const listRouteApi = getRouteApi("/_authenticated/notes/");
 const editRouteApi = getRouteApi("/_authenticated/notes/$noteId");
 
+const noteKeys = (): readonly (readonly unknown[])[] => [orpc.note.key()];
+
 export const invalidateNotes = (queryClient: QueryClient): Promise<void> =>
-	queryClient.invalidateQueries({ queryKey: orpc.note.key() });
+	invalidateKeys(queryClient, noteKeys());
 
 export const noteListOptions = (
 	input: TNoteListInput,
 ): UseSuspenseQueryOptions<TNoteOut["list"], TNoteErr["list"]> =>
-	orpc.note.list.queryOptions({
-		input,
-		queryKey: orpc.note.list.queryKey({ input }),
-	});
+	suspenseQueryOptionsFor(orpc.note.list, input);
 
 export const noteGetOptions = (
 	id: string,
 ): UseSuspenseQueryOptions<TNoteOut["get"], TNoteErr["get"]> =>
-	orpc.note.get.queryOptions({
-		input: { id },
-		queryKey: orpc.note.get.queryKey({ input: { id } }),
-	});
+	suspenseQueryOptionsFor(orpc.note.get, { id });
 
 export const useNoteList = (): UseSuspenseQueryResult<
 	TNoteOut["list"],
@@ -91,55 +88,28 @@ export const useNoteCreate = (): UseMutationResult<
 	TNoteOut["create"],
 	TNoteErr["create"],
 	TNoteIn["create"]
-> => {
-	const queryClient = useQueryClient();
-
-	return useMutation(
-		orpc.note.create.mutationOptions({
-			mutationKey: orpc.note.create.mutationKey(),
-			onSuccess: () => {
-				toast.success(NOTE_MESSAGE.CREATED);
-				return invalidateNotes(queryClient);
-			},
-			onError: toastError,
-		}),
-	);
-};
+> =>
+	useProcedureMutation(orpc.note.create, {
+		message: NOTE_MESSAGE.CREATED,
+		invalidates: noteKeys(),
+	});
 
 export const useNoteUpdate = (): UseMutationResult<
 	TNoteOut["update"],
 	TNoteErr["update"],
 	TNoteIn["update"]
-> => {
-	const queryClient = useQueryClient();
-
-	return useMutation(
-		orpc.note.update.mutationOptions({
-			mutationKey: orpc.note.update.mutationKey(),
-			onSuccess: () => {
-				toast.success(NOTE_MESSAGE.UPDATED);
-				return invalidateNotes(queryClient);
-			},
-			onError: toastError,
-		}),
-	);
-};
+> =>
+	useProcedureMutation(orpc.note.update, {
+		message: NOTE_MESSAGE.UPDATED,
+		invalidates: noteKeys(),
+	});
 
 export const useNoteDelete = (): UseMutationResult<
 	TNoteOut["remove"],
 	TNoteErr["remove"],
 	TNoteIn["remove"]
-> => {
-	const queryClient = useQueryClient();
-
-	return useMutation(
-		orpc.note.remove.mutationOptions({
-			mutationKey: orpc.note.remove.mutationKey(),
-			onSuccess: () => {
-				toast.success(NOTE_MESSAGE.DELETED);
-				return invalidateNotes(queryClient);
-			},
-			onError: toastError,
-		}),
-	);
-};
+> =>
+	useProcedureMutation(orpc.note.remove, {
+		message: NOTE_MESSAGE.DELETED,
+		invalidates: noteKeys(),
+	});
