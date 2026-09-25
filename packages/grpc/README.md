@@ -1,10 +1,10 @@
 # @app/grpc
 
-A gRPC server and client pair built on `@grpc/grpc-js` and `@grpc/proto-loader`, with `note.proto` as the sample contract and `grpc.test.ts` driving a real server and client in-process.
+A gRPC server and client pair built on `@grpc/grpc-js` and `@grpc/proto-loader`, with `sample.proto` as the sample contract and `grpc.test.ts` driving a real server and client in-process.
 
 ## Status
 
-Nothing in the sample application imports this package. It is kept on purpose: the repository is a boilerplate, and a working gRPC transport is part of what it offers to a project that needs one, even though the sample notes application talks HTTP and RPC only. Do not remove it on the grounds that the sample app has no consumer.
+Nothing in the sample application imports this package. It is kept on purpose: the repository is a boilerplate, and a working gRPC transport is part of what it offers to a project that needs one, even though the sample application talks HTTP and RPC only. Do not remove it on the grounds that the sample app has no consumer.
 
 ## Credentials
 
