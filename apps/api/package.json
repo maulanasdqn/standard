@@ -55,7 +55,7 @@
 	"devDependencies": {
 		"@electric-sql/pglite": "^0.5.8",
 		"@types/pg": "catalog:",
-		"dotenv": "^17.3.1",
+		"dotenv": "^18.0.2",
 		"drizzle-kit": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"
