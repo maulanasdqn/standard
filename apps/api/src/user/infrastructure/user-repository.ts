@@ -1,8 +1,9 @@
+import { USER_MESSAGE } from "@app/messages";
 import { D } from "@mobily/ts-belt";
 import { and, count, eq, or, type SQL } from "drizzle-orm";
 import { Effect, Layer } from "effect";
 import { match, P } from "ts-pattern";
-import { EAuth, EDatabase } from "#/shared/errors.ts";
+import { EAuth, EConflict, EDatabase } from "#/shared/errors.ts";
 import { offsetFor, orderFor } from "#/shared/pagination.ts";
 import { USER_SORT, type TUserSort } from "@app/schemas";
 import type { AnyPgColumn } from "drizzle-orm/pg-core";
@@ -11,6 +12,7 @@ import { AuthService, authServiceLayer } from "#/auth/index.ts";
 import { DbService, dbServiceLayer } from "#/platform/db/db-service.ts";
 import { containsWhere } from "#/platform/db/search.ts";
 import { dbActive } from "#/platform/db/transaction.ts";
+import { isUniqueViolation } from "#/platform/db/unique-violation.ts";
 import { session, user } from "#/platform/db/tables/auth.ts";
 
 const CREDENTIAL_PROVIDER_ID = "credential";
@@ -117,7 +119,10 @@ export const userRepoLayer = Layer.effect(
 						.limit(1);
 					return row as TUserRow;
 				},
-				catch: (cause) => new EAuth({ cause }),
+				catch: (cause) =>
+					isUniqueViolation(cause)
+						? new EConflict({ message: USER_MESSAGE.EMAIL_TAKEN })
+						: new EAuth({ cause }),
 			});
 
 		const update: TUserRepo["update"] = ({ id, ...patch }) =>
