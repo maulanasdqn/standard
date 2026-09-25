@@ -11,7 +11,6 @@
 	},
 	"dependencies": {
 		"@app/activity": "workspace:*",
-		"@app/api": "workspace:*",
 		"@app/components": "workspace:*",
 		"@app/format": "workspace:*",
 		"@app/messages": "workspace:*",
@@ -39,6 +38,7 @@
 		"zod": "catalog:"
 	},
 	"devDependencies": {
+		"@app/api": "workspace:*",
 		"@tanstack/router-plugin": "^1.168.37",
 		"@testing-library/dom": "catalog:",
 		"@testing-library/jest-dom": "^7.0.0",
