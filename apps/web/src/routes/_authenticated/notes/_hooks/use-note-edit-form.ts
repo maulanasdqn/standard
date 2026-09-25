@@ -1,14 +1,11 @@
 import { type TNote, noteUpdateInputSchema } from "@app/schemas";
 import { D } from "@mobily/ts-belt";
-import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
-import type { FormEvent } from "react";
 import type { z } from "zod";
-import type { TFormHook, TValidatedForm } from "#/libs/forms/form-hook.ts";
 import {
-	type TConfirmedAction,
-	useConfirmedAction,
-} from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
+	type TConfirmedForm,
+	useConfirmedForm,
+} from "#/routes/_authenticated/_hooks/use-confirmed-form.ts";
 import { useNoteUpdate } from "#/routes/_authenticated/notes/_hooks/use-notes.ts";
 
 const noteEditFormSchema = noteUpdateInputSchema
@@ -17,10 +14,10 @@ const noteEditFormSchema = noteUpdateInputSchema
 
 type TNoteEditFormValues = z.input<typeof noteEditFormSchema>;
 
-type TNoteEditForm = TFormHook<
-	TValidatedForm<TNoteEditFormValues, typeof noteEditFormSchema>
+type TNoteEditForm = TConfirmedForm<
+	TNoteEditFormValues,
+	typeof noteEditFormSchema
 > & {
-	confirm: TConfirmedAction<TNoteEditFormValues>;
 	isPending: boolean;
 };
 
@@ -33,22 +30,15 @@ export const useNoteEditForm = (note: TNote): TNoteEditForm => {
 		body: note.body,
 	};
 
-	const confirm = useConfirmedAction<TNoteEditFormValues>((value) =>
-		noteUpdate.mutate(D.merge(value, { id: note.id, version: note.version }), {
-			onSuccess: () => void navigate({ to: "/notes" }),
-		}),
-	);
-
-	const form = useForm({
+	const confirmed = useConfirmedForm({
 		defaultValues,
-		validators: { onChange: noteEditFormSchema },
-		onSubmit: ({ value }) => confirm.request(value),
+		schema: noteEditFormSchema,
+		run: (value): void =>
+			noteUpdate.mutate(
+				D.merge(value, { id: note.id, version: note.version }),
+				{ onSuccess: () => void navigate({ to: "/notes" }) },
+			),
 	});
 
-	const onSubmit = (event: FormEvent): void => {
-		event.preventDefault();
-		void form.handleSubmit();
-	};
-
-	return { form, onSubmit, confirm, isPending: noteUpdate.isPending };
+	return { ...confirmed, isPending: noteUpdate.isPending };
 };

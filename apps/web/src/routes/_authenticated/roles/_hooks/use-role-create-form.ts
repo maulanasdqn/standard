@@ -1,15 +1,12 @@
 import { roleCreateInputSchema } from "@app/schemas";
 import { D } from "@mobily/ts-belt";
-import { useForm } from "@tanstack/react-form";
-import type { FormEvent } from "react";
 import { match } from "ts-pattern";
 import type { z } from "zod";
-import { useRoleCreate } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
-import type { TFormHook, TValidatedForm } from "#/libs/forms/form-hook.ts";
 import {
-	type TConfirmedAction,
-	useConfirmedAction,
-} from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
+	type TConfirmedForm,
+	useConfirmedForm,
+} from "#/routes/_authenticated/_hooks/use-confirmed-form.ts";
+import { useRoleCreate } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
 
 type TRoleCreateFormValues = z.input<typeof roleCreateInputSchema>;
 
@@ -25,30 +22,24 @@ const payloadBuild = (value: TRoleCreateFormValues): TRoleCreateFormValues =>
 		.with("", () => D.deleteKey(value, "description"))
 		.otherwise(() => value);
 
-type TRoleCreateForm = TFormHook<
-	TValidatedForm<TRoleCreateFormValues, typeof roleCreateInputSchema>
+type TRoleCreateForm = TConfirmedForm<
+	TRoleCreateFormValues,
+	typeof roleCreateInputSchema
 > & {
-	confirm: TConfirmedAction<TRoleCreateFormValues>;
 	isPending: boolean;
 };
 
 export const useRoleCreateForm = (): TRoleCreateForm => {
 	const roleCreate = useRoleCreate();
 
-	const confirm = useConfirmedAction<TRoleCreateFormValues>((value) =>
-		roleCreate.mutate(payloadBuild(value), { onSuccess: () => form.reset() }),
-	);
-
-	const form = useForm({
+	const confirmed = useConfirmedForm({
 		defaultValues: DEFAULT_VALUES,
-		validators: { onChange: roleCreateInputSchema },
-		onSubmit: ({ value }) => confirm.request(value),
+		schema: roleCreateInputSchema,
+		run: (value, form): void =>
+			roleCreate.mutate(payloadBuild(value), {
+				onSuccess: () => form.reset(),
+			}),
 	});
 
-	const onSubmit = (event: FormEvent): void => {
-		event.preventDefault();
-		void form.handleSubmit();
-	};
-
-	return { form, onSubmit, confirm, isPending: roleCreate.isPending };
+	return { ...confirmed, isPending: roleCreate.isPending };
 };
