@@ -10,26 +10,26 @@ import {
 	grpcServerCreate,
 } from "./index.ts";
 
-const PROTO_PATH = fileURLToPath(new URL("./note.proto", import.meta.url));
-const PACKAGE = "note";
-const SERVICE = "NoteService";
+const PROTO_PATH = fileURLToPath(new URL("./sample.proto", import.meta.url));
+const PACKAGE = "sample";
+const SERVICE = "ItemService";
 
-type TNote = { id: string; title: string; content: string };
+type TItem = { id: string; title: string; content: string };
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null;
 
-const isNote = (value: unknown): value is TNote =>
+const isItem = (value: unknown): value is TItem =>
 	isRecord(value) &&
 	typeof value.id === "string" &&
 	typeof value.title === "string" &&
 	typeof value.content === "string";
 
-const noteDecode = (value: unknown): TNote =>
+const itemDecode = (value: unknown): TItem =>
 	match(value)
-		.when(isNote, (note): TNote => note)
+		.when(isItem, (item): TItem => item)
 		.otherwise((): never => {
-			throw new Error("not a note");
+			throw new Error("not an item");
 		});
 
 const stringField = (value: unknown, field: string): string =>
@@ -37,12 +37,12 @@ const stringField = (value: unknown, field: string): string =>
 
 const idOf = (value: unknown): string => stringField(value, "id");
 
-const draftOf = (value: unknown): Pick<TNote, "title" | "content"> => ({
+const draftOf = (value: unknown): Pick<TItem, "title" | "content"> => ({
 	title: stringField(value, "title"),
 	content: stringField(value, "content"),
 });
 
-const noteOf = (value: unknown): TNote => ({
+const itemOf = (value: unknown): TItem => ({
 	id: idOf(value),
 	...draftOf(value),
 });
@@ -59,8 +59,8 @@ describe("grpcServerCreate + grpcClientCreate", () => {
 	});
 
 	it("round-trips a unary call through a real server and client", async () => {
-		const notes: Record<string, TNote> = {
-			"note-1": { id: "note-1", title: "First note", content: "Hello" },
+		const items: Record<string, TItem> = {
+			"item-1": { id: "item-1", title: "First item", content: "Hello" },
 		};
 
 		server = await grpcServerCreate({
@@ -68,10 +68,10 @@ describe("grpcServerCreate + grpcClientCreate", () => {
 			packageName: PACKAGE,
 			serviceName: SERVICE,
 			handlers: {
-				getNote: async (request: unknown) => notes[idOf(request)],
-				createNote: async (request: unknown) => {
-					const created: TNote = { id: "note-2", ...draftOf(request) };
-					notes[created.id] = created;
+				getItem: async (request: unknown) => items[idOf(request)],
+				createItem: async (request: unknown) => {
+					const created: TItem = { id: "item-2", ...draftOf(request) };
+					items[created.id] = created;
 					return created;
 				},
 			},
@@ -84,15 +84,15 @@ describe("grpcServerCreate + grpcClientCreate", () => {
 			address: `127.0.0.1:${server.port}`,
 		});
 
-		const fetched = await client.call("getNote", { id: "note-1" }, noteDecode);
-		expect(fetched.title).toBe("First note");
+		const fetched = await client.call("getItem", { id: "item-1" }, itemDecode);
+		expect(fetched.title).toBe("First item");
 
 		const created = await client.call(
-			"createNote",
-			{ title: "Second note", content: "World" },
-			noteDecode,
+			"createItem",
+			{ title: "Second item", content: "World" },
+			itemDecode,
 		);
-		expect(created.id).toBe("note-2");
+		expect(created.id).toBe("item-2");
 		expect(created.content).toBe("World");
 	});
 
@@ -102,10 +102,10 @@ describe("grpcServerCreate + grpcClientCreate", () => {
 			packageName: PACKAGE,
 			serviceName: SERVICE,
 			handlers: {
-				getNote: async () => {
+				getItem: async () => {
 					throw new Error("not found");
 				},
-				createNote: async (request: unknown) => noteOf(request),
+				createItem: async (request: unknown) => itemOf(request),
 			},
 		});
 
@@ -117,7 +117,7 @@ describe("grpcServerCreate + grpcClientCreate", () => {
 		});
 
 		await expect(
-			client.call("getNote", { id: "missing" }, noteDecode),
+			client.call("getItem", { id: "missing" }, itemDecode),
 		).rejects.toMatchObject({ details: "not found" });
 	});
 
@@ -127,8 +127,8 @@ describe("grpcServerCreate + grpcClientCreate", () => {
 			packageName: PACKAGE,
 			serviceName: SERVICE,
 			handlers: {
-				getNote: async (request: unknown) => noteOf(request),
-				createNote: async (request: unknown) => noteOf(request),
+				getItem: async (request: unknown) => itemOf(request),
+				createItem: async (request: unknown) => itemOf(request),
 			},
 		});
 		client = await grpcClientCreate({
@@ -139,7 +139,7 @@ describe("grpcServerCreate + grpcClientCreate", () => {
 		});
 
 		await expect(
-			client.call("deleteNote", { id: "note-1" }, noteDecode),
+			client.call("deleteItem", { id: "item-1" }, itemDecode),
 		).rejects.toThrow(GRPC_CALL_ERROR.METHOD_MISSING);
 	});
 

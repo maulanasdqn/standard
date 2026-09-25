@@ -44,7 +44,8 @@ so a forgotten step 1 stops CI rather than shipping.
 |---|---|
 | `@app/schemas` | `src/<module>/`: the zod input and output schemas, exported from the package index. Both the router and the web import these, so the wire shape has one definition |
 | `@app/messages` | `src/<module>/message.ts`: a `SCREAMING_SNAKE` const object for every user-facing string |
-| `@app/permissions` | `permissions.ts` for the keys, `roles.ts` to grant them, `labels.ts` for the text the role editor shows |
+| `@app/permissions` | `permissions.ts` for the keys, `roles.ts` to grant them to a fixed role. A key is `<resource>:<action>` in this app and `<app>:<resource>:<action>` in any other app of the workspace. The text the role editor shows lives in `@app/messages`, in `permission/labels.ts` |
+| `@app/activity` | `actions.ts` for the resource type and the action keys. An action is `<resource>.<action>` in this app and `<app>.<resource>.<action>` in any other app. Its label lives in `@app/messages`, in `activity/message.ts` |
 
 ## Database
 

@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package sample;
+
+service ItemService {
+  rpc GetItem (GetItemRequest) returns (Item);
+  rpc CreateItem (CreateItemRequest) returns (Item);
+}
+
+message GetItemRequest {
+  string id = 1;
+}
+
+message CreateItemRequest {
+  string title = 1;
+  string content = 2;
+}
+
+message Item {
+  string id = 1;
+  string title = 2;
+  string content = 3;
+}
