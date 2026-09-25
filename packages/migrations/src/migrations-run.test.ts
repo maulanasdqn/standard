@@ -47,8 +47,26 @@ describe("migrationsRun", () => {
 
 		expect(migrate).toHaveBeenCalledWith(expect.anything(), {
 			migrationsFolder: OPTIONS.migrationsFolder,
+			migrationsSchema: undefined,
+			migrationsTable: undefined,
 		});
 		expect(poolEnd).toHaveBeenCalledTimes(1);
+	});
+
+	it("keeps the journal in the schema and table it is given, so two apps on one database never share one", async (): Promise<void> => {
+		migrate.mockResolvedValue(undefined);
+
+		await migrationsRun({
+			...OPTIONS,
+			migrationsSchema: "reporting",
+			migrationsTable: "journal",
+		});
+
+		expect(migrate).toHaveBeenCalledWith(expect.anything(), {
+			migrationsFolder: OPTIONS.migrationsFolder,
+			migrationsSchema: "reporting",
+			migrationsTable: "journal",
+		});
 	});
 
 	it("closes the pool and rethrows when a migration fails", async (): Promise<void> => {
