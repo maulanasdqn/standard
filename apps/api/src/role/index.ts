@@ -5,13 +5,7 @@ import { permissionsResolve } from "#/role/domain/permissions-resolve.ts";
 import { customRoleRepoLayer } from "#/role/infrastructure/custom-role-repository.ts";
 import { roleRouterBuild } from "#/role/presentation/role-router.ts";
 
-export {
-	CustomRoleRepo,
-	customRoleRepoLayer,
-	permissionsResolve,
-	roleEnsure,
-	roleExists,
-};
+export { CustomRoleRepo, permissionsResolve, roleEnsure, roleExists };
 export type { TCustomRoleRepoId };
 
 export const roleModule: {

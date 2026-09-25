@@ -18,7 +18,7 @@ import {
 import { offsetFor, orderFor } from "#/shared/pagination.ts";
 import { ACTIVITY_SORT, type TActivitySort } from "@app/schemas";
 import type { TDb } from "#/platform/db/client.ts";
-import { DbService, dbServiceLayer } from "#/platform/db/db-service.ts";
+import { DbService } from "#/platform/db/db-service.ts";
 import { dbActive } from "#/platform/db/transaction.ts";
 import { activityMetadataDecode } from "#/activity/infrastructure/activity-metadata.ts";
 import { activityLog } from "#/platform/db/tables/activity.ts";
@@ -66,7 +66,7 @@ export const activityRecorderLayer = Layer.effect(
 
 		return ActivityRecorder.of({ insert });
 	}),
-).pipe(Layer.provide(dbServiceLayer));
+);
 
 export const activityRepoLayer = Layer.effect(
 	ActivityRepo,
@@ -126,7 +126,7 @@ export const activityRepoLayer = Layer.effect(
 
 		return ActivityRepo.of({ list });
 	}),
-).pipe(Layer.provide(dbServiceLayer));
+);
 
 export const activityPrunerLayer = Layer.effect(
 	ActivityPruner,
@@ -157,4 +157,4 @@ export const activityPrunerLayer = Layer.effect(
 
 		return ActivityPruner.of({ deleteOlderThan });
 	}),
-).pipe(Layer.provide(dbServiceLayer));
+);
