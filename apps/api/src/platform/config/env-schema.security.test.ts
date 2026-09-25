@@ -32,6 +32,40 @@ describe("envSchema security", () => {
 		).toBe(false);
 	});
 
+	it("rejects a trusted origin that is not HTTPS in production", () => {
+		expect(
+			envSchema.safeParse({
+				...ENV,
+				NODE_ENV: "production",
+				METRICS_TOKEN,
+				AUTH_TRUSTED_ORIGINS: "https://*.standard.test, http://other.test",
+			}).success,
+		).toBe(false);
+	});
+
+	it("accepts HTTPS trusted origins with wildcards in production", () => {
+		const parsed = envSchema.safeParse({
+			...ENV,
+			NODE_ENV: "production",
+			METRICS_TOKEN,
+			AUTH_TRUSTED_ORIGINS: "https://*.standard.test, https://other.test",
+		});
+
+		expect(parsed.success).toBe(true);
+		expect(parsed.data?.AUTH_TRUSTED_ORIGINS).toEqual([
+			"https://*.standard.test",
+			"https://other.test",
+		]);
+	});
+
+	it("keeps JWT issuing and the shared cookie domain off by default", () => {
+		const parsed = envSchema.safeParse(ENV);
+
+		expect(parsed.data?.AUTH_JWT_ENABLED).toBe(false);
+		expect(parsed.data?.AUTH_COOKIE_DOMAIN).toBeUndefined();
+		expect(parsed.data?.AUTH_TRUSTED_ORIGINS).toEqual([]);
+	});
+
 	it("rejects an HTTP auth URL in production", () => {
 		expect(
 			envSchema.safeParse({
