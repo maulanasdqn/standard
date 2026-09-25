@@ -2,7 +2,9 @@
 
 ## The artifact
 
-One image builds both processes. `Dockerfile` installs the workspace from the lockfile, builds the SPA, and starts the API with `WEB_DIST_PATH` pointed at the built assets so a single container serves both.
+One image builds both processes. `Dockerfile` installs the workspace from the lockfile and builds the SPA in a build stage, then assembles the runtime from three things only: a production-only install of the API and the workspace packages it depends on, the API and package sources, and the built web assets served through `WEB_DIST_PATH`. No dev dependency, compiler or test runner crosses over, and `.dockerignore` keeps every `.env` file out of the build context. The production install also excludes optional dependencies, because `better-auth` and `drizzle-orm` declare their integrations (`drizzle-kit`, `vitest`, `react`, `pglite`) as optional peers that a plain production install would otherwise carry into the image. Node runs the TypeScript sources directly, so there is no build step for the API and no loader in front of it: the container command is `node src/main.ts`, which also means a stop signal reaches the process itself and the graceful shutdown runs. The one dependency that stood in the way is `@mobily/ts-belt`, whose ESM entry imports its modules as bare directories, which bundlers tolerate and Node's resolver rejects; `patches/` carries the nine-line patch that spells out the `index.js` files, and pnpm applies it on every install.
+
+The image declares a `HEALTHCHECK` against `GET /healthz`, the liveness probe. The worker runs the same image without an HTTP listener, so `docker-compose.staging.yml` disables the check for that service and points the API's own check at `/ready` instead.
 
 ```sh
 make image        # build, tagged with the root package.json version and latest
@@ -24,7 +26,7 @@ The workflow is keyed on the tag rather than on the diff, so a version that alre
 Migrations are forward-only and run as a separate step, never on process start, so that two API replicas coming up at once cannot race each other.
 
 1. Build and push the image for the commit
-2. Run `pnpm --filter @app/api migrate` once, as a job, against the target database
+2. Run the migrations once, as a job, against the target database: `node src/scripts/migrate.ts` inside the image, which is what `make staging-migrate` does
 3. Roll the API replicas
 4. Roll the worker replicas
 
