@@ -1,4 +1,4 @@
-import { betterAuth } from "better-auth";
+import { type Auth, type BetterAuthOptions, betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import type { TActivityRepo } from "@app/activity";
 import {
@@ -20,8 +20,18 @@ type TCreateAuthOptions = {
 	mailer: TMailer;
 };
 
-export const authCreate = (deps: TCreateAuthOptions) =>
-	betterAuth({
+type TAuthOptions = Omit<BetterAuthOptions, "user"> & {
+	user: {
+		additionalFields: {
+			role: { type: "string"; defaultValue: string; input: false };
+		};
+	};
+};
+
+export type TAuth = Auth<TAuthOptions>;
+
+export const authCreate = (deps: TCreateAuthOptions): TAuth =>
+	betterAuth<TAuthOptions>({
 		baseURL: env.BETTER_AUTH_URL,
 		secret: env.BETTER_AUTH_SECRET,
 		trustedOrigins: [env.WEB_ORIGIN],
@@ -46,7 +56,7 @@ export const authCreate = (deps: TCreateAuthOptions) =>
 		databaseHooks: {
 			session: {
 				create: {
-					after: async (session) => {
+					after: async (session): Promise<void> => {
 						await deps.activityRepo.insert({
 							actorId: session.userId,
 							action: ACTIVITY_ACTION.SESSION_CREATE,
@@ -58,5 +68,3 @@ export const authCreate = (deps: TCreateAuthOptions) =>
 			},
 		},
 	});
-
-export type TAuth = ReturnType<typeof authCreate>;
