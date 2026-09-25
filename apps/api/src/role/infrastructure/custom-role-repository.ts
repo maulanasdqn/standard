@@ -1,14 +1,17 @@
+import { ROLE_MESSAGE } from "@app/messages";
 import { A, D } from "@mobily/ts-belt";
 import { count, eq } from "drizzle-orm";
 import { Effect, Layer } from "effect";
-import { EDatabase } from "#/shared/errors.ts";
+import { match, P } from "ts-pattern";
+import { EConflict, EDatabase } from "#/shared/errors.ts";
 import {
 	CustomRoleRepo,
 	type TCustomRoleRepo,
 	type TCustomRoleRow,
 } from "#/role/domain/custom-role.ts";
-import { DbService, dbServiceLayer } from "#/platform/db/db-service.ts";
+import { DbService } from "#/platform/db/db-service.ts";
 import { dbActive } from "#/platform/db/transaction.ts";
+import { isUniqueViolation } from "#/platform/db/unique-violation.ts";
 import { customRole } from "#/platform/db/tables/custom-role.ts";
 import { user } from "#/platform/db/tables/auth.ts";
 
@@ -38,14 +41,18 @@ export const customRoleRepoLayer = Layer.effect(
 				catch: (cause) => new EDatabase({ cause }),
 			});
 
-		const findByKey: TCustomRoleRepo["findByKey"] = (key) =>
+		const findByKey: TCustomRoleRepo["findByKey"] = (key, lock) =>
 			Effect.tryPromise({
 				try: async () => {
-					const [row] = await dbActive(db)
+					const query = dbActive(db)
 						.select()
 						.from(customRole)
 						.where(eq(customRole.key, key))
-						.limit(1);
+						.limit(1)
+						.$dynamic();
+					const [row] = await match(lock)
+						.with(P.nullish, () => query)
+						.otherwise((strength) => query.for(strength));
 					return row ?? null;
 				},
 				catch: (cause) => new EDatabase({ cause }),
@@ -69,7 +76,10 @@ export const customRoleRepoLayer = Layer.effect(
 						.returning();
 					return row as TCustomRoleRow;
 				},
-				catch: (cause) => new EDatabase({ cause }),
+				catch: (cause) =>
+					isUniqueViolation(cause)
+						? new EConflict({ message: ROLE_MESSAGE.KEY_TAKEN })
+						: new EDatabase({ cause }),
 			});
 
 		const update: TCustomRoleRepo["update"] = ({ key, ...patch }) =>
@@ -106,4 +116,4 @@ export const customRoleRepoLayer = Layer.effect(
 			remove,
 		});
 	}),
-).pipe(Layer.provide(dbServiceLayer));
+);

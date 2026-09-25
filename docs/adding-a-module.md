@@ -16,7 +16,7 @@ module that is written but not registered compiles and does nothing.
 | `application/to-<module>-dto.ts` | Row to wire shape, so the router never maps by hand |
 | `infrastructure/<module>-repository.ts` | The Drizzle implementation and its `Layer` |
 | `presentation/<module>-router.ts` | The oRPC router, `permissionRequire(...)` on every procedure |
-| `index.ts` | The only surface other code may import: `{ layer, routerBuild }` |
+| `index.ts` | The only surface other code may import: `{ layer, routerBuild }`. Its type is written out on purpose: an inferred object would pull the router types in, and those reach back to the composition root through the request context, which is a cycle TypeScript refuses |
 
 Use cases carry their own `*.test.ts` next to them. The repository layer is exercised by
 `apps/api-e2e` against real infrastructure rather than mocked.
@@ -28,7 +28,9 @@ Four edits, none of them optional:
 1. `apps/api/scripts/architecture-rules.ts`: add the module to `MODULE`, and give it an entry in
    `MODULE_MAY_IMPORT`. An empty array is the right default; a module that imports nothing is a
    module that can be deleted on its own
-2. `apps/api/src/bootstrap/compose.ts`: add `<module>Module.layer` to `Layer.mergeAll`
+2. `apps/api/src/bootstrap/compose.ts`: add `<module>Module.layer` to the composition. A module that
+   needs only the platform joins the merged module layer; one that needs another module's service
+   is provided with it there, in the composition root, never inside the module
 3. `apps/api/src/bootstrap/router.ts`: add `<module>: <module>Module.routerBuild()`
 4. `apps/api/src/shared/repo-tags.ts`: add the repository tag id. It is a constant, never a literal
    at the `Context.Service` call

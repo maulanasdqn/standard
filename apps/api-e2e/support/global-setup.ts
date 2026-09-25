@@ -24,7 +24,9 @@ const waitForHealth = async (timeoutMs = 15_000): Promise<void> => {
 		} catch {}
 		await new Promise((resolve) => setTimeout(resolve, 300));
 	}
-	throw new Error(`API did not become healthy at ${HEALTH_URL} within ${timeoutMs}ms`);
+	throw new Error(
+		`API did not become healthy at ${HEALTH_URL} within ${timeoutMs}ms`,
+	);
 };
 
 const env = apiEnv({});
@@ -48,12 +50,16 @@ export const setup = async (): Promise<void> => {
 		stdio: "inherit",
 	});
 
-	apiProcess = spawn("pnpm", ["--filter", "@app/api", "exec", "node", "src/main.ts"], {
-		cwd: new URL("../../..", import.meta.url).pathname,
-		env,
-		stdio: "inherit",
-		detached: true,
-	});
+	apiProcess = spawn(
+		"pnpm",
+		["--filter", "@app/api", "exec", "node", "src/main.ts"],
+		{
+			cwd: new URL("../../..", import.meta.url).pathname,
+			env,
+			stdio: "inherit",
+			detached: true,
+		},
+	);
 
 	await waitForHealth();
 };

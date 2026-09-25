@@ -8,7 +8,7 @@ const meRouter = {
 		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.ME })
 		.output(meSchema)
 		.handler(({ context }) => ({
-			user: context.session!.user,
+			user: context.session.user,
 			permissions: [...context.permissions],
 		})),
 };

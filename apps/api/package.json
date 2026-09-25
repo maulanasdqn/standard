@@ -58,7 +58,6 @@
 		"dotenv": "^17.3.1",
 		"drizzle-kit": "catalog:",
 		"typescript": "catalog:",
-		"vite-tsconfig-paths": "catalog:",
 		"vitest": "catalog:"
 	}
 }

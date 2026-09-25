@@ -7,7 +7,7 @@ import { NoteRepo, type TNoteRepo, type TNoteRow } from "#/note/domain/note.ts";
 import { offsetFor, orderFor } from "#/shared/pagination.ts";
 import { NOTE_SORT, type TNoteSort } from "@app/schemas";
 import type { AnyPgColumn } from "drizzle-orm/pg-core";
-import { DbService, dbServiceLayer } from "#/platform/db/db-service.ts";
+import { DbService } from "#/platform/db/db-service.ts";
 import { dbActive } from "#/platform/db/transaction.ts";
 import { ownershipWhere } from "#/platform/db/ownership.ts";
 import { containsWhere } from "#/platform/db/search.ts";
@@ -127,4 +127,4 @@ export const noteRepoLayer = Layer.effect(
 			remove,
 		});
 	}),
-).pipe(Layer.provide(dbServiceLayer));
+);
