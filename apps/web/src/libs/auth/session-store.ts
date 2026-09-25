@@ -1,6 +1,5 @@
 import type { TMe } from "@app/schemas";
 import { Store } from "@tanstack/store";
-import { permissionsSync } from "#/libs/auth/permissions.ts";
 import {
 	SESSION_REACH,
 	type TSessionResolution,
@@ -15,7 +14,6 @@ export const sessionStore = new Store<TSessionResolution>(SESSION_UNRESOLVED);
 
 export const sessionResolutionSet = (resolution: TSessionResolution): void => {
 	sessionStore.setState(() => resolution);
-	permissionsSync(resolution.session);
 };
 
 export const sessionSet = (me: TMe | null): void =>

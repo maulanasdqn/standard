@@ -10,6 +10,7 @@ import { sessionStore } from "#/libs/auth/session-store.ts";
 import { queryClient } from "#/libs/tanstack-query/index.ts";
 import { RouteErrorScreen } from "#/routes/_components/route-error-screen.tsx";
 import { RoutePendingScreen } from "#/routes/_components/route-pending-screen.tsx";
+import { AppPermissions } from "#/routes/_components/app-permissions.tsx";
 import { AppToaster } from "#/routes/_components/app-toaster.tsx";
 import { routeTree } from "./routeTree.gen.ts";
 import "./styles.css";
@@ -62,7 +63,9 @@ const bootstrap = async (): Promise<void> => {
 			createRoot(root).render(
 				<StrictMode>
 					<QueryClientProvider client={queryClient}>
-						<RouterProvider router={router} />
+						<AppPermissions>
+							<RouterProvider router={router} />
+						</AppPermissions>
 						<AppToaster />
 					</QueryClientProvider>
 				</StrictMode>,
