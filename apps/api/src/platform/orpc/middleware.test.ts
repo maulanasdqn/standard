@@ -1,11 +1,11 @@
 import { AUTH_MESSAGE } from "@app/messages";
 import { PERMISSION, type TPermission } from "@app/permissions";
-import { type ORPCError, call } from "@orpc/server";
+import { type ORPCError, call, os } from "@orpc/server";
 import { describe, expect, it } from "vitest";
 import type { TORPCContext } from "#/platform/orpc/context.ts";
 import {
 	permissionRequire,
-	protectedProcedure,
+	sessionRequired,
 } from "#/platform/orpc/middleware.ts";
 import {
 	SESSION_STATE,
@@ -21,6 +21,9 @@ const SESSION: TSession = {
 const HTTP_UNAUTHORIZED = 401;
 const HTTP_FORBIDDEN = 403;
 const HTTP_SERVICE_UNAVAILABLE = 503;
+
+const base = os.$context<TORPCContext>();
+const protectedProcedure = base.use(sessionRequired);
 
 const contextOf = (
 	sessionState: TSessionState,
@@ -95,7 +98,9 @@ describe("protectedProcedure", () => {
 });
 
 describe("permissionRequire", () => {
-	const guarded = permissionRequire(PERMISSION.NOTE_WRITE).handler(() => "ok");
+	const guarded = base
+		.use(permissionRequire(PERMISSION.NOTE_WRITE))
+		.handler(() => "ok");
 
 	const contextGranting = (permissions: readonly TPermission[]): TORPCContext =>
 		({
@@ -127,10 +132,9 @@ describe("permissionRequire", () => {
 	});
 
 	it("requires every permission listed, not just one of them", async (): Promise<void> => {
-		const both = permissionRequire(
-			PERMISSION.NOTE_READ,
-			PERMISSION.NOTE_WRITE,
-		).handler(() => "ok");
+		const both = base
+			.use(permissionRequire(PERMISSION.NOTE_READ, PERMISSION.NOTE_WRITE))
+			.handler(() => "ok");
 
 		expect(await statusOf(both, contextGranting([PERMISSION.NOTE_READ]))).toBe(
 			HTTP_FORBIDDEN,

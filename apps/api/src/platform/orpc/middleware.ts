@@ -8,7 +8,7 @@ import { toORPCError } from "#/platform/orpc/error-mapping.ts";
 
 const base = os.$context<TORPCContext>();
 
-export const publicProcedure = base.use(async ({ next }) => {
+export const errorMapped = base.middleware(async ({ next }) => {
 	try {
 		return await next();
 	} catch (error) {
@@ -16,37 +16,32 @@ export const publicProcedure = base.use(async ({ next }) => {
 	}
 });
 
-export const protectedProcedure = publicProcedure.use(
-	async ({ context, next }) =>
-		match({ state: context.sessionState, session: context.session })
-			.with({ state: SESSION_STATE.UNAVAILABLE }, () => {
-				throw new ORPCError("SERVICE_UNAVAILABLE", {
-					message: AUTH_MESSAGE.SESSION_UNAVAILABLE,
-				});
-			})
-			.with({ session: P.nullish }, () => {
-				throw new ORPCError("UNAUTHORIZED", {
-					message: AUTH_MESSAGE.UNAUTHORIZED,
-				});
-			})
-			.with({ session: P.nonNullable }, ({ session }) =>
-				next({ context: { session } }),
-			)
-			.exhaustive(),
+export const sessionRequired = base.middleware(async ({ context, next }) =>
+	match({ state: context.sessionState, session: context.session })
+		.with({ state: SESSION_STATE.UNAVAILABLE }, () => {
+			throw new ORPCError("SERVICE_UNAVAILABLE", {
+				message: AUTH_MESSAGE.SESSION_UNAVAILABLE,
+			});
+		})
+		.with({ session: P.nullish }, () => {
+			throw new ORPCError("UNAUTHORIZED", {
+				message: AUTH_MESSAGE.UNAUTHORIZED,
+			});
+		})
+		.with({ session: P.nonNullable }, ({ session }) =>
+			next({ context: { session } }),
+		)
+		.exhaustive(),
 );
 
-type TProtectedProcedure = typeof protectedProcedure;
+type TSessionGuard = typeof sessionRequired;
 
-export const permissionRequire = (
-	...required: TPermission[]
-): TProtectedProcedure => {
-	const guarded = protectedProcedure.use(async ({ context, next }) =>
-		match(canAll(context.permissions, required))
-			.with(false, () => {
-				throw new ORPCError("FORBIDDEN", { message: AUTH_MESSAGE.FORBIDDEN });
-			})
-			.otherwise(() => next()),
+export const permissionRequire = (...required: TPermission[]): TSessionGuard =>
+	sessionRequired.concat<Record<never, never>, unknown>(
+		async ({ context, next }) =>
+			match(canAll(context.permissions, required))
+				.with(false, () => {
+					throw new ORPCError("FORBIDDEN", { message: AUTH_MESSAGE.FORBIDDEN });
+				})
+				.otherwise(() => next()),
 	);
-
-	return guarded;
-};
