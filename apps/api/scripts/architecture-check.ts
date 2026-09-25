@@ -1,18 +1,27 @@
-import { A, D } from "@mobily/ts-belt";
+import { A } from "@mobily/ts-belt";
 import { match, P } from "ts-pattern";
+import {
+	isModuleSurface,
+	LAYERS,
+	nameOf,
+	PLACE_KIND,
+	placeOf,
+	type TAreaPlace,
+	type TPlace,
+} from "./architecture-places.ts";
 import {
 	AREA,
 	COMPOSITION_ROOT,
-	ENTRYPOINT,
-	LAYER,
 	LAYER_MAY_IMPORT,
-	MODULE,
 	MODULE_MAY_IMPORT,
 	MODULE_SURFACE,
-	type TArea,
-	type TLayer,
-	type TModule,
 } from "./architecture-rules.ts";
+import {
+	resolveSpecifier,
+	specifiersOf,
+	TARGET_KIND,
+	uncheckedSpecifiersOf,
+} from "./architecture-specifiers.ts";
 
 export type TViolation = {
 	file: string;
@@ -25,123 +34,19 @@ export type TViolation = {
 
 type TViolationSite = Pick<TViolation, "file" | "line" | "specifier">;
 
-export const PLACE_KIND = {
-	MODULE: "module",
-	AREA: "area",
-	ENTRYPOINT: "entrypoint",
-	UNKNOWN: "unknown",
-} as const;
-
 export const RULE = {
 	UNCLASSIFIED_PATH: "unclassified-path",
 	MODULE_LAYER: "module-layer",
 	LAYER_BOUNDARY: "layer-boundary",
 	MODULE_ISOLATION: "module-isolation",
 	AREA_BOUNDARY: "area-boundary",
-	RELATIVE_ESCAPE: "relative-escape",
+	PATH_ESCAPE: "path-escape",
+	UNCHECKED_SPECIFIER: "unchecked-specifier",
 } as const;
 
-type TModulePlace = {
-	kind: typeof PLACE_KIND.MODULE;
-	module: TModule;
-	layer: TLayer | null;
-};
-
-type TAreaPlace = {
-	kind: typeof PLACE_KIND.AREA;
-	area: TArea;
-};
-
-type TEntrypointPlace = {
-	kind: typeof PLACE_KIND.ENTRYPOINT;
-	path: string;
-};
-
-type TUnknownPlace = {
-	kind: typeof PLACE_KIND.UNKNOWN;
-	name: string;
-};
-
-export type TPlace =
-	| TModulePlace
-	| TAreaPlace
-	| TEntrypointPlace
-	| TUnknownPlace;
-
-const MODULES: readonly string[] = D.values(MODULE);
-const AREAS: readonly string[] = D.values(AREA);
-const LAYERS: readonly string[] = D.values(LAYER);
-
 const FIRST_LINE = 1;
-const MODULE_ROOT_DEPTH = 2;
 
-const SPECIFIER_PATTERNS: readonly RegExp[] = [
-	/\bfrom\s*["']#\/([^"']+)["']/g,
-	/\bimport\s*\(\s*["']#\/([^"']+)["']/g,
-	/\bimport\s+["']#\/([^"']+)["']/g,
-	/\brequire\s*\(\s*["']#\/([^"']+)["']/g,
-];
-
-export type TImportSite = { line: number; target: string };
-
-const isModule = (value: string): value is TModule =>
-	A.includes(MODULES, value);
-
-const isArea = (value: string): value is TArea => A.includes(AREAS, value);
-
-const isLayer = (value: string): value is TLayer => A.includes(LAYERS, value);
-
-export const importsOf = (source: string): readonly TImportSite[] =>
-	A.flat(
-		A.mapWithIndex(source.split("\n"), (index, line) =>
-			A.flat(
-				A.map(SPECIFIER_PATTERNS, (pattern) =>
-					A.filterMap([...line.matchAll(new RegExp(pattern))], (m) =>
-						m[1] === undefined ? undefined : { line: index + 1, target: m[1] },
-					),
-				),
-			),
-		),
-	);
-
-const layerOf = (segment: string): TLayer | null =>
-	isLayer(segment) ? segment : null;
-
-export const placeOf = (path: string): TPlace => {
-	const segments = path.split("/");
-	const head = segments[0] ?? "";
-
-	return match(head)
-		.when(
-			(): boolean => A.includes(ENTRYPOINT, path),
-			(): TPlace => ({ kind: PLACE_KIND.ENTRYPOINT, path }),
-		)
-		.when(
-			isModule,
-			(module): TPlace => ({
-				kind: PLACE_KIND.MODULE,
-				module,
-				layer: layerOf(segments[1] ?? ""),
-			}),
-		)
-		.when(isArea, (area): TPlace => ({ kind: PLACE_KIND.AREA, area }))
-		.otherwise((name): TPlace => ({ kind: PLACE_KIND.UNKNOWN, name }));
-};
-
-const nameOf = (place: TPlace): string =>
-	match(place)
-		.with({ kind: PLACE_KIND.MODULE }, (found): string => found.module)
-		.with({ kind: PLACE_KIND.AREA }, (found): string => found.area)
-		.with({ kind: PLACE_KIND.ENTRYPOINT }, (found): string => found.path)
-		.with({ kind: PLACE_KIND.UNKNOWN }, (found): string => found.name)
-		.exhaustive();
-
-const isModuleSurface = (file: string): boolean => {
-	const segments = file.split("/");
-	return (
-		segments.length === MODULE_ROOT_DEPTH && segments[1] === MODULE_SURFACE
-	);
-};
+const rootOf = (file: string): string => file.split("/")[0] ?? file;
 
 const unclassifiedViolation = (
 	from: TPlace,
@@ -176,6 +81,22 @@ const surfaceViolation = (from: TPlace, file: string): TViolation | undefined =>
 							specifier: file,
 							remedy: `every file in "${found.module}" belongs to one of ${A.join(LAYERS, ", ")}; only "${found.module}/${MODULE_SURFACE}" may sit at the module root`,
 						},
+		)
+		.otherwise((): undefined => undefined);
+
+const targetViolation = (
+	to: TPlace,
+	site: TViolationSite,
+): TViolation | undefined =>
+	match(to)
+		.with(
+			{ kind: PLACE_KIND.UNKNOWN },
+			(found): TViolation => ({
+				...site,
+				rule: RULE.UNCLASSIFIED_PATH,
+				edge: found.name,
+				remedy: `the import lands in "${found.name}", which is neither a module nor an area; fix the path or add it to scripts/architecture-rules.ts`,
+			}),
 		)
 		.otherwise((): undefined => undefined);
 
@@ -263,22 +184,39 @@ const areaViolation = (
 		)
 		.otherwise((): undefined => undefined);
 
-const escapeViolations = (
+const escapeViolation = (file: string, site: TViolationSite): TViolation => ({
+	...site,
+	rule: RULE.PATH_ESCAPE,
+	edge: rootOf(file),
+	remedy: `the specifier resolves outside the file's own directory; use an absolute "#/" specifier so the boundary is checkable`,
+});
+
+const uncheckedViolation = (
 	file: string,
-	source: string,
-): readonly TViolation[] =>
-	A.filterMap(source.split("\n"), (line, index) =>
-		line.includes('from "../') || line.includes("from '../")
-			? {
-					file,
-					line: index + 1,
-					rule: RULE.RELATIVE_ESCAPE,
-					edge: file.split("/")[0] ?? file,
-					specifier: line.trim(),
-					remedy: 'use an absolute "#/" specifier so the boundary is checkable',
-				}
-			: undefined,
+	site: TViolationSite,
+): TViolation => ({
+	...site,
+	rule: RULE.UNCHECKED_SPECIFIER,
+	edge: rootOf(file),
+	remedy:
+		"a dynamic import or require needs a string literal specifier so the boundary is checkable",
+});
+
+const edgeViolation = (
+	from: TPlace,
+	target: string,
+	file: string,
+	site: TViolationSite,
+): TViolation | undefined => {
+	const to = placeOf(target);
+
+	return (
+		targetViolation(to, site) ??
+		layerViolation(from, to, site) ??
+		moduleViolation(from, to, target, site) ??
+		areaViolation(from, to, file, site)
 	);
+};
 
 export const violationsFor = (
 	file: string,
@@ -286,23 +224,33 @@ export const violationsFor = (
 ): readonly TViolation[] => {
 	const from = placeOf(file);
 
-	const edges = A.filterMap(importsOf(source), ({ line, target }) => {
-		const to = placeOf(target);
-		const site: TViolationSite = { file, line, specifier: `#/${target}` };
+	const edges = A.filterMap(specifiersOf(source), ({ line, specifier }) => {
+		const site: TViolationSite = { file, line, specifier };
 
-		return (
-			layerViolation(from, to, site) ??
-			moduleViolation(from, to, target, site) ??
-			areaViolation(from, to, file, site)
-		);
+		return match(resolveSpecifier(file, specifier))
+			.with({ kind: TARGET_KIND.PACKAGE }, (): undefined => undefined)
+			.with(
+				{ kind: TARGET_KIND.ESCAPE },
+				(): TViolation => escapeViolation(file, site),
+			)
+			.with({ kind: TARGET_KIND.INSIDE }, ({ path }): TViolation | undefined =>
+				edgeViolation(from, path, file, site),
+			)
+			.exhaustive();
 	});
+
+	const unchecked = A.map(
+		uncheckedSpecifiersOf(source),
+		({ line, specifier }) =>
+			uncheckedViolation(file, { file, line, specifier }),
+	);
 
 	return A.filterMap(
 		[
 			unclassifiedViolation(from, file),
 			surfaceViolation(from, file),
 			...edges,
-			...escapeViolations(file, source),
+			...unchecked,
 		],
 		(violation) => violation,
 	);
