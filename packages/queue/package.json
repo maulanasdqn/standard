@@ -12,12 +12,12 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
-		"amqplib": "^2.0.1",
-		"ts-pattern": "^5.9.0"
+		"amqplib": "catalog:",
+		"ts-pattern": "catalog:"
 	},
 	"devDependencies": {
-		"@types/node": "^26.5.1",
-		"typescript": "^7.0.2",
-		"vitest": "^5.0.0"
+		"@types/node": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
 	}
 }

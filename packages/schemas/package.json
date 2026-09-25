@@ -14,10 +14,10 @@
 		"@app/activity": "workspace:*",
 		"@app/messages": "workspace:*",
 		"@app/permissions": "workspace:*",
-		"zod": "^4.6.4"
+		"zod": "catalog:"
 	},
 	"devDependencies": {
-		"typescript": "^7.0.2",
-		"vitest": "^5.0.0"
+		"typescript": "catalog:",
+		"vitest": "catalog:"
 	}
 }
