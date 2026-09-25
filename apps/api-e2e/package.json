@@ -20,7 +20,6 @@
 		"drizzle-orm": "catalog:",
 		"pg": "catalog:",
 		"typescript": "catalog:",
-		"vite-tsconfig-paths": "catalog:",
 		"vitest": "catalog:"
 	},
 	"dependencies": {

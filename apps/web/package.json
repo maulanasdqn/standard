@@ -50,7 +50,6 @@
 		"jsdom": "catalog:",
 		"typescript": "catalog:",
 		"vite": "^8.3.0",
-		"vite-tsconfig-paths": "catalog:",
 		"vitest": "catalog:"
 	}
 }

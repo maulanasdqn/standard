@@ -2,7 +2,6 @@ import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { defineConfig, type Plugin } from "vite";
-import tsconfigPaths from "vite-tsconfig-paths";
 import { THEME, THEME_STORAGE_KEY } from "./src/libs/theme/theme.ts";
 
 const API_URL = process.env.VITE_API_URL ?? "http://localhost:3001";
@@ -21,8 +20,8 @@ const themeScriptPlugin = (): Plugin => ({
 });
 
 export default defineConfig({
+	resolve: { tsconfigPaths: true },
 	plugins: [
-		tsconfigPaths({ projects: ["./tsconfig.json"] }),
 		tailwindcss(),
 		tanstackRouter({
 			target: "react",

@@ -16,7 +16,7 @@ module that is written but not registered compiles and does nothing.
 | `application/to-<module>-dto.ts` | Row to wire shape, so the router never maps by hand |
 | `infrastructure/<module>-repository.ts` | The Drizzle implementation and its `Layer` |
 | `presentation/<module>-router.ts` | The oRPC router, `permissionRequire(...)` on every procedure |
-| `index.ts` | The only surface other code may import: `{ layer, routerBuild }` |
+| `index.ts` | The only surface other code may import: `{ layer, routerBuild }`. Its type is written out on purpose: an inferred object would pull the router types in, and those reach back to the composition root through the request context, which is a cycle TypeScript refuses |
 
 Use cases carry their own `*.test.ts` next to them. The repository layer is exercised by
 `apps/api-e2e` against real infrastructure rather than mocked.
