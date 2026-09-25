@@ -1,4 +1,3 @@
-import { permissionsStore } from "@app/components/guard/permissions-store";
 import { PERMISSION } from "@app/permissions";
 import type { TMe } from "@app/schemas";
 import { afterEach, describe, expect, it } from "vitest";
@@ -23,17 +22,16 @@ const ME: TMe = {
 describe("session store", () => {
 	afterEach(sessionClear);
 
-	it("records a reached session and hands its permissions to the guard", (): void => {
+	it("records a reached session", (): void => {
 		sessionSet(ME);
 
 		expect(sessionStore.state).toEqual({
 			reach: SESSION_REACH.REACHED,
 			session: ME,
 		});
-		expect(permissionsStore.state.permissions).toEqual([PERMISSION.NOTE_READ]);
 	});
 
-	it("clears the session and the guard's permissions together", (): void => {
+	it("clears the session while remembering the server was reached", (): void => {
 		sessionSet(ME);
 
 		sessionClear();
@@ -42,7 +40,6 @@ describe("session store", () => {
 			reach: SESSION_REACH.REACHED,
 			session: null,
 		});
-		expect(permissionsStore.state.permissions).toEqual([]);
 	});
 
 	it("keeps an unreachable server distinct from being signed out", (): void => {

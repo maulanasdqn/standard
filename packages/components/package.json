@@ -4,13 +4,13 @@
 	"private": true,
 	"type": "module",
 	"exports": {
-		"./ui/*": "./src/ui/*.tsx",
 		"./guard/guard": "./src/guard/guard.tsx",
-		"./guard/permissions-store": "./src/guard/permissions-store.ts",
+		"./guard/permissions-provider": "./src/guard/permissions-provider.tsx",
 		"./guard/use-permissions": "./src/guard/use-permissions.ts",
 		"./hooks/use-mobile": "./src/hooks/use-mobile.ts",
 		"./lib/utils": "./src/lib/utils.ts",
-		"./theme.css": "./theme.css"
+		"./theme.css": "./theme.css",
+		"./ui/*": "./src/ui/*.tsx"
 	},
 	"scripts": {
 		"build": "tsc --noEmit",
