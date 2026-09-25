@@ -15,7 +15,7 @@ module that is written but not registered compiles and does nothing.
 | `application/<module>-<use-case>.ts` | One `Effect.fn("name")(function* ...)` per use case, one file each |
 | `application/to-<module>-dto.ts` | Row to wire shape, so the router never maps by hand |
 | `infrastructure/<module>-repository.ts` | The Drizzle implementation and its `Layer` |
-| `presentation/<module>-router.ts` | The oRPC router, `permissionRequire(...)` on every procedure |
+| `presentation/<module>-router.ts` | The oRPC handlers for the module's contract, `permissionRequire(...)` on every procedure. Method, path, input and output come from `@app/contract`, so a procedure that is not declared there cannot be implemented here |
 | `index.ts` | The only surface other code may import: `{ layer, routerBuild }`. Its type is written out on purpose: an inferred object would pull the router types in, and those reach back to the composition root through the request context, which is a cycle TypeScript refuses |
 
 Use cases carry their own `*.test.ts` next to them. The repository layer is exercised by
@@ -23,26 +23,31 @@ Use cases carry their own `*.test.ts` next to them. The repository layer is exer
 
 ## Register it
 
-Four edits, none of them optional:
+Five edits, none of them optional:
 
-1. `apps/api/scripts/architecture-rules.ts`: add the module to `MODULE`, and give it an entry in
+1. `packages/contract/src/<module>.ts`: declare every procedure with `oc.route(...)`, its input and
+   its output, and add the object to `appContract` in `src/index.ts`. The web client is typed from
+   this, so a procedure missing here is invisible to the web
+2. `apps/api/scripts/architecture-rules.ts`: add the module to `MODULE`, and give it an entry in
    `MODULE_MAY_IMPORT`. An empty array is the right default; a module that imports nothing is a
    module that can be deleted on its own
-2. `apps/api/src/bootstrap/compose.ts`: add `<module>Module.layer` to the composition. A module that
+3. `apps/api/src/bootstrap/compose.ts`: add `<module>Module.layer` to the composition. A module that
    needs only the platform joins the merged module layer; one that needs another module's service
    is provided with it there, in the composition root, never inside the module
-3. `apps/api/src/bootstrap/router.ts`: add `<module>: <module>Module.routerBuild()`
-4. `apps/api/src/shared/repo-tags.ts`: add the repository tag id. It is a constant, never a literal
+4. `apps/api/src/bootstrap/router.ts`: add `<module>: <module>Module.routerBuild()`. The router is
+   built with `implementer.router(...)`, so a contract key with no implementation is a type error
+5. `apps/api/src/shared/repo-tags.ts`: add the repository tag id. It is a constant, never a literal
    at the `Context.Service` call
 
 `moon run api:arch` fails on a module that is missing from the rules, and `api:build` depends on it,
-so a forgotten step 1 stops CI rather than shipping.
+so a forgotten step 2 stops CI rather than shipping.
 
 ## Shared packages it touches
 
 | Package | What the module adds |
 |---|---|
-| `@app/schemas` | `src/<module>/`: the zod input and output schemas, exported from the package index. Both the router and the web import these, so the wire shape has one definition |
+| `@app/schemas` | `src/<module>/`: the zod input and output schemas, exported from the package index. Both the contract and the web import these, so the wire shape has one definition |
+| `@app/contract` | `src/<module>.ts`: the procedures, each with its method, path, input and output. The API implements it and the web client is typed against it, so neither side depends on the other |
 | `@app/messages` | `src/<module>/message.ts`: a `SCREAMING_SNAKE` const object for every user-facing string |
 | `@app/permissions` | `permissions.ts` for the keys, `roles.ts` to grant them, `labels.ts` for the text the role editor shows |
 

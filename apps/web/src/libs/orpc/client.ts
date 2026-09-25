@@ -1,4 +1,4 @@
-import type { TAppRouterClient } from "@app/api";
+import type { TAppRouterClient } from "@app/contract";
 import { D } from "@mobily/ts-belt";
 import { createORPCClient } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";

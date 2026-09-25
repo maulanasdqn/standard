@@ -9,7 +9,7 @@ import { A } from "@mobily/ts-belt";
 import type { Hono } from "hono";
 import { match } from "ts-pattern";
 import { HTTP_STATUS } from "#/platform/http/http-status.ts";
-import { ROUTE_PATH } from "#/platform/http/route-paths.ts";
+import { ROUTE_PATH } from "@app/contract";
 
 const REQUEST_EVENT = "request";
 
