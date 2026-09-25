@@ -3,7 +3,11 @@ import type { TUser, TUserUpdateInput } from "@app/schemas";
 import { Effect } from "effect";
 import { match, P } from "ts-pattern";
 import { roleEnsure } from "#/role/index.ts";
-import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
+import {
+	ACTIVITY_ACTION,
+	ACTIVITY_RESOURCE_TYPE,
+	type TActivityMetadata,
+} from "@app/activity";
 import {
 	type EBadRequest,
 	type EDatabase,
@@ -48,6 +52,9 @@ export const userUpdate = Effect.fn("userUpdate")(function* (
 		action: ACTIVITY_ACTION.USER_UPDATE,
 		resourceType: ACTIVITY_RESOURCE_TYPE.USER,
 		resourceId: updated.id,
+		metadata: match(input.role)
+			.with(P.nullish, (): undefined => undefined)
+			.otherwise((role): TActivityMetadata => ({ role })),
 	});
 
 	return toUserDto(updated);

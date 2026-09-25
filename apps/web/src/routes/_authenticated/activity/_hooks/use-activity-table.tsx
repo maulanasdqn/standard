@@ -1,4 +1,4 @@
-import { formatDateTime, NOT_SET, orDash } from "@app/format";
+import { formatDateTime, orDash } from "@app/format";
 import {
 	ACTIVITY_ACTION_LABEL,
 	ACTIVITY_ENTITY_LABEL,
@@ -13,10 +13,10 @@ import {
 } from "@app/schemas";
 import { createColumnHelper, type ReactTable } from "@tanstack/react-table";
 import type { ReactElement } from "react";
-import { match, P } from "ts-pattern";
 import type { TTableFeatures } from "#/libs/table/features.ts";
 import type { TListChange } from "#/libs/table/list-patch.ts";
 import { useServerTable } from "#/routes/_authenticated/_hooks/use-server-table.ts";
+import { metadataLabel } from "#/routes/_authenticated/activity/_utils/metadata-label.ts";
 
 const helper = createColumnHelper<TTableFeatures, TActivity>();
 
@@ -27,11 +27,6 @@ const SORT_KEYS: readonly TActivitySort[] = [
 	ACTIVITY_SORT.ACTION,
 	ACTIVITY_SORT.RESOURCE_TYPE,
 ];
-
-const metadataLabel = (metadata: unknown): string =>
-	match(metadata)
-		.with(P.nullish, () => NOT_SET)
-		.otherwise((value) => JSON.stringify(value));
 
 const columns = helper.columns([
 	helper.accessor("createdAt", {

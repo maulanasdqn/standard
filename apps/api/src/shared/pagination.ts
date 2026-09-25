@@ -8,7 +8,7 @@ import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { match } from "ts-pattern";
 
 export type TRowPage<TRow> = {
-	items: TRow[];
+	items: readonly TRow[];
 	total: number;
 };
 
