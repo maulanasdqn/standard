@@ -1,6 +1,6 @@
 import type * as React from "react";
 import type { FC, ReactElement } from "react";
-import { UI_MESSAGE } from "@app/messages";
+import { UI_MESSAGE } from "../lib/messages.ts";
 import { PanelLeftIcon } from "lucide-react";
 import { cn } from "../lib/utils.ts";
 import { Button } from "./button";

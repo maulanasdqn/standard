@@ -20,6 +20,10 @@ http, config) and `src/bootstrap/` (composition root). A module is reachable onl
 four layers, and `index.ts` is the only thing allowed to sit at the module root: a helper dropped
 next to it would answer to no layer rule at all.
 
+## Package layers
+
+Every project carries one moon tag, and `constraints.tagRelationships` in `.moon/workspace.yml` fixes the direction between them. `infra` (cache, queue, logger, metrics, tracing, migrations, mail, storage, format, grpc, version) depends on nothing else in the workspace. `identity` (permissions, activity, messages, schemas, components) may depend on `infra`. `app`, every directory under `apps/`, may depend on both. A package that needs user-facing copy keeps it in its own source rather than importing `@app/messages`, because that import would pull the identity vocabulary into infrastructure. The edges come from each `package.json`, so there is no `dependsOn` bookkeeping, and moon refuses to build the project graph when one points the wrong way: a violation fails the first `moon run` rather than waiting for review. A tag may always depend on itself, and a tag with an empty list is unconstrained, which is why `infra` lists itself.
+
 ## Keep the repository neutral
 
 This is a reusable boilerplate, so no client, company, partner, or vendor name belongs anywhere in it. That covers documentation, code and comments, string constants in `@app/messages`, test fixtures, branch names, commit messages, and pull request titles and descriptions. It covers abbreviations and initialisms too, because a short form in a commit subject is just as searchable as the full name.

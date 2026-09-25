@@ -1,4 +1,4 @@
-import { STORAGE_MESSAGE } from "@app/messages";
+import { STORAGE_MESSAGE } from "./storage-messages.ts";
 import { describe, expect, it } from "vitest";
 import {
 	STORAGE_CONTENT_TYPE,

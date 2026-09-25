@@ -1,5 +1,5 @@
-import { MAIL_MESSAGE } from "@app/messages";
 import { describe, expect, it, vi } from "vitest";
+import { MAIL_MESSAGE } from "./mail-messages.ts";
 import { MAIL_EVENT, MAIL_TEMPLATE, mailSendSafe } from "./mail-send.ts";
 import type { TMailMessage } from "./mailer.ts";
 
