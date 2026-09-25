@@ -43,7 +43,7 @@ describe("readiness under a dependency outage", () => {
 	it("stays live but refuses traffic, naming the dependency that is down", async (): Promise<void> => {
 		apiProcess = spawn(
 			"pnpm",
-			["--filter", "@app/api", "exec", "tsx", "src/main.ts"],
+			["--filter", "@app/api", "exec", "node", "src/main.ts"],
 			{
 				cwd: new URL("../../..", import.meta.url).pathname,
 				env: apiEnv({

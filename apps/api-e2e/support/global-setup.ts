@@ -48,7 +48,7 @@ export const setup = async (): Promise<void> => {
 		stdio: "inherit",
 	});
 
-	apiProcess = spawn("pnpm", ["--filter", "@app/api", "exec", "tsx", "src/main.ts"], {
+	apiProcess = spawn("pnpm", ["--filter", "@app/api", "exec", "node", "src/main.ts"], {
 		cwd: new URL("../../..", import.meta.url).pathname,
 		env,
 		stdio: "inherit",
