@@ -1,10 +1,5 @@
-import {
-	isPermission,
-	permissionsForRole,
-	ROLE_DESCRIPTION,
-	ROLE_LABEL,
-	type TRole,
-} from "@app/permissions";
+import { ROLE_DESCRIPTION, ROLE_LABEL } from "@app/messages";
+import { isPermission, permissionsForRole, type TRole } from "@app/permissions";
 import { roleSchema, type TRoleDto } from "@app/schemas";
 import { A, D } from "@mobily/ts-belt";
 import type {

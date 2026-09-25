@@ -1,5 +1,6 @@
 import { Guard } from "@app/components/guard/guard";
 import { checkRoutePermissions } from "#/libs/auth/route-guard.ts";
+import { ROLE_MESSAGE } from "@app/messages";
 import { PERMISSION } from "@app/permissions";
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
@@ -15,7 +16,7 @@ const RolesPage: FC = (): ReactElement => {
 
 	return (
 		<div className="flex flex-col gap-6">
-			<h1 className="text-xl font-semibold">Roles</h1>
+			<h1 className="text-xl font-semibold">{ROLE_MESSAGE.TITLE}</h1>
 			<Guard permissions={[PERMISSION.USER_MANAGE]}>
 				<RoleCreateForm />
 			</Guard>

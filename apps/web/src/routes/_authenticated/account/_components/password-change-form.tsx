@@ -16,11 +16,13 @@ export const PasswordChangeForm: FC = (): ReactElement => {
 		<Card>
 			<CardContent>
 				<form onSubmit={onSubmit} className="flex flex-col gap-4">
-					<h2 className="font-medium">Change password</h2>
+					<h2 className="font-medium">{AUTH_MESSAGE.PASSWORD_CHANGE_TITLE}</h2>
 					<form.Field name="currentPassword">
 						{(field) => (
 							<div className="flex flex-col gap-1">
-								<Label htmlFor={field.name}>Current password</Label>
+								<Label htmlFor={field.name}>
+									{AUTH_MESSAGE.FIELD_CURRENT_PASSWORD}
+								</Label>
 								<Input
 									id={field.name}
 									type="password"
@@ -37,7 +39,9 @@ export const PasswordChangeForm: FC = (): ReactElement => {
 					<form.Field name="newPassword">
 						{(field) => (
 							<div className="flex flex-col gap-1">
-								<Label htmlFor={field.name}>New password</Label>
+								<Label htmlFor={field.name}>
+									{AUTH_MESSAGE.FIELD_NEW_PASSWORD}
+								</Label>
 								<Input
 									id={field.name}
 									type="password"
@@ -54,7 +58,9 @@ export const PasswordChangeForm: FC = (): ReactElement => {
 					<form.Field name="confirmPassword">
 						{(field) => (
 							<div className="flex flex-col gap-1">
-								<Label htmlFor={field.name}>Confirm new password</Label>
+								<Label htmlFor={field.name}>
+									{AUTH_MESSAGE.FIELD_CONFIRM_PASSWORD}
+								</Label>
 								<Input
 									id={field.name}
 									type="password"

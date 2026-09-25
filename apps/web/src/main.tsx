@@ -1,5 +1,6 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
+import { APP_MESSAGE } from "@app/messages";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { match, P } from "ts-pattern";
@@ -55,7 +56,7 @@ const bootstrap = async (): Promise<void> => {
 
 	match(rootElement)
 		.with(P.nullish, () => {
-			throw new Error("Root element not found");
+			throw new Error(APP_MESSAGE.ROOT_MISSING);
 		})
 		.otherwise((root) => {
 			createRoot(root).render(

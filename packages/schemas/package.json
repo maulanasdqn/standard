@@ -12,6 +12,7 @@
 	},
 	"dependencies": {
 		"@app/activity": "workspace:*",
+		"@app/messages": "workspace:*",
 		"@app/permissions": "workspace:*",
 		"zod": "^4.6.4"
 	},

@@ -13,7 +13,7 @@ export const UserSearch: FC = (): ReactElement => {
 					<Input
 						type="search"
 						placeholder={USER_MESSAGE.SEARCH_PLACEHOLDER}
-						aria-label="Search users"
+						aria-label={USER_MESSAGE.SEARCH_LABEL}
 						value={field.state.value ?? ""}
 						onBlur={field.handleBlur}
 						onChange={(event) => field.handleChange(event.target.value)}

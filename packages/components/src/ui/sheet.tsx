@@ -1,3 +1,4 @@
+import { UI_MESSAGE } from "@app/messages";
 import type * as React from "react";
 import type { FC, ReactElement } from "react";
 import { cn } from "../lib/utils.ts";
@@ -84,7 +85,7 @@ const SheetContent: FC<TSheetContentProps> = (props): ReactElement => {
 				{showCloseButton && (
 					<SheetPrimitive.Close className="absolute top-4 right-4 rounded-md opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-secondary">
 						<XIcon className="size-4" />
-						<span className="sr-only">Close</span>
+						<span className="sr-only">{UI_MESSAGE.CLOSE}</span>
 					</SheetPrimitive.Close>
 				)}
 			</SheetPrimitive.Content>

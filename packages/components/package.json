@@ -17,6 +17,7 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
+		"@app/messages": "workspace:*",
 		"@app/permissions": "workspace:*",
 		"@tanstack/react-store": "^0.11.1",
 		"@tanstack/store": "^0.11.1",

@@ -1,3 +1,4 @@
+import { AUTH_MESSAGE } from "@app/messages";
 import type { TLoginInput } from "@app/schemas";
 import { expect, type Page } from "@playwright/test";
 
@@ -6,9 +7,11 @@ const submitLogin = async (
 	{ email, password }: TLoginInput,
 ): Promise<void> => {
 	await page.goto("/login");
-	await page.getByLabel("Email").pressSequentially(email);
-	await page.getByLabel("Password").pressSequentially(password);
-	await page.getByRole("button", { name: "Login" }).click();
+	await page.getByLabel(AUTH_MESSAGE.FIELD_EMAIL).pressSequentially(email);
+	await page
+		.getByLabel(AUTH_MESSAGE.FIELD_PASSWORD)
+		.pressSequentially(password);
+	await page.getByRole("button", { name: AUTH_MESSAGE.LOGIN_ACTION }).click();
 };
 
 export const signIn = async (

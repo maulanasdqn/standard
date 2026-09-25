@@ -26,18 +26,18 @@ export const RoleEditForm: FC<TRoleEditFormProps> = (props): ReactElement => {
 			<CardContent>
 				<form onSubmit={onSubmit} className="flex flex-col gap-4">
 					<p className="text-sm text-muted-foreground">
-						Key: <code>{props.role.key}</code> · {props.role.memberCount}{" "}
-						members
+						{ROLE_MESSAGE.KEY_PREFIX} <code>{props.role.key}</code> ·{" "}
+						{props.role.memberCount} {ROLE_MESSAGE.MEMBERS}
 					</p>
 					{isFixed && (
 						<p className="rounded-lg border border-border bg-muted p-3 text-sm text-muted-foreground">
-							Fixed roles are defined in code and can't be changed here.
+							{ROLE_MESSAGE.FIXED}
 						</p>
 					)}
 					<form.Field name="label">
 						{(field) => (
 							<div className="flex flex-col gap-1">
-								<Label htmlFor={field.name}>Label</Label>
+								<Label htmlFor={field.name}>{ROLE_MESSAGE.FIELD_LABEL}</Label>
 								<Input
 									id={field.name}
 									placeholder={ROLE_MESSAGE.LABEL_PLACEHOLDER}
@@ -53,7 +53,9 @@ export const RoleEditForm: FC<TRoleEditFormProps> = (props): ReactElement => {
 					<form.Field name="description">
 						{(field) => (
 							<div className="flex flex-col gap-1">
-								<Label htmlFor={field.name}>Description</Label>
+								<Label htmlFor={field.name}>
+									{ROLE_MESSAGE.FIELD_DESCRIPTION}
+								</Label>
 								<Textarea
 									id={field.name}
 									placeholder={ROLE_MESSAGE.DESCRIPTION_PLACEHOLDER}
@@ -69,7 +71,9 @@ export const RoleEditForm: FC<TRoleEditFormProps> = (props): ReactElement => {
 					<form.Field name="permissions">
 						{(field) => (
 							<div className="flex flex-col gap-2">
-								<span className="text-sm font-medium">Permissions</span>
+								<span className="text-sm font-medium">
+									{ROLE_MESSAGE.FIELD_PERMISSIONS}
+								</span>
 								<PermissionChecklist
 									value={field.state.value}
 									disabled={isFixed}
@@ -82,11 +86,11 @@ export const RoleEditForm: FC<TRoleEditFormProps> = (props): ReactElement => {
 					<div className="flex items-center gap-3">
 						{!isFixed && (
 							<Button type="submit" disabled={isPending}>
-								{isPending ? "Saving…" : "Save changes"}
+								{isPending ? ROLE_MESSAGE.SAVING : ROLE_MESSAGE.SAVE_CHANGES}
 							</Button>
 						)}
 						<Link to="/roles" className="text-sm hover:underline">
-							Back to roles
+							{ROLE_MESSAGE.BACK_TO_ROLES}
 						</Link>
 					</div>
 				</form>

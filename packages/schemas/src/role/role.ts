@@ -1,12 +1,10 @@
+import { VALIDATION_MESSAGE } from "@app/messages";
 import { z } from "zod";
 import { permissionSchema } from "../permission/permission.ts";
 
 const roleKeySchema = z
 	.string()
-	.regex(
-		/^[a-z][a-z0-9_-]{1,49}$/,
-		"Use 2-50 lowercase letters, digits, hyphens or underscores, starting with a letter.",
-	);
+	.regex(/^[a-z][a-z0-9_-]{1,49}$/, VALIDATION_MESSAGE.ROLE_KEY_FORMAT);
 
 export const roleSchema = z.object({
 	key: z.string().min(1),

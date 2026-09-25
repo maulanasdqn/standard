@@ -21,7 +21,7 @@ export const RoleCreateForm: FC = (): ReactElement => {
 						<form.Field name="key">
 							{(field) => (
 								<div className="flex flex-col gap-1">
-									<Label htmlFor={field.name}>Key</Label>
+									<Label htmlFor={field.name}>{ROLE_MESSAGE.FIELD_KEY}</Label>
 									<Input
 										id={field.name}
 										placeholder={ROLE_MESSAGE.KEY_PLACEHOLDER}
@@ -36,7 +36,7 @@ export const RoleCreateForm: FC = (): ReactElement => {
 						<form.Field name="label">
 							{(field) => (
 								<div className="flex flex-col gap-1">
-									<Label htmlFor={field.name}>Label</Label>
+									<Label htmlFor={field.name}>{ROLE_MESSAGE.FIELD_LABEL}</Label>
 									<Input
 										id={field.name}
 										placeholder={ROLE_MESSAGE.LABEL_PLACEHOLDER}
@@ -52,7 +52,9 @@ export const RoleCreateForm: FC = (): ReactElement => {
 					<form.Field name="description">
 						{(field) => (
 							<div className="flex flex-col gap-1">
-								<Label htmlFor={field.name}>Description</Label>
+								<Label htmlFor={field.name}>
+									{ROLE_MESSAGE.FIELD_DESCRIPTION}
+								</Label>
 								<Textarea
 									id={field.name}
 									placeholder={ROLE_MESSAGE.DESCRIPTION_PLACEHOLDER}
@@ -67,7 +69,9 @@ export const RoleCreateForm: FC = (): ReactElement => {
 					<form.Field name="permissions">
 						{(field) => (
 							<div className="flex flex-col gap-2">
-								<span className="text-sm font-medium">Permissions</span>
+								<span className="text-sm font-medium">
+									{ROLE_MESSAGE.FIELD_PERMISSIONS}
+								</span>
 								<PermissionChecklist
 									value={field.state.value ?? []}
 									onChange={(next) => field.handleChange([...next])}
@@ -77,7 +81,7 @@ export const RoleCreateForm: FC = (): ReactElement => {
 						)}
 					</form.Field>
 					<Button type="submit" disabled={isPending} className="self-start">
-						{isPending ? "Creating…" : "Create role"}
+						{isPending ? ROLE_MESSAGE.CREATING : ROLE_MESSAGE.CREATE_ACTION}
 					</Button>
 				</form>
 				<ConfirmDialog

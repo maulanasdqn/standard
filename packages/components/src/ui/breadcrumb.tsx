@@ -1,3 +1,4 @@
+import { UI_MESSAGE } from "@app/messages";
 import type * as React from "react";
 import type { FC, ReactElement } from "react";
 import { cn } from "../lib/utils.ts";
@@ -103,7 +104,7 @@ const BreadcrumbEllipsis: FC<React.ComponentProps<"span">> = (
 			{...rest}
 		>
 			<MoreHorizontal className="size-4" />
-			<span className="sr-only">More</span>
+			<span className="sr-only">{UI_MESSAGE.MORE}</span>
 		</span>
 	);
 };

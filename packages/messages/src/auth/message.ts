@@ -1,4 +1,18 @@
 export const AUTH_MESSAGE = {
+	LOGIN_TITLE: "Login to your account",
+	LOGIN_DESCRIPTION: "Enter your email below to login to your account",
+	LOGIN_ACTION: "Login",
+	SIGNING_IN: "Signing in…",
+	FIELD_EMAIL: "Email",
+	FIELD_PASSWORD: "Password",
+	FIELD_NAME: "Name",
+	FIELD_ROLE: "Role",
+	ACCOUNT_TITLE: "Account",
+	NOT_SIGNED_IN: "Not signed in.",
+	PASSWORD_CHANGE_TITLE: "Change password",
+	FIELD_CURRENT_PASSWORD: "Current password",
+	FIELD_NEW_PASSWORD: "New password",
+	FIELD_CONFIRM_PASSWORD: "Confirm new password",
 	UNAUTHORIZED: "Please sign in to continue.",
 	SIGN_OUT_FAILED:
 		"Could not sign you out. You are still signed in on this device, so try again.",
