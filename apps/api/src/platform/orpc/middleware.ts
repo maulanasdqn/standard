@@ -1,6 +1,5 @@
 import { AUTH_MESSAGE } from "@app/messages";
 import { canAll, type TPermission } from "@app/permissions";
-import { D } from "@mobily/ts-belt";
 import { ORPCError, os } from "@orpc/server";
 import { match, P } from "ts-pattern";
 import type { TORPCContext } from "#/platform/orpc/context.ts";
@@ -30,20 +29,24 @@ export const protectedProcedure = publicProcedure.use(
 					message: AUTH_MESSAGE.UNAUTHORIZED,
 				});
 			})
-			.otherwise(({ session }) =>
-				next({ context: D.merge(context, { session }) }),
-			),
+			.with({ session: P.nonNullable }, ({ session }) =>
+				next({ context: { session } }),
+			)
+			.exhaustive(),
 );
 
 type TProtectedProcedure = typeof protectedProcedure;
 
 export const permissionRequire = (
 	...required: TPermission[]
-): TProtectedProcedure =>
-	protectedProcedure.use(async ({ context, next }) =>
+): TProtectedProcedure => {
+	const guarded = protectedProcedure.use(async ({ context, next }) =>
 		match(canAll(context.permissions, required))
 			.with(false, () => {
 				throw new ORPCError("FORBIDDEN", { message: AUTH_MESSAGE.FORBIDDEN });
 			})
-			.otherwise(() => next({ context })),
+			.otherwise(() => next()),
 	);
+
+	return guarded;
+};

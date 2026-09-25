@@ -47,7 +47,7 @@ const userRouter = {
 		.handler(({ input, context }) =>
 			effectRunTransactional(
 				context.runtime,
-				userCreate(input, context.session!.user.id),
+				userCreate(input, context.session.user.id),
 			),
 		),
 
@@ -58,7 +58,7 @@ const userRouter = {
 		.handler(({ input, context }) =>
 			effectRunTransactional(
 				context.runtime,
-				userUpdate(input, context.session!.user.id),
+				userUpdate(input, context.session.user.id),
 			),
 		),
 
@@ -69,7 +69,7 @@ const userRouter = {
 		.handler(({ input, context }) =>
 			effectRunTransactional(
 				context.runtime,
-				userDelete(input, context.session!.user.id),
+				userDelete(input, context.session.user.id),
 			),
 		),
 
@@ -80,7 +80,7 @@ const userRouter = {
 		.handler(({ input, context }) =>
 			effectRunTransactional(
 				context.runtime,
-				userPasswordReset(input, context.session!.user.id),
+				userPasswordReset(input, context.session.user.id),
 			),
 		),
 };

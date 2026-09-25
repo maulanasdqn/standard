@@ -27,7 +27,7 @@ const noteRouter = {
 		.input(noteListInputSchema)
 		.output(noteListSchema)
 		.handler(({ input, context }) =>
-			effectRun(context.runtime, noteList(input, context.session!.user)),
+			effectRun(context.runtime, noteList(input, context.session.user)),
 		),
 
 	get: permissionRequire(PERMISSION.NOTE_READ)
@@ -35,7 +35,7 @@ const noteRouter = {
 		.input(noteIdInputSchema)
 		.output(noteSchema)
 		.handler(({ input, context }) =>
-			effectRun(context.runtime, noteGet(input, context.session!.user)),
+			effectRun(context.runtime, noteGet(input, context.session.user)),
 		),
 
 	create: permissionRequire(PERMISSION.NOTE_WRITE)
@@ -45,7 +45,7 @@ const noteRouter = {
 		.handler(({ input, context }) =>
 			effectRunTransactional(
 				context.runtime,
-				noteCreate(input, context.session!.user),
+				noteCreate(input, context.session.user),
 			),
 		),
 
@@ -56,7 +56,7 @@ const noteRouter = {
 		.handler(({ input, context }) =>
 			effectRunTransactional(
 				context.runtime,
-				noteUpdate(input, context.session!.user),
+				noteUpdate(input, context.session.user),
 			),
 		),
 
@@ -67,7 +67,7 @@ const noteRouter = {
 		.handler(({ input, context }) =>
 			effectRunTransactional(
 				context.runtime,
-				noteDelete(input, context.session!.user),
+				noteDelete(input, context.session.user),
 			),
 		),
 };
