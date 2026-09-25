@@ -90,6 +90,16 @@ That marks the removal as the deliberate second half of an expand and contract, 
 
 `0003_brown_silk_fever.sql` renamed two columns in a single migration and predates this policy. It is listed as an exception in `apps/api/scripts/migration-rules.ts` rather than rewritten, since it shipped long ago. It is also the concrete example of what this rule exists to prevent.
 
+## Several apps on one database
+
+The API owns the `public` schema and drizzle's default migration journal, `drizzle.__drizzle_migrations`, which `apps/api/src/scripts/migrate.ts` names explicitly because `migrationsRun` makes the journal location a required choice. Any other app that shares the database keeps out of both:
+
+- its tables are declared with `pgSchema("<app>")`, never in `public`
+- its `drizzle.config.ts` sets `schemaFilter: ["<app>"]`, so `db:generate` and `db:push` only ever look at its own schema and never report the other app's tables as drift
+- it runs `migrationsRun` with `migrationsSchema: "<app>"`, so its journal is `<app>.__drizzle_migrations`
+
+The journal is the part that bites silently. Drizzle applies only the migrations that are newer than the latest entry in the journal it reads, so two apps writing one journal means that a migration of the second app generated before the first app's latest one is skipped without any error. A separate journal per app removes that outcome. An app with a database of its own follows the same convention, because it costs nothing and it is what makes moving to a shared database a change of `DATABASE_URL` and nothing else.
+
 ## Staged rollout
 
 Not implemented, and declined on purpose. There are no feature flags, no canary and no percentage rollout: every deploy reaches every user at once.
