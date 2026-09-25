@@ -1,3 +1,4 @@
+import type { TActivityMetadata } from "@app/activity";
 import type { TActivityListInput } from "@app/schemas";
 import { Context, type Effect } from "effect";
 import type { TBaseEventRow } from "#/shared/base-row.ts";
@@ -12,7 +13,7 @@ export type TActivityRow = TBaseEventRow & {
 	action: string;
 	resourceType: string;
 	resourceId: string;
-	metadata: unknown;
+	metadata: TActivityMetadata | null;
 };
 
 export type TActivityReader = {

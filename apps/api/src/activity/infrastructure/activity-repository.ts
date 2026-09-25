@@ -1,3 +1,4 @@
+import { A } from "@mobily/ts-belt";
 import type { TActivityEntry, TActivityRepo } from "@app/activity";
 import { and, count, eq, inArray, lt, type SQL } from "drizzle-orm";
 import type { AnyPgColumn } from "drizzle-orm/pg-core";
@@ -19,6 +20,7 @@ import { ACTIVITY_SORT, type TActivitySort } from "@app/schemas";
 import type { TDb } from "#/platform/db/client.ts";
 import { DbService, dbServiceLayer } from "#/platform/db/db-service.ts";
 import { dbActive } from "#/platform/db/transaction.ts";
+import { activityMetadataDecode } from "#/activity/infrastructure/activity-metadata.ts";
 import { activityLog } from "#/platform/db/tables/activity.ts";
 import { user } from "#/platform/db/tables/auth.ts";
 
@@ -110,7 +112,13 @@ export const activityRepoLayer = Layer.effect(
 							.from(activityLog)
 							.where(where),
 					]);
-					return { items, total };
+					return {
+						items: A.map(items, (row) => ({
+							...row,
+							metadata: activityMetadataDecode(row.metadata),
+						})),
+						total,
+					};
 				},
 				catch: (cause) => new EDatabase({ cause }),
 			});
