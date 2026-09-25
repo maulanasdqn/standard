@@ -1,4 +1,4 @@
-import { MAIL_MESSAGE } from "@app/messages";
+import { MAIL_MESSAGE } from "./mail-messages.ts";
 import type { TMailMessage, TMailer } from "./mailer.ts";
 
 export const MAIL_EVENT = { SEND_FAILED: "mail.send.failed" } as const;

@@ -1,6 +1,6 @@
-import { STORAGE_MESSAGE } from "@app/messages";
 import { A } from "@mobily/ts-belt";
 import { match, P } from "ts-pattern";
+import { STORAGE_MESSAGE } from "./storage-messages.ts";
 
 export const STORAGE_MEGABYTE = 1_024 * 1_024;
 

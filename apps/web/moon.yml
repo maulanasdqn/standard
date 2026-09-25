@@ -3,6 +3,7 @@ $schema: 'https://moonrepo.dev/schemas/project.json'
 id: 'web'
 layer: 'application'
 language: 'typescript'
+tags: ['app']
 stack: 'frontend'
 
 dependsOn:

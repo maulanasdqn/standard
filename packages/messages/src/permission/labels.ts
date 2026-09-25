@@ -18,8 +18,8 @@ export const ROLE_LABEL = {
 export const ROLE_DESCRIPTION = {
 	superadmin: "Full access, including ownership bypass.",
 	admin: "Full access, including user and role management.",
-	member: "Can view, create and edit notes.",
-	viewer: "Read-only access to notes.",
+	member: "Can view, create and edit content.",
+	viewer: "Read-only access.",
 } as const satisfies Record<TRole, string>;
 
 const isLabelledRole = (role: string): role is TRole =>

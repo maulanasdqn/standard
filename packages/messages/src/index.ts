@@ -8,7 +8,6 @@ export { DASHBOARD_MESSAGE } from "./dashboard/message.ts";
 export { AUTH_MESSAGE } from "./auth/message.ts";
 export { ERROR_MESSAGE } from "./error/message.ts";
 export { HEALTH_MESSAGE } from "./health/message.ts";
-export { MAIL_MESSAGE } from "./mail/message.ts";
 export { NOTE_MESSAGE } from "./note/message.ts";
 export { NAV_MESSAGE } from "./nav/message.ts";
 export {
@@ -19,8 +18,6 @@ export {
 } from "./permission/labels.ts";
 export { PERMISSION_MESSAGE } from "./permission/message.ts";
 export { ROLE_MESSAGE } from "./role/message.ts";
-export { STORAGE_MESSAGE } from "./storage/message.ts";
 export { TABLE_MESSAGE } from "./table/message.ts";
-export { UI_MESSAGE } from "./ui/message.ts";
 export { USER_MESSAGE } from "./user/message.ts";
 export { VALIDATION_MESSAGE } from "./validation/message.ts";
