@@ -1,6 +1,7 @@
 import { A, D } from "@mobily/ts-belt";
 import { count, eq } from "drizzle-orm";
 import { Effect, Layer } from "effect";
+import { match, P } from "ts-pattern";
 import { EDatabase } from "#/shared/errors.ts";
 import {
 	CustomRoleRepo,
@@ -38,14 +39,18 @@ export const customRoleRepoLayer = Layer.effect(
 				catch: (cause) => new EDatabase({ cause }),
 			});
 
-		const findByKey: TCustomRoleRepo["findByKey"] = (key) =>
+		const findByKey: TCustomRoleRepo["findByKey"] = (key, lock) =>
 			Effect.tryPromise({
 				try: async () => {
-					const [row] = await dbActive(db)
+					const query = dbActive(db)
 						.select()
 						.from(customRole)
 						.where(eq(customRole.key, key))
-						.limit(1);
+						.limit(1)
+						.$dynamic();
+					const [row] = await match(lock)
+						.with(P.nullish, () => query)
+						.otherwise((strength) => query.for(strength));
 					return row ?? null;
 				},
 				catch: (cause) => new EDatabase({ cause }),

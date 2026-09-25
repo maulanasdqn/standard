@@ -14,6 +14,7 @@ import {
 	ActivityRecorder,
 	type TActivityRecorderId,
 } from "#/shared/activity-recorder.ts";
+import { ROW_LOCK } from "#/shared/row-lock.ts";
 import {
 	CustomRoleRepo,
 	type TCustomRoleRepoId,
@@ -34,17 +35,19 @@ export const roleDelete = Effect.fn("roleDelete")(function* (
 		return yield* new EBadRequest({ message: ROLE_MESSAGE.FIXED });
 	}
 
+	const found = yield* customRoleRepo.findByKey(key, ROW_LOCK.UPDATE);
+
+	if (found === null) {
+		return yield* new ENotFound({ message: ROLE_MESSAGE.NOT_FOUND });
+	}
+
 	const counts = yield* customRoleRepo.memberCounts();
 
 	if ((D.get(counts, key) ?? 0) > 0) {
 		return yield* new EConflict({ message: ROLE_MESSAGE.IN_USE });
 	}
 
-	const removed = yield* customRoleRepo.remove(key);
-
-	if (!removed) {
-		return yield* new ENotFound({ message: ROLE_MESSAGE.NOT_FOUND });
-	}
+	yield* customRoleRepo.remove(key);
 
 	yield* activityRepo.insert({
 		actorId,
