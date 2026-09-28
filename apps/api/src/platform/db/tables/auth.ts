@@ -59,6 +59,18 @@ export const account = pgTable("account", {
 		.defaultNow(),
 });
 
+export const jwks = pgTable("jwks", {
+	id: text("id").primaryKey(),
+	publicKey: text("public_key").notNull(),
+	privateKey: text("private_key").notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true })
+		.notNull()
+		.defaultNow(),
+	expiresAt: timestamp("expires_at", { withTimezone: true }),
+	alg: text("alg"),
+	crv: text("crv"),
+});
+
 export const verification = pgTable("verification", {
 	id: text("id").primaryKey(),
 	identifier: text("identifier").notNull(),

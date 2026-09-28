@@ -38,7 +38,14 @@ export const authServiceLayer = Layer.effect(
 			},
 		};
 
-		const auth = authCreate({ db, activityRepo, mailer });
+		const permissionsFor = (role: string): Promise<readonly string[]> =>
+			Effect.runPromise(
+				permissionsResolve(role).pipe(
+					Effect.provideService(CustomRoleRepo, customRoleRepo),
+				),
+			);
+
+		const auth = authCreate({ db, activityRepo, mailer, permissionsFor });
 
 		const sessionBuild = (
 			user: Pick<TSessionUser, "id" | "email" | "name">,

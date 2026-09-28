@@ -3,6 +3,7 @@ import { userCreateInputSchema } from "@app/schemas";
 import { z } from "zod";
 import { A } from "@mobily/ts-belt";
 import { match, P } from "ts-pattern";
+import { authEnvRefine } from "#/platform/config/auth-env-rules.ts";
 
 export const NODE_ENV = {
 	PRODUCTION: "production",
@@ -104,6 +105,15 @@ export const envSchema = z
 		MAIL_FROM: z.string().min(1).default("Standard <no-reply@standard.test>"),
 		BETTER_AUTH_URL: z.url(),
 		BETTER_AUTH_SECRET: z.string().min(32),
+		AUTH_COOKIE_DOMAIN: z.preprocess(
+			blankAsUndefined,
+			z.string().min(1).optional(),
+		),
+		AUTH_TRUSTED_ORIGINS: z.string().default("").transform(stringListParse),
+		AUTH_JWT_ENABLED: z.preprocess(
+			blankAsUndefined,
+			z.stringbool().default(false),
+		),
 		SEED_PASSWORD: z.preprocess(
 			blankAsUndefined,
 			userCreateInputSchema.shape.password.optional(),
@@ -141,6 +151,7 @@ export const envSchema = z
 		),
 	})
 	.superRefine((env, context): void => {
+		authEnvRefine(env, context, env.NODE_ENV === NODE_ENV.PRODUCTION);
 		match(env.NODE_ENV)
 			.with(NODE_ENV.PRODUCTION, (): void => {
 				match(new URL(env.WEB_ORIGIN).protocol)
