@@ -10,11 +10,13 @@
 	"devDependencies": {
 		"@app/api": "workspace:*",
 		"@app/metrics": "workspace:*",
+		"@app/migrations": "workspace:*",
 		"@app/permissions": "workspace:*",
 		"@app/queue": "workspace:*",
 		"@app/schemas": "workspace:*",
 		"@app/version": "workspace:*",
 		"@orpc/client": "catalog:",
+		"@types/pg": "catalog:",
 		"amqplib": "catalog:",
 		"drizzle-kit": "catalog:",
 		"drizzle-orm": "catalog:",

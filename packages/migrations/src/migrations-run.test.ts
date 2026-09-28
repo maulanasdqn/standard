@@ -31,6 +31,8 @@ const OPTIONS = {
 	service: "api",
 	migrationsFolder: "/srv/app/drizzle",
 	databaseUrl: "postgres://app:app@localhost:5432/app",
+	migrationsSchema: "reporting",
+	migrationsTable: "journal",
 };
 
 describe("migrationsRun", () => {
@@ -40,13 +42,15 @@ describe("migrationsRun", () => {
 		poolEnd.mockResolvedValue(undefined);
 	});
 
-	it("applies the migrations from the folder it is given and closes the pool", async (): Promise<void> => {
+	it("applies the folder into the journal schema and table it is given, then closes the pool", async (): Promise<void> => {
 		migrate.mockResolvedValue(undefined);
 
 		await migrationsRun(OPTIONS);
 
 		expect(migrate).toHaveBeenCalledWith(expect.anything(), {
 			migrationsFolder: OPTIONS.migrationsFolder,
+			migrationsSchema: OPTIONS.migrationsSchema,
+			migrationsTable: OPTIONS.migrationsTable,
 		});
 		expect(poolEnd).toHaveBeenCalledTimes(1);
 	});
