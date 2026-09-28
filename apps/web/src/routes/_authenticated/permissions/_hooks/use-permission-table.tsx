@@ -27,11 +27,17 @@ const ROWS: readonly TPermissionRow[] = A.map(
 
 const getRowId = (row: TPermissionRow): string => row.permission;
 
+const PINNED_COLUMN_CLASS =
+	"sticky left-0 z-10 min-w-64 bg-background shadow-[inset_-1px_0_0_var(--border)] [tr:hover>&]:bg-[color-mix(in_oklab,var(--muted)_50%,var(--background))]";
+
+const ROLE_COLUMN_CLASS = "w-28 min-w-28 text-center";
+
 const permissionColumn = helper.accessor("permission", {
 	header: PERMISSION_MESSAGE.COLUMN_PERMISSION,
+	meta: { className: PINNED_COLUMN_CLASS, headerClassName: "bg-muted" },
 	cell: (context): ReactElement => (
 		<span className="flex flex-col">
-			<span className="font-medium">
+			<span className="font-medium whitespace-nowrap">
 				{PERMISSION_LABEL[context.getValue()]}
 			</span>
 			<code className="text-xs text-muted-foreground">
@@ -46,8 +52,12 @@ const roleColumn = (
 ): DisplayColumnDef<TTableFeatures, TPermissionRow, unknown> =>
 	helper.display({
 		id: role.key,
-		header: role.label,
-		meta: { className: "text-center" },
+		header: (): ReactElement => (
+			<span className="mx-auto block max-w-24 truncate" title={role.label}>
+				{role.label}
+			</span>
+		),
+		meta: { className: ROLE_COLUMN_CLASS, label: role.label },
 		cell: (context): ReactElement =>
 			A.includes(role.permissions, context.row.original.permission) ? (
 				<Check
