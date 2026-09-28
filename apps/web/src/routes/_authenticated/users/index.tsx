@@ -16,6 +16,7 @@ import {
 	useUserList,
 	useUserListChange,
 } from "#/routes/_authenticated/users/_hooks/use-users.ts";
+import { ListPageSkeleton } from "#/routes/_components/list-page-skeleton.tsx";
 
 const userSearchValidate = searchLenient(userListInputSchema);
 
@@ -49,6 +50,8 @@ const UsersPage: FC = (): ReactElement => {
 	);
 };
 
+const UsersPending: FC = (): ReactElement => <ListPageSkeleton action />;
+
 export const Route = createFileRoute("/_authenticated/users/")({
 	validateSearch: userSearchValidate,
 	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
@@ -59,4 +62,5 @@ export const Route = createFileRoute("/_authenticated/users/")({
 			context.queryClient.ensureQueryData(roleListOptions()),
 		]),
 	component: UsersPage,
+	pendingComponent: UsersPending,
 });

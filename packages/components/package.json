@@ -9,6 +9,7 @@
 		"./guard/use-permissions": "./src/guard/use-permissions.ts",
 		"./hooks/use-mobile": "./src/hooks/use-mobile.ts",
 		"./lib/utils": "./src/lib/utils.ts",
+		"./skeleton/*": "./src/skeleton/*.tsx",
 		"./theme.css": "./theme.css",
 		"./ui/*": "./src/ui/*.tsx"
 	},
@@ -18,6 +19,7 @@
 	},
 	"dependencies": {
 		"@app/permissions": "workspace:*",
+		"@mobily/ts-belt": "catalog:",
 		"@tanstack/react-store": "catalog:",
 		"@tanstack/store": "catalog:",
 		"class-variance-authority": "^0.7.1",

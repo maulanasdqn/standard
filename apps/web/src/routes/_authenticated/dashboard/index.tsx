@@ -1,6 +1,7 @@
 import { DASHBOARD_MESSAGE } from "@app/messages";
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
+import { DashboardSkeleton } from "#/routes/_authenticated/dashboard/_components/dashboard-skeleton.tsx";
 import { ActivitySection } from "#/routes/_authenticated/dashboard/_components/activity-section.tsx";
 import { HealthCard } from "#/routes/_authenticated/dashboard/_components/health-card.tsx";
 import { QuickActions } from "#/routes/_authenticated/dashboard/_components/quick-actions.tsx";
@@ -27,4 +28,5 @@ const DashboardPage: FC = (): ReactElement => {
 
 export const Route = createFileRoute("/_authenticated/dashboard/")({
 	component: DashboardPage,
+	pendingComponent: DashboardSkeleton,
 });

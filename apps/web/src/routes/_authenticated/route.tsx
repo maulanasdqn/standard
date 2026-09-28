@@ -10,6 +10,7 @@ import { match, P } from "ts-pattern";
 import { EServerUnreachable } from "#/libs/auth/server-unreachable.ts";
 import { SESSION_REACH } from "#/libs/auth/session-reach.ts";
 import { AppSidebar } from "#/routes/_authenticated/_components/app-sidebar.tsx";
+import { PageTransition } from "#/routes/_components/page-transition.tsx";
 
 const AuthenticatedLayout: FC = (): ReactElement => (
 	<SidebarProvider>
@@ -21,7 +22,9 @@ const AuthenticatedLayout: FC = (): ReactElement => (
 			</header>
 			<div className="min-w-0 flex-1 overflow-y-auto p-6">
 				<div className="mx-auto w-full max-w-7xl">
-					<Outlet />
+					<PageTransition>
+						<Outlet />
+					</PageTransition>
 				</div>
 			</div>
 		</SidebarInset>

@@ -451,6 +451,9 @@ importers:
       '@app/permissions':
         specifier: workspace:*
         version: link:../permissions
+      '@mobily/ts-belt':
+        specifier: 'catalog:'
+        version: 3.13.1(patch_hash=089c2961d9dcaf34a971874c8717d7a961ff3c49d4508968d9c4dd22fab7300a)
       '@tanstack/react-store':
         specifier: 'catalog:'
         version: 0.11.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
