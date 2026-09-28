@@ -102,7 +102,7 @@ test.describe("roles admin flow", () => {
 		).toBeVisible();
 	});
 
-	test("edits the custom role's label and grants note:update", async (): Promise<void> => {
+	test("edits the custom role's label and grants note:create", async (): Promise<void> => {
 		await rowWithCell(page, NEW_ROLE.key)
 			.getByRole("link", { name: "Edit" })
 			.click();
@@ -115,7 +115,7 @@ test.describe("roles admin flow", () => {
 		await page.getByLabel("Label", { exact: true }).fill(RENAMED_LABEL);
 		await page
 			.getByRole("checkbox", {
-				name: PERMISSION_LABEL[PERMISSION_KEY.NOTE_UPDATE],
+				name: PERMISSION_LABEL[PERMISSION_KEY.NOTE_CREATE],
 			})
 			.check();
 		await page.getByRole("button", { name: ROLE_MESSAGE.SAVE_CHANGES }).click();
