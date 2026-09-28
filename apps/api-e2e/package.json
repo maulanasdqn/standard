@@ -21,6 +21,7 @@
 		"amqplib": "catalog:",
 		"drizzle-kit": "catalog:",
 		"drizzle-orm": "catalog:",
+		"jose": "catalog:",
 		"pg": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"

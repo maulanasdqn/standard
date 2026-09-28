@@ -23,7 +23,7 @@ import { metrics } from "#/platform/observability/metrics.ts";
 import { authMount } from "#/auth/presentation/mount-auth.ts";
 import { healthModule, healthMount } from "#/health/index.ts";
 import { orpcMount } from "#/platform/http/mount-orpc.ts";
-import { originAllowed, originsOf } from "#/platform/http/origins.ts";
+import { originMatcherOf, originsOf } from "#/platform/http/origins.ts";
 import { metricsMount } from "#/platform/http/mount-metrics.ts";
 import { observabilityMount } from "#/platform/http/mount-observability.ts";
 import { rateLimitMount } from "#/platform/http/mount-rate-limit.ts";
@@ -104,13 +104,14 @@ app.use("*", requestId());
 
 observabilityMount(app, { logger, metrics, tracing });
 
-const origins = originsOf(env.WEB_ORIGIN, env.AUTH_TRUSTED_ORIGINS);
+const originAllowed = originMatcherOf(
+	originsOf(env.WEB_ORIGIN, env.AUTH_TRUSTED_ORIGINS),
+);
 
 app.use(
 	"*",
 	cors({
-		origin: (origin): string | null =>
-			originAllowed(origin, origins) ? origin : null,
+		origin: (origin): string | null => (originAllowed(origin) ? origin : null),
 		credentials: true,
 		allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
 		allowHeaders: ["Content-Type", "Authorization"],

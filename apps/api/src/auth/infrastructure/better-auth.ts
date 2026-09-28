@@ -54,6 +54,8 @@ export const authCreate = (deps: TCreateAuthOptions): TAuth =>
 		database: drizzleAdapter(dbActiveProxy(deps.db), { provider: "pg" }),
 		plugins: authPluginsOf({
 			jwtEnabled: env.AUTH_JWT_ENABLED,
+			issuer: env.BETTER_AUTH_URL,
+			audience: env.BETTER_AUTH_URL,
 			permissionsFor: deps.permissionsFor,
 		}),
 		advanced: {

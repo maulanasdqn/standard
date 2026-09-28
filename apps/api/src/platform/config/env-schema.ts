@@ -3,6 +3,7 @@ import { userCreateInputSchema } from "@app/schemas";
 import { z } from "zod";
 import { A } from "@mobily/ts-belt";
 import { match, P } from "ts-pattern";
+import { authEnvRefine } from "#/platform/config/auth-env-rules.ts";
 
 export const NODE_ENV = {
 	PRODUCTION: "production",
@@ -12,19 +13,14 @@ const URL_PROTOCOL = {
 	HTTPS: "https:",
 } as const;
 
-const HTTPS_PREFIX = `${URL_PROTOCOL.HTTPS}//`;
-
 const ENV_KEY = {
 	BETTER_AUTH_URL: "BETTER_AUTH_URL",
 	WEB_ORIGIN: "WEB_ORIGIN",
-	AUTH_TRUSTED_ORIGINS: "AUTH_TRUSTED_ORIGINS",
 	METRICS_TOKEN: "METRICS_TOKEN",
 } as const;
 
 const ENV_VALIDATION_MESSAGE = {
 	HTTPS_REQUIRED: "HTTPS is required in production.",
-	TRUSTED_ORIGINS_HTTPS_REQUIRED:
-		"Every AUTH_TRUSTED_ORIGINS entry must start with https:// in production.",
 	TRANSPORT_OPTIONS_INVALID_JSON: "LOG_TRANSPORT_OPTIONS must be valid JSON.",
 	TRANSPORT_OPTIONS_NOT_OBJECT:
 		"LOG_TRANSPORT_OPTIONS must be a JSON object, not an array, a string, or null.",
@@ -155,6 +151,7 @@ export const envSchema = z
 		),
 	})
 	.superRefine((env, context): void => {
+		authEnvRefine(env, context, env.NODE_ENV === NODE_ENV.PRODUCTION);
 		match(env.NODE_ENV)
 			.with(NODE_ENV.PRODUCTION, (): void => {
 				match(new URL(env.WEB_ORIGIN).protocol)
@@ -173,19 +170,6 @@ export const envSchema = z
 							code: "custom",
 							path: [ENV_KEY.BETTER_AUTH_URL],
 							message: ENV_VALIDATION_MESSAGE.HTTPS_REQUIRED,
-						});
-					});
-				match(
-					A.every(env.AUTH_TRUSTED_ORIGINS, (origin) =>
-						origin.startsWith(HTTPS_PREFIX),
-					),
-				)
-					.with(true, (): void => undefined)
-					.otherwise((): void => {
-						context.addIssue({
-							code: "custom",
-							path: [ENV_KEY.AUTH_TRUSTED_ORIGINS],
-							message: ENV_VALIDATION_MESSAGE.TRUSTED_ORIGINS_HTTPS_REQUIRED,
 						});
 					});
 				match({ enabled: env.METRICS_ENABLED, token: env.METRICS_TOKEN })

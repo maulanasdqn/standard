@@ -1,11 +1,23 @@
 import { ROLE } from "@app/permissions";
 import type { BetterAuthPlugin } from "better-auth";
-import { bearer, jwt } from "better-auth/plugins";
+import { jwt } from "better-auth/plugins";
 import { match, P } from "ts-pattern";
+
+const SECONDS_PER_DAY = 86_400;
+
+export const JWT_POLICY = {
+	EXPIRATION_TIME: "15m",
+	KEY_ROTATION_SECONDS: 30 * SECONDS_PER_DAY,
+	KEY_GRACE_SECONDS: 30 * SECONDS_PER_DAY,
+} as const;
+
+type TPermissionsFor = (role: string) => Promise<readonly string[]>;
 
 type TAuthPluginsOptions = {
 	jwtEnabled: boolean;
-	permissionsFor: (role: string) => Promise<readonly string[]>;
+	issuer: string;
+	audience: string;
+	permissionsFor: TPermissionsFor;
 };
 
 type TJwtPayload = {
@@ -23,30 +35,46 @@ type TJwtUser = {
 	role?: unknown;
 };
 
+type TJwtPayloadSource = { user: TJwtUser };
+
+type TDefinePayload = (source: TJwtPayloadSource) => Promise<TJwtPayload>;
+
 const roleOf = (user: TJwtUser): string =>
 	match(user.role)
 		.with(P.string, (role): string => role)
 		.otherwise((): string => ROLE.VIEWER);
 
 const payloadOf =
-	(permissionsFor: TAuthPluginsOptions["permissionsFor"]) =>
-	async ({ user }: { user: TJwtUser }): Promise<TJwtPayload> => {
-		const role = roleOf(user);
+	(permissionsFor: TPermissionsFor): TDefinePayload =>
+	async (source): Promise<TJwtPayload> => {
+		const role = roleOf(source.user);
 		return {
-			id: user.id,
-			email: user.email,
-			name: user.name,
+			id: source.user.id,
+			email: source.user.email,
+			name: source.user.name,
 			role,
 			permissions: await permissionsFor(role),
 		};
 	};
+
+const jwtPluginOf = (options: TAuthPluginsOptions): BetterAuthPlugin =>
+	jwt({
+		disableSettingJwtHeader: true,
+		jwks: {
+			rotationInterval: JWT_POLICY.KEY_ROTATION_SECONDS,
+			gracePeriod: JWT_POLICY.KEY_GRACE_SECONDS,
+		},
+		jwt: {
+			issuer: options.issuer,
+			audience: options.audience,
+			expirationTime: JWT_POLICY.EXPIRATION_TIME,
+			definePayload: payloadOf(options.permissionsFor),
+		},
+	});
 
 export const authPluginsOf = (
 	options: TAuthPluginsOptions,
 ): BetterAuthPlugin[] =>
 	match(options.jwtEnabled)
 		.with(false, (): BetterAuthPlugin[] => [])
-		.otherwise((): BetterAuthPlugin[] => [
-			jwt({ jwt: { definePayload: payloadOf(options.permissionsFor) } }),
-			bearer(),
-		]);
+		.otherwise((): BetterAuthPlugin[] => [jwtPluginOf(options)]);
