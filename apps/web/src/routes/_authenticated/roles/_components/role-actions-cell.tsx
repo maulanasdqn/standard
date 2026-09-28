@@ -8,7 +8,6 @@ import { Eye, Pencil } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { DeleteConfirm } from "#/routes/_authenticated/_components/delete-confirm.tsx";
 import { RowAction } from "#/routes/_authenticated/_components/row-action.tsx";
-import { useRoleReadOnly } from "#/routes/_authenticated/roles/_hooks/use-role-read-only.ts";
 import { useRoleDelete } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
 import { roleDeletable } from "#/routes/_authenticated/roles/_utils/role-deletable.ts";
 
@@ -20,24 +19,37 @@ export const RoleActionsCell: FC<TRoleActionsCellProps> = (
 	props,
 ): ReactElement => {
 	const roleDelete = useRoleDelete();
-	const isReadOnly = useRoleReadOnly(props.role);
-	const openLabel = isReadOnly
-		? ROLE_MESSAGE.ACTION_VIEW
-		: ROLE_MESSAGE.ACTION_EDIT;
 
 	return (
 		<>
-			<RowAction label={openLabel}>
-				<Button variant="ghost" size="icon-sm" asChild>
-					<Link
-						to="/roles/$key"
-						params={{ key: props.role.key }}
-						aria-label={openLabel}
-					>
-						{isReadOnly ? <Eye /> : <Pencil />}
-					</Link>
-				</Button>
-			</RowAction>
+			<Guard permissions={[PERMISSION.ROLE_READ]}>
+				<RowAction label={ROLE_MESSAGE.ACTION_VIEW}>
+					<Button variant="ghost" size="icon-sm" asChild>
+						<Link
+							to="/roles/$key"
+							params={{ key: props.role.key }}
+							aria-label={ROLE_MESSAGE.ACTION_VIEW}
+						>
+							<Eye />
+						</Link>
+					</Button>
+				</RowAction>
+			</Guard>
+			{!props.role.fixed && (
+				<Guard permissions={[PERMISSION.ROLE_UPDATE]}>
+					<RowAction label={ROLE_MESSAGE.ACTION_EDIT}>
+						<Button variant="ghost" size="icon-sm" asChild>
+							<Link
+								to="/roles/$key/edit"
+								params={{ key: props.role.key }}
+								aria-label={ROLE_MESSAGE.ACTION_EDIT}
+							>
+								<Pencil />
+							</Link>
+						</Button>
+					</RowAction>
+				</Guard>
+			)}
 			{roleDeletable(props.role) && (
 				<Guard permissions={[PERMISSION.ROLE_DELETE]}>
 					<DeleteConfirm

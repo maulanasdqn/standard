@@ -17,6 +17,7 @@ export const ROLE_MESSAGE = {
 	FIELD_PERMISSIONS: "Permissions",
 	CREATE_ACTION: "Create role",
 	CREATING: "Creating…",
+	EDIT_ACTION: "Edit role",
 	SAVE_CHANGES: "Save changes",
 	SAVING: "Saving…",
 	BACK_TO_ROLES: "Back to roles",

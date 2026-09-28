@@ -5,7 +5,6 @@ import {
 	type UseSuspenseQueryResult,
 	useSuspenseQuery,
 } from "@tanstack/react-query";
-import { getRouteApi } from "@tanstack/react-router";
 import { orpc } from "#/libs/orpc/client.ts";
 import { useProcedureMutation } from "#/libs/orpc/procedure-mutation.ts";
 import { suspenseQueryOptionsFor } from "#/libs/orpc/procedure-query.ts";
@@ -18,8 +17,6 @@ import type {
 type TRoleIn = TClientInputs["role"];
 type TRoleOut = TClientOutputs["role"];
 type TRoleErr = TClientErrors["role"];
-
-const editRouteApi = getRouteApi("/_authenticated/roles/$key");
 
 const roleKeys = (): readonly (readonly unknown[])[] => [orpc.role.key()];
 
@@ -38,10 +35,10 @@ export const useRoleList = (): UseSuspenseQueryResult<
 	TRoleErr["list"]
 > => useSuspenseQuery(roleListOptions());
 
-export const useRoleGet = (): UseSuspenseQueryResult<
-	TRoleOut["get"],
-	TRoleErr["get"]
-> => useSuspenseQuery(roleGetOptions(editRouteApi.useParams().key));
+export const useRoleGet = (
+	key: string,
+): UseSuspenseQueryResult<TRoleOut["get"], TRoleErr["get"]> =>
+	useSuspenseQuery(roleGetOptions(key));
 
 export const useRoleCreate = (): UseMutationResult<
 	TRoleOut["create"],

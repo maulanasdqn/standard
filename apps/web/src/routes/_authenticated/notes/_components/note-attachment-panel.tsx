@@ -1,3 +1,5 @@
+import { PERMISSION } from "@app/permissions";
+import { Guard } from "@app/components/guard/guard";
 import { Badge } from "@app/components/ui/badge";
 import {
 	Card,
@@ -42,16 +44,18 @@ export const NoteAttachmentPanel: FC<TNoteAttachmentPanelProps> = (
 				</div>
 			</CardHeader>
 			<CardContent className="flex flex-col gap-6">
-				<NoteAttachmentDropzone
-					isDragging={panel.isDragging}
-					isUploading={panel.isUploading}
-					isFull={panel.isFull}
-					inputId={panel.inputId}
-					onInputChange={panel.onInputChange}
-					onDragOver={panel.onDragOver}
-					onDragLeave={panel.onDragLeave}
-					onDrop={panel.onDrop}
-				/>
+				<Guard permissions={[PERMISSION.NOTE_UPDATE]}>
+					<NoteAttachmentDropzone
+						isDragging={panel.isDragging}
+						isUploading={panel.isUploading}
+						isFull={panel.isFull}
+						inputId={panel.inputId}
+						onInputChange={panel.onInputChange}
+						onDragOver={panel.onDragOver}
+						onDragLeave={panel.onDragLeave}
+						onDrop={panel.onDrop}
+					/>
+				</Guard>
 				{match(A.isEmpty(panel.items))
 					.with(true, () => (
 						<EmptyState message={NOTE_ATTACHMENT_MESSAGE.EMPTY} />
