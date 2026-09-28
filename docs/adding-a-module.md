@@ -15,7 +15,7 @@ module that is written but not registered compiles and does nothing.
 | `application/<module>-<use-case>.ts` | One `Effect.fn("name")(function* ...)` per use case, one file each |
 | `application/to-<module>-dto.ts` | Row to wire shape, so the router never maps by hand |
 | `infrastructure/<module>-repository.ts` | The Drizzle implementation and its `Layer` |
-| `presentation/<module>-router.ts` | The oRPC handlers for the module's contract, `permissionRequire(...)` on every procedure. Method, path, input and output come from `@app/contract`, so a procedure that is not declared there cannot be implemented here |
+| `presentation/<module>-router.ts` | The oRPC handlers for the module's contract, each built from `permissionGuarded(...)` in `platform/orpc/implementer.ts`. Method, path, input and output come from `@app/contract`, so a procedure that is not declared there cannot be implemented here |
 | `index.ts` | The only surface other code may import: `{ layer, routerBuild }`. Its type is written out on purpose: an inferred object would pull the router types in, and those reach back to the composition root through the request context, which is a cycle TypeScript refuses |
 
 Use cases carry their own `*.test.ts` next to them. The repository layer is exercised by

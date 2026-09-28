@@ -23,7 +23,7 @@ const HTTP_FORBIDDEN = 403;
 const HTTP_SERVICE_UNAVAILABLE = 503;
 
 const base = os.$context<TORPCContext>();
-const protectedProcedure = base.use(sessionRequired);
+const sessionProcedure = base.use(sessionRequired);
 
 const contextOf = (
 	sessionState: TSessionState,
@@ -41,7 +41,7 @@ const callWith = (
 	session: TSession | null,
 ): Promise<unknown> =>
 	call(
-		protectedProcedure.handler(() => "ok"),
+		sessionProcedure.handler(() => "ok"),
 		undefined,
 		{
 			context: contextOf(sessionState, session),
@@ -60,14 +60,14 @@ const errorOf = async (
 	throw new Error("expected the procedure to reject");
 };
 
-describe("protectedProcedure", () => {
+describe("sessionRequired", () => {
 	it("runs the handler for a resolved session", async (): Promise<void> => {
 		expect(await callWith(SESSION_STATE.RESOLVED, SESSION)).toBe("ok");
 	});
 
 	it("hands the handler a session it can read without asserting on it", async (): Promise<void> => {
 		const userId = await call(
-			protectedProcedure.handler(({ context }) => context.session.user.id),
+			sessionProcedure.handler(({ context }) => context.session.user.id),
 			undefined,
 			{ context: contextOf(SESSION_STATE.RESOLVED, SESSION) },
 		);

@@ -6,9 +6,6 @@ language: 'typescript'
 tags: ['app']
 stack: 'frontend'
 
-dependsOn:
-  - 'api'
-
 tasks:
   dev:
     command: 'pnpm dev'
