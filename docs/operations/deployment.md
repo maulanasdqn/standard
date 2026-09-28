@@ -95,8 +95,10 @@ That marks the removal as the deliberate second half of an expand and contract, 
 The API owns the `public` schema and drizzle's default migration journal, `drizzle.__drizzle_migrations`, which `apps/api/src/scripts/migrate.ts` names explicitly because `migrationsRun` makes the journal location a required choice. Any other app that shares the database keeps out of both:
 
 - its tables are declared with `pgSchema("<app>")`, never in `public`
-- its `drizzle.config.ts` sets `schemaFilter: ["<app>"]`, so `db:generate` and `db:push` only ever look at its own schema and never report the other app's tables as drift
-- it runs `migrationsRun` with `migrationsSchema: "<app>"`, so its journal is `<app>.__drizzle_migrations`
+- its `drizzle.config.ts` sets `schemaFilter: ["<app>"]`, so `db:push` and `db:pull` only ever look at its own schema and never offer to drop the other app's tables
+- it runs `migrationsRun` with `migrationsSchema: "<app>_migrations"`, so its journal is `<app>_migrations.__drizzle_migrations`
+
+The journal schema sits outside `schemaFilter` on purpose, which is also why the API's journal lives in `drizzle` rather than `public`. Drizzle-kit's Postgres introspection does not skip the journal table, so a journal inside the filtered schema looks to `db:push` like a table missing from the code, and `db:push` offers to drop it (silently with `--force`). Without its journal, the next `migrate` replays every migration from the start.
 
 The journal is the part that bites silently. Drizzle applies only the migrations that are newer than the latest entry in the journal it reads, so two apps writing one journal means that a migration of the second app generated before the first app's latest one is skipped without any error. A separate journal per app removes that outcome. An app with a database of its own follows the same convention, because it costs nothing and it is what makes moving to a shared database a change of `DATABASE_URL` and nothing else.
 

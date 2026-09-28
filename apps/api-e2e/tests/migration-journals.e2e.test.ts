@@ -109,7 +109,7 @@ describe("migration journals on one database", () => {
 		expect(await journalRows(beta.schema)).toBe(ONE_ROW);
 	});
 
-	it("skips the older app's migration silently when two apps share one journal", async (): Promise<void> => {
+	it("skips the older app's migration silently when two apps share one journal, which pins drizzle-orm 0.45 and is revisited on a drizzle major", async (): Promise<void> => {
 		const gamma = fixtureCreate("gamma", WHEN.NEWER);
 		const delta = fixtureCreate("delta", WHEN.OLDER);
 
