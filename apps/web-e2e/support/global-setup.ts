@@ -18,6 +18,11 @@ const env = {
 	RATE_LIMIT_MAX: process.env.RATE_LIMIT_MAX ?? "10000",
 	BETTER_AUTH_URL: API_URL,
 	BETTER_AUTH_SECRET: "web-e2e-test-secret-please-do-not-use-in-prod",
+	STORAGE_ENDPOINT: process.env.STORAGE_ENDPOINT ?? "http://localhost:9100",
+	STORAGE_BUCKET: process.env.STORAGE_BUCKET ?? "standard",
+	STORAGE_ACCESS_KEY_ID: process.env.STORAGE_ACCESS_KEY_ID ?? "app",
+	STORAGE_SECRET_ACCESS_KEY:
+		process.env.STORAGE_SECRET_ACCESS_KEY ?? "appsecret",
 	WEB_ORIGIN: "http://127.0.0.1:5273",
 };
 

@@ -36,7 +36,12 @@ const toORPCError = (error: TDomainError): ORPCError<string, undefined> =>
 		)
 		.with(
 			{
-				_tag: P.union(ERROR_TAG.DATABASE, ERROR_TAG.AUTH, ERROR_TAG.QUEUE),
+				_tag: P.union(
+					ERROR_TAG.DATABASE,
+					ERROR_TAG.AUTH,
+					ERROR_TAG.QUEUE,
+					ERROR_TAG.STORAGE,
+				),
 			},
 			(): ORPCError<string, undefined> =>
 				new ORPCError("INTERNAL_SERVER_ERROR", {

@@ -1,4 +1,5 @@
 import { PERMISSION } from "@app/permissions";
+import { noteAttachmentRouter } from "#/note/presentation/note-attachment-router.ts";
 import { noteCreate } from "#/note/application/note-create.ts";
 import { noteDelete } from "#/note/application/note-delete.ts";
 import { noteGet } from "#/note/application/note-get.ts";
@@ -11,6 +12,8 @@ import {
 } from "#/platform/orpc/run-effect.ts";
 
 const noteRouter = implementer.note.router({
+	attachment: noteAttachmentRouter,
+
 	list: permissionGuarded(PERMISSION.NOTE_READ).note.list.handler(
 		({ input, context }) =>
 			effectRun(context.runtime, noteList(input, context.session.user)),

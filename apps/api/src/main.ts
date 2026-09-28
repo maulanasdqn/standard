@@ -22,6 +22,7 @@ import { logger } from "#/platform/observability/logger.ts";
 import { metrics } from "#/platform/observability/metrics.ts";
 import { authMount } from "#/auth/presentation/mount-auth.ts";
 import { healthModule, healthMount } from "#/health/index.ts";
+import { bodyLimitMount } from "#/platform/http/mount-body-limit.ts";
 import { orpcMount } from "#/platform/http/mount-orpc.ts";
 import { originMatcherOf, originsOf } from "#/platform/http/origins.ts";
 import { metricsMount } from "#/platform/http/mount-metrics.ts";
@@ -117,6 +118,8 @@ app.use(
 		allowHeaders: ["Content-Type", "Authorization"],
 	}),
 );
+
+bodyLimitMount(app);
 
 healthMount(app, {
 	readiness: () => runtime.runPromise(healthModule.readiness()),

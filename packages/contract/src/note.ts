@@ -9,9 +9,12 @@ import {
 import { oc } from "@orpc/contract";
 import { z } from "zod";
 import { HTTP_METHOD } from "./http-methods.ts";
+import { noteAttachmentContract } from "./note-attachment.ts";
 import { ROUTE_PATH } from "./route-paths.ts";
 
 export const noteContract = {
+	attachment: noteAttachmentContract,
+
 	list: oc
 		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.NOTES })
 		.input(noteListInputSchema)

@@ -17,7 +17,10 @@ export const storageDeclaredByteLength = (
 				.otherwise((): number | undefined => undefined);
 		});
 
-const concat = (chunks: readonly Uint8Array[], total: number): Uint8Array => {
+const concat = (
+	chunks: readonly Uint8Array[],
+	total: number,
+): Uint8Array<ArrayBuffer> => {
 	const merged = new Uint8Array(total);
 	chunks.reduce((offset, chunk): number => {
 		merged.set(chunk, offset);
@@ -30,14 +33,17 @@ export const storageBodyRead = async (
 	limits: TStorageLimits,
 	key: string,
 	body: ReadableStream<Uint8Array> | null,
-): Promise<Uint8Array> => {
+): Promise<Uint8Array<ArrayBuffer>> => {
 	const stream = match(body)
 		.with(P.nullish, (): ReadableStream<Uint8Array> | null => null)
 		.otherwise((found): ReadableStream<Uint8Array> => found);
 
 	return match(stream)
-		.with(P.nullish, async (): Promise<Uint8Array> => new Uint8Array(0))
-		.otherwise(async (found): Promise<Uint8Array> => {
+		.with(
+			P.nullish,
+			async (): Promise<Uint8Array<ArrayBuffer>> => new Uint8Array(0),
+		)
+		.otherwise(async (found): Promise<Uint8Array<ArrayBuffer>> => {
 			const reader = found.getReader();
 			const chunks: Uint8Array[] = [];
 			let total = 0;
