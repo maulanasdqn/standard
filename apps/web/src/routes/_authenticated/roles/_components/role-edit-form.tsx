@@ -1,3 +1,4 @@
+import { Guard } from "@app/components/guard/guard";
 import { Button } from "@app/components/ui/button";
 import {
 	Card,
@@ -12,9 +13,10 @@ import { Input } from "@app/components/ui/input";
 import { Label } from "@app/components/ui/label";
 import { Textarea } from "@app/components/ui/textarea";
 import { APP_MESSAGE, ROLE_MESSAGE } from "@app/messages";
+import { PERMISSION } from "@app/permissions";
 import type { TRoleDto } from "@app/schemas";
 import { Link } from "@tanstack/react-router";
-import { Loader2 } from "lucide-react";
+import { Loader2, Pencil } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { ConfirmDialog } from "#/routes/_authenticated/_components/confirm-dialog.tsx";
 import { PermissionChecklist } from "#/routes/_authenticated/roles/_components/permission-checklist.tsx";
@@ -22,11 +24,13 @@ import { useRoleEditForm } from "#/routes/_authenticated/roles/_hooks/use-role-e
 
 type TRoleEditFormProps = {
 	role: TRoleDto;
+	readOnly: boolean;
+	editable: boolean;
 };
 
 export const RoleEditForm: FC<TRoleEditFormProps> = (props): ReactElement => {
 	const { form, onSubmit, confirm, isPending, isFixed, isReadOnly } =
-		useRoleEditForm(props.role);
+		useRoleEditForm(props.role, props.readOnly);
 
 	return (
 		<form onSubmit={onSubmit}>
@@ -99,6 +103,16 @@ export const RoleEditForm: FC<TRoleEditFormProps> = (props): ReactElement => {
 							{isReadOnly ? ROLE_MESSAGE.BACK_TO_ROLES : APP_MESSAGE.CANCEL}
 						</Link>
 					</Button>
+					{isReadOnly && props.editable && (
+						<Guard permissions={[PERMISSION.ROLE_UPDATE]}>
+							<Button asChild>
+								<Link to="/roles/$key/edit" params={{ key: props.role.key }}>
+									<Pencil />
+									{ROLE_MESSAGE.EDIT_ACTION}
+								</Link>
+							</Button>
+						</Guard>
+					)}
 					{!isReadOnly && (
 						<Button type="submit" disabled={isPending}>
 							{isPending && <Loader2 className="animate-spin" />}

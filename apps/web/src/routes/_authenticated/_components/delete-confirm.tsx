@@ -11,7 +11,9 @@ import {
 	AlertDialogTrigger,
 } from "@app/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@app/components/ui/button";
+import { Trash2 } from "lucide-react";
 import type { FC, ReactElement } from "react";
+import { RowAction } from "#/routes/_authenticated/_components/row-action.tsx";
 
 type TDeleteConfirmProps = {
 	title: string;
@@ -25,11 +27,19 @@ export const DeleteConfirm: FC<TDeleteConfirmProps> = (props): ReactElement => {
 
 	return (
 		<AlertDialog>
-			<AlertDialogTrigger asChild>
-				<Button variant="ghost" size="sm" disabled={disabled}>
-					{APP_MESSAGE.DELETE}
-				</Button>
-			</AlertDialogTrigger>
+			<RowAction label={APP_MESSAGE.DELETE}>
+				<AlertDialogTrigger asChild>
+					<Button
+						variant="ghost"
+						size="icon-sm"
+						disabled={disabled}
+						aria-label={APP_MESSAGE.DELETE}
+						className="text-muted-foreground hover:text-destructive"
+					>
+						<Trash2 />
+					</Button>
+				</AlertDialogTrigger>
+			</RowAction>
 			<AlertDialogContent>
 				<AlertDialogHeader>
 					<AlertDialogTitle>{props.title}</AlertDialogTitle>

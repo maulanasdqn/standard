@@ -106,7 +106,7 @@ test.describe("roles admin flow", () => {
 		await rowWithCell(page, NEW_ROLE.key)
 			.getByRole("link", { name: "Edit" })
 			.click();
-		await expect(page).toHaveURL(new RegExp(`/roles/${NEW_ROLE.key}$`));
+		await expect(page).toHaveURL(new RegExp(`/roles/${NEW_ROLE.key}/edit$`));
 		await expect(
 			page.getByRole("heading", { name: NEW_ROLE.label }),
 		).toBeVisible();

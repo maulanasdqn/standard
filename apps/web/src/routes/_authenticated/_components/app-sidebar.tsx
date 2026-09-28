@@ -1,3 +1,4 @@
+import { Guard } from "@app/components/guard/guard";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -26,12 +27,11 @@ import { useSessionSignOut } from "#/routes/_authenticated/_hooks/use-session-si
 import { useTheme } from "#/routes/_authenticated/_hooks/use-theme.ts";
 import { Switch } from "@app/components/ui/switch";
 import { APP_MESSAGE } from "@app/messages";
-import { useVisibleNav } from "#/routes/_authenticated/_hooks/use-visible-nav.ts";
+import { NAV_ITEMS } from "#/routes/_authenticated/_constants/nav.ts";
 
 export const AppSidebar: FC = (): ReactElement => {
 	const session = useSession();
 	const signOut = useSessionSignOut();
-	const navItems = useVisibleNav();
 	const matchRoute = useMatchRoute();
 	const theme = useTheme();
 
@@ -60,19 +60,21 @@ export const AppSidebar: FC = (): ReactElement => {
 					<SidebarGroupLabel>{APP_MESSAGE.NAVIGATION}</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu>
-							{A.map(navItems, (item) => (
-								<SidebarMenuItem key={item.to}>
-									<SidebarMenuButton
-										asChild
-										tooltip={item.label}
-										isActive={!!matchRoute({ to: item.to, fuzzy: true })}
-									>
-										<Link to={item.to}>
-											<item.icon />
-											<span>{item.label}</span>
-										</Link>
-									</SidebarMenuButton>
-								</SidebarMenuItem>
+							{A.map(NAV_ITEMS, (item) => (
+								<Guard key={item.to} permissions={item.permissions}>
+									<SidebarMenuItem>
+										<SidebarMenuButton
+											asChild
+											tooltip={item.label}
+											isActive={!!matchRoute({ to: item.to, fuzzy: true })}
+										>
+											<Link to={item.to}>
+												<item.icon />
+												<span>{item.label}</span>
+											</Link>
+										</SidebarMenuButton>
+									</SidebarMenuItem>
+								</Guard>
 							))}
 						</SidebarMenu>
 					</SidebarGroupContent>

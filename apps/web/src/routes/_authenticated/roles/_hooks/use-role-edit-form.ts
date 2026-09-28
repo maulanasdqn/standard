@@ -7,7 +7,6 @@ import {
 	type TConfirmedForm,
 	useConfirmedForm,
 } from "#/routes/_authenticated/_hooks/use-confirmed-form.ts";
-import { useRoleReadOnly } from "#/routes/_authenticated/roles/_hooks/use-role-read-only.ts";
 import { useRoleUpdate } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
 
 const roleEditFormSchema = roleUpdateInputSchema.omit({ key: true }).required();
@@ -28,10 +27,12 @@ const descriptionOf = (value: string | null): string | null =>
 		.with(P.union("", P.nullish), (): null => null)
 		.otherwise((text): string => text);
 
-export const useRoleEditForm = (role: TRoleDto): TRoleEditForm => {
+export const useRoleEditForm = (
+	role: TRoleDto,
+	isReadOnly: boolean,
+): TRoleEditForm => {
 	const navigate = useNavigate();
 	const roleUpdate = useRoleUpdate();
-	const isReadOnly = useRoleReadOnly(role);
 
 	const defaultValues: TRoleEditFormValues = {
 		label: role.label,
