@@ -5,6 +5,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
 import { PermissionMatrix } from "#/routes/_authenticated/permissions/_components/permission-matrix.tsx";
 import { roleListOptions } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
+import { ListPageSkeleton } from "#/routes/_components/list-page-skeleton.tsx";
 
 const PermissionsPage: FC = (): ReactElement => {
 	return (
@@ -20,9 +21,14 @@ const PermissionsPage: FC = (): ReactElement => {
 	);
 };
 
+const PermissionsPending: FC = (): ReactElement => (
+	<ListPageSkeleton description toolbar={false} pagination={false} />
+);
+
 export const Route = createFileRoute("/_authenticated/permissions/")({
 	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
 	loader: ({ context }) =>
 		context.queryClient.ensureQueryData(roleListOptions()),
 	component: PermissionsPage,
+	pendingComponent: PermissionsPending,
 });

@@ -14,6 +14,7 @@ import {
 	useNoteList,
 	useNoteListChange,
 } from "#/routes/_authenticated/notes/_hooks/use-notes.ts";
+import { ListPageSkeleton } from "#/routes/_components/list-page-skeleton.tsx";
 
 const noteSearchValidate = searchLenient(noteListInputSchema);
 
@@ -45,6 +46,8 @@ const NotesPage: FC = (): ReactElement => {
 	);
 };
 
+const NotesPending: FC = (): ReactElement => <ListPageSkeleton action />;
+
 export const Route = createFileRoute("/_authenticated/notes/")({
 	validateSearch: noteSearchValidate,
 	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.NOTE_READ] }),
@@ -52,4 +55,5 @@ export const Route = createFileRoute("/_authenticated/notes/")({
 	loader: ({ context, deps }) =>
 		context.queryClient.ensureQueryData(noteListOptions(deps.search)),
 	component: NotesPage,
+	pendingComponent: NotesPending,
 });

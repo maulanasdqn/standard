@@ -15,6 +15,8 @@ import {
 	useIsSelf,
 	useUserGet,
 } from "#/routes/_authenticated/users/_hooks/use-users.ts";
+import { FormPageSkeleton } from "#/routes/_components/form-page-skeleton.tsx";
+import { FormSkeleton } from "@app/components/skeleton/form-skeleton";
 
 const UserEditPage: FC = (): ReactElement => {
 	const { data } = useUserGet();
@@ -53,6 +55,13 @@ const UserEditPage: FC = (): ReactElement => {
 	);
 };
 
+const UserEditPending: FC = (): ReactElement => (
+	<FormPageSkeleton>
+		<FormSkeleton fields={4} twoColumn />
+		<FormSkeleton fields={2} twoColumn />
+	</FormPageSkeleton>
+);
+
 export const Route = createFileRoute("/_authenticated/users/$userId")({
 	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
 	loader: ({ context, params }) =>
@@ -61,4 +70,5 @@ export const Route = createFileRoute("/_authenticated/users/$userId")({
 			context.queryClient.ensureQueryData(roleListOptions()),
 		]),
 	component: UserEditPage,
+	pendingComponent: UserEditPending,
 });

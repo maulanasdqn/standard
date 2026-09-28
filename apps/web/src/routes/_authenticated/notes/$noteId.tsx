@@ -12,6 +12,9 @@ import {
 	noteGetOptions,
 	useNoteGet,
 } from "#/routes/_authenticated/notes/_hooks/use-notes.ts";
+import { FormPageSkeleton } from "#/routes/_components/form-page-skeleton.tsx";
+import { FormSkeleton } from "@app/components/skeleton/form-skeleton";
+import { CardSkeleton } from "@app/components/skeleton/card-grid-skeleton";
 
 const NoteEditPage: FC = (): ReactElement => {
 	const { data } = useNoteGet();
@@ -44,6 +47,13 @@ const NoteEditPage: FC = (): ReactElement => {
 	);
 };
 
+const NoteEditPending: FC = (): ReactElement => (
+	<FormPageSkeleton>
+		<FormSkeleton fields={1} textArea />
+		<CardSkeleton className="h-72" />
+	</FormPageSkeleton>
+);
+
 export const Route = createFileRoute("/_authenticated/notes/$noteId")({
 	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.NOTE_WRITE] }),
 	loader: ({ context, params }) =>
@@ -54,4 +64,5 @@ export const Route = createFileRoute("/_authenticated/notes/$noteId")({
 			),
 		]),
 	component: NoteEditPage,
+	pendingComponent: NoteEditPending,
 });

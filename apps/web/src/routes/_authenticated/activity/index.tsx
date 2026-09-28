@@ -11,6 +11,7 @@ import {
 	useActivityList,
 	useActivityListChange,
 } from "#/routes/_authenticated/activity/_hooks/use-activity.ts";
+import { ListPageSkeleton } from "#/routes/_components/list-page-skeleton.tsx";
 
 const activitySearchValidate = searchLenient(activityListInputSchema);
 
@@ -32,6 +33,10 @@ const ActivityPage: FC = (): ReactElement => {
 	);
 };
 
+const ActivityPending: FC = (): ReactElement => (
+	<ListPageSkeleton columns={5} />
+);
+
 export const Route = createFileRoute("/_authenticated/activity/")({
 	validateSearch: activitySearchValidate,
 	beforeLoad: checkRoutePermissions({
@@ -41,4 +46,5 @@ export const Route = createFileRoute("/_authenticated/activity/")({
 	loader: ({ context, deps }) =>
 		context.queryClient.ensureQueryData(activityListOptions(deps.search)),
 	component: ActivityPage,
+	pendingComponent: ActivityPending,
 });

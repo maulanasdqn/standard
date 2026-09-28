@@ -5,6 +5,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
 import { NoteCreateForm } from "#/routes/_authenticated/notes/_components/note-create-form.tsx";
 import { FormPage } from "#/routes/_authenticated/_components/form-page.tsx";
+import { FormPageSkeleton } from "#/routes/_components/form-page-skeleton.tsx";
+import { FormSkeleton } from "@app/components/skeleton/form-skeleton";
 
 const NoteCreatePage: FC = (): ReactElement => (
 	<FormPage
@@ -18,7 +20,14 @@ const NoteCreatePage: FC = (): ReactElement => (
 	</FormPage>
 );
 
+const NoteCreatePending: FC = (): ReactElement => (
+	<FormPageSkeleton>
+		<FormSkeleton fields={1} textArea />
+	</FormPageSkeleton>
+);
+
 export const Route = createFileRoute("/_authenticated/notes/create")({
 	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.NOTE_WRITE] }),
 	component: NoteCreatePage,
+	pendingComponent: NoteCreatePending,
 });

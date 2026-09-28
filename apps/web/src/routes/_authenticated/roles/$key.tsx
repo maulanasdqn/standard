@@ -8,6 +8,9 @@ import {
 	roleGetOptions,
 	useRoleGet,
 } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
+import { RouteSkeleton } from "#/routes/_components/route-skeleton.tsx";
+import { PageHeaderSkeleton } from "@app/components/skeleton/page-header-skeleton";
+import { FormSkeleton } from "@app/components/skeleton/form-skeleton";
 
 const RoleEditPage: FC = (): ReactElement => {
 	const { data } = useRoleGet();
@@ -22,9 +25,17 @@ const RoleEditPage: FC = (): ReactElement => {
 	);
 };
 
+const RoleEditPending: FC = (): ReactElement => (
+	<RouteSkeleton>
+		<PageHeaderSkeleton />
+		<FormSkeleton fields={6} twoColumn />
+	</RouteSkeleton>
+);
+
 export const Route = createFileRoute("/_authenticated/roles/$key")({
 	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
 	loader: ({ context, params }) =>
 		context.queryClient.ensureQueryData(roleGetOptions(params.key)),
 	component: RoleEditPage,
+	pendingComponent: RoleEditPending,
 });

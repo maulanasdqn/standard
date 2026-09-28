@@ -3,8 +3,13 @@ import type { FC, ReactElement } from "react";
 import { match, P } from "ts-pattern";
 import { EServerUnreachable } from "#/libs/auth/server-unreachable.ts";
 import { SESSION_REACH } from "#/libs/auth/session-reach.ts";
+import { PageTransition } from "#/routes/_components/page-transition.tsx";
 
-const PublicLayout: FC = (): ReactElement => <Outlet />;
+const PublicLayout: FC = (): ReactElement => (
+	<PageTransition>
+		<Outlet />
+	</PageTransition>
+);
 
 export const Route = createFileRoute("/_public")({
 	beforeLoad: ({ context }) => {

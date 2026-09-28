@@ -10,6 +10,10 @@ import {
 	roleListOptions,
 	useRoleList,
 } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
+import { RouteSkeleton } from "#/routes/_components/route-skeleton.tsx";
+import { PageHeaderSkeleton } from "@app/components/skeleton/page-header-skeleton";
+import { FormSkeleton } from "@app/components/skeleton/form-skeleton";
+import { TableSkeleton } from "@app/components/skeleton/table-skeleton";
 
 const RolesPage: FC = (): ReactElement => {
 	const { data } = useRoleList();
@@ -25,9 +29,18 @@ const RolesPage: FC = (): ReactElement => {
 	);
 };
 
+const RolesPending: FC = (): ReactElement => (
+	<RouteSkeleton>
+		<PageHeaderSkeleton />
+		<FormSkeleton fields={2} twoColumn />
+		<TableSkeleton toolbar={false} pagination={false} columns={3} />
+	</RouteSkeleton>
+);
+
 export const Route = createFileRoute("/_authenticated/roles/")({
 	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
 	loader: ({ context }) =>
 		context.queryClient.ensureQueryData(roleListOptions()),
 	component: RolesPage,
+	pendingComponent: RolesPending,
 });
