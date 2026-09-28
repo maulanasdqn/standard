@@ -3,7 +3,7 @@ import type { TMetrics } from "@app/metrics";
 import type { Hono } from "hono";
 import { match, P } from "ts-pattern";
 import { HTTP_STATUS } from "#/platform/http/http-status.ts";
-import { ROUTE_PATH } from "#/platform/http/route-paths.ts";
+import { ROUTE_PATH } from "@app/contract";
 
 const AUTHORIZATION_HEADER = "authorization";
 const BEARER_PREFIX = "Bearer ";

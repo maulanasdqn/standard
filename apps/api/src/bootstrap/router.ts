@@ -5,8 +5,9 @@ import { noteModule } from "#/note/index.ts";
 import { permissionModule } from "#/permission/index.ts";
 import { roleModule } from "#/role/index.ts";
 import { userModule } from "#/user/index.ts";
+import { implementer } from "#/platform/orpc/implementer.ts";
 
-const appRouter = {
+const appRouter = implementer.router({
 	health: healthModule.routerBuild(),
 	me: authModule.routerBuild(),
 	note: noteModule.routerBuild(),
@@ -14,7 +15,7 @@ const appRouter = {
 	role: roleModule.routerBuild(),
 	permission: permissionModule.routerBuild(),
 	activity: activityModule.routerBuild(),
-};
+});
 
 export type TAppRouter = typeof appRouter;
 

@@ -3,7 +3,7 @@ import { APP_VERSION } from "@app/version";
 import type { Hono } from "hono";
 import { match } from "ts-pattern";
 import { HTTP_STATUS } from "#/platform/http/http-status.ts";
-import { ROUTE_PATH } from "#/platform/http/route-paths.ts";
+import { ROUTE_PATH } from "@app/contract";
 
 export type THealthMountDeps = {
 	readiness: () => Promise<TReadiness>;
