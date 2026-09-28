@@ -1,4 +1,5 @@
 export * from "./format-bytes.ts";
+export * from "./format-kebab.ts";
 import { match, P } from "ts-pattern";
 
 export const NOT_SET = "-";

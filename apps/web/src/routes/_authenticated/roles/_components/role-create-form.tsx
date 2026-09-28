@@ -20,7 +20,15 @@ import { PermissionChecklist } from "#/routes/_authenticated/roles/_components/p
 import { useRoleCreateForm } from "#/routes/_authenticated/roles/_hooks/use-role-create-form.ts";
 
 export const RoleCreateForm: FC = (): ReactElement => {
-	const { form, onSubmit, confirm, isPending } = useRoleCreateForm();
+	const {
+		form,
+		onSubmit,
+		confirm,
+		isPending,
+		onLabelChange,
+		onKeyChange,
+		onKeyBlur,
+	} = useRoleCreateForm();
 
 	return (
 		<form onSubmit={onSubmit}>
@@ -33,21 +41,6 @@ export const RoleCreateForm: FC = (): ReactElement => {
 				</CardHeader>
 				<CardContent className="flex flex-col gap-6">
 					<div className="grid gap-6 sm:grid-cols-2">
-						<form.Field name="key">
-							{(field) => (
-								<div className="flex flex-col gap-2">
-									<Label htmlFor={field.name}>{ROLE_MESSAGE.FIELD_KEY}</Label>
-									<Input
-										id={field.name}
-										placeholder={ROLE_MESSAGE.KEY_PLACEHOLDER}
-										value={field.state.value}
-										onBlur={field.handleBlur}
-										onChange={(event) => field.handleChange(event.target.value)}
-									/>
-									<FieldError errors={field.state.meta.errors} />
-								</div>
-							)}
-						</form.Field>
 						<form.Field name="label">
 							{(field) => (
 								<div className="flex flex-col gap-2">
@@ -57,7 +50,25 @@ export const RoleCreateForm: FC = (): ReactElement => {
 										placeholder={ROLE_MESSAGE.LABEL_PLACEHOLDER}
 										value={field.state.value}
 										onBlur={field.handleBlur}
-										onChange={(event) => field.handleChange(event.target.value)}
+										onChange={(event) => onLabelChange(event.target.value)}
+									/>
+									<FieldError errors={field.state.meta.errors} />
+								</div>
+							)}
+						</form.Field>
+						<form.Field name="key">
+							{(field) => (
+								<div className="flex flex-col gap-2">
+									<Label htmlFor={field.name}>{ROLE_MESSAGE.FIELD_KEY}</Label>
+									<Input
+										id={field.name}
+										placeholder={ROLE_MESSAGE.KEY_PLACEHOLDER}
+										value={field.state.value}
+										onBlur={() => {
+											field.handleBlur();
+											onKeyBlur();
+										}}
+										onChange={(event) => onKeyChange(event.target.value)}
 									/>
 									<FieldError errors={field.state.meta.errors} />
 								</div>
