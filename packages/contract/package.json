@@ -12,7 +12,7 @@
 	},
 	"dependencies": {
 		"@app/schemas": "workspace:*",
-		"@orpc/contract": "^1.13.6",
+		"@orpc/contract": "^1.15.4",
 		"zod": "catalog:"
 	},
 	"devDependencies": {
