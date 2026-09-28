@@ -69,6 +69,8 @@ test.describe("deleting from the lists", () => {
 
 	test("deletes an unused custom role and offers no delete on a fixed one", async (): Promise<void> => {
 		await page.goto("/roles");
+		await page.getByRole("link", { name: ROLE_MESSAGE.NEW_ROLE }).click();
+		await expect(page).toHaveURL(/\/roles\/create$/);
 		await page.getByLabel("Key", { exact: true }).fill(DOOMED_ROLE.key);
 		await page.getByLabel("Label", { exact: true }).fill(DOOMED_ROLE.label);
 		await page
@@ -83,6 +85,7 @@ test.describe("deleting from the lists", () => {
 			.getByRole("button", { name: ROLE_MESSAGE.CREATE_ACTION })
 			.click();
 		await confirmAction(page);
+		await expect(page).toHaveURL(/\/roles$/);
 		await expect(rowWithCell(page, DOOMED_ROLE.key)).toBeVisible();
 
 		await expect(deleteButtonOf(rowWithCell(page, ROLE_KEY.ADMIN))).toHaveCount(

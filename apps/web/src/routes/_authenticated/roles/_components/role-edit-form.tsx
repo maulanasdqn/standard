@@ -1,16 +1,24 @@
 import { Button } from "@app/components/ui/button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@app/components/ui/card";
 import { FieldError } from "@app/components/ui/field-error";
 import { Input } from "@app/components/ui/input";
 import { Label } from "@app/components/ui/label";
 import { Textarea } from "@app/components/ui/textarea";
+import { APP_MESSAGE, ROLE_MESSAGE } from "@app/messages";
 import type { TRoleDto } from "@app/schemas";
 import { Link } from "@tanstack/react-router";
+import { Loader2 } from "lucide-react";
 import type { FC, ReactElement } from "react";
+import { ConfirmDialog } from "#/routes/_authenticated/_components/confirm-dialog.tsx";
 import { PermissionChecklist } from "#/routes/_authenticated/roles/_components/permission-checklist.tsx";
 import { useRoleEditForm } from "#/routes/_authenticated/roles/_hooks/use-role-edit-form.ts";
-import { Card, CardContent } from "@app/components/ui/card";
-import { ROLE_MESSAGE } from "@app/messages";
-import { ConfirmDialog } from "#/routes/_authenticated/_components/confirm-dialog.tsx";
 
 type TRoleEditFormProps = {
 	role: TRoleDto;
@@ -22,13 +30,15 @@ export const RoleEditForm: FC<TRoleEditFormProps> = (props): ReactElement => {
 	);
 
 	return (
-		<Card>
-			<CardContent>
-				<form onSubmit={onSubmit} className="flex flex-col gap-4">
-					<p className="text-sm text-muted-foreground">
-						{ROLE_MESSAGE.KEY_PREFIX} <code>{props.role.key}</code> ·{" "}
-						{props.role.memberCount} {ROLE_MESSAGE.MEMBERS}
-					</p>
+		<form onSubmit={onSubmit}>
+			<Card>
+				<CardHeader>
+					<CardTitle>{ROLE_MESSAGE.DETAILS_TITLE}</CardTitle>
+					<CardDescription>
+						{ROLE_MESSAGE.EDIT_DETAILS_DESCRIPTION}
+					</CardDescription>
+				</CardHeader>
+				<CardContent className="flex flex-col gap-6">
 					{isFixed && (
 						<p className="rounded-lg border border-border bg-muted p-3 text-sm text-muted-foreground">
 							{ROLE_MESSAGE.FIXED}
@@ -36,7 +46,7 @@ export const RoleEditForm: FC<TRoleEditFormProps> = (props): ReactElement => {
 					)}
 					<form.Field name="label">
 						{(field) => (
-							<div className="flex flex-col gap-1">
+							<div className="flex flex-col gap-2">
 								<Label htmlFor={field.name}>{ROLE_MESSAGE.FIELD_LABEL}</Label>
 								<Input
 									id={field.name}
@@ -52,7 +62,7 @@ export const RoleEditForm: FC<TRoleEditFormProps> = (props): ReactElement => {
 					</form.Field>
 					<form.Field name="description">
 						{(field) => (
-							<div className="flex flex-col gap-1">
+							<div className="flex flex-col gap-2">
 								<Label htmlFor={field.name}>
 									{ROLE_MESSAGE.FIELD_DESCRIPTION}
 								</Label>
@@ -83,25 +93,28 @@ export const RoleEditForm: FC<TRoleEditFormProps> = (props): ReactElement => {
 							</div>
 						)}
 					</form.Field>
-					<div className="flex items-center gap-3">
-						{!isFixed && (
-							<Button type="submit" disabled={isPending}>
-								{isPending ? ROLE_MESSAGE.SAVING : ROLE_MESSAGE.SAVE_CHANGES}
-							</Button>
-						)}
-						<Link to="/roles" className="text-sm hover:underline">
-							{ROLE_MESSAGE.BACK_TO_ROLES}
+				</CardContent>
+				<CardFooter className="justify-end gap-2 border-t pt-6">
+					<Button variant="outline" asChild>
+						<Link to="/roles">
+							{isFixed ? ROLE_MESSAGE.BACK_TO_ROLES : APP_MESSAGE.CANCEL}
 						</Link>
-					</div>
-				</form>
-				<ConfirmDialog
-					open={confirm.open}
-					title={ROLE_MESSAGE.UPDATE_CONFIRM_TITLE}
-					description={ROLE_MESSAGE.UPDATE_CONFIRM_DESCRIPTION}
-					onOpenChange={confirm.onOpenChange}
-					onConfirm={confirm.onConfirm}
-				/>
-			</CardContent>
-		</Card>
+					</Button>
+					{!isFixed && (
+						<Button type="submit" disabled={isPending}>
+							{isPending && <Loader2 className="animate-spin" />}
+							{isPending ? ROLE_MESSAGE.SAVING : ROLE_MESSAGE.SAVE_CHANGES}
+						</Button>
+					)}
+				</CardFooter>
+			</Card>
+			<ConfirmDialog
+				open={confirm.open}
+				title={ROLE_MESSAGE.UPDATE_CONFIRM_TITLE}
+				description={ROLE_MESSAGE.UPDATE_CONFIRM_DESCRIPTION}
+				onOpenChange={confirm.onOpenChange}
+				onConfirm={confirm.onConfirm}
+			/>
+		</form>
 	);
 };

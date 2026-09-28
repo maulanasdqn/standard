@@ -1,11 +1,20 @@
 export const ROLE_MESSAGE = {
 	TITLE: "Roles",
+	NEW_ROLE: "New Role",
+	CREATE_DESCRIPTION:
+		"Create a role with a key, a label, and the permissions it grants. It can be assigned to users right away.",
+	EDIT_DESCRIPTION:
+		"Update the label, description, or permissions. Every member gets the change as soon as you confirm.",
+	VIEW_DESCRIPTION: "See what this role grants and how many users hold it.",
+	DETAILS_TITLE: "Role details",
+	CREATE_DETAILS_DESCRIPTION:
+		"The key identifies the role and cannot be changed later.",
+	EDIT_DETAILS_DESCRIPTION:
+		"The key identifies the role and cannot be changed here.",
 	FIELD_KEY: "Key",
 	FIELD_LABEL: "Label",
 	FIELD_DESCRIPTION: "Description",
 	FIELD_PERMISSIONS: "Permissions",
-	KEY_PREFIX: "Key:",
-	MEMBERS: "members",
 	CREATE_ACTION: "Create role",
 	CREATING: "Creating…",
 	SAVE_CHANGES: "Save changes",

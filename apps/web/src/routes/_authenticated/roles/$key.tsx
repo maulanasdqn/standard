@@ -1,35 +1,58 @@
 import { Guard } from "@app/components/guard/guard";
-import { checkRoutePermissions } from "#/libs/auth/route-guard.ts";
+import { FormSkeleton } from "@app/components/skeleton/form-skeleton";
+import { ROLE_MESSAGE } from "@app/messages";
 import { PERMISSION } from "@app/permissions";
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
+import { checkRoutePermissions } from "#/libs/auth/route-guard.ts";
+import { FormPage } from "#/routes/_authenticated/_components/form-page.tsx";
 import { RoleEditForm } from "#/routes/_authenticated/roles/_components/role-edit-form.tsx";
 import {
 	roleGetOptions,
 	useRoleGet,
 } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
-import { RouteSkeleton } from "#/routes/_components/route-skeleton.tsx";
-import { PageHeaderSkeleton } from "@app/components/skeleton/page-header-skeleton";
-import { FormSkeleton } from "@app/components/skeleton/form-skeleton";
+import { FormPageSkeleton } from "#/routes/_components/form-page-skeleton.tsx";
 
 const RoleEditPage: FC = (): ReactElement => {
 	const { data } = useRoleGet();
 
 	return (
-		<div className="flex w-full flex-col gap-6">
-			<h1 className="text-xl font-semibold">{data.label}</h1>
+		<FormPage
+			parentLabel={ROLE_MESSAGE.TITLE}
+			parentTo="/roles"
+			backLabel={ROLE_MESSAGE.BACK_TO_ROLES}
+			title={data.label}
+			description={
+				data.fixed
+					? ROLE_MESSAGE.VIEW_DESCRIPTION
+					: ROLE_MESSAGE.EDIT_DESCRIPTION
+			}
+			meta={
+				<dl className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted-foreground">
+					<div className="flex gap-1">
+						<dt>{ROLE_MESSAGE.FIELD_KEY}</dt>
+						<dd>
+							<code>{data.key}</code>
+						</dd>
+					</div>
+					<div className="flex gap-1">
+						<dt>{ROLE_MESSAGE.COLUMN_MEMBERS}</dt>
+						<dd>{data.memberCount}</dd>
+					</div>
+				</dl>
+			}
+		>
 			<Guard permissions={[PERMISSION.USER_MANAGE]}>
 				<RoleEditForm key={data.key} role={data} />
 			</Guard>
-		</div>
+		</FormPage>
 	);
 };
 
 const RoleEditPending: FC = (): ReactElement => (
-	<RouteSkeleton>
-		<PageHeaderSkeleton />
-		<FormSkeleton fields={6} twoColumn />
-	</RouteSkeleton>
+	<FormPageSkeleton>
+		<FormSkeleton fields={1} textArea />
+	</FormPageSkeleton>
 );
 
 export const Route = createFileRoute("/_authenticated/roles/$key")({

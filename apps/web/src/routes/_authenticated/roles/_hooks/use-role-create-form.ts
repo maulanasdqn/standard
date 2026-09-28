@@ -1,4 +1,5 @@
 import { roleCreateInputSchema } from "@app/schemas";
+import { useNavigate } from "@tanstack/react-router";
 import { D } from "@mobily/ts-belt";
 import { match } from "ts-pattern";
 import type { z } from "zod";
@@ -31,13 +32,14 @@ type TRoleCreateForm = TConfirmedForm<
 
 export const useRoleCreateForm = (): TRoleCreateForm => {
 	const roleCreate = useRoleCreate();
+	const navigate = useNavigate();
 
 	const confirmed = useConfirmedForm({
 		defaultValues: DEFAULT_VALUES,
 		schema: roleCreateInputSchema,
-		run: (value, form): void =>
+		run: (value): void =>
 			roleCreate.mutate(payloadBuild(value), {
-				onSuccess: () => form.reset(),
+				onSuccess: () => void navigate({ to: "/roles" }),
 			}),
 	});
 
