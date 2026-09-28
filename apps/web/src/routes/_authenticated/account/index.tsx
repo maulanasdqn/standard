@@ -6,7 +6,7 @@ import { PasswordChangeForm } from "#/routes/_authenticated/account/_components/
 
 const AccountPage: FC = (): ReactElement => {
 	return (
-		<div className="flex max-w-md flex-col gap-6">
+		<div className="flex w-full flex-col gap-6">
 			<h1 className="text-xl font-semibold">{AUTH_MESSAGE.ACCOUNT_TITLE}</h1>
 			<AccountSummary />
 			<PasswordChangeForm />
