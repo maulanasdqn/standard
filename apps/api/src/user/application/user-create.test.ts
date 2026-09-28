@@ -2,7 +2,7 @@ import { ROLE } from "@app/permissions";
 import type { TUserCreateInput } from "@app/schemas";
 import { Effect, Layer } from "effect";
 import { describe, expect, it, type Mock, vi } from "vitest";
-import { ACTIVITY_ACTION } from "@app/activity";
+import { ACTIVITY_ACTION, ACTIVITY_DETAIL } from "@app/activity";
 import { EConflict } from "#/shared/errors.ts";
 import { userCreate } from "#/user/application/user-create.ts";
 import type { TUserRow, TUserRepoId } from "#/user/domain/user.ts";
@@ -83,6 +83,10 @@ describe("userCreate", () => {
 			expect.objectContaining({
 				action: ACTIVITY_ACTION.USER_CREATE,
 				resourceId: row.id,
+				metadata: {
+					[ACTIVITY_DETAIL.EMAIL]: row.email,
+					[ACTIVITY_DETAIL.ROLE]: row.role,
+				},
 			}),
 		);
 	});

@@ -1,15 +1,43 @@
 import { NOTE_MESSAGE } from "@app/messages";
-import type { TNote, TNoteUpdateInput } from "@app/schemas";
+import {
+	NOTE_FIELD,
+	type TNote,
+	type TNoteField,
+	type TNoteUpdateInput,
+} from "@app/schemas";
+import { A, D } from "@mobily/ts-belt";
 import { Effect } from "effect";
 import { toNoteDto } from "#/note/application/to-note-dto.ts";
-import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
+import {
+	ACTIVITY_ACTION,
+	ACTIVITY_DETAIL,
+	ACTIVITY_RESOURCE_TYPE,
+	activityDetailList,
+	activityDetails,
+	type TActivityDetails,
+} from "@app/activity";
 import { EConflict, ENotFound, type EDatabase } from "#/shared/errors.ts";
 import {
 	ActivityRecorder,
 	type TActivityRecorderId,
 } from "#/shared/activity-recorder.ts";
-import { NoteRepo, type TNoteRepoId } from "#/note/domain/note.ts";
+import {
+	NoteRepo,
+	type TNoteRepoId,
+	type TNoteRow,
+} from "#/note/domain/note.ts";
 import type { TOwnershipActor } from "#/shared/authorization/owned-entity.ts";
+
+const updateDetails = (previous: TNoteRow, next: TNoteRow): TActivityDetails =>
+	activityDetails({
+		[ACTIVITY_DETAIL.TITLE]: next.title,
+		[ACTIVITY_DETAIL.CHANGED_FIELDS]: activityDetailList(
+			A.filter(
+				D.values(NOTE_FIELD),
+				(field: TNoteField): boolean => previous[field] !== next[field],
+			),
+		),
+	});
 
 export const noteUpdate = Effect.fn("noteUpdate")(function* (
 	input: TNoteUpdateInput,
@@ -21,6 +49,12 @@ export const noteUpdate = Effect.fn("noteUpdate")(function* (
 > {
 	const noteRepo = yield* NoteRepo;
 	const activityRepo = yield* ActivityRecorder;
+	const previous = yield* noteRepo.findById(input.id, actor);
+
+	if (previous === null) {
+		return yield* new ENotFound({ message: NOTE_MESSAGE.NOT_FOUND });
+	}
+
 	const updated = yield* noteRepo.update(input, actor);
 
 	if (updated === null) {
@@ -38,6 +72,7 @@ export const noteUpdate = Effect.fn("noteUpdate")(function* (
 		action: ACTIVITY_ACTION.NOTE_UPDATE,
 		resourceType: ACTIVITY_RESOURCE_TYPE.NOTE,
 		resourceId: updated.id,
+		metadata: updateDetails(previous, updated),
 	});
 
 	return toNoteDto(updated);

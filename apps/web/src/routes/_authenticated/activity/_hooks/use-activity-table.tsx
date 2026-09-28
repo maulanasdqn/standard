@@ -60,7 +60,10 @@ const columns = helper.columns([
 		header: ACTIVITY_MESSAGE.COLUMN_DETAILS,
 		enableSorting: false,
 		meta: { className: "max-w-xs truncate text-xs text-muted-foreground" },
-		cell: (context): string => metadataLabel(context.getValue()),
+		cell: (context): ReactElement => {
+			const label = metadataLabel(context.getValue());
+			return <span title={label}>{label}</span>;
+		},
 	}),
 ]);
 

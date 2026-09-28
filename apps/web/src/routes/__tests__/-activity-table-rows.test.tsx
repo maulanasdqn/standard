@@ -1,4 +1,8 @@
-import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
+import {
+	ACTIVITY_ACTION,
+	ACTIVITY_DETAIL,
+	ACTIVITY_RESOURCE_TYPE,
+} from "@app/activity";
 import { formatDateTime, NOT_SET } from "@app/format";
 import { ACTIVITY_ACTION_LABEL, ACTIVITY_ENTITY_LABEL } from "@app/messages";
 import { ACTIVITY_SORT, SORT_DIRECTION, type TActivity } from "@app/schemas";
@@ -38,7 +42,7 @@ const entries: readonly TActivity[] = [
 		action: ACTIVITY_ACTION.USER_UPDATE,
 		resourceType: ACTIVITY_RESOURCE_TYPE.USER,
 		resourceId: "user-1",
-		metadata: { role: "member" },
+		metadata: { [ACTIVITY_DETAIL.ROLE]: "member" },
 		createdAt: CREATED_AT,
 	},
 ];
@@ -80,10 +84,10 @@ describe("ActivityTable with rows", () => {
 		expect(second).toHaveTextContent(NOT_SET);
 	});
 
-	it("spells the metadata out as key and value pairs", (): void => {
+	it("spells the details out with a readable label", (): void => {
 		renderRows();
 
-		expect(screen.getByText("role: member")).toBeVisible();
+		expect(screen.getByText("Role: member")).toBeVisible();
 	});
 
 	it("formats the time of each entry", (): void => {

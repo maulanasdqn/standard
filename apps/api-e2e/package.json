@@ -8,6 +8,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
+		"@app/activity": "workspace:*",
 		"@app/api": "workspace:*",
 		"@app/contract": "workspace:*",
 		"@app/metrics": "workspace:*",

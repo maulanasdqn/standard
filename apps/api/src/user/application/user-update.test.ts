@@ -1,4 +1,4 @@
-import { ACTIVITY_ACTION } from "@app/activity";
+import { ACTIVITY_ACTION, ACTIVITY_DETAIL } from "@app/activity";
 import { PERMISSION, ROLE } from "@app/permissions";
 import { Effect, Layer } from "effect";
 import { describe, expect, it, type Mock, vi } from "vitest";
@@ -42,12 +42,19 @@ const customRole = {
 	updatedAt: row.updatedAt,
 };
 
-type TMocks = { update: Mock; findByKey: Mock; insert: Mock };
+type TMocks = {
+	findById: Mock;
+	update: Mock;
+	findByKey: Mock;
+	insert: Mock;
+};
 
 const mocksBuild = (
 	updated: TUserRow | null,
 	roleFound: typeof customRole | null,
+	previous: TUserRow | null = row,
 ): TMocks => ({
+	findById: vi.fn().mockReturnValue(Effect.succeed(previous)),
 	update: vi.fn().mockReturnValue(Effect.succeed(updated)),
 	findByKey: vi.fn().mockReturnValue(Effect.succeed(roleFound)),
 	insert: vi.fn().mockReturnValue(Effect.succeed(undefined)),
@@ -61,7 +68,7 @@ const layerBuild = (
 			UserRepo,
 			UserRepo.of({
 				list: vi.fn(),
-				findById: vi.fn(),
+				findById: mocks.findById,
 				findByEmail: vi.fn(),
 				create: vi.fn(),
 				update: mocks.update,
@@ -102,7 +109,10 @@ describe("userUpdate", () => {
 	});
 
 	it("lets the actor rename themselves", async (): Promise<void> => {
-		const mocks = mocksBuild({ ...row, id: ACTOR_ID, name: NEW_NAME }, null);
+		const mocks = mocksBuild({ ...row, id: ACTOR_ID, name: NEW_NAME }, null, {
+			...row,
+			id: ACTOR_ID,
+		});
 
 		const result = await Effect.runPromise(
 			userUpdate({ id: ACTOR_ID, name: NEW_NAME }, ACTOR_ID).pipe(
@@ -129,7 +139,7 @@ describe("userUpdate", () => {
 	});
 
 	it("fails with ENotFound when the user is gone", async (): Promise<void> => {
-		const mocks = mocksBuild(null, null);
+		const mocks = mocksBuild(null, null, null);
 
 		const error = await Effect.runPromise(
 			userUpdate({ id: USER_ID, name: NEW_NAME }, ACTOR_ID).pipe(
@@ -160,12 +170,15 @@ describe("userUpdate", () => {
 			expect.objectContaining({
 				action: ACTIVITY_ACTION.USER_UPDATE,
 				resourceId: USER_ID,
-				metadata: { role: CUSTOM_ROLE },
+				metadata: {
+					[ACTIVITY_DETAIL.ROLE]: CUSTOM_ROLE,
+					[ACTIVITY_DETAIL.PREVIOUS_ROLE]: ROLE.MEMBER,
+				},
 			}),
 		);
 	});
 
-	it("skips the role lookup and the metadata when only the name changes", async (): Promise<void> => {
+	it("skips the role lookup and records only the rename when only the name changes", async (): Promise<void> => {
 		const mocks = mocksBuild({ ...row, name: NEW_NAME }, null);
 
 		await Effect.runPromise(
@@ -176,7 +189,12 @@ describe("userUpdate", () => {
 
 		expect(mocks.findByKey).not.toHaveBeenCalled();
 		expect(mocks.insert).toHaveBeenCalledWith(
-			expect.objectContaining({ metadata: undefined }),
+			expect.objectContaining({
+				metadata: {
+					[ACTIVITY_DETAIL.NAME]: NEW_NAME,
+					[ACTIVITY_DETAIL.PREVIOUS_NAME]: row.name,
+				},
+			}),
 		);
 	});
 });

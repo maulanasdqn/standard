@@ -35,6 +35,13 @@ export type TNoteUpdateInput = z.infer<typeof noteUpdateInputSchema>;
 export const noteIdInputSchema = z.object({ id: z.uuid() });
 export type TNoteIdInput = z.infer<typeof noteIdInputSchema>;
 
+export const NOTE_FIELD = {
+	TITLE: "title",
+	BODY: "body",
+} as const;
+
+export type TNoteField = (typeof NOTE_FIELD)[keyof typeof NOTE_FIELD];
+
 export const NOTE_SORT = {
 	TITLE: "title",
 	CREATED_AT: "createdAt",

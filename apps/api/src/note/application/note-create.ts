@@ -1,7 +1,12 @@
 import type { TNoteCreateInput, TNote } from "@app/schemas";
 import { Effect } from "effect";
 import { toNoteDto } from "#/note/application/to-note-dto.ts";
-import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
+import {
+	ACTIVITY_ACTION,
+	ACTIVITY_DETAIL,
+	ACTIVITY_RESOURCE_TYPE,
+	activityDetails,
+} from "@app/activity";
 import type { EDatabase } from "#/shared/errors.ts";
 import {
 	ActivityRecorder,
@@ -23,6 +28,7 @@ export const noteCreate = Effect.fn("noteCreate")(function* (
 		action: ACTIVITY_ACTION.NOTE_CREATE,
 		resourceType: ACTIVITY_RESOURCE_TYPE.NOTE,
 		resourceId: row.id,
+		metadata: activityDetails({ [ACTIVITY_DETAIL.TITLE]: row.title }),
 	});
 
 	return toNoteDto(row);

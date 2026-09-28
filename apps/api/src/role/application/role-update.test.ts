@@ -1,4 +1,4 @@
-import { ACTIVITY_ACTION } from "@app/activity";
+import { ACTIVITY_ACTION, ACTIVITY_DETAIL } from "@app/activity";
 import { PERMISSION, ROLE } from "@app/permissions";
 import type { TRoleUpdateInput } from "@app/schemas";
 import { Effect, Layer } from "effect";
@@ -37,12 +37,25 @@ const row: TCustomRoleRow = {
 	updatedAt: new Date("2026-01-01T00:00:00Z"),
 };
 
-type TMocks = { update: Mock; memberCounts: Mock; insert: Mock };
+const previousRow: TCustomRoleRow = {
+	...row,
+	label: "Reviewer",
+	permissions: [PERMISSION.NOTE_READ, PERMISSION.USER_DELETE],
+};
+
+type TMocks = {
+	findByKey: Mock;
+	update: Mock;
+	memberCounts: Mock;
+	insert: Mock;
+};
 
 const mocksBuild = (
 	updated: TCustomRoleRow | null,
 	counts: TRoleMemberCounts,
+	previous: TCustomRoleRow | null = previousRow,
 ): TMocks => ({
+	findByKey: vi.fn().mockReturnValue(Effect.succeed(previous)),
 	update: vi.fn().mockReturnValue(Effect.succeed(updated)),
 	memberCounts: vi.fn().mockReturnValue(Effect.succeed(counts)),
 	insert: vi.fn().mockReturnValue(Effect.succeed(undefined)),
@@ -57,7 +70,7 @@ const layerBuild = (
 			CustomRoleRepo.of({
 				memberCounts: mocks.memberCounts,
 				list: vi.fn(),
-				findByKey: vi.fn(),
+				findByKey: mocks.findByKey,
 				create: vi.fn(),
 				update: mocks.update,
 				remove: vi.fn(),
@@ -85,7 +98,7 @@ describe("roleUpdate", () => {
 	});
 
 	it("fails with ENotFound when the custom role does not exist", async (): Promise<void> => {
-		const mocks = mocksBuild(null, {});
+		const mocks = mocksBuild(null, {}, null);
 
 		const error = await Effect.runPromise(
 			roleUpdate(input, ACTOR_ID).pipe(
@@ -116,6 +129,26 @@ describe("roleUpdate", () => {
 			expect.objectContaining({
 				action: ACTIVITY_ACTION.ROLE_UPDATE,
 				resourceId: KEY,
+				metadata: {
+					[ACTIVITY_DETAIL.LABEL]: input.label,
+					[ACTIVITY_DETAIL.PREVIOUS_LABEL]: previousRow.label,
+					[ACTIVITY_DETAIL.PERMISSIONS_ADDED]: PERMISSION.NOTE_UPDATE,
+					[ACTIVITY_DETAIL.PERMISSIONS_REMOVED]: PERMISSION.USER_DELETE,
+				},
+			}),
+		);
+	});
+
+	it("leaves out the label and permission changes when nothing changed", async (): Promise<void> => {
+		const mocks = mocksBuild(row, {}, row);
+
+		await Effect.runPromise(
+			roleUpdate(input, ACTOR_ID).pipe(Effect.provide(layerBuild(mocks))),
+		);
+
+		expect(mocks.insert).toHaveBeenCalledWith(
+			expect.objectContaining({
+				metadata: { [ACTIVITY_DETAIL.LABEL]: input.label },
 			}),
 		);
 	});

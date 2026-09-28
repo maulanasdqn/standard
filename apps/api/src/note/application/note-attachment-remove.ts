@@ -2,6 +2,7 @@ import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
 import { NOTE_ATTACHMENT_MESSAGE } from "@app/messages";
 import type { TNoteAttachmentIdInput } from "@app/schemas";
 import { Effect } from "effect";
+import { noteAttachmentDetails } from "#/note/application/note-attachment-details.ts";
 import {
 	NoteAttachmentRepo,
 	type TNoteAttachmentRepoId,
@@ -56,7 +57,7 @@ export const noteAttachmentRemove = Effect.fn("noteAttachmentRemove")(
 			action: ACTIVITY_ACTION.NOTE_ATTACHMENT_DELETE,
 			resourceType: ACTIVITY_RESOURCE_TYPE.NOTE_ATTACHMENT,
 			resourceId: id,
-			metadata: { noteId: row.noteId },
+			metadata: noteAttachmentDetails(row),
 		});
 
 		return { id };

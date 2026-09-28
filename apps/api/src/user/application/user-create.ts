@@ -2,7 +2,12 @@ import { USER_MESSAGE } from "@app/messages";
 import type { TUser, TUserCreateInput } from "@app/schemas";
 import { Effect } from "effect";
 import { roleEnsure } from "#/role/index.ts";
-import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
+import {
+	ACTIVITY_ACTION,
+	ACTIVITY_DETAIL,
+	ACTIVITY_RESOURCE_TYPE,
+	activityDetails,
+} from "@app/activity";
 import {
 	type EAuth,
 	type EBadRequest,
@@ -42,6 +47,10 @@ export const userCreate = Effect.fn("userCreate")(function* (
 		action: ACTIVITY_ACTION.USER_CREATE,
 		resourceType: ACTIVITY_RESOURCE_TYPE.USER,
 		resourceId: row.id,
+		metadata: activityDetails({
+			[ACTIVITY_DETAIL.EMAIL]: row.email,
+			[ACTIVITY_DETAIL.ROLE]: row.role,
+		}),
 	});
 
 	return toUserDto(row);
