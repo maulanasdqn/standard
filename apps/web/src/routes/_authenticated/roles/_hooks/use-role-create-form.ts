@@ -1,4 +1,5 @@
 import { roleCreateInputSchema } from "@app/schemas";
+import { useNavigate } from "@tanstack/react-router";
 import { D } from "@mobily/ts-belt";
 import { match } from "ts-pattern";
 import type { z } from "zod";
@@ -7,6 +8,7 @@ import {
 	useConfirmedForm,
 } from "#/routes/_authenticated/_hooks/use-confirmed-form.ts";
 import { useRoleCreate } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
+import { roleKeyOf } from "#/routes/_authenticated/roles/_utils/role-key.ts";
 
 type TRoleCreateFormValues = z.input<typeof roleCreateInputSchema>;
 
@@ -27,19 +29,32 @@ type TRoleCreateForm = TConfirmedForm<
 	typeof roleCreateInputSchema
 > & {
 	isPending: boolean;
+	onLabelChange: (label: string) => void;
 };
 
 export const useRoleCreateForm = (): TRoleCreateForm => {
 	const roleCreate = useRoleCreate();
+	const navigate = useNavigate();
 
 	const confirmed = useConfirmedForm({
 		defaultValues: DEFAULT_VALUES,
 		schema: roleCreateInputSchema,
-		run: (value, form): void =>
+		run: (value): void =>
 			roleCreate.mutate(payloadBuild(value), {
-				onSuccess: () => form.reset(),
+				onSuccess: () => void navigate({ to: "/roles" }),
 			}),
 	});
 
-	return { ...confirmed, isPending: roleCreate.isPending };
+	const { form } = confirmed;
+
+	const onLabelChange = (label: string): void => {
+		form.setFieldValue("label", label);
+		form.setFieldValue("key", roleKeyOf(label));
+	};
+
+	return {
+		...confirmed,
+		isPending: roleCreate.isPending,
+		onLabelChange,
+	};
 };

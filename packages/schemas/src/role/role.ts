@@ -2,9 +2,17 @@ import { VALIDATION_MESSAGE } from "@app/messages";
 import { z } from "zod";
 import { permissionSchema } from "../permission/permission.ts";
 
+export const RESERVED_ROLE_KEY = {
+	CREATE: "create",
+} as const;
+
 const roleKeySchema = z
 	.string()
-	.regex(/^[a-z][a-z0-9_-]{1,49}$/, VALIDATION_MESSAGE.ROLE_KEY_FORMAT);
+	.regex(/^[a-z][a-z0-9_-]{1,49}$/, VALIDATION_MESSAGE.ROLE_KEY_FORMAT)
+	.refine(
+		(key): boolean => key !== RESERVED_ROLE_KEY.CREATE,
+		VALIDATION_MESSAGE.ROLE_KEY_RESERVED,
+	);
 
 export const roleSchema = z.object({
 	key: z.string().min(1),
