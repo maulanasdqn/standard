@@ -6,6 +6,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@app/components/ui/table";
+import { cn } from "@app/components/lib/utils";
 import { SORT_DIRECTION } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
 import {
@@ -56,6 +57,7 @@ type TDataTableProps<TData extends RowData> = {
 const columnLabel = <TData extends RowData>(
 	column: Column<TTableFeatures, TData, unknown>,
 ): string =>
+	column.columnDef.meta?.label ??
 	match(column.columnDef.header)
 		.with(undefined, () => column.id)
 		.otherwise((header) => (typeof header === "string" ? header : column.id));
@@ -106,7 +108,10 @@ export const DataTable = <TData extends RowData>(
 								<TableHead
 									key={header.id}
 									aria-sort={ariaSortFor(header.column)}
-									className={header.column.columnDef.meta?.className}
+									className={cn(
+										header.column.columnDef.meta?.className,
+										header.column.columnDef.meta?.headerClassName,
+									)}
 								>
 									{!header.isPlaceholder && headerContent(header)}
 								</TableHead>

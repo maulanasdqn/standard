@@ -7,6 +7,8 @@ import {
 
 export type TColumnMeta = {
 	className?: string;
+	headerClassName?: string;
+	label?: string;
 };
 
 export const TABLE_FEATURES = tableFeatures({
