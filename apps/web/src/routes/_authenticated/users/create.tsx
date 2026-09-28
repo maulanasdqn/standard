@@ -33,7 +33,9 @@ const UserCreatePending: FC = (): ReactElement => (
 );
 
 export const Route = createFileRoute("/_authenticated/users/create")({
-	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
+	beforeLoad: checkRoutePermissions({
+		permissions: [PERMISSION.USER_CREATE, PERMISSION.ROLE_READ],
+	}),
 	loader: ({ context }) =>
 		context.queryClient.ensureQueryData(roleListOptions()),
 	component: UserCreatePage,

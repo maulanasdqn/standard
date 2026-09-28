@@ -7,6 +7,7 @@ import {
 	type TConfirmedForm,
 	useConfirmedForm,
 } from "#/routes/_authenticated/_hooks/use-confirmed-form.ts";
+import { useRoleReadOnly } from "#/routes/_authenticated/roles/_hooks/use-role-read-only.ts";
 import { useRoleUpdate } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
 
 const roleEditFormSchema = roleUpdateInputSchema.omit({ key: true }).required();
@@ -19,6 +20,7 @@ type TRoleEditForm = TConfirmedForm<
 > & {
 	isPending: boolean;
 	isFixed: boolean;
+	isReadOnly: boolean;
 };
 
 const descriptionOf = (value: string | null): string | null =>
@@ -29,6 +31,7 @@ const descriptionOf = (value: string | null): string | null =>
 export const useRoleEditForm = (role: TRoleDto): TRoleEditForm => {
 	const navigate = useNavigate();
 	const roleUpdate = useRoleUpdate();
+	const isReadOnly = useRoleReadOnly(role);
 
 	const defaultValues: TRoleEditFormValues = {
 		label: role.label,
@@ -53,5 +56,6 @@ export const useRoleEditForm = (role: TRoleDto): TRoleEditForm => {
 		...confirmed,
 		isPending: roleUpdate.isPending,
 		isFixed: role.fixed,
+		isReadOnly,
 	};
 };

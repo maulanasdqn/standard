@@ -13,7 +13,7 @@ describe("permissions REST endpoint", () => {
 			cookie: adminCookie,
 		});
 		expect(
-			A.some(list.items, (item) => item.key === PERMISSION.USER_MANAGE),
+			A.some(list.items, (item) => item.key === PERMISSION.ROLE_READ),
 		).toBe(true);
 	});
 

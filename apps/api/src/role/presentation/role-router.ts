@@ -10,36 +10,37 @@ import {
 	effectRunTransactional,
 } from "#/platform/orpc/run-effect.ts";
 
-const manage = permissionGuarded(PERMISSION.USER_MANAGE);
-
 const roleRouter = implementer.role.router({
-	list: manage.role.list.handler(({ context }) =>
-		effectRun(context.runtime, roleList()),
+	list: permissionGuarded(PERMISSION.ROLE_READ).role.list.handler(
+		({ context }) => effectRun(context.runtime, roleList()),
 	),
 
-	get: manage.role.get.handler(({ input, context }) =>
-		effectRun(context.runtime, roleGet(input)),
+	get: permissionGuarded(PERMISSION.ROLE_READ).role.get.handler(
+		({ input, context }) => effectRun(context.runtime, roleGet(input)),
 	),
 
-	create: manage.role.create.handler(({ input, context }) =>
-		effectRunTransactional(
-			context.runtime,
-			roleCreate(input, context.session.user.id),
-		),
+	create: permissionGuarded(PERMISSION.ROLE_CREATE).role.create.handler(
+		({ input, context }) =>
+			effectRunTransactional(
+				context.runtime,
+				roleCreate(input, context.session.user.id),
+			),
 	),
 
-	update: manage.role.update.handler(({ input, context }) =>
-		effectRunTransactional(
-			context.runtime,
-			roleUpdate(input, context.session.user.id),
-		),
+	update: permissionGuarded(PERMISSION.ROLE_UPDATE).role.update.handler(
+		({ input, context }) =>
+			effectRunTransactional(
+				context.runtime,
+				roleUpdate(input, context.session.user.id),
+			),
 	),
 
-	remove: manage.role.remove.handler(({ input, context }) =>
-		effectRunTransactional(
-			context.runtime,
-			roleDelete(input, context.session.user.id),
-		),
+	remove: permissionGuarded(PERMISSION.ROLE_DELETE).role.remove.handler(
+		({ input, context }) =>
+			effectRunTransactional(
+				context.runtime,
+				roleDelete(input, context.session.user.id),
+			),
 	),
 });
 

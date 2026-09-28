@@ -1,10 +1,18 @@
 import type { TPermission, TRole } from "@app/permissions";
 
 export const PERMISSION_LABEL = {
+	"note:create": "Create notes",
 	"note:read": "View notes",
-	"note:write": "Create & edit notes",
+	"note:update": "Edit notes",
 	"note:delete": "Delete notes",
-	"user:manage": "Manage users",
+	"user:create": "Create users",
+	"user:read": "View users",
+	"user:update": "Edit users and reset their passwords",
+	"user:delete": "Delete users",
+	"role:create": "Create roles",
+	"role:read": "View roles and the permission catalog",
+	"role:update": "Edit roles",
+	"role:delete": "Delete roles",
 	"activity:read": "View the activity log",
 } as const satisfies Record<TPermission, string>;
 

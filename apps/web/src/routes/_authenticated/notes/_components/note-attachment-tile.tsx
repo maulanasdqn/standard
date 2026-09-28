@@ -39,7 +39,7 @@ export const NoteAttachmentTile: FC<TNoteAttachmentTileProps> = (
 						<ExternalLink className="size-3.5" />
 					</a>
 				</Button>
-				<Guard permissions={[PERMISSION.NOTE_WRITE]}>
+				<Guard permissions={[PERMISSION.NOTE_UPDATE]}>
 					<Button
 						type="button"
 						size="icon"

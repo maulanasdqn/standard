@@ -26,7 +26,7 @@ const PermissionsPending: FC = (): ReactElement => (
 );
 
 export const Route = createFileRoute("/_authenticated/permissions/")({
-	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
+	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.ROLE_READ] }),
 	loader: ({ context }) =>
 		context.queryClient.ensureQueryData(roleListOptions()),
 	component: PermissionsPage,

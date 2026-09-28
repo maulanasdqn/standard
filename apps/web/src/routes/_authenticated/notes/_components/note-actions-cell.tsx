@@ -18,7 +18,7 @@ export const NoteActionsCell: FC<TNoteActionsCellProps> = (
 
 	return (
 		<>
-			<Guard permissions={[PERMISSION.NOTE_WRITE]}>
+			<Guard permissions={[PERMISSION.NOTE_UPDATE]}>
 				<Link
 					to="/notes/$noteId"
 					params={{ noteId: props.note.id }}

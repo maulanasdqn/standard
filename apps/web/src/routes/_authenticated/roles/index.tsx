@@ -20,7 +20,7 @@ const RolesPage: FC = (): ReactElement => {
 		<div className="flex flex-col gap-6">
 			<div className="flex items-center justify-between">
 				<h1 className="text-xl font-semibold">{ROLE_MESSAGE.TITLE}</h1>
-				<Guard permissions={[PERMISSION.USER_MANAGE]}>
+				<Guard permissions={[PERMISSION.ROLE_CREATE]}>
 					<Button asChild size="sm">
 						<Link to="/roles/create">
 							<Plus className="mr-1 size-4" />
@@ -39,7 +39,7 @@ const RolesPending: FC = (): ReactElement => (
 );
 
 export const Route = createFileRoute("/_authenticated/roles/")({
-	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
+	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.ROLE_READ] }),
 	loader: ({ context }) =>
 		context.queryClient.ensureQueryData(roleListOptions()),
 	component: RolesPage,

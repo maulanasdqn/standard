@@ -5,7 +5,7 @@ import { signIn } from "../support/sign-in.ts";
 import { confirmAction } from "../support/confirm.ts";
 
 const NEW_NOTE = "New Note";
-const WRITER_NOTE = "Written by a note:write holder";
+const WRITER_NOTE = "Written by a note:create holder";
 const EDITED_NOTE = "Edited once";
 const EDITED_AGAIN = "Edited twice";
 const SAVE_CHANGES = "Save changes";
@@ -31,7 +31,7 @@ test.describe("note write affordances follow the permission", () => {
 		await expect(page.getByRole("link", { name: NEW_NOTE })).toHaveCount(0);
 	});
 
-	test("a note:write holder can create a note from the dedicated page", async ({
+	test("a note:create holder can create a note from the dedicated page", async ({
 		browser,
 	}): Promise<void> => {
 		page = await browser.newPage();

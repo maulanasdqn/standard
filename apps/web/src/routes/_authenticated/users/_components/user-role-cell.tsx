@@ -24,7 +24,7 @@ type TUserRoleCellProps = {
 
 export const UserRoleCell: FC<TUserRoleCellProps> = (props): ReactElement => (
 	<Guard
-		permissions={[PERMISSION.USER_MANAGE]}
+		permissions={[PERMISSION.USER_UPDATE]}
 		fallback={
 			<span className="text-sm">
 				{roleLabelOf(props.roleOptions, props.user.role)}

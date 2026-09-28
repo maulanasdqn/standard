@@ -55,7 +55,7 @@ const NoteEditPending: FC = (): ReactElement => (
 );
 
 export const Route = createFileRoute("/_authenticated/notes/$noteId")({
-	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.NOTE_WRITE] }),
+	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.NOTE_UPDATE] }),
 	loader: ({ context, params }) =>
 		Promise.all([
 			context.queryClient.ensureQueryData(noteGetOptions(params.noteId)),

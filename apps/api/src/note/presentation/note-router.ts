@@ -24,7 +24,7 @@ const noteRouter = implementer.note.router({
 			effectRun(context.runtime, noteGet(input, context.session.user)),
 	),
 
-	create: permissionGuarded(PERMISSION.NOTE_WRITE).note.create.handler(
+	create: permissionGuarded(PERMISSION.NOTE_CREATE).note.create.handler(
 		({ input, context }) =>
 			effectRunTransactional(
 				context.runtime,
@@ -32,7 +32,7 @@ const noteRouter = implementer.note.router({
 			),
 	),
 
-	update: permissionGuarded(PERMISSION.NOTE_WRITE).note.update.handler(
+	update: permissionGuarded(PERMISSION.NOTE_UPDATE).note.update.handler(
 		({ input, context }) =>
 			effectRunTransactional(
 				context.runtime,

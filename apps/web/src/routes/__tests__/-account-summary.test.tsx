@@ -18,7 +18,7 @@ describe("AccountSummary", () => {
 				name: "Ada",
 				role: ROLE.ADMIN,
 			},
-			permissions: [PERMISSION.USER_MANAGE],
+			permissions: [PERMISSION.USER_READ],
 		});
 
 		render(<AccountSummary />);

@@ -24,14 +24,14 @@ describe("Guard", () => {
 	afterEach(cleanup);
 
 	it("renders the fallback when the permission is missing", (): void => {
-		render(guardWith([], [PERMISSION.NOTE_WRITE]));
+		render(guardWith([], [PERMISSION.NOTE_UPDATE]));
 
 		expect(screen.queryByText(ALLOWED)).toBeNull();
 		expect(screen.getByText(DENIED)).toBeTruthy();
 	});
 
 	it("renders the children once the permission is granted", (): void => {
-		render(guardWith([PERMISSION.NOTE_WRITE], [PERMISSION.NOTE_WRITE]));
+		render(guardWith([PERMISSION.NOTE_UPDATE], [PERMISSION.NOTE_UPDATE]));
 
 		expect(screen.getByText(ALLOWED)).toBeTruthy();
 		expect(screen.queryByText(DENIED)).toBeNull();
@@ -41,7 +41,7 @@ describe("Guard", () => {
 		render(
 			guardWith(
 				[PERMISSION.NOTE_READ],
-				[PERMISSION.NOTE_READ, PERMISSION.NOTE_WRITE],
+				[PERMISSION.NOTE_READ, PERMISSION.NOTE_UPDATE],
 			),
 		);
 
@@ -52,7 +52,7 @@ describe("Guard", () => {
 		render(
 			guardWith(
 				[PERMISSION.NOTE_READ],
-				[PERMISSION.NOTE_READ, PERMISSION.NOTE_WRITE],
+				[PERMISSION.NOTE_READ, PERMISSION.NOTE_UPDATE],
 				GUARD_MODE.ANY,
 			),
 		);

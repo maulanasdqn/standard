@@ -101,7 +101,7 @@ That last set matters because TypeScript does not protect you here: rename the v
 
 **Two catalogues are shared by every app in the workspace**, and their keys have a fixed shape so a second app can add to them without colliding with the first:
 
-- A permission key is `<resource>:<action>` in the central app (`note:read`, `user:manage`) and `<app>:<resource>:<action>` in any other app. Lower-case, a hyphen inside a segment if needed, never a space. The key goes in `PERMISSION` in `@app/permissions`, its label in `PERMISSION_LABEL` in `@app/messages`, and a grant in `ROLE_PERMISSIONS` when a fixed role should hold it
+- A permission key is `<resource>:<action>` in the central app (`note:read`, `user:update`) and `<app>:<resource>:<action>` in any other app. Lower-case, a hyphen inside a segment if needed, never a space. The key goes in `PERMISSION` in `@app/permissions`, its label in `PERMISSION_LABEL` in `@app/messages`, and a grant in `ROLE_PERMISSIONS` when a fixed role should hold it
 - An activity action is `<resource>.<action>` in the central app (`note.create`, `user.password_reset`) and `<app>.<resource>.<action>` in any other app. The resource type goes in `ACTIVITY_RESOURCE_TYPE` and the action in `ACTIVITY_ACTION`, both in `@app/activity`, with the labels in `ACTIVITY_ACTION_LABEL` and `ACTIVITY_ENTITY_LABEL` in `@app/messages`
 
 ## File size

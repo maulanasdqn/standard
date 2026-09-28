@@ -4,13 +4,13 @@ import { EForbidden } from "#/libs/auth/forbidden.ts";
 import { checkRoutePermissions } from "#/libs/auth/route-guard.ts";
 
 const guard = checkRoutePermissions({
-	permissions: [PERMISSION.USER_MANAGE],
+	permissions: [PERMISSION.USER_READ],
 });
 
 describe("checkRoutePermissions", () => {
 	it("lets a visitor with every required permission through", (): void => {
 		expect(
-			guard({ context: { permissions: [PERMISSION.USER_MANAGE] } }),
+			guard({ context: { permissions: [PERMISSION.USER_READ] } }),
 		).toBeUndefined();
 	});
 

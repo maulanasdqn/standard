@@ -103,7 +103,7 @@ describe("JWT for other apps", () => {
 
 		expect(payload.role).toBe(ROLE.ADMIN);
 		expect(payload.permissions).toEqual(
-			expect.arrayContaining([PERMISSION.USER_MANAGE]),
+			expect.arrayContaining([PERMISSION.USER_UPDATE, PERMISSION.ROLE_READ]),
 		);
 		expect((payload.exp ?? 0) - (payload.iat ?? 0)).toBe(
 			TOKEN_LIFETIME_SECONDS,

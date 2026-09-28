@@ -6,6 +6,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
 import { checkRoutePermissions } from "#/libs/auth/route-guard.ts";
 import { FormPage } from "#/routes/_authenticated/_components/form-page.tsx";
+import { useRoleReadOnly } from "#/routes/_authenticated/roles/_hooks/use-role-read-only.ts";
 import { RoleEditForm } from "#/routes/_authenticated/roles/_components/role-edit-form.tsx";
 import {
 	roleGetOptions,
@@ -15,6 +16,7 @@ import { FormPageSkeleton } from "#/routes/_components/form-page-skeleton.tsx";
 
 const RoleEditPage: FC = (): ReactElement => {
 	const { data } = useRoleGet();
+	const isReadOnly = useRoleReadOnly(data);
 
 	return (
 		<FormPage
@@ -23,7 +25,7 @@ const RoleEditPage: FC = (): ReactElement => {
 			backLabel={ROLE_MESSAGE.BACK_TO_ROLES}
 			title={data.label}
 			description={
-				data.fixed
+				isReadOnly
 					? ROLE_MESSAGE.VIEW_DESCRIPTION
 					: ROLE_MESSAGE.EDIT_DESCRIPTION
 			}
@@ -42,7 +44,7 @@ const RoleEditPage: FC = (): ReactElement => {
 				</dl>
 			}
 		>
-			<Guard permissions={[PERMISSION.USER_MANAGE]}>
+			<Guard permissions={[PERMISSION.ROLE_READ]}>
 				<RoleEditForm key={data.key} role={data} />
 			</Guard>
 		</FormPage>
@@ -56,7 +58,7 @@ const RoleEditPending: FC = (): ReactElement => (
 );
 
 export const Route = createFileRoute("/_authenticated/roles/$key")({
-	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
+	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.ROLE_READ] }),
 	loader: ({ context, params }) =>
 		context.queryClient.ensureQueryData(roleGetOptions(params.key)),
 	component: RoleEditPage,

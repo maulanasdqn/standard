@@ -18,7 +18,7 @@ export const noteAttachmentRouter = implementer.note.attachment.router({
 	),
 
 	upload: permissionGuarded(
-		PERMISSION.NOTE_WRITE,
+		PERMISSION.NOTE_UPDATE,
 	).note.attachment.upload.handler(({ input, context }) =>
 		effectRun(
 			context.runtime,
@@ -27,7 +27,7 @@ export const noteAttachmentRouter = implementer.note.attachment.router({
 	),
 
 	remove: permissionGuarded(
-		PERMISSION.NOTE_WRITE,
+		PERMISSION.NOTE_UPDATE,
 	).note.attachment.remove.handler(({ input, context }) =>
 		effectRunTransactional(
 			context.runtime,
