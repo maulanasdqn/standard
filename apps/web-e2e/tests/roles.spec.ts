@@ -25,7 +25,7 @@ const FIXED_NOTICE = ROLE_MESSAGE.FIXED;
 
 const NEW_ROLE: TRoleCreateInput = {
 	key: "e2e-reviewer",
-	label: "Reviewer",
+	label: "E2E Reviewer",
 	description: "Reads notes, nothing else.",
 	permissions: [PERMISSION_KEY.NOTE_READ],
 };
@@ -79,7 +79,6 @@ test.describe("roles admin flow", () => {
 		await page.goto("/roles");
 		await page.getByRole("link", { name: ROLE_MESSAGE.NEW_ROLE }).click();
 		await expect(page).toHaveURL(/\/roles\/create$/);
-		await page.getByLabel("Key", { exact: true }).fill(NEW_ROLE.key);
 		await page.getByLabel("Label", { exact: true }).fill(NEW_ROLE.label);
 		await page
 			.getByLabel("Description", { exact: true })

@@ -8,7 +8,7 @@ export const ROLE_MESSAGE = {
 	VIEW_DESCRIPTION: "See what this role grants and how many users hold it.",
 	DETAILS_TITLE: "Role details",
 	CREATE_DETAILS_DESCRIPTION:
-		"The key identifies the role and cannot be changed later.",
+		"The key is made from the label and cannot be changed later.",
 	EDIT_DETAILS_DESCRIPTION:
 		"The key identifies the role and cannot be changed here.",
 	FIELD_KEY: "Key",

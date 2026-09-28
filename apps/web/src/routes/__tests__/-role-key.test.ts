@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-	roleKeyDraft,
-	roleKeyOf,
-} from "#/routes/_authenticated/roles/_utils/role-key.ts";
+import { roleKeyOf } from "#/routes/_authenticated/roles/_utils/role-key.ts";
 
 const LONG_WORD = "a";
 const ROLE_KEY_MAX_LENGTH = 50;
@@ -23,11 +20,5 @@ describe("roleKeyOf", () => {
 	it("never ends on a hyphen after the cap", (): void => {
 		const label = `${LONG_WORD.repeat(ROLE_KEY_MAX_LENGTH - 1)} b`;
 		expect(roleKeyOf(label).endsWith("-")).toBe(false);
-	});
-});
-
-describe("roleKeyDraft", () => {
-	it("keeps the trailing hyphen while the key is being typed", (): void => {
-		expect(roleKeyDraft("Content ")).toBe("content-");
 	});
 });

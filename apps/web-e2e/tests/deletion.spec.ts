@@ -26,7 +26,7 @@ const DOOMED_USER: TUserCreateInput = {
 
 const DOOMED_ROLE: TRoleCreateInput = {
 	key: "e2e-doomed",
-	label: "Doomed",
+	label: "E2E Doomed",
 	description: "About to go.",
 	permissions: [PERMISSION_KEY.NOTE_READ],
 };
@@ -71,7 +71,6 @@ test.describe("deleting from the lists", () => {
 		await page.goto("/roles");
 		await page.getByRole("link", { name: ROLE_MESSAGE.NEW_ROLE }).click();
 		await expect(page).toHaveURL(/\/roles\/create$/);
-		await page.getByLabel("Key", { exact: true }).fill(DOOMED_ROLE.key);
 		await page.getByLabel("Label", { exact: true }).fill(DOOMED_ROLE.label);
 		await page
 			.getByLabel("Description", { exact: true })

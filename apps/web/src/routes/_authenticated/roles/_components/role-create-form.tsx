@@ -20,15 +20,8 @@ import { PermissionChecklist } from "#/routes/_authenticated/roles/_components/p
 import { useRoleCreateForm } from "#/routes/_authenticated/roles/_hooks/use-role-create-form.ts";
 
 export const RoleCreateForm: FC = (): ReactElement => {
-	const {
-		form,
-		onSubmit,
-		confirm,
-		isPending,
-		onLabelChange,
-		onKeyChange,
-		onKeyBlur,
-	} = useRoleCreateForm();
+	const { form, onSubmit, confirm, isPending, onLabelChange } =
+		useRoleCreateForm();
 
 	return (
 		<form onSubmit={onSubmit}>
@@ -64,11 +57,7 @@ export const RoleCreateForm: FC = (): ReactElement => {
 										id={field.name}
 										placeholder={ROLE_MESSAGE.KEY_PLACEHOLDER}
 										value={field.state.value}
-										onBlur={() => {
-											field.handleBlur();
-											onKeyBlur();
-										}}
-										onChange={(event) => onKeyChange(event.target.value)}
+										disabled
 									/>
 									<FieldError errors={field.state.meta.errors} />
 								</div>
