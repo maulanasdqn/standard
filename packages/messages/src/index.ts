@@ -1,5 +1,6 @@
 export {
 	ACTIVITY_ACTION_LABEL,
+	ACTIVITY_DETAIL_LABEL,
 	ACTIVITY_ENTITY_LABEL,
 	ACTIVITY_MESSAGE,
 } from "./activity/message.ts";

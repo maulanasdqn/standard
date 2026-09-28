@@ -1,4 +1,4 @@
-import { ACTIVITY_ACTION } from "@app/activity";
+import { ACTIVITY_ACTION, ACTIVITY_DETAIL } from "@app/activity";
 import { PERMISSION, ROLE } from "@app/permissions";
 import type { TRoleCreateInput } from "@app/schemas";
 import { Effect, Layer } from "effect";
@@ -114,6 +114,10 @@ describe("roleCreate", () => {
 				actorId: ACTOR_ID,
 				action: ACTIVITY_ACTION.ROLE_CREATE,
 				resourceId: input.key,
+				metadata: {
+					[ACTIVITY_DETAIL.LABEL]: input.label,
+					[ACTIVITY_DETAIL.PERMISSION_COUNT]: 1,
+				},
 			}),
 		);
 	});

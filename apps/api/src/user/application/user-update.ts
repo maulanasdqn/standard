@@ -5,8 +5,11 @@ import { match, P } from "ts-pattern";
 import { roleEnsure } from "#/role/index.ts";
 import {
 	ACTIVITY_ACTION,
+	ACTIVITY_DETAIL,
 	ACTIVITY_RESOURCE_TYPE,
-	type TActivityMetadata,
+	activityDetailPrevious,
+	activityDetails,
+	type TActivityDetails,
 } from "@app/activity";
 import {
 	type EBadRequest,
@@ -20,7 +23,28 @@ import {
 	type TActivityRecorderId,
 } from "#/shared/activity-recorder.ts";
 import type { TCustomRoleRepoId } from "#/role/index.ts";
-import { UserRepo, type TUserRepoId } from "#/user/domain/user.ts";
+import {
+	UserRepo,
+	type TUserRepoId,
+	type TUserRow,
+} from "#/user/domain/user.ts";
+
+const changedTo = (previous: string, next: string): string | undefined =>
+	previous === next ? undefined : next;
+
+const updateDetails = (previous: TUserRow, next: TUserRow): TActivityDetails =>
+	activityDetails({
+		[ACTIVITY_DETAIL.ROLE]: changedTo(previous.role, next.role),
+		[ACTIVITY_DETAIL.PREVIOUS_ROLE]: activityDetailPrevious(
+			previous.role,
+			next.role,
+		),
+		[ACTIVITY_DETAIL.NAME]: changedTo(previous.name, next.name),
+		[ACTIVITY_DETAIL.PREVIOUS_NAME]: activityDetailPrevious(
+			previous.name,
+			next.name,
+		),
+	});
 
 export const userUpdate = Effect.fn("userUpdate")(function* (
 	input: TUserUpdateInput,
@@ -41,6 +65,12 @@ export const userUpdate = Effect.fn("userUpdate")(function* (
 		.with(P.nullish, () => Effect.void)
 		.otherwise((role) => roleEnsure(role));
 
+	const previous = yield* userRepo.findById(input.id);
+
+	if (previous === null) {
+		return yield* new ENotFound({ message: USER_MESSAGE.NOT_FOUND });
+	}
+
 	const updated = yield* userRepo.update(input);
 
 	if (updated === null) {
@@ -52,9 +82,7 @@ export const userUpdate = Effect.fn("userUpdate")(function* (
 		action: ACTIVITY_ACTION.USER_UPDATE,
 		resourceType: ACTIVITY_RESOURCE_TYPE.USER,
 		resourceId: updated.id,
-		metadata: match(input.role)
-			.with(P.nullish, (): undefined => undefined)
-			.otherwise((role): TActivityMetadata => ({ role })),
+		metadata: updateDetails(previous, updated),
 	});
 
 	return toUserDto(updated);

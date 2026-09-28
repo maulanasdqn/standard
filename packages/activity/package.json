@@ -10,6 +10,9 @@
 		"build": "tsc --noEmit",
 		"test": "vitest run"
 	},
+	"dependencies": {
+		"@mobily/ts-belt": "catalog:"
+	},
 	"devDependencies": {
 		"typescript": "catalog:",
 		"vitest": "catalog:"

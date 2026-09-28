@@ -1,7 +1,12 @@
 import { NOTE_MESSAGE } from "@app/messages";
 import type { TNoteIdInput } from "@app/schemas";
 import { Effect } from "effect";
-import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
+import {
+	ACTIVITY_ACTION,
+	ACTIVITY_DETAIL,
+	ACTIVITY_RESOURCE_TYPE,
+	activityDetails,
+} from "@app/activity";
 import { ENotFound, type EDatabase } from "#/shared/errors.ts";
 import {
 	ActivityRecorder,
@@ -20,6 +25,12 @@ export const noteDelete = Effect.fn("noteDelete")(function* (
 > {
 	const noteRepo = yield* NoteRepo;
 	const activityRepo = yield* ActivityRecorder;
+	const existing = yield* noteRepo.findById(id, actor);
+
+	if (existing === null) {
+		return yield* new ENotFound({ message: NOTE_MESSAGE.NOT_FOUND });
+	}
+
 	const removed = yield* noteRepo.remove(id, actor);
 
 	if (!removed) {
@@ -31,6 +42,7 @@ export const noteDelete = Effect.fn("noteDelete")(function* (
 		action: ACTIVITY_ACTION.NOTE_DELETE,
 		resourceType: ACTIVITY_RESOURCE_TYPE.NOTE,
 		resourceId: id,
+		metadata: activityDetails({ [ACTIVITY_DETAIL.TITLE]: existing.title }),
 	});
 
 	return { id };

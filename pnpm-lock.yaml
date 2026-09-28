@@ -217,6 +217,9 @@ importers:
         specifier: 'catalog:'
         version: 5.9.0
     devDependencies:
+      '@app/activity':
+        specifier: workspace:*
+        version: link:../../packages/activity
       '@app/api':
         specifier: workspace:*
         version: link:../api
@@ -422,6 +425,10 @@ importers:
         version: 7.0.2
 
   packages/activity:
+    dependencies:
+      '@mobily/ts-belt':
+        specifier: 'catalog:'
+        version: 3.13.1(patch_hash=089c2961d9dcaf34a971874c8717d7a961ff3c49d4508968d9c4dd22fab7300a)
     devDependencies:
       typescript:
         specifier: 'catalog:'

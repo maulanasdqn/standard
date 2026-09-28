@@ -1,9 +1,14 @@
 import { ROLE_MESSAGE } from "@app/messages";
 import { isRole } from "@app/permissions";
 import type { TRoleKeyInput } from "@app/schemas";
-import { D } from "@mobily/ts-belt";
+import { A, D } from "@mobily/ts-belt";
 import { Effect } from "effect";
-import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
+import {
+	ACTIVITY_ACTION,
+	ACTIVITY_DETAIL,
+	ACTIVITY_RESOURCE_TYPE,
+	activityDetails,
+} from "@app/activity";
 import {
 	EBadRequest,
 	EConflict,
@@ -54,6 +59,10 @@ export const roleDelete = Effect.fn("roleDelete")(function* (
 		action: ACTIVITY_ACTION.ROLE_DELETE,
 		resourceType: ACTIVITY_RESOURCE_TYPE.ROLE,
 		resourceId: key,
+		metadata: activityDetails({
+			[ACTIVITY_DETAIL.LABEL]: found.label,
+			[ACTIVITY_DETAIL.PERMISSION_COUNT]: A.length(found.permissions),
+		}),
 	});
 
 	return { key };

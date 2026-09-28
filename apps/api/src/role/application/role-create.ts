@@ -3,7 +3,13 @@ import type { TRoleCreateInput, TRoleDto } from "@app/schemas";
 import { Effect } from "effect";
 import { roleExists } from "#/role/application/role-ensure.ts";
 import { toRoleDto } from "#/role/application/to-role-dto.ts";
-import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
+import {
+	ACTIVITY_ACTION,
+	ACTIVITY_DETAIL,
+	ACTIVITY_RESOURCE_TYPE,
+	activityDetails,
+} from "@app/activity";
+import { A } from "@mobily/ts-belt";
 import { EConflict, type EDatabase } from "#/shared/errors.ts";
 import {
 	ActivityRecorder,
@@ -37,6 +43,10 @@ export const roleCreate = Effect.fn("roleCreate")(function* (
 		action: ACTIVITY_ACTION.ROLE_CREATE,
 		resourceType: ACTIVITY_RESOURCE_TYPE.ROLE,
 		resourceId: row.key,
+		metadata: activityDetails({
+			[ACTIVITY_DETAIL.LABEL]: row.label,
+			[ACTIVITY_DETAIL.PERMISSION_COUNT]: A.length(row.permissions),
+		}),
 	});
 
 	return toRoleDto(row, {});

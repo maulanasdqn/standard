@@ -1,4 +1,4 @@
-import { ACTIVITY_ACTION } from "@app/activity";
+import { ACTIVITY_ACTION, ACTIVITY_DETAIL } from "@app/activity";
 import { NOTE_ATTACHMENT_MESSAGE } from "@app/messages";
 import { ROLE } from "@app/permissions";
 import { Effect, Layer } from "effect";
@@ -60,6 +60,11 @@ describe("noteAttachmentRemove", () => {
 		expect(parts.insert).toHaveBeenCalledWith(
 			expect.objectContaining({
 				action: ACTIVITY_ACTION.NOTE_ATTACHMENT_DELETE,
+				metadata: {
+					[ACTIVITY_DETAIL.NOTE_ID]: attachmentRow.noteId,
+					[ACTIVITY_DETAIL.FILE_NAME]: attachmentRow.fileName,
+					[ACTIVITY_DETAIL.BYTE_SIZE]: attachmentRow.byteSize,
+				},
 			}),
 		);
 	});

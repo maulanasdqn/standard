@@ -1,3 +1,5 @@
+import { ACTIVITY_DETAIL } from "@app/activity";
+import { NOTE_FIELD } from "@app/schemas";
 import { Effect, Layer } from "effect";
 import { describe, expect, it, vi } from "vitest";
 import { noteUpdate } from "#/note/application/note-update.ts";
@@ -26,6 +28,7 @@ const row: TNoteRow = {
 };
 
 const INPUT = { id: NOTE_ID, version: VERSION, title: row.title };
+const PREVIOUS_TITLE = "Old title";
 
 const activityLayer = Layer.succeed(
 	ActivityRecorder,
@@ -37,18 +40,22 @@ const activityLayer = Layer.succeed(
 describe("noteUpdate", () => {
 	it("passes the actor and the expected version to the owned update query", async (): Promise<void> => {
 		const update = vi.fn().mockReturnValue(Effect.succeed(row));
+		const findById = vi
+			.fn()
+			.mockReturnValue(Effect.succeed({ ...row, title: PREVIOUS_TITLE }));
+		const insert = vi.fn().mockReturnValue(Effect.succeed(undefined));
 		const testLayer = Layer.merge(
 			Layer.succeed(
 				NoteRepo,
 				NoteRepo.of({
 					list: vi.fn(),
-					findById: vi.fn(),
+					findById,
 					create: vi.fn(),
 					update,
 					remove: vi.fn(),
 				}),
 			),
-			activityLayer,
+			Layer.succeed(ActivityRecorder, ActivityRecorder.of({ insert })),
 		);
 
 		const result = await Effect.runPromise(
@@ -57,6 +64,14 @@ describe("noteUpdate", () => {
 
 		expect(result.id).toBe(NOTE_ID);
 		expect(update).toHaveBeenCalledWith(INPUT, OTHER_ACTOR);
+		expect(insert).toHaveBeenCalledWith(
+			expect.objectContaining({
+				metadata: {
+					[ACTIVITY_DETAIL.TITLE]: row.title,
+					[ACTIVITY_DETAIL.CHANGED_FIELDS]: NOTE_FIELD.TITLE,
+				},
+			}),
+		);
 	});
 
 	it("fails with a conflict when the note is there but the version has moved on", async (): Promise<void> => {

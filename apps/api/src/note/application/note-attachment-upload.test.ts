@@ -1,4 +1,4 @@
-import { ACTIVITY_ACTION } from "@app/activity";
+import { ACTIVITY_ACTION, ACTIVITY_DETAIL } from "@app/activity";
 import { NOTE_ATTACHMENT_MESSAGE, NOTE_MESSAGE } from "@app/messages";
 import { ROLE } from "@app/permissions";
 import {
@@ -108,6 +108,11 @@ describe("noteAttachmentUpload", () => {
 			expect.objectContaining({
 				action: ACTIVITY_ACTION.NOTE_ATTACHMENT_UPLOAD,
 				resourceId: attachmentRow.id,
+				metadata: {
+					[ACTIVITY_DETAIL.NOTE_ID]: attachmentRow.noteId,
+					[ACTIVITY_DETAIL.FILE_NAME]: attachmentRow.fileName,
+					[ACTIVITY_DETAIL.BYTE_SIZE]: attachmentRow.byteSize,
+				},
 			}),
 		);
 	});

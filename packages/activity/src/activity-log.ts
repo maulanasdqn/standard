@@ -1,4 +1,5 @@
 import type { TActivityAction, TActivityResourceType } from "./actions.ts";
+import type { TActivityDetails } from "./details.ts";
 
 export type TActivityMetadataValue = string | number | boolean | null;
 
@@ -11,7 +12,7 @@ export type TActivityEntry = {
 	action: TActivityAction;
 	resourceType: TActivityResourceType;
 	resourceId: string;
-	metadata?: TActivityMetadata;
+	metadata?: TActivityDetails;
 };
 
 export type TActivityRepo = {

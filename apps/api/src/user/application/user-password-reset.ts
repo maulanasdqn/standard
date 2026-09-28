@@ -1,4 +1,9 @@
-import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
+import {
+	ACTIVITY_ACTION,
+	ACTIVITY_DETAIL,
+	ACTIVITY_RESOURCE_TYPE,
+	activityDetails,
+} from "@app/activity";
 import { USER_MESSAGE } from "@app/messages";
 import type { TUserPasswordResetInput } from "@app/schemas";
 import { Effect } from "effect";
@@ -41,6 +46,9 @@ export const userPasswordReset = Effect.fn("userPasswordReset")(function* (
 		action: ACTIVITY_ACTION.USER_PASSWORD_RESET,
 		resourceType: ACTIVITY_RESOURCE_TYPE.USER,
 		resourceId: input.id,
+		metadata: activityDetails({
+			[ACTIVITY_DETAIL.EMAIL]: existing.email,
+		}),
 	});
 
 	return { id: input.id };

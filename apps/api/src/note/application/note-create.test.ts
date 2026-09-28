@@ -1,7 +1,7 @@
 import { Effect, Layer } from "effect";
 import { describe, expect, it, vi } from "vitest";
 import { noteCreate } from "#/note/application/note-create.ts";
-import { ACTIVITY_ACTION } from "@app/activity";
+import { ACTIVITY_ACTION, ACTIVITY_DETAIL } from "@app/activity";
 import { ROLE } from "@app/permissions";
 import type { TNoteRow } from "#/note/domain/note.ts";
 import { ActivityRecorder } from "#/shared/activity-recorder.ts";
@@ -54,6 +54,7 @@ describe("noteCreate", () => {
 			expect.objectContaining({
 				action: ACTIVITY_ACTION.NOTE_CREATE,
 				resourceId: row.id,
+				metadata: { [ACTIVITY_DETAIL.TITLE]: row.title },
 			}),
 		);
 	});

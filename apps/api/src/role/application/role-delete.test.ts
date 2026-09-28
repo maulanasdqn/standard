@@ -1,4 +1,4 @@
-import { ACTIVITY_ACTION } from "@app/activity";
+import { ACTIVITY_ACTION, ACTIVITY_DETAIL } from "@app/activity";
 import { PERMISSION, ROLE } from "@app/permissions";
 import { Effect, Layer } from "effect";
 import { describe, expect, it, type Mock, vi } from "vitest";
@@ -143,6 +143,10 @@ describe("roleDelete", () => {
 			expect.objectContaining({
 				action: ACTIVITY_ACTION.ROLE_DELETE,
 				resourceId: KEY,
+				metadata: {
+					[ACTIVITY_DETAIL.LABEL]: row.label,
+					[ACTIVITY_DETAIL.PERMISSION_COUNT]: 1,
+				},
 			}),
 		);
 	});

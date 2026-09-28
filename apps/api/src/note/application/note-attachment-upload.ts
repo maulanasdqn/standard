@@ -6,6 +6,7 @@ import {
 	type TNoteAttachmentUploadInput,
 } from "@app/schemas";
 import { Effect } from "effect";
+import { noteAttachmentDetails } from "#/note/application/note-attachment-details.ts";
 import { toNoteAttachmentDto } from "#/note/application/to-note-attachment-dto.ts";
 import {
 	NoteAttachmentRepo,
@@ -129,7 +130,7 @@ export const noteAttachmentUpload = Effect.fn("noteAttachmentUpload")(
 					action: ACTIVITY_ACTION.NOTE_ATTACHMENT_UPLOAD,
 					resourceType: ACTIVITY_RESOURCE_TYPE.NOTE_ATTACHMENT,
 					resourceId: created.id,
-					metadata: { noteId: input.noteId },
+					metadata: noteAttachmentDetails(created),
 				});
 
 				return created;

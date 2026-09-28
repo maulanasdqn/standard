@@ -1,3 +1,5 @@
+import { ACTIVITY_ACTION, ACTIVITY_DETAIL } from "@app/activity";
+import { ROLE } from "@app/permissions";
 import { Effect, Layer } from "effect";
 import { describe, expect, it, type Mock, vi } from "vitest";
 import { EForbidden, ENotFound } from "#/shared/errors.ts";
@@ -6,14 +8,32 @@ import {
 	ActivityRecorder,
 	type TActivityRecorderId,
 } from "#/shared/activity-recorder.ts";
-import { UserRepo, type TUserRepoId } from "#/user/domain/user.ts";
+import {
+	UserRepo,
+	type TUserRepoId,
+	type TUserRow,
+} from "#/user/domain/user.ts";
 
 const ACTOR_ID = "22222222-2222-4222-8222-222222222222";
 const TARGET_ID = "11111111-1111-4111-8111-111111111111";
 
+const PASSWORD = "new-password-123";
+
+const target: TUserRow = {
+	id: TARGET_ID,
+	name: "Member",
+	email: "member@test.app",
+	emailVerified: false,
+	image: null,
+	role: ROLE.MEMBER,
+	createdAt: new Date("2026-01-01T00:00:00Z"),
+	updatedAt: new Date("2026-01-01T00:00:00Z"),
+};
+
 const layerBuild = (
 	findById: Mock,
 	resetPassword: Mock,
+	insert: Mock = vi.fn(),
 ): Layer.Layer<TUserRepoId | TActivityRecorderId> =>
 	Layer.mergeAll(
 		Layer.succeed(
@@ -28,7 +48,7 @@ const layerBuild = (
 				resetPassword,
 			}),
 		),
-		Layer.succeed(ActivityRecorder, ActivityRecorder.of({ insert: vi.fn() })),
+		Layer.succeed(ActivityRecorder, ActivityRecorder.of({ insert })),
 	);
 
 describe("userPasswordReset", () => {
@@ -36,10 +56,10 @@ describe("userPasswordReset", () => {
 		const resetPassword = vi.fn();
 
 		const error = await Effect.runPromise(
-			userPasswordReset(
-				{ id: ACTOR_ID, password: "new-password-123" },
-				ACTOR_ID,
-			).pipe(Effect.provide(layerBuild(vi.fn(), resetPassword)), Effect.flip),
+			userPasswordReset({ id: ACTOR_ID, password: PASSWORD }, ACTOR_ID).pipe(
+				Effect.provide(layerBuild(vi.fn(), resetPassword)),
+				Effect.flip,
+			),
 		);
 
 		expect(error).toBeInstanceOf(EForbidden);
@@ -51,13 +71,32 @@ describe("userPasswordReset", () => {
 		const resetPassword = vi.fn();
 
 		const error = await Effect.runPromise(
-			userPasswordReset(
-				{ id: TARGET_ID, password: "new-password-123" },
-				ACTOR_ID,
-			).pipe(Effect.provide(layerBuild(findById, resetPassword)), Effect.flip),
+			userPasswordReset({ id: TARGET_ID, password: PASSWORD }, ACTOR_ID).pipe(
+				Effect.provide(layerBuild(findById, resetPassword)),
+				Effect.flip,
+			),
 		);
 
 		expect(error).toBeInstanceOf(ENotFound);
 		expect(resetPassword).not.toHaveBeenCalled();
+	});
+
+	it("resets the password and records the user's email", async (): Promise<void> => {
+		const findById = vi.fn().mockReturnValue(Effect.succeed(target));
+		const resetPassword = vi.fn().mockReturnValue(Effect.succeed(undefined));
+		const insert = vi.fn().mockReturnValue(Effect.succeed(undefined));
+
+		await Effect.runPromise(
+			userPasswordReset({ id: TARGET_ID, password: PASSWORD }, ACTOR_ID).pipe(
+				Effect.provide(layerBuild(findById, resetPassword, insert)),
+			),
+		);
+
+		expect(insert).toHaveBeenCalledWith(
+			expect.objectContaining({
+				action: ACTIVITY_ACTION.USER_PASSWORD_RESET,
+				metadata: { [ACTIVITY_DETAIL.EMAIL]: target.email },
+			}),
+		);
 	});
 });
