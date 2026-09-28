@@ -10,6 +10,10 @@ const ENV = {
 	DATABASE_URL: "postgres://app:app@localhost:5432/app",
 	RABBITMQ_URL: "amqp://app:app@localhost:5672",
 	REDIS_URL: "redis://localhost:6379",
+	STORAGE_ENDPOINT: "https://objects.standard.test",
+	STORAGE_BUCKET: "standard",
+	STORAGE_ACCESS_KEY_ID: "storage-key",
+	STORAGE_SECRET_ACCESS_KEY: "storage-secret",
 	WEB_ORIGIN: "https://standard.test",
 } as const;
 

@@ -43,6 +43,36 @@ services:
       timeout: 5s
       retries: 10
 
+  objects:
+    image: rustfs/rustfs:1.0.0
+    restart: unless-stopped
+    environment:
+      RUSTFS_ACCESS_KEY: app
+      RUSTFS_SECRET_KEY: appsecret
+      RUSTFS_VOLUMES: /data
+      RUSTFS_ADDRESS: 0.0.0.0:9000
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_CONSOLE_ADDRESS: 0.0.0.0:9001
+    ports:
+      - "9100:9000"
+      - "9101:9001"
+    volumes:
+      - standard-objects:/data
+
+  objects-bucket:
+    image: curlimages/curl:8.22.0
+    depends_on:
+      - objects
+    entrypoint:
+      - sh
+      - -c
+      - >-
+        until curl -sf -o /dev/null --aws-sigv4 "aws:amz:us-east-1:s3"
+        --user app:appsecret -X PUT http://objects:9000/standard
+        || curl -s --aws-sigv4 "aws:amz:us-east-1:s3" --user app:appsecret
+        http://objects:9000/standard -o /dev/null -w "%{http_code}" | grep -q 200;
+        do sleep 1; done
+
   mailpit:
     image: axllent/mailpit:v1.31
     restart: unless-stopped
@@ -57,3 +87,4 @@ services:
 
 volumes:
   standard-postgres:
+  standard-objects:

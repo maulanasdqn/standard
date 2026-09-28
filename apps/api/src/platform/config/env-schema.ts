@@ -4,6 +4,10 @@ import { z } from "zod";
 import { A } from "@mobily/ts-belt";
 import { match, P } from "ts-pattern";
 import { authEnvRefine } from "#/platform/config/auth-env-rules.ts";
+import {
+	storageEnvRefine,
+	storageEnvShape,
+} from "#/platform/config/storage-env-rules.ts";
 
 export const NODE_ENV = {
 	PRODUCTION: "production",
@@ -32,6 +36,23 @@ const blankAsUndefined = (value: unknown): unknown =>
 	match(value)
 		.with("", (): undefined => undefined)
 		.otherwise((found): unknown => found);
+
+type TEnvKey = (typeof ENV_KEY)[keyof typeof ENV_KEY];
+
+const httpsRequire = (
+	url: string,
+	key: TEnvKey,
+	context: z.RefinementCtx,
+): void =>
+	match(new URL(url).protocol)
+		.with(URL_PROTOCOL.HTTPS, (): void => undefined)
+		.otherwise((): void => {
+			context.addIssue({
+				code: "custom",
+				path: [key],
+				message: ENV_VALIDATION_MESSAGE.HTTPS_REQUIRED,
+			});
+		});
 
 type TJsonDecoded = { ok: true; value: unknown } | { ok: false };
 
@@ -101,6 +122,7 @@ export const envSchema = z
 		DATABASE_URL: z.string().min(1),
 		REDIS_URL: z.string().min(1),
 		RABBITMQ_URL: z.string().min(1),
+		...storageEnvShape,
 		SMTP_URL: z.string().min(1).default("smtp://localhost:1025"),
 		MAIL_FROM: z.string().min(1).default("Standard <no-reply@standard.test>"),
 		BETTER_AUTH_URL: z.url(),
@@ -152,26 +174,11 @@ export const envSchema = z
 	})
 	.superRefine((env, context): void => {
 		authEnvRefine(env, context, env.NODE_ENV === NODE_ENV.PRODUCTION);
+		storageEnvRefine(env, context, env.NODE_ENV === NODE_ENV.PRODUCTION);
 		match(env.NODE_ENV)
 			.with(NODE_ENV.PRODUCTION, (): void => {
-				match(new URL(env.WEB_ORIGIN).protocol)
-					.with(URL_PROTOCOL.HTTPS, (): void => undefined)
-					.otherwise((): void => {
-						context.addIssue({
-							code: "custom",
-							path: [ENV_KEY.WEB_ORIGIN],
-							message: ENV_VALIDATION_MESSAGE.HTTPS_REQUIRED,
-						});
-					});
-				match(new URL(env.BETTER_AUTH_URL).protocol)
-					.with(URL_PROTOCOL.HTTPS, (): void => undefined)
-					.otherwise((): void => {
-						context.addIssue({
-							code: "custom",
-							path: [ENV_KEY.BETTER_AUTH_URL],
-							message: ENV_VALIDATION_MESSAGE.HTTPS_REQUIRED,
-						});
-					});
+				httpsRequire(env.WEB_ORIGIN, ENV_KEY.WEB_ORIGIN, context);
+				httpsRequire(env.BETTER_AUTH_URL, ENV_KEY.BETTER_AUTH_URL, context);
 				match({ enabled: env.METRICS_ENABLED, token: env.METRICS_TOKEN })
 					.with({ enabled: true, token: P.nullish }, (): void => {
 						context.addIssue({

@@ -55,6 +55,19 @@ Staging is where the things that are currently unrehearsed get rehearsed: a roll
 
 Point the orchestrator's liveness probe at `/healthz` and its readiness probe at `/ready`. Wiring liveness to `/ready` causes a restart loop during any dependency blip.
 
+## Object storage
+
+The api refuses to start without `STORAGE_ENDPOINT`, `STORAGE_BUCKET` and a key pair, the same way it refuses to start without a database. Note attachments are written through it, and a build that cannot reach a bucket would accept an upload it cannot keep.
+
+Two rules the environment has to satisfy:
+
+- **The browser-facing endpoint is HTTPS in production.** Presigned links are signed for a host, so the api signs them for `STORAGE_PUBLIC_ENDPOINT` when it is set and for `STORAGE_ENDPOINT` otherwise, and `envSchema` requires HTTPS on whichever of the two the browser will use. The api may reach the store on an in-cluster address such as `http://objects:9000` through `STORAGE_ENDPOINT`, as long as `STORAGE_PUBLIC_ENDPOINT` names the HTTPS origin that fronts the same bucket. A proxy in front of that origin must pass the `Host` header through unchanged, because rewriting it breaks the signature
+- **The bucket is private.** Objects reach the browser through presigned links that expire after `STORAGE_URL_EXPIRY_SECONDS`, never through public read. Each link signs `response-content-type` and `response-content-disposition=inline` into its query, so the store answers with the image type the api sniffed from the bytes on upload rather than whatever the uploader claimed
+
+Storage is deliberately **not** part of `/ready`. A bucket outage stops image uploads and leaves every other route working, so taking the instance out of rotation for it would turn a degraded feature into an outage. The failure surfaces as a `storage` error in the logs, while the person uploading sees the same generic internal error as any other failed dependency, so the response never names the subsystem that failed.
+
+Request bodies are capped before they are read: 1 MiB on every route, and the attachment maximum plus 64 KiB of multipart overhead on the two upload routes (`/rpc/note/attachment/upload` and `POST /api/notes/{noteId}/attachments`). Anything larger is answered with 413 without being buffered.
+
 ## Rollback
 
 Roll back by deploying the previous image tag. Confirm with `/health`, which reports the version that is actually running.

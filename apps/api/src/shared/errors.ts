@@ -51,6 +51,13 @@ export class EQueue extends Schema.TaggedError<EQueue>()(ERROR_TAG.QUEUE, {
 	cause: Schema.Defect(),
 }) {}
 
+export class EStorage extends Schema.TaggedError<EStorage>()(
+	ERROR_TAG.STORAGE,
+	{
+		cause: Schema.Defect(),
+	},
+) {}
+
 export type TDomainError =
 	| ENotFound
 	| EForbidden
@@ -59,4 +66,5 @@ export type TDomainError =
 	| EBadRequest
 	| EDatabase
 	| EAuth
-	| EQueue;
+	| EQueue
+	| EStorage;

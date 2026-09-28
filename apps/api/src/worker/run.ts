@@ -1,8 +1,10 @@
 import "#/bootstrap/polyfill.ts";
 
 import { connectionUrlRedact } from "@app/logger";
+import { A } from "@mobily/ts-belt";
 import { jobWorkerCreate } from "@app/queue";
 import { activityModule } from "#/activity/index.ts";
+import { noteModule, type TNoteAttachmentSweepReport } from "#/note/index.ts";
 import { Effect } from "effect";
 import { match } from "ts-pattern";
 import { runtime } from "#/bootstrap/compose.ts";
@@ -30,6 +32,8 @@ import {
 const EXIT_OK = 0;
 const EXIT_FAILURE = 1;
 const PRUNE_INTERVAL_MS = 86_400_000;
+const SWEEP_INTERVAL_MS = 900_000;
+const SWEEP_BATCH = 200;
 
 const queue = await runtime.runPromise(
 	QueueService.use((service) => Effect.succeed(service)),
@@ -119,3 +123,31 @@ await prune();
 setInterval((): void => {
 	void prune();
 }, PRUNE_INTERVAL_MS).unref();
+
+const SWEEP_NOTHING: TNoteAttachmentSweepReport = { removed: 0, failed: [] };
+
+const sweep = async (): Promise<void> => {
+	const report = await runtime
+		.runPromise(noteModule.attachmentSweep(SWEEP_BATCH))
+		.catch((cause: unknown): TNoteAttachmentSweepReport => {
+			logger.error({ err: cause }, "attachment sweep failed");
+			return SWEEP_NOTHING;
+		});
+
+	A.forEach(report.failed, (failure): void => {
+		logger.warn(
+			{ err: failure.cause, storageKey: failure.storageKey },
+			"attachment sweep deferred a key",
+		);
+	});
+
+	logger.info(
+		{ removed: report.removed, deferred: report.failed.length },
+		"attachment sweep finished",
+	);
+};
+
+await sweep();
+setInterval((): void => {
+	void sweep();
+}, SWEEP_INTERVAL_MS).unref();

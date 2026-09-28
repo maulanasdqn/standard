@@ -2,6 +2,11 @@ import { AwsClient } from "aws4fetch";
 import { match, P } from "ts-pattern";
 import { storageBodyRead, storageDeclaredByteLength } from "./storage-body.ts";
 import {
+	objectUrlAt,
+	storageSignedUrlBuild,
+	type TStorageResponseHeaders,
+} from "./storage-url.ts";
+import {
 	type TStorageContentType,
 	type TStorageLimits,
 	type TStorageRejectionError,
@@ -28,6 +33,7 @@ export type TStorageOptions = {
 	secretAccessKey: string;
 	bucket: string;
 	endpoint: string;
+	publicEndpoint?: string;
 	maxBytes: number;
 	allowedContentTypes: readonly TStorageContentType[];
 	region?: string;
@@ -37,16 +43,20 @@ export type TStorageOptions = {
 export type TStorage = {
 	put: (
 		key: string,
-		body: Uint8Array | string,
+		body: Uint8Array<ArrayBuffer> | string,
 		contentType: string,
 	) => Promise<void>;
-	get: (key: string) => Promise<Uint8Array | null>;
+	get: (key: string) => Promise<Uint8Array<ArrayBuffer> | null>;
 	remove: (key: string) => Promise<void>;
-	getUrl: (key: string, expiresInSeconds?: number) => Promise<string>;
+	getUrl: (
+		key: string,
+		expiresInSeconds?: number,
+		responseHeaders?: TStorageResponseHeaders,
+	) => Promise<string>;
 };
 
 const objectUrl = (options: TStorageOptions, key: string): string =>
-	`${options.endpoint}/${options.bucket}/${key}`;
+	objectUrlAt(options.endpoint, options.bucket, key);
 
 const failedOn = (action: string, key: string, status: number): Error =>
 	new Error(`storage ${action} failed for "${key}": ${status}`);
@@ -100,12 +110,12 @@ export const storageCreate = (options: TStorageOptions): TStorage => {
 		return match(response)
 			.with(
 				{ status: HTTP_STATUS.NOT_FOUND },
-				async (): Promise<Uint8Array | null> => null,
+				async (): Promise<Uint8Array<ArrayBuffer> | null> => null,
 			)
-			.with({ ok: false }, (found): Promise<Uint8Array | null> => {
+			.with({ ok: false }, (found): Promise<Uint8Array<ArrayBuffer> | null> => {
 				throw failedOn("get", key, found.status);
 			})
-			.otherwise(async (found): Promise<Uint8Array | null> => {
+			.otherwise(async (found): Promise<Uint8Array<ArrayBuffer> | null> => {
 				const declared = storageDeclaredByteLength(found);
 
 				match(declared)
@@ -135,9 +145,17 @@ export const storageCreate = (options: TStorageOptions): TStorage => {
 	const getUrl: TStorage["getUrl"] = async (
 		key,
 		expiresInSeconds = STORAGE_URL_EXPIRY_SECONDS,
+		responseHeaders = {},
 	) => {
-		const url = new URL(objectUrl(options, key));
-		url.searchParams.set("X-Amz-Expires", String(expiresInSeconds));
+		const url = storageSignedUrlBuild(
+			objectUrlAt(
+				options.publicEndpoint ?? options.endpoint,
+				options.bucket,
+				key,
+			),
+			expiresInSeconds,
+			responseHeaders,
+		);
 		const signedRequest = await client.sign(url.toString(), {
 			aws: { signQuery: true },
 		});
