@@ -27,7 +27,7 @@ const NotesPage: FC = (): ReactElement => {
 		<div className="flex flex-col gap-6">
 			<div className="flex items-center justify-between">
 				<h1 className="text-xl font-semibold">{NOTE_MESSAGE.TITLE}</h1>
-				<Guard permissions={[PERMISSION.NOTE_WRITE]}>
+				<Guard permissions={[PERMISSION.NOTE_CREATE]}>
 					<Button asChild size="sm">
 						<Link to="/notes/create">
 							<Plus className="mr-1 size-4" />

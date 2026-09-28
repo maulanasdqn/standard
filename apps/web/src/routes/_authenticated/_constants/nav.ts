@@ -35,19 +35,19 @@ export const NAV_ITEMS: readonly TNavItem[] = [
 	{
 		to: "/users",
 		label: NAV_MESSAGE.USERS,
-		permissions: [PERMISSION.USER_MANAGE],
+		permissions: [PERMISSION.USER_READ, PERMISSION.ROLE_READ],
 		icon: Users,
 	},
 	{
 		to: "/roles",
 		label: NAV_MESSAGE.ROLES,
-		permissions: [PERMISSION.USER_MANAGE],
+		permissions: [PERMISSION.ROLE_READ],
 		icon: Shield,
 	},
 	{
 		to: "/permissions",
 		label: NAV_MESSAGE.PERMISSIONS,
-		permissions: [PERMISSION.USER_MANAGE],
+		permissions: [PERMISSION.ROLE_READ],
 		icon: KeyRound,
 	},
 	{

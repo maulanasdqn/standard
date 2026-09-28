@@ -99,7 +99,7 @@ describe("sessionRequired", () => {
 
 describe("permissionRequire", () => {
 	const guarded = base
-		.use(permissionRequire(PERMISSION.NOTE_WRITE))
+		.use(permissionRequire(PERMISSION.NOTE_UPDATE))
 		.handler(() => "ok");
 
 	const contextGranting = (permissions: readonly TPermission[]): TORPCContext =>
@@ -119,7 +119,7 @@ describe("permissionRequire", () => {
 
 	it("runs the handler when the session holds the permission", async (): Promise<void> => {
 		const result = await call(guarded, undefined, {
-			context: contextGranting([PERMISSION.NOTE_WRITE]),
+			context: contextGranting([PERMISSION.NOTE_UPDATE]),
 		});
 
 		expect(result).toBe("ok");
@@ -133,7 +133,7 @@ describe("permissionRequire", () => {
 
 	it("requires every permission listed, not just one of them", async (): Promise<void> => {
 		const both = base
-			.use(permissionRequire(PERMISSION.NOTE_READ, PERMISSION.NOTE_WRITE))
+			.use(permissionRequire(PERMISSION.NOTE_READ, PERMISSION.NOTE_UPDATE))
 			.handler(() => "ok");
 
 		expect(await statusOf(both, contextGranting([PERMISSION.NOTE_READ]))).toBe(

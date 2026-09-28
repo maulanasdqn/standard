@@ -57,6 +57,13 @@
       "when": 1790578087114,
       "tag": "0007_note_attachment_reap_on_delete",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1790582570058,
+      "tag": "0008_crud_permissions",
+      "breakpoints": true
     }
   ]
 }

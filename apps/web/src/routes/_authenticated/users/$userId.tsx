@@ -43,11 +43,11 @@ const UserEditPage: FC = (): ReactElement => {
 				</dl>
 			}
 		>
-			<Guard permissions={[PERMISSION.USER_MANAGE]}>
+			<Guard permissions={[PERMISSION.USER_UPDATE]}>
 				<UserEditForm user={data} roleOptions={roleOptions} />
 			</Guard>
 			{!isSelf(data.id) && (
-				<Guard permissions={[PERMISSION.USER_MANAGE]}>
+				<Guard permissions={[PERMISSION.USER_UPDATE]}>
 					<UserPasswordResetForm user={data} />
 				</Guard>
 			)}
@@ -63,7 +63,13 @@ const UserEditPending: FC = (): ReactElement => (
 );
 
 export const Route = createFileRoute("/_authenticated/users/$userId")({
-	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
+	beforeLoad: checkRoutePermissions({
+		permissions: [
+			PERMISSION.USER_READ,
+			PERMISSION.USER_UPDATE,
+			PERMISSION.ROLE_READ,
+		],
+	}),
 	loader: ({ context, params }) =>
 		Promise.all([
 			context.queryClient.ensureQueryData(userGetOptions(params.userId)),

@@ -22,7 +22,7 @@ const roles: readonly TRoleDto[] = [
 		key: "admin",
 		label: "Admin",
 		description: null,
-		permissions: [PERMISSION.NOTE_READ, PERMISSION.NOTE_WRITE],
+		permissions: [PERMISSION.NOTE_READ, PERMISSION.NOTE_UPDATE],
 		fixed: true,
 		memberCount: 2,
 	},

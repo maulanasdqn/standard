@@ -1,10 +1,18 @@
 import { A, D } from "@mobily/ts-belt";
 
 export const PERMISSION = {
+	NOTE_CREATE: "note:create",
 	NOTE_READ: "note:read",
-	NOTE_WRITE: "note:write",
+	NOTE_UPDATE: "note:update",
 	NOTE_DELETE: "note:delete",
-	USER_MANAGE: "user:manage",
+	USER_CREATE: "user:create",
+	USER_READ: "user:read",
+	USER_UPDATE: "user:update",
+	USER_DELETE: "user:delete",
+	ROLE_CREATE: "role:create",
+	ROLE_READ: "role:read",
+	ROLE_UPDATE: "role:update",
+	ROLE_DELETE: "role:delete",
 	ACTIVITY_READ: "activity:read",
 } as const;
 

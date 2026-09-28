@@ -27,7 +27,7 @@ const RoleCreatePending: FC = (): ReactElement => (
 );
 
 export const Route = createFileRoute("/_authenticated/roles/create")({
-	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
+	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.ROLE_CREATE] }),
 	component: RoleCreatePage,
 	pendingComponent: RoleCreatePending,
 });

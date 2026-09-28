@@ -19,14 +19,16 @@ export const UserActionsCell: FC<TUserActionsCellProps> = (
 
 	return (
 		<>
-			<Link
-				to="/users/$userId"
-				params={{ userId: props.user.id }}
-				className="px-3 py-1 text-sm hover:underline"
-			>
-				{USER_MESSAGE.ACTION_EDIT}
-			</Link>
-			<Guard permissions={[PERMISSION.USER_MANAGE]}>
+			<Guard permissions={[PERMISSION.USER_UPDATE]}>
+				<Link
+					to="/users/$userId"
+					params={{ userId: props.user.id }}
+					className="px-3 py-1 text-sm hover:underline"
+				>
+					{USER_MESSAGE.ACTION_EDIT}
+				</Link>
+			</Guard>
+			<Guard permissions={[PERMISSION.USER_DELETE]}>
 				<DeleteConfirm
 					title={USER_MESSAGE.DELETE_CONFIRM_TITLE}
 					description={USER_MESSAGE.DELETE_CONFIRM_DESCRIPTION}

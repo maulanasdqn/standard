@@ -27,7 +27,7 @@ const NoteCreatePending: FC = (): ReactElement => (
 );
 
 export const Route = createFileRoute("/_authenticated/notes/create")({
-	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.NOTE_WRITE] }),
+	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.NOTE_CREATE] }),
 	component: NoteCreatePage,
 	pendingComponent: NoteCreatePending,
 });

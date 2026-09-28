@@ -25,9 +25,8 @@ type TRoleEditFormProps = {
 };
 
 export const RoleEditForm: FC<TRoleEditFormProps> = (props): ReactElement => {
-	const { form, onSubmit, confirm, isPending, isFixed } = useRoleEditForm(
-		props.role,
-	);
+	const { form, onSubmit, confirm, isPending, isFixed, isReadOnly } =
+		useRoleEditForm(props.role);
 
 	return (
 		<form onSubmit={onSubmit}>
@@ -52,7 +51,7 @@ export const RoleEditForm: FC<TRoleEditFormProps> = (props): ReactElement => {
 									id={field.name}
 									placeholder={ROLE_MESSAGE.LABEL_PLACEHOLDER}
 									value={field.state.value}
-									disabled={isFixed}
+									disabled={isReadOnly}
 									onBlur={field.handleBlur}
 									onChange={(event) => field.handleChange(event.target.value)}
 								/>
@@ -70,7 +69,7 @@ export const RoleEditForm: FC<TRoleEditFormProps> = (props): ReactElement => {
 									id={field.name}
 									placeholder={ROLE_MESSAGE.DESCRIPTION_PLACEHOLDER}
 									value={field.state.value ?? ""}
-									disabled={isFixed}
+									disabled={isReadOnly}
 									onBlur={field.handleBlur}
 									onChange={(event) => field.handleChange(event.target.value)}
 								/>
@@ -86,7 +85,7 @@ export const RoleEditForm: FC<TRoleEditFormProps> = (props): ReactElement => {
 								</span>
 								<PermissionChecklist
 									value={field.state.value}
-									disabled={isFixed}
+									disabled={isReadOnly}
 									onChange={(next) => field.handleChange([...next])}
 								/>
 								<FieldError errors={field.state.meta.errors} />
@@ -97,10 +96,10 @@ export const RoleEditForm: FC<TRoleEditFormProps> = (props): ReactElement => {
 				<CardFooter className="justify-end gap-2 border-t pt-6">
 					<Button variant="outline" asChild>
 						<Link to="/roles">
-							{isFixed ? ROLE_MESSAGE.BACK_TO_ROLES : APP_MESSAGE.CANCEL}
+							{isReadOnly ? ROLE_MESSAGE.BACK_TO_ROLES : APP_MESSAGE.CANCEL}
 						</Link>
 					</Button>
-					{!isFixed && (
+					{!isReadOnly && (
 						<Button type="submit" disabled={isPending}>
 							{isPending && <Loader2 className="animate-spin" />}
 							{isPending ? ROLE_MESSAGE.SAVING : ROLE_MESSAGE.SAVE_CHANGES}

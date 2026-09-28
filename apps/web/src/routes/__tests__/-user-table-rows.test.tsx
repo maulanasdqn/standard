@@ -67,7 +67,7 @@ describe("UserTable with rows", () => {
 		expect(screen.queryByText("No users yet.")).not.toBeInTheDocument();
 	});
 
-	it("shows the role as plain text to someone who cannot manage users", (): void => {
+	it("shows the role as plain text to someone who cannot edit users", (): void => {
 		renderWithPermissions([]);
 
 		expect(screen.getByText(MEMBER_LABEL)).toBeVisible();
@@ -76,8 +76,8 @@ describe("UserTable with rows", () => {
 		).not.toBeInTheDocument();
 	});
 
-	it("offers the role as a select to someone who can manage users", (): void => {
-		renderWithPermissions([PERMISSION.USER_MANAGE]);
+	it("offers the role as a select to someone who can edit users", (): void => {
+		renderWithPermissions([PERMISSION.USER_UPDATE]);
 
 		expect(
 			screen.getByRole("combobox", { name: `Role for ${user.name}` }),

@@ -20,7 +20,7 @@ export const QuickActions: FC = (): ReactElement => (
 			</CardTitle>
 		</CardHeader>
 		<CardContent className="flex flex-col gap-2">
-			<Guard permissions={[PERMISSION.NOTE_WRITE]}>
+			<Guard permissions={[PERMISSION.NOTE_CREATE]}>
 				<Button variant="outline" size="sm" className="justify-start" asChild>
 					<Link to="/notes/create">
 						<Plus className="size-4" />
@@ -28,7 +28,7 @@ export const QuickActions: FC = (): ReactElement => (
 					</Link>
 				</Button>
 			</Guard>
-			<Guard permissions={[PERMISSION.USER_MANAGE]}>
+			<Guard permissions={[PERMISSION.USER_CREATE, PERMISSION.ROLE_READ]}>
 				<Button variant="outline" size="sm" className="justify-start" asChild>
 					<Link to="/users/create">
 						<Plus className="size-4" />

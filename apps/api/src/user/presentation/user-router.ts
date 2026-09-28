@@ -11,39 +11,42 @@ import {
 	effectRunTransactional,
 } from "#/platform/orpc/run-effect.ts";
 
-const manage = permissionGuarded(PERMISSION.USER_MANAGE);
-
 const userRouter = implementer.user.router({
-	list: manage.user.list.handler(({ input, context }) =>
-		effectRun(context.runtime, userList(input)),
+	list: permissionGuarded(PERMISSION.USER_READ).user.list.handler(
+		({ input, context }) => effectRun(context.runtime, userList(input)),
 	),
 
-	get: manage.user.get.handler(({ input, context }) =>
-		effectRun(context.runtime, userGet(input)),
+	get: permissionGuarded(PERMISSION.USER_READ).user.get.handler(
+		({ input, context }) => effectRun(context.runtime, userGet(input)),
 	),
 
-	create: manage.user.create.handler(({ input, context }) =>
-		effectRunTransactional(
-			context.runtime,
-			userCreate(input, context.session.user.id),
-		),
+	create: permissionGuarded(PERMISSION.USER_CREATE).user.create.handler(
+		({ input, context }) =>
+			effectRunTransactional(
+				context.runtime,
+				userCreate(input, context.session.user.id),
+			),
 	),
 
-	update: manage.user.update.handler(({ input, context }) =>
-		effectRunTransactional(
-			context.runtime,
-			userUpdate(input, context.session.user.id),
-		),
+	update: permissionGuarded(PERMISSION.USER_UPDATE).user.update.handler(
+		({ input, context }) =>
+			effectRunTransactional(
+				context.runtime,
+				userUpdate(input, context.session.user.id),
+			),
 	),
 
-	remove: manage.user.remove.handler(({ input, context }) =>
-		effectRunTransactional(
-			context.runtime,
-			userDelete(input, context.session.user.id),
-		),
+	remove: permissionGuarded(PERMISSION.USER_DELETE).user.remove.handler(
+		({ input, context }) =>
+			effectRunTransactional(
+				context.runtime,
+				userDelete(input, context.session.user.id),
+			),
 	),
 
-	resetPassword: manage.user.resetPassword.handler(({ input, context }) =>
+	resetPassword: permissionGuarded(
+		PERMISSION.USER_UPDATE,
+	).user.resetPassword.handler(({ input, context }) =>
 		effectRunTransactional(
 			context.runtime,
 			userPasswordReset(input, context.session.user.id),

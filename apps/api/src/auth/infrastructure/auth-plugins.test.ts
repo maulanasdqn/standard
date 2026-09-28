@@ -15,7 +15,7 @@ const JWT_PLUGIN_ID = "jwt";
 type TJwtPlugin = ReturnType<typeof jwt>;
 
 const permissionsFor = vi.fn(
-	async (): Promise<readonly string[]> => [PERMISSION.USER_MANAGE],
+	async (): Promise<readonly string[]> => [PERMISSION.USER_UPDATE],
 );
 
 const OPTIONS = {
@@ -75,7 +75,7 @@ describe("authPluginsOf", () => {
 			email: USER.email,
 			name: USER.name,
 			role: ROLE.ADMIN,
-			permissions: [PERMISSION.USER_MANAGE],
+			permissions: [PERMISSION.USER_UPDATE],
 		});
 	});
 

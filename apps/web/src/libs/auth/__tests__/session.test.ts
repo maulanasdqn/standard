@@ -18,7 +18,7 @@ const ME: TMe = {
 		name: "Ada",
 		role: ROLE.ADMIN,
 	},
-	permissions: [PERMISSION.USER_MANAGE],
+	permissions: [PERMISSION.USER_READ],
 };
 
 const meGet = vi.mocked(orpc.me.get.call);

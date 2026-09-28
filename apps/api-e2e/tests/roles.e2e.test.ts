@@ -126,13 +126,13 @@ describe("roles REST endpoints", () => {
 			path: `/roles/${ROLE_KEY}`,
 			cookie: adminCookie,
 			method: "PATCH",
-			body: { permissions: [PERMISSION.NOTE_READ, PERMISSION.NOTE_WRITE] },
+			body: { permissions: [PERMISSION.NOTE_READ, PERMISSION.NOTE_UPDATE] },
 		});
 		expect(update.status).toBe(200);
 
 		const meAfter = await apiJson<TMe>({ path: "/me", cookie: reviewerCookie });
 		expect(meAfter.permissions).toEqual(
-			expect.arrayContaining([PERMISSION.NOTE_WRITE]),
+			expect.arrayContaining([PERMISSION.NOTE_UPDATE]),
 		);
 
 		const deleteUser = await apiFetch({

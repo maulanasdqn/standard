@@ -23,7 +23,7 @@ const MEMBERS = 3;
 const input: TRoleUpdateInput = {
 	key: KEY,
 	label: "Reviewer Plus",
-	permissions: [PERMISSION.NOTE_READ, PERMISSION.NOTE_WRITE],
+	permissions: [PERMISSION.NOTE_READ, PERMISSION.NOTE_UPDATE],
 };
 
 const row: TCustomRoleRow = {

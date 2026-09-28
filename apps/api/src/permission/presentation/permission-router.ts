@@ -3,7 +3,7 @@ import { permissionList } from "#/permission/application/permission-list.ts";
 import { implementer, permissionGuarded } from "#/platform/orpc/implementer.ts";
 
 const permissionRouter = implementer.permission.router({
-	list: permissionGuarded(PERMISSION.USER_MANAGE).permission.list.handler(() =>
+	list: permissionGuarded(PERMISSION.ROLE_READ).permission.list.handler(() =>
 		permissionList(),
 	),
 });

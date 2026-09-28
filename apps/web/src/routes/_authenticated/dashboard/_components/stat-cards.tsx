@@ -54,10 +54,12 @@ export const StatCards: FC = (): ReactElement => (
 				<NoteStat />
 			</Suspense>
 		</Guard>
-		<Guard permissions={[PERMISSION.USER_MANAGE]}>
+		<Guard permissions={[PERMISSION.USER_READ]}>
 			<Suspense fallback={<CardSkeleton />}>
 				<UserStat />
 			</Suspense>
+		</Guard>
+		<Guard permissions={[PERMISSION.ROLE_READ]}>
 			<Suspense fallback={<CardSkeleton />}>
 				<RoleStat />
 			</Suspense>

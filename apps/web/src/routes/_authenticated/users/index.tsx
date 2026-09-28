@@ -30,7 +30,7 @@ const UsersPage: FC = (): ReactElement => {
 		<div className="flex flex-col gap-6">
 			<div className="flex items-center justify-between">
 				<h1 className="text-xl font-semibold">{USER_MESSAGE.TITLE}</h1>
-				<Guard permissions={[PERMISSION.USER_MANAGE]}>
+				<Guard permissions={[PERMISSION.USER_CREATE]}>
 					<Button asChild size="sm">
 						<Link to="/users/create">
 							<Plus className="mr-1 size-4" />
@@ -54,7 +54,9 @@ const UsersPending: FC = (): ReactElement => <ListPageSkeleton action />;
 
 export const Route = createFileRoute("/_authenticated/users/")({
 	validateSearch: userSearchValidate,
-	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.USER_MANAGE] }),
+	beforeLoad: checkRoutePermissions({
+		permissions: [PERMISSION.USER_READ, PERMISSION.ROLE_READ],
+	}),
 	loaderDeps: ({ search }) => ({ search }),
 	loader: ({ context, deps }) =>
 		Promise.all([
