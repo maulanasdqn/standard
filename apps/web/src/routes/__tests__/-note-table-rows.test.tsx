@@ -1,7 +1,12 @@
 import { formatDateTime } from "@app/format";
 import { NOTE_SORT, SORT_DIRECTION, type TNote } from "@app/schemas";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, type RenderResult, screen } from "@testing-library/react";
+import {
+	render,
+	waitFor,
+	type RenderResult,
+	screen,
+} from "@testing-library/react";
 import type { ReactElement } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { NoteTable } from "#/routes/_authenticated/notes/_components/note-table.tsx";
@@ -59,12 +64,18 @@ const renderRows = (): RenderResult =>
 	);
 
 describe("NoteTable with rows", () => {
-	it("renders one row per note with its title and body", (): void => {
+	it("renders one row per note with its title and body", async (): Promise<void> => {
 		renderRows();
 
-		expect(screen.getByRole("row", { name: /first note/i })).toBeVisible();
-		expect(screen.getByText("The body of the first note")).toBeVisible();
-		expect(screen.getByRole("row", { name: /second note/i })).toBeVisible();
+		await waitFor((): void => {
+			expect(screen.getByRole("row", { name: /first note/i })).toBeVisible();
+		});
+		await waitFor((): void => {
+			expect(screen.getByText("The body of the first note")).toBeVisible();
+		});
+		await waitFor((): void => {
+			expect(screen.getByRole("row", { name: /second note/i })).toBeVisible();
+		});
 		expect(screen.queryByText("No notes yet.")).not.toBeInTheDocument();
 	});
 

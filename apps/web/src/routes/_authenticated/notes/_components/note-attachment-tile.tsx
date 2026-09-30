@@ -5,6 +5,11 @@ import { NOTE_ATTACHMENT_MESSAGE } from "@app/messages";
 import { PERMISSION } from "@app/permissions";
 import type { TNoteAttachment } from "@app/schemas";
 import { ExternalLink, Trash2 } from "lucide-react";
+import {
+	MOTION_VARIANT,
+	popVariants,
+} from "@app/components/motion/motion-tokens";
+import { motion } from "motion/react";
 import type { FC, ReactElement } from "react";
 
 type TNoteAttachmentTileProps = {
@@ -15,7 +20,15 @@ type TNoteAttachmentTileProps = {
 export const NoteAttachmentTile: FC<TNoteAttachmentTileProps> = (
 	props,
 ): ReactElement => (
-	<li className="group relative overflow-hidden rounded-xl border bg-muted">
+	<motion.li
+		layout
+		variants={popVariants}
+		initial={MOTION_VARIANT.HIDDEN}
+		animate={MOTION_VARIANT.VISIBLE}
+		exit={MOTION_VARIANT.EXIT}
+		whileHover={{ y: -3 }}
+		className="group relative overflow-hidden rounded-xl border bg-muted"
+	>
 		<img
 			src={props.attachment.url}
 			alt={props.attachment.fileName}
@@ -61,5 +74,5 @@ export const NoteAttachmentTile: FC<TNoteAttachmentTileProps> = (
 				</span>
 			</div>
 		</div>
-	</li>
+	</motion.li>
 );

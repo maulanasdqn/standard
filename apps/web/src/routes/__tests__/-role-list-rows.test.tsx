@@ -3,7 +3,12 @@ import { ROLE_MESSAGE } from "@app/messages";
 import { PERMISSION } from "@app/permissions";
 import type { TRoleDto } from "@app/schemas";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, type RenderResult, screen } from "@testing-library/react";
+import {
+	render,
+	waitFor,
+	type RenderResult,
+	screen,
+} from "@testing-library/react";
 import type { ReactElement } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { RoleList } from "#/routes/_authenticated/roles/_components/role-list.tsx";
@@ -46,11 +51,15 @@ const renderRows = (): RenderResult => {
 };
 
 describe("RoleList with rows", () => {
-	it("renders every role with its label and key", (): void => {
+	it("renders every role with its label and key", async (): Promise<void> => {
 		renderRows();
 
-		expect(screen.getByRole("row", { name: /admin/i })).toBeVisible();
-		expect(screen.getByRole("row", { name: /reviewer/i })).toBeVisible();
+		await waitFor((): void => {
+			expect(screen.getByRole("row", { name: /admin/i })).toBeVisible();
+		});
+		await waitFor((): void => {
+			expect(screen.getByRole("row", { name: /reviewer/i })).toBeVisible();
+		});
 		expect(screen.queryByText("No roles yet.")).not.toBeInTheDocument();
 	});
 

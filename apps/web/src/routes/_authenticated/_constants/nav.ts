@@ -12,6 +12,14 @@ import {
 	Users,
 } from "lucide-react";
 
+export const NAV_ACTIVE_LAYOUT_ID = "nav-active-indicator";
+export const NAV_HOVER_LAYOUT_ID = "nav-hover-indicator";
+
+export const ROUTER_STATUS = {
+	PENDING: "pending",
+	IDLE: "idle",
+} as const;
+
 export type TNavItem = {
 	to: LinkProps["to"];
 	label: string;

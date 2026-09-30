@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import type { FC, ReactElement } from "react";
 
 type TEmptyStateProps = {
@@ -5,5 +6,11 @@ type TEmptyStateProps = {
 };
 
 export const EmptyState: FC<TEmptyStateProps> = (props): ReactElement => (
-	<output className="text-sm text-muted-foreground">{props.message}</output>
+	<motion.output
+		className="block text-sm text-muted-foreground"
+		initial={{ opacity: 0, y: 4 }}
+		animate={{ opacity: 1, y: 0 }}
+	>
+		{props.message}
+	</motion.output>
 );

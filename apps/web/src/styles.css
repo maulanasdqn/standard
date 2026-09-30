@@ -14,6 +14,32 @@
         @apply bg-background text-foreground;
     }
 
+    @supports not selector(::-webkit-scrollbar) {
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: var(--scrollbar-thumb) transparent;
+        }
+    }
+
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    ::-webkit-scrollbar-track,
+    ::-webkit-scrollbar-corner {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--scrollbar-thumb);
+        border-radius: 9999px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--scrollbar-thumb-hover);
+    }
+
     @media (min-width: 2560px) {
         html {
             font-size: 20px;
@@ -28,6 +54,8 @@
 }
 
 :root {
+    --scrollbar-thumb: oklch(0.3 0 0 / 0.35);
+    --scrollbar-thumb-hover: oklch(0.3 0 0 / 0.55);
     --sidebar: hsl(0 0% 98%);
     --sidebar-foreground: hsl(240 5.3% 26.1%);
     --sidebar-primary: hsl(240 5.9% 10%);
@@ -39,6 +67,9 @@
 }
 
 .dark {
+    color-scheme: dark;
+    --scrollbar-thumb: oklch(0.32 0 0);
+    --scrollbar-thumb-hover: oklch(0.42 0 0);
     --sidebar: hsl(240 5.9% 10%);
     --sidebar-foreground: hsl(240 4.8% 95.9%);
     --sidebar-primary: hsl(224.3 76.3% 48%);

@@ -11,7 +11,9 @@
 		"./lib/utils": "./src/lib/utils.ts",
 		"./skeleton/*": "./src/skeleton/*.tsx",
 		"./theme.css": "./theme.css",
-		"./ui/*": "./src/ui/*.tsx"
+		"./ui/*": "./src/ui/*.tsx",
+		"./motion/motion-tokens": "./src/motion/motion-tokens.ts",
+		"./motion/*": "./src/motion/*.tsx"
 	},
 	"scripts": {
 		"build": "tsc --noEmit",
@@ -25,6 +27,7 @@
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"lucide-react": "catalog:",
+		"motion": "catalog:",
 		"radix-ui": "^1.6.7",
 		"tailwind-merge": "^3.7.0",
 		"ts-pattern": "catalog:"

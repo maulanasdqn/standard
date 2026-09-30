@@ -1,3 +1,4 @@
+import { FadeIn } from "@app/components/motion/fade-in";
 import type { FC, ReactElement, ReactNode } from "react";
 import { usePageTransitionKey } from "#/routes/_hooks/use-page-transition-key.ts";
 
@@ -10,12 +11,5 @@ export const PageTransition: FC<TPageTransitionProps> = (
 ): ReactElement => {
 	const transitionKey = usePageTransitionKey();
 
-	return (
-		<div
-			key={transitionKey}
-			className="animate-in fade-in-0 slide-in-from-bottom-2 duration-300 ease-out motion-reduce:animate-none"
-		>
-			{props.children}
-		</div>
-	);
+	return <FadeIn key={transitionKey}>{props.children}</FadeIn>;
 };

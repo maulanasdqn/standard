@@ -11,6 +11,7 @@ import {
 import { NOTE_ATTACHMENT_MESSAGE } from "@app/messages";
 import { NOTE_ATTACHMENT_MAX_PER_NOTE } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
+import { AnimatePresence } from "motion/react";
 import type { FC, ReactElement } from "react";
 import { match } from "ts-pattern";
 import { ConfirmDialog } from "#/routes/_authenticated/_components/confirm-dialog.tsx";
@@ -62,13 +63,15 @@ export const NoteAttachmentPanel: FC<TNoteAttachmentPanelProps> = (
 					))
 					.otherwise(() => (
 						<ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-							{A.map(panel.items, (attachment) => (
-								<NoteAttachmentTile
-									key={attachment.id}
-									attachment={attachment}
-									onRemove={panel.onRemoveRequest}
-								/>
-							))}
+							<AnimatePresence mode="popLayout" initial={false}>
+								{A.map(panel.items, (attachment) => (
+									<NoteAttachmentTile
+										key={attachment.id}
+										attachment={attachment}
+										onRemove={panel.onRemoveRequest}
+									/>
+								))}
+							</AnimatePresence>
 						</ul>
 					))}
 			</CardContent>

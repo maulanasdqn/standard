@@ -1,5 +1,7 @@
-import { type FC, Fragment, type ReactElement } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import type { FC, ReactElement } from "react";
 import { match, P } from "ts-pattern";
+import { MOTION_DURATION } from "../motion/motion-tokens.ts";
 
 type TErrorMap = Partial<Record<string, unknown>>;
 
@@ -26,11 +28,29 @@ export const hasFieldError = (errorMap: TErrorMap): boolean =>
 	firstIssue(errorMap.onBlur) !== undefined ||
 	firstIssue(errorMap.onSubmit) !== undefined;
 
-export const FieldError: FC<TFieldErrorProps> = (props): ReactElement =>
-	match(resolve(props))
-		.with({ message: P.string }, (issue) => (
-			<p role="alert" className="text-xs text-destructive">
-				{issue.message}
-			</p>
-		))
-		.otherwise(() => <Fragment />);
+const issueMessage = (issue: unknown): string | undefined =>
+	match(issue)
+		.with({ message: P.string }, (found) => found.message)
+		.otherwise(() => undefined);
+
+export const FieldError: FC<TFieldErrorProps> = (props): ReactElement => {
+	const message = issueMessage(resolve(props));
+
+	return (
+		<AnimatePresence initial={false}>
+			{message !== undefined && (
+				<motion.p
+					key={message}
+					role="alert"
+					className="text-xs text-destructive"
+					initial={{ opacity: 0, y: -4, x: -2 }}
+					animate={{ opacity: 1, y: 0, x: [0, -3, 3, -2, 0] }}
+					exit={{ opacity: 0, y: -4 }}
+					transition={{ duration: MOTION_DURATION.BASE }}
+				>
+					{message}
+				</motion.p>
+			)}
+		</AnimatePresence>
+	);
+};

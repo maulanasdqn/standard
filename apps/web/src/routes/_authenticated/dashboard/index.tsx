@@ -1,3 +1,4 @@
+import { Stagger, StaggerItem } from "@app/components/motion/stagger";
 import { DASHBOARD_MESSAGE } from "@app/messages";
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
@@ -12,17 +13,25 @@ const DashboardPage: FC = (): ReactElement => {
 	const health = useDashboardHealth();
 
 	return (
-		<div className="flex flex-col gap-6">
-			<h1 className="text-xl font-semibold">{DASHBOARD_MESSAGE.TITLE}</h1>
-			<StatCards />
-			<div className="grid gap-4 lg:grid-cols-3">
+		<Stagger className="flex flex-col gap-6">
+			<StaggerItem>
+				<h1 className="text-xl font-semibold">{DASHBOARD_MESSAGE.TITLE}</h1>
+			</StaggerItem>
+			<StaggerItem>
+				<StatCards />
+			</StaggerItem>
+			<StaggerItem className="grid gap-4 lg:grid-cols-3">
 				<ActivitySection />
-				<div className="flex flex-col gap-4">
-					<HealthCard health={health} />
-					<QuickActions />
-				</div>
-			</div>
-		</div>
+				<Stagger className="flex flex-col gap-4">
+					<StaggerItem>
+						<HealthCard health={health} />
+					</StaggerItem>
+					<StaggerItem>
+						<QuickActions />
+					</StaggerItem>
+				</Stagger>
+			</StaggerItem>
+		</Stagger>
 	);
 };
 

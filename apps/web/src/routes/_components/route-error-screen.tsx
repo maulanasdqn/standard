@@ -1,3 +1,4 @@
+import { Stagger, StaggerItem } from "@app/components/motion/stagger";
 import { Button } from "@app/components/ui/button";
 import { ERROR_MESSAGE } from "@app/messages";
 import {
@@ -56,33 +57,43 @@ export const RouteErrorScreen: FC<ErrorComponentProps> = (
 	return (
 		<section
 			aria-labelledby={ERROR_TITLE_ID}
-			className="flex min-h-dvh flex-col items-center justify-center gap-4 p-6 text-center"
+			className="flex min-h-dvh flex-col items-center justify-center p-6 text-center"
 		>
-			<h1 id={ERROR_TITLE_ID} className="text-2xl font-bold uppercase">
-				{copy.title}
-			</h1>
-			<p role="alert" className="max-w-prose text-sm font-light">
-				{copy.body}
-			</p>
-			<p className="max-w-prose text-sm font-light text-muted-foreground">
-				{copy.next}
-			</p>
-			{match(forbidden)
-				.with(true, () => (
-					<Button asChild>
-						<Link to="/">{ERROR_MESSAGE.GO_HOME}</Link>
-					</Button>
-				))
-				.otherwise(() => (
-					<Button
-						onClick={() => void router.invalidate()}
-						disabled={isRetrying}
-					>
-						{match(isRetrying)
-							.with(true, () => ERROR_MESSAGE.RETRYING)
-							.otherwise(() => ERROR_MESSAGE.RETRY)}
-					</Button>
-				))}
+			<Stagger className="flex flex-col items-center gap-4">
+				<StaggerItem>
+					<h1 id={ERROR_TITLE_ID} className="text-2xl font-bold uppercase">
+						{copy.title}
+					</h1>
+				</StaggerItem>
+				<StaggerItem>
+					<p role="alert" className="max-w-prose text-sm font-light">
+						{copy.body}
+					</p>
+				</StaggerItem>
+				<StaggerItem>
+					<p className="max-w-prose text-sm font-light text-muted-foreground">
+						{copy.next}
+					</p>
+				</StaggerItem>
+				<StaggerItem>
+					{match(forbidden)
+						.with(true, () => (
+							<Button asChild>
+								<Link to="/">{ERROR_MESSAGE.GO_HOME}</Link>
+							</Button>
+						))
+						.otherwise(() => (
+							<Button
+								onClick={() => void router.invalidate()}
+								disabled={isRetrying}
+							>
+								{match(isRetrying)
+									.with(true, () => ERROR_MESSAGE.RETRYING)
+									.otherwise(() => ERROR_MESSAGE.RETRY)}
+							</Button>
+						))}
+				</StaggerItem>
+			</Stagger>
 		</section>
 	);
 };
