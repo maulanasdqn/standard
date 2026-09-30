@@ -6,4 +6,5 @@ export const NAV_MESSAGE = {
 	PERMISSIONS: "Permissions",
 	ACTIVITY: "Activity",
 	ACCOUNT: "Account",
+	SIGN_OUT: "Sign out",
 } as const;

@@ -2,6 +2,7 @@ import { USER_MESSAGE } from "@app/messages";
 import type { FC, ReactElement } from "react";
 import { ConfirmDialog } from "#/routes/_authenticated/_components/confirm-dialog.tsx";
 import { DataTable } from "#/routes/_authenticated/_components/data-table.tsx";
+import { useUserRowOpen } from "#/routes/_authenticated/users/_hooks/use-user-row-actions.ts";
 import { UserSearch } from "#/routes/_authenticated/users/_components/user-search.tsx";
 import {
 	type TUserTableInput,
@@ -10,6 +11,7 @@ import {
 
 export const UserTable: FC<TUserTableInput> = (props): ReactElement => {
 	const { table, roleChange } = useUserTable(props);
+	const openRow = useUserRowOpen();
 
 	return (
 		<>
@@ -18,6 +20,7 @@ export const UserTable: FC<TUserTableInput> = (props): ReactElement => {
 				emptyMessage={USER_MESSAGE.EMPTY}
 				toolbar={<UserSearch />}
 				paginated
+				onRowClick={openRow}
 			/>
 			<ConfirmDialog
 				open={roleChange.open}

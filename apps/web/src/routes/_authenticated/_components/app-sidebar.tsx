@@ -2,6 +2,7 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
+	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@app/components/ui/dropdown-menu";
 import {
@@ -18,13 +19,19 @@ import {
 	SidebarRail,
 } from "@app/components/ui/sidebar";
 import { Link } from "@tanstack/react-router";
-import { ChevronsUpDown, Command, LogOut, Moon } from "lucide-react";
+import {
+	ChevronsUpDown,
+	CircleUser,
+	Command,
+	LogOut,
+	Moon,
+} from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useSession } from "#/libs/auth/use-session.ts";
 import { useSessionSignOut } from "#/routes/_authenticated/_hooks/use-session-sign-out.ts";
 import { useTheme } from "#/routes/_authenticated/_hooks/use-theme.ts";
 import { Switch } from "@app/components/ui/switch";
-import { APP_MESSAGE } from "@app/messages";
+import { APP_MESSAGE, NAV_MESSAGE } from "@app/messages";
 import { AppLogo } from "#/routes/_components/app-logo.tsx";
 import { AppSidebarNav } from "#/routes/_authenticated/_components/app-sidebar-nav.tsx";
 
@@ -80,6 +87,13 @@ export const AppSidebar: FC = (): ReactElement => {
 								side="top"
 								className="w-(--radix-dropdown-menu-trigger-width)"
 							>
+								<DropdownMenuItem asChild>
+									<Link to="/account">
+										<CircleUser />
+										{NAV_MESSAGE.ACCOUNT}
+									</Link>
+								</DropdownMenuItem>
+								<DropdownMenuSeparator />
 								<DropdownMenuItem
 									onSelect={(event) => {
 										event.preventDefault();
@@ -96,7 +110,7 @@ export const AppSidebar: FC = (): ReactElement => {
 								</DropdownMenuItem>
 								<DropdownMenuItem onClick={() => void signOut()}>
 									<LogOut />
-									Sign out
+									{NAV_MESSAGE.SIGN_OUT}
 								</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>

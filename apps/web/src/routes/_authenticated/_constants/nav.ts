@@ -4,7 +4,6 @@ import type { LinkProps } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
 import {
 	Activity,
-	CircleUser,
 	KeyRound,
 	LayoutDashboard,
 	Shield,
@@ -63,11 +62,5 @@ export const NAV_ITEMS: readonly TNavItem[] = [
 		label: NAV_MESSAGE.ACTIVITY,
 		permissions: [PERMISSION.ACTIVITY_READ],
 		icon: Activity,
-	},
-	{
-		to: "/account",
-		label: NAV_MESSAGE.ACCOUNT,
-		permissions: [],
-		icon: CircleUser,
 	},
 ];

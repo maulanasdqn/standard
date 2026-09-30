@@ -22,6 +22,7 @@ import type {
 	TClientOutputs,
 } from "#/libs/orpc/types.ts";
 import type { TListChange } from "#/libs/table/list-patch.ts";
+import { toNoteListInput } from "#/routes/_authenticated/notes/_utils/note-list-input.ts";
 
 type TNoteIn = TClientInputs["note"];
 type TNoteOut = TClientOutputs["note"];
@@ -53,7 +54,8 @@ export const noteGetOptions = (
 export const useNoteList = (): UseSuspenseQueryResult<
 	TNoteOut["list"],
 	TNoteErr["list"]
-> => useSuspenseQuery(noteListOptions(listRouteApi.useSearch()));
+> =>
+	useSuspenseQuery(noteListOptions(toNoteListInput(listRouteApi.useSearch())));
 
 export const useNoteGet = (): UseSuspenseQueryResult<
 	TNoteOut["get"],

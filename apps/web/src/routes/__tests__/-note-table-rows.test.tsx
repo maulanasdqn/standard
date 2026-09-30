@@ -18,6 +18,10 @@ vi.mock("#/routes/_authenticated/notes/_components/note-search.tsx", () => ({
 	NoteSearch: (): ReactElement => <input aria-label="Search notes" />,
 }));
 
+vi.mock("#/routes/_authenticated/notes/_components/note-filters.tsx", () => ({
+	NoteFilters: (): ReactElement => <button type="button">Filters</button>,
+}));
+
 vi.mock(
 	"#/routes/_authenticated/notes/_components/note-actions-cell.tsx",
 	() => ({

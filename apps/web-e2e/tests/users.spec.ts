@@ -11,6 +11,7 @@ import {
 } from "../support/nav.ts";
 import { signIn } from "../support/sign-in.ts";
 import { signOut } from "../support/sign-out.ts";
+import { chooseRowAction } from "../support/row-menu.ts";
 import { rowWithCell } from "../support/table.ts";
 import { selectOption } from "../support/select.ts";
 import { confirmAction } from "../support/confirm.ts";
@@ -59,9 +60,11 @@ test.describe("users admin flow", () => {
 	});
 
 	test("renames the user from the edit page", async (): Promise<void> => {
-		await rowWithCell(page, NEW_USER.email)
-			.getByRole("link", { name: "Edit" })
-			.click();
+		await chooseRowAction(
+			page,
+			rowWithCell(page, NEW_USER.email),
+			USER_MESSAGE.ACTION_EDIT,
+		);
 		await expect(
 			page.getByRole("heading", { name: "Edit user" }),
 		).toBeVisible();
@@ -75,9 +78,11 @@ test.describe("users admin flow", () => {
 	});
 
 	test("resets the user's password", async (): Promise<void> => {
-		await rowWithCell(page, NEW_USER.email)
-			.getByRole("link", { name: "Edit" })
-			.click();
+		await chooseRowAction(
+			page,
+			rowWithCell(page, NEW_USER.email),
+			USER_MESSAGE.ACTION_EDIT,
+		);
 		await expect(
 			page.getByRole("heading", { name: "Edit user" }),
 		).toBeVisible();
@@ -93,11 +98,7 @@ test.describe("users admin flow", () => {
 		await signOut(page);
 		await signIn(page, { email: NEW_USER.email, password: RESET_PASSWORD });
 
-		await expectNavVisible(page, [
-			NAV_LABEL.DASHBOARD,
-			NAV_LABEL.NOTES,
-			NAV_LABEL.ACCOUNT,
-		]);
+		await expectNavVisible(page, [NAV_LABEL.DASHBOARD, NAV_LABEL.NOTES]);
 		await expectNavHidden(page, ADMIN_NAV_LABELS);
 
 		await page.goto("/users");
