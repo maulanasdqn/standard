@@ -11,6 +11,10 @@ vi.mock("#/routes/_authenticated/notes/_components/note-search.tsx", () => ({
 	NoteSearch: (): ReactElement => <input aria-label={SEARCH_LABEL} />,
 }));
 
+vi.mock("#/routes/_authenticated/notes/_components/note-filters.tsx", () => ({
+	NoteFilters: (): ReactElement => <button type="button">Filters</button>,
+}));
+
 const renderWithClient = (ui: ReactElement): RenderResult => {
 	const queryClient = new QueryClient();
 	return render(

@@ -73,7 +73,7 @@ test.describe("editing a note twice in a row", () => {
 
 		await page
 			.getByRole("row", { name: EDITED_NOTE })
-			.getByRole("link")
+			.getByRole("cell", { name: EDITED_NOTE })
 			.click();
 		await expect(page).toHaveURL(/\/notes\/[^/]+$/);
 		await page.getByLabel("Title").fill(EDITED_AGAIN);
@@ -83,7 +83,7 @@ test.describe("editing a note twice in a row", () => {
 
 		await page
 			.getByRole("row", { name: EDITED_AGAIN })
-			.getByRole("link")
+			.getByRole("cell", { name: EDITED_AGAIN })
 			.click();
 
 		await expect(page.getByLabel("Title")).toHaveValue(EDITED_AGAIN);

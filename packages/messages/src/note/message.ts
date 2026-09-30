@@ -38,4 +38,9 @@ export const NOTE_MESSAGE = {
 	SAVING: "Saving…",
 	CREATED_AT: "Created",
 	UPDATED_AT: "Updated",
+	FILTER_TITLE: "Title",
+	FILTER_TITLE_PLACEHOLDER: "Title contains",
+	FILTER_ATTACHMENTS: "Attachments",
+	FILTER_ATTACHMENTS_WITH: "With attachments",
+	FILTER_ATTACHMENTS_WITHOUT: "Without attachments",
 } as const;

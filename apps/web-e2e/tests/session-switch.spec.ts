@@ -25,11 +25,7 @@ test("a second account signed in after a sign-out sees only its own data", async
 	await signOut(page);
 	await signIn(page, SEED_CREDENTIALS.viewer);
 
-	await expectNavVisible(page, [
-		NAV_LABEL.DASHBOARD,
-		NAV_LABEL.NOTES,
-		NAV_LABEL.ACCOUNT,
-	]);
+	await expectNavVisible(page, [NAV_LABEL.DASHBOARD, NAV_LABEL.NOTES]);
 	await expectNavHidden(page, ADMIN_NAV_LABELS);
 
 	await page.goto("/account");

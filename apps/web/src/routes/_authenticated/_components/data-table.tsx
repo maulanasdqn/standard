@@ -20,6 +20,7 @@ import {
 import type { ReactElement, ReactNode } from "react";
 import { match } from "ts-pattern";
 import type { TTableFeatures } from "#/libs/table/features.ts";
+import { rowOpenProps } from "#/libs/table/row-open.ts";
 import {
 	DataTableColumnsMenu,
 	type TColumnToggle,
@@ -53,6 +54,7 @@ type TDataTableProps<TData extends RowData> = {
 	emptyMessage: string;
 	toolbar?: ReactNode;
 	paginated?: boolean;
+	onRowClick?: (row: TData) => void;
 };
 
 const columnLabel = <TData extends RowData>(
@@ -133,7 +135,14 @@ export const DataTable = <TData extends RowData>(
 						))
 						.otherwise((rows) =>
 							A.mapWithIndex(rows, (index, row) => (
-								<MotionTableRow key={row.id} index={index}>
+								<MotionTableRow
+									key={row.id}
+									index={index}
+									{...rowOpenProps(
+										props.onRowClick &&
+											((): void => props.onRowClick?.(row.original)),
+									)}
+								>
 									{A.map(row.getVisibleCells(), (cell) => (
 										<TableCell
 											key={cell.id}

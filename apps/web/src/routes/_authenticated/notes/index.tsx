@@ -3,7 +3,7 @@ import { checkRoutePermissions } from "#/libs/auth/route-guard.ts";
 import { Button } from "@app/components/ui/button";
 import { NOTE_MESSAGE } from "@app/messages";
 import { PERMISSION } from "@app/permissions";
-import { noteListInputSchema } from "@app/schemas";
+import { noteListSearchSchema } from "@app/schemas";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import type { FC, ReactElement } from "react";
@@ -14,9 +14,10 @@ import {
 	useNoteList,
 	useNoteListChange,
 } from "#/routes/_authenticated/notes/_hooks/use-notes.ts";
+import { toNoteListInput } from "#/routes/_authenticated/notes/_utils/note-list-input.ts";
 import { ListPageSkeleton } from "#/routes/_components/list-page-skeleton.tsx";
 
-const noteSearchValidate = searchLenient(noteListInputSchema);
+const noteSearchValidate = searchLenient(noteListSearchSchema);
 
 const NotesPage: FC = (): ReactElement => {
 	const { data } = useNoteList();
@@ -53,7 +54,9 @@ export const Route = createFileRoute("/_authenticated/notes/")({
 	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.NOTE_READ] }),
 	loaderDeps: ({ search }) => ({ search }),
 	loader: ({ context, deps }) =>
-		context.queryClient.ensureQueryData(noteListOptions(deps.search)),
+		context.queryClient.ensureQueryData(
+			noteListOptions(toNoteListInput(deps.search)),
+		),
 	component: NotesPage,
 	pendingComponent: NotesPending,
 });

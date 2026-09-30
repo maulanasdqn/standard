@@ -8,4 +8,12 @@ export const TABLE_MESSAGE = {
 	NEXT_PAGE: "Next page",
 	LAST_PAGE: "Last page",
 	SORT: "Sort",
+	FILTERS: "Filters",
+	FILTER_APPLY: "Apply",
+	FILTER_RESET: "Reset",
+	FILTER_CLEAR: "Clear filters",
+	FILTER_ANY: "Any",
+	FILTER_DATE: "Date",
+	FILTER_FROM: "From",
+	FILTER_TO: "To",
 } as const;

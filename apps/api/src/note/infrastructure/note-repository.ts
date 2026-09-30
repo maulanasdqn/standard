@@ -1,7 +1,6 @@
 import { D } from "@mobily/ts-belt";
-import { and, count, eq, type SQL } from "drizzle-orm";
+import { and, count, eq } from "drizzle-orm";
 import { Effect, Layer } from "effect";
-import { match, P } from "ts-pattern";
 import { EDatabase } from "#/shared/errors.ts";
 import { NoteRepo, type TNoteRepo, type TNoteRow } from "#/note/domain/note.ts";
 import { offsetFor, orderFor } from "#/shared/pagination.ts";
@@ -10,7 +9,7 @@ import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { DbService } from "#/platform/db/db-service.ts";
 import { dbActive } from "#/platform/db/transaction.ts";
 import { ownershipWhere } from "#/platform/db/ownership.ts";
-import { containsWhere } from "#/platform/db/search.ts";
+import { noteFilterWhere } from "#/note/infrastructure/note-list-where.ts";
 import { note } from "#/platform/db/tables/note.ts";
 
 const VERSION_STEP = 1;
@@ -21,23 +20,16 @@ const SORT_COLUMN: Record<TNoteSort, AnyPgColumn> = {
 	[NOTE_SORT.UPDATED_AT]: note.updatedAt,
 };
 
-const searchWhere = (search: string | undefined): SQL | undefined =>
-	match(search)
-		.with(P.nonNullable, (value) => containsWhere(note.title, value))
-		.otherwise(() => undefined);
-
 export const noteRepoLayer = Layer.effect(
 	NoteRepo,
 	Effect.gen(function* () {
 		const { db } = yield* DbService;
 
-		const list: TNoteRepo["list"] = (
-			{ page, pageSize, search, sortBy, sortDir },
-			actor,
-		) => {
+		const list: TNoteRepo["list"] = (input, actor) => {
+			const { page, pageSize, sortBy, sortDir } = input;
 			const where = and(
 				ownershipWhere(actor, note.authorId),
-				searchWhere(search),
+				noteFilterWhere(input),
 			);
 
 			return Effect.tryPromise({

@@ -5,6 +5,7 @@ export const APP_MESSAGE = {
 	LOADING: "Loading…",
 	CANCEL: "Cancel",
 	DELETE: "Delete",
+	ROW_ACTIONS: "Row actions",
 	CONFIRM: "Confirm",
 	DARK_MODE: "Dark mode",
 } as const;

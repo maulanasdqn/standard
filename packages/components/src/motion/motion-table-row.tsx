@@ -1,5 +1,11 @@
 import { motion } from "motion/react";
-import type { FC, ReactElement, ReactNode } from "react";
+import type {
+	FC,
+	KeyboardEvent,
+	MouseEvent,
+	ReactElement,
+	ReactNode,
+} from "react";
 import { cn } from "../lib/utils.ts";
 import { MOTION_DURATION, MOTION_EASE_OUT, rowDelay } from "./motion-tokens.ts";
 
@@ -7,6 +13,9 @@ type TMotionTableRowProps = {
 	children: ReactNode;
 	index: number;
 	className?: string;
+	tabIndex?: number;
+	onClick?: (event: MouseEvent<HTMLTableRowElement>) => void;
+	onKeyDown?: (event: KeyboardEvent<HTMLTableRowElement>) => void;
 };
 
 export const MotionTableRow: FC<TMotionTableRowProps> = (
@@ -14,6 +23,9 @@ export const MotionTableRow: FC<TMotionTableRowProps> = (
 ): ReactElement => (
 	<motion.tr
 		className={cn("hover:bg-muted/50", props.className)}
+		tabIndex={props.tabIndex}
+		onClick={props.onClick}
+		onKeyDown={props.onKeyDown}
 		initial={{ opacity: 0, y: 6 }}
 		animate={{ opacity: 1, y: 0 }}
 		transition={{

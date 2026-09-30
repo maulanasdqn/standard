@@ -16,6 +16,7 @@ import {
 } from "../support/nav.ts";
 import { signIn } from "../support/sign-in.ts";
 import { signOut } from "../support/sign-out.ts";
+import { chooseRowAction } from "../support/row-menu.ts";
 import { rowWithCell } from "../support/table.ts";
 import { confirmAction } from "../support/confirm.ts";
 import { createUser } from "../support/users.ts";
@@ -62,9 +63,11 @@ test.describe("roles admin flow", () => {
 			),
 		);
 
-		await rowWithCell(page, ROLE_KEY.ADMIN)
-			.getByRole("link", { name: "View" })
-			.click();
+		await chooseRowAction(
+			page,
+			rowWithCell(page, ROLE_KEY.ADMIN),
+			ROLE_MESSAGE.ACTION_VIEW,
+		);
 		await expect(page).toHaveURL(new RegExp(`/roles/${ROLE_KEY.ADMIN}$`));
 
 		await expect(page.getByText(FIXED_NOTICE)).toBeVisible();
@@ -103,9 +106,11 @@ test.describe("roles admin flow", () => {
 	});
 
 	test("edits the custom role's label and grants note:create", async (): Promise<void> => {
-		await rowWithCell(page, NEW_ROLE.key)
-			.getByRole("link", { name: "Edit" })
-			.click();
+		await chooseRowAction(
+			page,
+			rowWithCell(page, NEW_ROLE.key),
+			ROLE_MESSAGE.ACTION_EDIT,
+		);
 		await expect(page).toHaveURL(new RegExp(`/roles/${NEW_ROLE.key}/edit$`));
 		await expect(
 			page.getByRole("heading", { name: NEW_ROLE.label }),
@@ -141,11 +146,7 @@ test.describe("roles admin flow", () => {
 		await signOut(page);
 		await signIn(page, { email: REVIEWER.email, password: REVIEWER.password });
 
-		await expectNavVisible(page, [
-			NAV_LABEL.DASHBOARD,
-			NAV_LABEL.NOTES,
-			NAV_LABEL.ACCOUNT,
-		]);
+		await expectNavVisible(page, [NAV_LABEL.DASHBOARD, NAV_LABEL.NOTES]);
 		await expectNavHidden(page, ADMIN_NAV_LABELS);
 
 		await createNote(page, "Reviewer note");

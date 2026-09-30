@@ -9,7 +9,8 @@ import {
 } from "../support/access.ts";
 import { confirmAction } from "../support/confirm.ts";
 import { SEED_CREDENTIALS } from "../support/credentials.ts";
-import { deleteButtonOf, deleteFromRow } from "../support/delete.ts";
+import { deleteFromRow, deleteItemOf } from "../support/delete.ts";
+import { closeRowMenu } from "../support/row-menu.ts";
 import { createNote } from "../support/notes.ts";
 import { signIn } from "../support/sign-in.ts";
 import { rowWithCell } from "../support/table.ts";
@@ -58,8 +59,9 @@ test.describe("deleting from the lists", () => {
 		await createUser(page, DOOMED_USER, ROLE_LABEL[ROLE_KEY.VIEWER]);
 
 		await expect(
-			deleteButtonOf(rowWithCell(page, SEED_CREDENTIALS.admin.email)),
+			await deleteItemOf(page, rowWithCell(page, SEED_CREDENTIALS.admin.email)),
 		).toBeDisabled();
+		await closeRowMenu(page);
 
 		await deleteFromRow(page, rowWithCell(page, DOOMED_USER.email));
 
@@ -87,9 +89,10 @@ test.describe("deleting from the lists", () => {
 		await expect(page).toHaveURL(/\/roles$/);
 		await expect(rowWithCell(page, DOOMED_ROLE.key)).toBeVisible();
 
-		await expect(deleteButtonOf(rowWithCell(page, ROLE_KEY.ADMIN))).toHaveCount(
-			0,
-		);
+		await expect(
+			await deleteItemOf(page, rowWithCell(page, ROLE_KEY.ADMIN)),
+		).toHaveCount(0);
+		await closeRowMenu(page);
 
 		await deleteFromRow(page, rowWithCell(page, DOOMED_ROLE.key));
 

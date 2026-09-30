@@ -1,16 +1,22 @@
 import { APP_MESSAGE } from "@app/messages";
 import type { Locator, Page } from "@playwright/test";
+import { chooseRowAction, openRowMenu } from "./row-menu.ts";
 
 export const deleteFromRow = async (
 	page: Page,
 	row: Locator,
 ): Promise<void> => {
-	await row.getByRole("button", { name: APP_MESSAGE.DELETE }).click();
+	await chooseRowAction(page, row, APP_MESSAGE.DELETE);
 	await page
 		.getByRole("alertdialog")
 		.getByRole("button", { name: APP_MESSAGE.DELETE })
 		.click();
 };
 
-export const deleteButtonOf = (row: Locator): Locator =>
-	row.getByRole("button", { name: APP_MESSAGE.DELETE });
+export const deleteItemOf = async (
+	page: Page,
+	row: Locator,
+): Promise<Locator> =>
+	(await openRowMenu(page, row)).getByRole("menuitem", {
+		name: APP_MESSAGE.DELETE,
+	});
