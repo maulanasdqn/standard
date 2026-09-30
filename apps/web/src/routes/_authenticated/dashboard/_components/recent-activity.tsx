@@ -1,3 +1,5 @@
+import { MOTION_STAGGER } from "@app/components/motion/motion-tokens";
+import { Stagger, StaggerItem } from "@app/components/motion/stagger";
 import { Badge } from "@app/components/ui/badge";
 import {
 	Card,
@@ -34,10 +36,10 @@ export const RecentActivity: FC<TRecentActivityProps> = (
 			</CardTitle>
 			<Link
 				to="/activity"
-				className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+				className="group/link inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
 			>
 				{DASHBOARD_MESSAGE.VIEW_ALL}
-				<ArrowRight className="size-3" />
+				<ArrowRight className="size-3 transition-transform group-hover/link:translate-x-0.5" />
 			</Link>
 		</CardHeader>
 		<CardContent>
@@ -48,9 +50,9 @@ export const RecentActivity: FC<TRecentActivityProps> = (
 					</p>
 				))
 				.otherwise(() => (
-					<div className="space-y-3">
+					<Stagger className="space-y-3" interval={MOTION_STAGGER.TIGHT}>
 						{A.map(props.entries, (entry) => (
-							<div
+							<StaggerItem
 								key={entry.id}
 								className="flex items-center justify-between gap-4"
 							>
@@ -74,9 +76,9 @@ export const RecentActivity: FC<TRecentActivityProps> = (
 										{relativeTimeLabel(entry.createdAt, new Date())}
 									</span>
 								</div>
-							</div>
+							</StaggerItem>
 						))}
-					</div>
+					</Stagger>
 				))}
 		</CardContent>
 	</Card>

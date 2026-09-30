@@ -6,7 +6,7 @@ import {
 import { formatDateTime, NOT_SET } from "@app/format";
 import { ACTIVITY_ACTION_LABEL, ACTIVITY_ENTITY_LABEL } from "@app/messages";
 import { ACTIVITY_SORT, SORT_DIRECTION, type TActivity } from "@app/schemas";
-import { render, screen } from "@testing-library/react";
+import { render, waitFor, screen } from "@testing-library/react";
 import type { ReactElement } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { ActivityTable } from "#/routes/_authenticated/activity/_components/activity-table.tsx";
@@ -84,10 +84,12 @@ describe("ActivityTable with rows", () => {
 		expect(second).toHaveTextContent(NOT_SET);
 	});
 
-	it("spells the details out with a readable label", (): void => {
+	it("spells the details out with a readable label", async (): Promise<void> => {
 		renderRows();
 
-		expect(screen.getByText("Role: member")).toBeVisible();
+		await waitFor((): void => {
+			expect(screen.getByText("Role: member")).toBeVisible();
+		});
 	});
 
 	it("formats the time of each entry", (): void => {

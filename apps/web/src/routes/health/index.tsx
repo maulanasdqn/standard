@@ -1,3 +1,4 @@
+import { Stagger, StaggerItem } from "@app/components/motion/stagger";
 import { HEALTH_MESSAGE } from "@app/messages";
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
@@ -8,10 +9,14 @@ const HealthPage: FC = (): ReactElement => {
 	const health = useHealth();
 
 	return (
-		<div className="flex min-h-screen flex-col items-center justify-center gap-6">
-			<h1 className="text-xl font-semibold">{HEALTH_MESSAGE.TITLE}</h1>
-			<HealthPanel {...health} />
-		</div>
+		<Stagger className="flex min-h-screen flex-col items-center justify-center gap-6">
+			<StaggerItem>
+				<h1 className="text-xl font-semibold">{HEALTH_MESSAGE.TITLE}</h1>
+			</StaggerItem>
+			<StaggerItem>
+				<HealthPanel {...health} />
+			</StaggerItem>
+		</Stagger>
 	);
 };
 

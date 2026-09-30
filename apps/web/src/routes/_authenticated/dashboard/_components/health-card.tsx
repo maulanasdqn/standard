@@ -6,6 +6,8 @@ import {
 	CardTitle,
 } from "@app/components/ui/card";
 import { DASHBOARD_MESSAGE, HEALTH_MESSAGE } from "@app/messages";
+import { MOTION_PULSE } from "@app/components/motion/motion-tokens";
+import { motion } from "motion/react";
 import type { FC, ReactElement } from "react";
 import { match } from "ts-pattern";
 import {
@@ -44,9 +46,18 @@ export const HealthCard: FC<THealthCardProps> = (props): ReactElement => (
 				{DASHBOARD_MESSAGE.SYSTEM_HEALTH}
 			</CardTitle>
 			<Badge variant={statusVariant(props.health.status)}>
-				<span
-					className={`mr-1.5 inline-block size-2 rounded-full ${statusDotClass(props.health.status)}`}
-				/>
+				<span className="relative mr-1.5 inline-flex size-2">
+					{props.health.status === HEALTH_VIEW_STATUS.OK && (
+						<motion.span
+							className={`absolute inset-0 rounded-full ${statusDotClass(props.health.status)}`}
+							animate={{ scale: [1, 2.4], opacity: [0.7, 0] }}
+							transition={MOTION_PULSE}
+						/>
+					)}
+					<span
+						className={`relative inline-block size-2 rounded-full ${statusDotClass(props.health.status)}`}
+					/>
+				</span>
 				{statusLabel(props.health.status)}
 			</Badge>
 		</CardHeader>

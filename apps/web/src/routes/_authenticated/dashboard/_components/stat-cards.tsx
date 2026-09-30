@@ -1,4 +1,5 @@
 import { Guard } from "@app/components/guard/guard";
+import { Stagger, StaggerItem } from "@app/components/motion/stagger";
 import { CardSkeleton } from "@app/components/skeleton/card-grid-skeleton";
 import { DASHBOARD_MESSAGE } from "@app/messages";
 import { PERMISSION } from "@app/permissions";
@@ -48,21 +49,27 @@ const NoteStat: FC = (): ReactElement => {
 };
 
 export const StatCards: FC = (): ReactElement => (
-	<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+	<Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 		<Guard permissions={[PERMISSION.NOTE_READ]}>
-			<Suspense fallback={<CardSkeleton />}>
-				<NoteStat />
-			</Suspense>
+			<StaggerItem>
+				<Suspense fallback={<CardSkeleton />}>
+					<NoteStat />
+				</Suspense>
+			</StaggerItem>
 		</Guard>
 		<Guard permissions={[PERMISSION.USER_READ]}>
-			<Suspense fallback={<CardSkeleton />}>
-				<UserStat />
-			</Suspense>
+			<StaggerItem>
+				<Suspense fallback={<CardSkeleton />}>
+					<UserStat />
+				</Suspense>
+			</StaggerItem>
 		</Guard>
 		<Guard permissions={[PERMISSION.ROLE_READ]}>
-			<Suspense fallback={<CardSkeleton />}>
-				<RoleStat />
-			</Suspense>
+			<StaggerItem>
+				<Suspense fallback={<CardSkeleton />}>
+					<RoleStat />
+				</Suspense>
+			</StaggerItem>
 		</Guard>
-	</div>
+	</Stagger>
 );

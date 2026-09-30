@@ -1,5 +1,6 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
+import { MotionProvider } from "@app/components/motion/motion-provider";
 import { APP_MESSAGE } from "@app/messages";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
@@ -63,10 +64,12 @@ const bootstrap = async (): Promise<void> => {
 			createRoot(root).render(
 				<StrictMode>
 					<QueryClientProvider client={queryClient}>
-						<AppPermissions>
-							<RouterProvider router={router} />
-						</AppPermissions>
-						<AppToaster />
+						<MotionProvider>
+							<AppPermissions>
+								<RouterProvider router={router} />
+							</AppPermissions>
+							<AppToaster />
+						</MotionProvider>
 					</QueryClientProvider>
 				</StrictMode>,
 			);

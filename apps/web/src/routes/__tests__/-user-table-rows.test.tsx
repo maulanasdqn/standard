@@ -2,7 +2,12 @@ import { PermissionsProvider } from "@app/components/guard/permissions-provider"
 import { PERMISSION, type TPermission } from "@app/permissions";
 import { SORT_DIRECTION, type TUser, USER_SORT } from "@app/schemas";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, type RenderResult, screen } from "@testing-library/react";
+import {
+	render,
+	waitFor,
+	type RenderResult,
+	screen,
+} from "@testing-library/react";
 import type { ReactElement } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { UserTable } from "#/routes/_authenticated/users/_components/user-table.tsx";
@@ -67,26 +72,32 @@ describe("UserTable with rows", () => {
 		expect(screen.queryByText("No users yet.")).not.toBeInTheDocument();
 	});
 
-	it("shows the role as plain text to someone who cannot edit users", (): void => {
+	it("shows the role as plain text to someone who cannot edit users", async (): Promise<void> => {
 		renderWithPermissions([]);
 
-		expect(screen.getByText(MEMBER_LABEL)).toBeVisible();
+		await waitFor((): void => {
+			expect(screen.getByText(MEMBER_LABEL)).toBeVisible();
+		});
 		expect(
 			screen.queryByRole("combobox", { name: `Role for ${user.name}` }),
 		).not.toBeInTheDocument();
 	});
 
-	it("offers the role as a select to someone who can edit users", (): void => {
+	it("offers the role as a select to someone who can edit users", async (): Promise<void> => {
 		renderWithPermissions([PERMISSION.USER_UPDATE]);
 
-		expect(
-			screen.getByRole("combobox", { name: `Role for ${user.name}` }),
-		).toBeVisible();
+		await waitFor((): void => {
+			expect(
+				screen.getByRole("combobox", { name: `Role for ${user.name}` }),
+			).toBeVisible();
+		});
 	});
 
-	it("gives the row its actions cell", (): void => {
+	it("gives the row its actions cell", async (): Promise<void> => {
 		renderWithPermissions([]);
 
-		expect(screen.getByText(ACTIONS_LABEL)).toBeVisible();
+		await waitFor((): void => {
+			expect(screen.getByText(ACTIONS_LABEL)).toBeVisible();
+		});
 	});
 });

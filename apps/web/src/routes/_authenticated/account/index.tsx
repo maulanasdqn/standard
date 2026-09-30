@@ -1,3 +1,4 @@
+import { Stagger, StaggerItem } from "@app/components/motion/stagger";
 import { AUTH_MESSAGE } from "@app/messages";
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
@@ -10,11 +11,17 @@ import { CardSkeleton } from "@app/components/skeleton/card-grid-skeleton";
 
 const AccountPage: FC = (): ReactElement => {
 	return (
-		<div className="flex w-full flex-col gap-6">
-			<h1 className="text-xl font-semibold">{AUTH_MESSAGE.ACCOUNT_TITLE}</h1>
-			<AccountSummary />
-			<PasswordChangeForm />
-		</div>
+		<Stagger className="flex w-full flex-col gap-6">
+			<StaggerItem>
+				<h1 className="text-xl font-semibold">{AUTH_MESSAGE.ACCOUNT_TITLE}</h1>
+			</StaggerItem>
+			<StaggerItem>
+				<AccountSummary />
+			</StaggerItem>
+			<StaggerItem>
+				<PasswordChangeForm />
+			</StaggerItem>
+		</Stagger>
 	);
 };
 

@@ -7,6 +7,7 @@ import {
 	TableRow,
 } from "@app/components/ui/table";
 import { cn } from "@app/components/lib/utils";
+import { MotionTableRow } from "@app/components/motion/motion-table-row";
 import { SORT_DIRECTION } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
 import {
@@ -131,8 +132,8 @@ export const DataTable = <TData extends RowData>(
 							</TableRow>
 						))
 						.otherwise((rows) =>
-							A.map(rows, (row) => (
-								<TableRow key={row.id}>
+							A.mapWithIndex(rows, (index, row) => (
+								<MotionTableRow key={row.id} index={index}>
 									{A.map(row.getVisibleCells(), (cell) => (
 										<TableCell
 											key={cell.id}
@@ -144,7 +145,7 @@ export const DataTable = <TData extends RowData>(
 											)}
 										</TableCell>
 									))}
-								</TableRow>
+								</MotionTableRow>
 							)),
 						)}
 				</TableBody>

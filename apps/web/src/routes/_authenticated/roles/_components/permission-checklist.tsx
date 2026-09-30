@@ -1,3 +1,5 @@
+import { MOTION_STAGGER } from "@app/components/motion/motion-tokens";
+import { Stagger, StaggerItem } from "@app/components/motion/stagger";
 import {
 	Card,
 	CardContent,
@@ -25,38 +27,46 @@ export const PermissionChecklist: FC<TPermissionChecklistProps> = (
 	const { value, onChange, disabled = false } = props;
 
 	return (
-		<div className="grid gap-4 sm:grid-cols-2">
+		<Stagger
+			className="grid gap-4 sm:grid-cols-2"
+			interval={MOTION_STAGGER.TIGHT}
+		>
 			{A.map(PERMISSION_GROUPS, (group) => (
-				<Card key={group.resource} className="gap-3 py-4 shadow-none">
-					<CardHeader className="px-4">
-						<CardTitle className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-							{group.resource}
-						</CardTitle>
-					</CardHeader>
-					<CardContent className="flex flex-col gap-2 px-4">
-						{A.map(group.permissions, (permission) => (
-							<div key={permission} className="flex items-center gap-2 text-sm">
-								<Checkbox
-									id={`permission-${permission}`}
-									checked={A.includes(value, permission)}
-									disabled={disabled}
-									onCheckedChange={(checked) =>
-										onChange(
-											permissionsToggle(value, permission, checked === true),
-										)
-									}
-								/>
-								<Label htmlFor={`permission-${permission}`}>
-									{PERMISSION_LABEL[permission]}
-								</Label>
-								<code className="ml-auto text-xs text-muted-foreground">
-									{permission}
-								</code>
-							</div>
-						))}
-					</CardContent>
-				</Card>
+				<StaggerItem key={group.resource}>
+					<Card className="h-full gap-3 py-4 shadow-none transition-colors hover:border-primary/30">
+						<CardHeader className="px-4">
+							<CardTitle className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+								{group.resource}
+							</CardTitle>
+						</CardHeader>
+						<CardContent className="flex flex-col gap-2 px-4">
+							{A.map(group.permissions, (permission) => (
+								<div
+									key={permission}
+									className="flex items-center gap-2 text-sm"
+								>
+									<Checkbox
+										id={`permission-${permission}`}
+										checked={A.includes(value, permission)}
+										disabled={disabled}
+										onCheckedChange={(checked) =>
+											onChange(
+												permissionsToggle(value, permission, checked === true),
+											)
+										}
+									/>
+									<Label htmlFor={`permission-${permission}`}>
+										{PERMISSION_LABEL[permission]}
+									</Label>
+									<code className="ml-auto text-xs text-muted-foreground">
+										{permission}
+									</code>
+								</div>
+							))}
+						</CardContent>
+					</Card>
+				</StaggerItem>
 			))}
-		</div>
+		</Stagger>
 	);
 };

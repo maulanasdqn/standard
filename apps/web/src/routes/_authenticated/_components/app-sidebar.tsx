@@ -1,4 +1,3 @@
-import { Guard } from "@app/components/guard/guard";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -18,8 +17,7 @@ import {
 	SidebarMenuItem,
 	SidebarRail,
 } from "@app/components/ui/sidebar";
-import { A } from "@mobily/ts-belt";
-import { Link, useMatchRoute } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { ChevronsUpDown, Command, LogOut, Moon } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useSession } from "#/libs/auth/use-session.ts";
@@ -27,12 +25,12 @@ import { useSessionSignOut } from "#/routes/_authenticated/_hooks/use-session-si
 import { useTheme } from "#/routes/_authenticated/_hooks/use-theme.ts";
 import { Switch } from "@app/components/ui/switch";
 import { APP_MESSAGE } from "@app/messages";
-import { NAV_ITEMS } from "#/routes/_authenticated/_constants/nav.ts";
+import { AppLogo } from "#/routes/_components/app-logo.tsx";
+import { AppSidebarNav } from "#/routes/_authenticated/_components/app-sidebar-nav.tsx";
 
 export const AppSidebar: FC = (): ReactElement => {
 	const session = useSession();
 	const signOut = useSessionSignOut();
-	const matchRoute = useMatchRoute();
 	const theme = useTheme();
 
 	return (
@@ -42,9 +40,7 @@ export const AppSidebar: FC = (): ReactElement => {
 					<SidebarMenuItem>
 						<SidebarMenuButton size="lg" asChild>
 							<Link to="/dashboard">
-								<div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-									<Command className="size-4" />
-								</div>
+								<AppLogo className="size-8" />
 								<div className="grid flex-1 text-left text-sm leading-tight">
 									<span className="truncate font-medium">
 										{APP_MESSAGE.NAME}
@@ -59,24 +55,7 @@ export const AppSidebar: FC = (): ReactElement => {
 				<SidebarGroup>
 					<SidebarGroupLabel>{APP_MESSAGE.NAVIGATION}</SidebarGroupLabel>
 					<SidebarGroupContent>
-						<SidebarMenu>
-							{A.map(NAV_ITEMS, (item) => (
-								<Guard key={item.to} permissions={item.permissions}>
-									<SidebarMenuItem>
-										<SidebarMenuButton
-											asChild
-											tooltip={item.label}
-											isActive={!!matchRoute({ to: item.to, fuzzy: true })}
-										>
-											<Link to={item.to}>
-												<item.icon />
-												<span>{item.label}</span>
-											</Link>
-										</SidebarMenuButton>
-									</SidebarMenuItem>
-								</Guard>
-							))}
-						</SidebarMenu>
+						<AppSidebarNav />
 					</SidebarGroupContent>
 				</SidebarGroup>
 			</SidebarContent>
