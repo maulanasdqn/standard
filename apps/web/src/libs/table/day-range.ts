@@ -16,3 +16,7 @@ export const dayRangeToInstants = (range: TDayRange): TDayRange => ({
 	dateFrom: localInstant(range.dateFrom, DAY_START),
 	dateTo: localInstant(range.dateTo, DAY_END),
 });
+
+export const withInstantRange = <TSearch extends TDayRange>(
+	search: TSearch,
+): TSearch => ({ ...search, ...dayRangeToInstants(search) });

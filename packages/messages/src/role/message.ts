@@ -49,4 +49,10 @@ export const ROLE_MESSAGE = {
 	CREATED: "Role created.",
 	UPDATED: "Role updated.",
 	DELETED: "Role deleted.",
+	FILTER_TYPE: "Type",
+	FILTER_TYPE_FIXED: "Fixed",
+	FILTER_TYPE_CUSTOM: "Custom",
+	FILTER_MEMBERS: "Members",
+	FILTER_MEMBERS_WITH: "With members",
+	FILTER_MEMBERS_WITHOUT: "Without members",
 } as const;

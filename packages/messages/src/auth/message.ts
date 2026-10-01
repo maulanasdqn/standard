@@ -156,4 +156,7 @@ export const AUTH_MESSAGE = {
 	SIGN_OUT_CONFIRM_TITLE: "Sign out?",
 	SIGN_OUT_CONFIRM_DESCRIPTION:
 		"You will need to sign in again to keep using the app on this device.",
+	ACCOUNT_TAB_PROFILE: "Profile",
+	ACCOUNT_TAB_SECURITY: "Security",
+	ACCOUNT_TAB_SESSIONS: "Sessions",
 } as const;

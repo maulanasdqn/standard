@@ -24,6 +24,9 @@ test("a user renames themselves and signs another device out", async ({
 		page.getByRole("definition").filter({ hasText: RENAMED }),
 	).toBeVisible();
 
+	await page
+		.getByRole("tab", { name: AUTH_MESSAGE.ACCOUNT_TAB_SESSIONS })
+		.click();
 	await expect(page.getByText(AUTH_MESSAGE.SESSION_THIS_DEVICE)).toBeVisible();
 	await page
 		.getByRole("button", { name: AUTH_MESSAGE.SESSION_REVOKE_OTHERS })
@@ -33,6 +36,9 @@ test("a user renames themselves and signs another device out", async ({
 	await otherDevice.reload();
 	await expect(otherDevice).toHaveURL(/\/login/);
 
+	await page
+		.getByRole("tab", { name: AUTH_MESSAGE.ACCOUNT_TAB_PROFILE })
+		.click();
 	await name.clear();
 	await name.pressSequentially(ORIGINAL_NAME);
 	await page.getByRole("button", { name: AUTH_MESSAGE.PROFILE_SAVE }).click();

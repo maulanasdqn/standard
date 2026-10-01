@@ -14,6 +14,7 @@ export const TABLE_MESSAGE = {
 	FILTER_CLEAR: "Clear filters",
 	FILTER_ANY: "Any",
 	FILTER_DATE: "Date",
+	FILTER_DATE_FIELD: "Date of",
 	FILTER_FROM: "From",
 	FILTER_TO: "To",
 } as const;

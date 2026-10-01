@@ -39,3 +39,11 @@ export const USER_STATUS = {
 } as const;
 
 export type TUserStatus = (typeof USER_STATUS)[keyof typeof USER_STATUS];
+
+export const USER_TWO_FACTOR_FILTER = {
+	ON: "on",
+	OFF: "off",
+} as const;
+
+export type TUserTwoFactorFilter =
+	(typeof USER_TWO_FACTOR_FILTER)[keyof typeof USER_TWO_FACTOR_FILTER];

@@ -18,6 +18,7 @@ import {
 import { offsetFor, orderFor } from "#/shared/pagination.ts";
 import { ACTIVITY_SORT, type TActivitySort } from "@app/schemas";
 import type { TDb } from "#/platform/db/client.ts";
+import { dateRangeWhere } from "#/platform/db/date-range.ts";
 import { DbService } from "#/platform/db/db-service.ts";
 import { dbActive } from "#/platform/db/transaction.ts";
 import { activityMetadataDecode } from "#/activity/infrastructure/activity-metadata.ts";
@@ -78,6 +79,8 @@ export const activityRepoLayer = Layer.effect(
 			action,
 			resourceType,
 			actorId,
+			dateFrom,
+			dateTo,
 			sortBy,
 			sortDir,
 		}) => {
@@ -85,6 +88,7 @@ export const activityRepoLayer = Layer.effect(
 				optionalEq(activityLog.action, action),
 				optionalEq(activityLog.resourceType, resourceType),
 				optionalEq(activityLog.actorId, actorId),
+				dateRangeWhere(activityLog.createdAt, dateFrom, dateTo),
 			);
 
 			return Effect.tryPromise({

@@ -1,4 +1,4 @@
-import { ERROR_MESSAGE } from "@app/messages";
+import { ERROR_MESSAGE, TABLE_MESSAGE } from "@app/messages";
 import { ACTIVITY_ACTION } from "@app/activity";
 import { ACTIVITY_ACTION_LABEL } from "@app/messages";
 import { expect, type Page, test } from "@playwright/test";
@@ -31,11 +31,15 @@ test.describe("activity log", () => {
 		await page.goto("/activity");
 		await expect(page.getByRole("heading", { name: "Activity" })).toBeVisible();
 
+		await page.getByRole("button", { name: TABLE_MESSAGE.FILTERS }).click();
 		await selectOption(
 			page,
 			page.getByLabel("Action", { exact: true }),
 			ACTIVITY_ACTION_LABEL[ACTIVITY_ACTION.NOTE_CREATE],
 		);
+		await page
+			.getByRole("button", { name: TABLE_MESSAGE.FILTER_APPLY })
+			.click();
 		await expect(page).toHaveURL(/action=note\.create/);
 
 		const entry = page

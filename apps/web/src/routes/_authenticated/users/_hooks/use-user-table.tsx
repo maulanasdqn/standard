@@ -6,26 +6,18 @@ import {
 	type TUser,
 	type TUserList,
 	type TUserSort,
-	type TUserUpdateInput,
 } from "@app/schemas";
 import { createColumnHelper, type ReactTable } from "@tanstack/react-table";
 import { type ReactElement, useMemo } from "react";
 import type { TTableFeatures } from "#/libs/table/features.ts";
 import type { TListChange } from "#/libs/table/list-patch.ts";
 import { useServerTable } from "#/routes/_authenticated/_hooks/use-server-table.ts";
-import {
-	type TConfirmedAction,
-	useConfirmedAction,
-} from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
 import { UserActionsCell } from "#/routes/_authenticated/users/_components/user-actions-cell.tsx";
 import { UserStatusBadge } from "#/routes/_authenticated/users/_components/user-status-badge.tsx";
 import { userStatusOf } from "#/routes/_authenticated/users/_utils/user-status.ts";
 import { UserRoleCell } from "#/routes/_authenticated/users/_components/user-role-cell.tsx";
 import type { TRoleOption } from "#/routes/_authenticated/users/_hooks/use-role-options.ts";
-import {
-	useIsSelf,
-	useUserUpdate,
-} from "#/routes/_authenticated/users/_hooks/use-users.ts";
+import { useIsSelf } from "#/routes/_authenticated/users/_hooks/use-users.ts";
 
 const helper = createColumnHelper<TTableFeatures, TUser>();
 
@@ -48,16 +40,11 @@ export type TUserTableInput = {
 
 export type TUserTable = {
 	table: ReactTable<TTableFeatures, TUser>;
-	roleChange: TConfirmedAction<TUserUpdateInput>;
 };
 
 export const useUserTable = (input: TUserTableInput): TUserTable => {
 	const { roleOptions } = input;
-	const userUpdate = useUserUpdate();
 	const isSelf = useIsSelf();
-	const roleChange = useConfirmedAction<TUserUpdateInput>((input) =>
-		userUpdate.mutate(input),
-	);
 
 	const columns = useMemo(
 		() =>
@@ -76,10 +63,6 @@ export const useUserTable = (input: TUserTableInput): TUserTable => {
 						<UserRoleCell
 							user={context.row.original}
 							roleOptions={roleOptions}
-							disabled={isSelf(context.row.original.id) || userUpdate.isPending}
-							onChange={(role) =>
-								roleChange.request({ id: context.row.original.id, role })
-							}
 						/>
 					),
 				}),
@@ -108,7 +91,7 @@ export const useUserTable = (input: TUserTableInput): TUserTable => {
 					),
 				}),
 			]),
-		[roleOptions, isSelf, userUpdate.isPending, roleChange.request],
+		[roleOptions, isSelf],
 	);
 
 	const table = useServerTable({
@@ -124,5 +107,5 @@ export const useUserTable = (input: TUserTableInput): TUserTable => {
 		onChange: input.onChange,
 	});
 
-	return { table, roleChange };
+	return { table };
 };

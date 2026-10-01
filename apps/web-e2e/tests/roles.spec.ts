@@ -137,7 +137,7 @@ test.describe("roles admin flow", () => {
 	test("assigns the custom role to a new user", async (): Promise<void> => {
 		await createUser(page, REVIEWER, RENAMED_LABEL);
 
-		await expect(page.getByLabel(`Role for ${REVIEWER.name}`)).toHaveText(
+		await expect(rowWithCell(page, REVIEWER.email)).toContainText(
 			RENAMED_LABEL,
 		);
 	});

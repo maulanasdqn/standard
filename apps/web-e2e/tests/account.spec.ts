@@ -33,6 +33,9 @@ test.describe("account self-service", () => {
 
 	test("changes the password", async (): Promise<void> => {
 		await page
+			.getByRole("tab", { name: AUTH_MESSAGE.ACCOUNT_TAB_SECURITY })
+			.click();
+		await page
 			.getByLabel(AUTH_MESSAGE.FIELD_CURRENT_PASSWORD, { exact: true })
 			.fill(SEED_CREDENTIALS.member.password);
 		await page

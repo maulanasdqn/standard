@@ -49,14 +49,27 @@ test.describe("users admin flow", () => {
 		await expect(row).toContainText(NEW_USER.name);
 	});
 
-	test("changes the role inline", async (): Promise<void> => {
-		const roleSelect = page.getByLabel(`Role for ${NEW_USER.name}`);
-		await expect(roleSelect).toHaveText(ROLE_LABEL[ROLE_KEY.MEMBER]);
+	test("shows the role as text and changes it from the edit page", async (): Promise<void> => {
+		const row = rowWithCell(page, NEW_USER.email);
+		await expect(row).toContainText(ROLE_LABEL[ROLE_KEY.MEMBER]);
+		await expect(row.getByRole("combobox")).toHaveCount(0);
 
-		await selectOption(page, roleSelect, ROLE_LABEL[ROLE_KEY.VIEWER]);
+		await chooseRowAction(page, row, USER_MESSAGE.ACTION_EDIT);
+		await expect(
+			page.getByRole("heading", { name: "Edit user" }),
+		).toBeVisible();
+		await selectOption(
+			page,
+			page.getByRole("combobox", { name: USER_MESSAGE.COLUMN_ROLE }),
+			ROLE_LABEL[ROLE_KEY.VIEWER],
+		);
+		await page.getByRole("button", { name: "Save changes" }).click();
 		await confirmAction(page);
 
-		await expect(roleSelect).toHaveText(ROLE_LABEL[ROLE_KEY.VIEWER]);
+		await expect(page).toHaveURL(/\/users(\?.*)?$/);
+		await expect(rowWithCell(page, NEW_USER.email)).toContainText(
+			ROLE_LABEL[ROLE_KEY.VIEWER],
+		);
 	});
 
 	test("renames the user from the edit page", async (): Promise<void> => {

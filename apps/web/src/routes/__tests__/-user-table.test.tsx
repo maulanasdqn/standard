@@ -5,6 +5,10 @@ import { describe, expect, it, vi } from "vitest";
 import { SORT_DIRECTION, USER_SORT } from "@app/schemas";
 import { UserTable } from "#/routes/_authenticated/users/_components/user-table.tsx";
 
+vi.mock("#/routes/_authenticated/users/_components/user-filters.tsx", () => ({
+	UserFilters: (): ReactElement => <button type="button">Filters</button>,
+}));
+
 const SEARCH_LABEL = "Search users";
 
 vi.mock("#/routes/_authenticated/users/_components/user-search.tsx", () => ({
