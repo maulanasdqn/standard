@@ -1,22 +1,18 @@
 import { type Auth, type BetterAuthOptions, betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import type { TActivityRepo } from "@app/activity";
-import {
-	MAIL_TEMPLATE,
-	mailSendSafe,
-	passwordResetMailBuild,
-	type TMailer,
-} from "@app/mail";
-import { APP_MESSAGE } from "@app/messages";
+import type { TMailer } from "@app/mail";
 import { ROLE } from "@app/permissions";
 import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
 import type { TDb } from "#/platform/db/client.ts";
 import { dbActiveProxy } from "#/platform/db/transaction.ts";
 import { match, P } from "ts-pattern";
+import { authEmailOptionsOf } from "#/auth/infrastructure/auth-email.ts";
+import { passwordStrengthHook } from "#/auth/infrastructure/auth-password-hook.ts";
 import { authPluginsOf } from "#/auth/infrastructure/auth-plugins.ts";
+import { userVerifiedMark } from "#/auth/infrastructure/user-verified-mark.ts";
 import { env } from "#/platform/config/env.ts";
 import { originsOf } from "#/platform/http/origins.ts";
-import { logger } from "#/platform/observability/logger.ts";
 
 type TCreateAuthOptions = {
 	db: TDb;
@@ -62,22 +58,12 @@ export const authCreate = (deps: TCreateAuthOptions): TAuth =>
 			database: { generateId: (): string => crypto.randomUUID() },
 			crossSubDomainCookies: crossSubDomainCookiesOf(env.AUTH_COOKIE_DOMAIN),
 		},
-		emailAndPassword: {
-			enabled: true,
-			sendResetPassword: async ({ user, url }): Promise<void> => {
-				await mailSendSafe(
-					deps.mailer,
-					logger,
-					MAIL_TEMPLATE.PASSWORD_RESET,
-					passwordResetMailBuild({
-						to: user.email,
-						name: user.name,
-						url,
-						brand: APP_MESSAGE.NAME,
-					}),
-				);
-			},
-		},
+		...authEmailOptionsOf({
+			mailer: deps.mailer,
+			markVerified: (userId: string): Promise<void> =>
+				userVerifiedMark(deps.db, userId),
+		}),
+		hooks: { before: passwordStrengthHook },
 		user: {
 			additionalFields: {
 				role: { type: "string", defaultValue: ROLE.VIEWER, input: false },

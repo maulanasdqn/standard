@@ -6,6 +6,7 @@ import { useSelector } from "@tanstack/react-store";
 import type { FormEvent } from "react";
 import { match, P } from "ts-pattern";
 import { signInErrorMessage } from "#/libs/auth/auth-error.ts";
+import { verificationResendIfNeeded } from "#/libs/auth/verification-resend.ts";
 import type {
 	TFormHook,
 	TFormValidator,
@@ -63,6 +64,7 @@ export const useLoginForm = (): TLoginForm => {
 						});
 				})
 				.otherwise(async (found) => {
+					await verificationResendIfNeeded(found, value.email);
 					loginError.set(signInErrorMessage(found));
 				});
 		},

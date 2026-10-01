@@ -21,7 +21,7 @@ const DOOMED_NOTE = "Doomed note";
 const DOOMED_USER: TUserCreateInput = {
 	name: "E2E Doomed",
 	email: "e2e-doomed@test.app",
-	password: "doomed-password-123",
+	password: "Doomed-password-123",
 	role: ROLE_KEY.VIEWER,
 };
 

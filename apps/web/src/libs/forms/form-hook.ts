@@ -32,3 +32,8 @@ export type TFormHook<TForm> = {
 	form: TForm;
 	onSubmit: (event: FormEvent) => void;
 };
+
+export type TSchemaForm<
+	TValues,
+	TSchema extends TFormValidator<TValues>,
+> = TValidatedForm<TValues, TFormValidator<TValues>, TSchema, TSchema>;

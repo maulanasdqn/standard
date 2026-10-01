@@ -102,7 +102,7 @@ export const userRepoLayer = Layer.effect(
 				try: async () => {
 					const ctx = await auth.$context;
 					const created = await ctx.internalAdapter.createUser(
-						{ name, email: email.toLowerCase(), emailVerified: false, role },
+						{ name, email: email.toLowerCase(), emailVerified: true, role },
 						{ method: USER_PROVISIONING_METHOD },
 					);
 					const hashed = await ctx.password.hash(password);

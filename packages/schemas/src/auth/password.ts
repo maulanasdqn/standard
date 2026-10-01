@@ -1,0 +1,17 @@
+import { VALIDATION_MESSAGE } from "@app/messages";
+import { z } from "zod";
+
+export const PASSWORD_MIN = 8;
+export const PASSWORD_MAX = 128;
+
+const LOWERCASE = /[a-z]/;
+const UPPERCASE = /[A-Z]/;
+const DIGIT = /\d/;
+
+export const passwordSchema = z
+	.string()
+	.min(PASSWORD_MIN, VALIDATION_MESSAGE.PASSWORD_TOO_SHORT)
+	.max(PASSWORD_MAX, VALIDATION_MESSAGE.PASSWORD_TOO_LONG)
+	.regex(LOWERCASE, VALIDATION_MESSAGE.PASSWORD_NEEDS_LOWERCASE)
+	.regex(UPPERCASE, VALIDATION_MESSAGE.PASSWORD_NEEDS_UPPERCASE)
+	.regex(DIGIT, VALIDATION_MESSAGE.PASSWORD_NEEDS_DIGIT);

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { userIdSchema } from "../auth/auth.ts";
+import { passwordSchema } from "../auth/password.ts";
 import { baseSchema, type TEntityOf } from "../shared/base-schema.ts";
 import { paginated, paginationSchema } from "../shared/pagination.ts";
 import { searchQuerySchema } from "../shared/search.ts";
@@ -17,7 +18,7 @@ export type TUser = TEntityOf<z.infer<typeof userSchema>>;
 export const userCreateInputSchema = z.object({
 	name: z.string().min(1).max(100),
 	email: z.email(),
-	password: z.string().min(8).max(128),
+	password: passwordSchema,
 	role: z.string().min(1),
 });
 export type TUserCreateInput = z.infer<typeof userCreateInputSchema>;
@@ -34,7 +35,7 @@ export type TUserIdInput = z.infer<typeof userIdInputSchema>;
 
 export const userPasswordResetInputSchema = z.object({
 	id: userIdSchema,
-	password: z.string().min(8).max(128),
+	password: passwordSchema,
 });
 export type TUserPasswordResetInput = z.infer<
 	typeof userPasswordResetInputSchema

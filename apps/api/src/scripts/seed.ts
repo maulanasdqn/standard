@@ -31,6 +31,9 @@ const adminUserFor = (password: string): TUserCreateInput => ({
 	role: ROLE.ADMIN,
 });
 
+const CREDENTIAL_PROVIDER_ID = "credential";
+const SEED_PROVISIONING_METHOD = "seed";
+
 const demoUsersFor = (password: string): readonly TUserCreateInput[] => [
 	{ name: "Member", email: "member@test.app", password, role: ROLE.MEMBER },
 	{ name: "Viewer", email: "viewer@test.app", password, role: ROLE.VIEWER },
@@ -51,18 +54,23 @@ const userEnsure = (
 			.with(P.nonNullable, (found) => Effect.succeed(found.id))
 			.otherwise(() =>
 				Effect.promise(async () => {
-					const result = await auth.api.signUpEmail({
-						body: {
-							email: seedUser.email,
-							password: seedUser.password,
+					const ctx = await auth.$context;
+					const created = await ctx.internalAdapter.createUser(
+						{
 							name: seedUser.name,
+							email: seedUser.email,
+							emailVerified: true,
+							role: seedUser.role,
 						},
+						{ method: SEED_PROVISIONING_METHOD },
+					);
+					await ctx.internalAdapter.linkAccount({
+						providerId: CREDENTIAL_PROVIDER_ID,
+						accountId: created.id,
+						userId: created.id,
+						password: await ctx.password.hash(seedUser.password),
 					});
-					await db
-						.update(user)
-						.set({ role: seedUser.role })
-						.where(eq(user.id, result.user.id));
-					return result.user.id;
+					return created.id;
 				}),
 			);
 	});
