@@ -153,4 +153,7 @@ export const AUTH_MESSAGE = {
 	TWO_FACTOR_INVALID_CODE: "That code is not right. Try again.",
 	TWO_FACTOR_EXPIRED: "This sign-in took too long. Sign in again.",
 	TWO_FACTOR_TOO_MANY: "Too many wrong codes. Sign in again.",
+	SIGN_OUT_CONFIRM_TITLE: "Sign out?",
+	SIGN_OUT_CONFIRM_DESCRIPTION:
+		"You will need to sign in again to keep using the app on this device.",
 } as const;
