@@ -3,13 +3,18 @@ import { APP_MESSAGE, USER_MESSAGE } from "@app/messages";
 import { PERMISSION } from "@app/permissions";
 import type { TUser } from "@app/schemas";
 import { useNavigate } from "@tanstack/react-router";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, UserCheck, UserX } from "lucide-react";
 import {
 	ROW_ACTION,
 	type TRowAction,
 } from "#/routes/_authenticated/_constants/row-action.ts";
 import type { TConfirmedAction } from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
+import { useConfirmedAction } from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
 import { useRowDeleteConfirm } from "#/routes/_authenticated/_hooks/use-row-delete-confirm.ts";
+import {
+	useUserDeactivate,
+	useUserReactivate,
+} from "#/routes/_authenticated/users/_hooks/use-user-admin.ts";
 import { useUserDelete } from "#/routes/_authenticated/users/_hooks/use-users.ts";
 
 const USER_OPEN_PERMISSIONS = [
@@ -21,6 +26,8 @@ const USER_OPEN_PERMISSIONS = [
 export type TUserRowActions = {
 	actions: readonly TRowAction[];
 	confirm: TConfirmedAction<void>;
+	accessConfirm: TConfirmedAction<void>;
+	deactivated: boolean;
 };
 
 export const useUserRowActions = (
@@ -30,9 +37,19 @@ export const useUserRowActions = (
 	const navigate = useNavigate();
 	const userDelete = useUserDelete();
 	const confirm = useRowDeleteConfirm(() => userDelete.mutate({ id: user.id }));
+	const userDeactivate = useUserDeactivate();
+	const userReactivate = useUserReactivate();
+	const deactivated = user.deactivatedAt !== null;
+	const accessConfirm = useConfirmedAction<void>((): void =>
+		deactivated
+			? userReactivate.mutate({ id: user.id })
+			: userDeactivate.mutate({ id: user.id }),
+	);
 
 	return {
 		confirm,
+		accessConfirm,
+		deactivated,
 		actions: [
 			{
 				id: ROW_ACTION.EDIT,
@@ -41,6 +58,17 @@ export const useUserRowActions = (
 				permissions: USER_OPEN_PERMISSIONS,
 				onSelect: (): void =>
 					void navigate({ to: "/users/$userId", params: { userId: user.id } }),
+			},
+			{
+				id: deactivated ? ROW_ACTION.REACTIVATE : ROW_ACTION.DEACTIVATE,
+				label: deactivated
+					? USER_MESSAGE.ACTION_REACTIVATE
+					: USER_MESSAGE.ACTION_DEACTIVATE,
+				icon: deactivated ? UserCheck : UserX,
+				permissions: [PERMISSION.USER_UPDATE],
+				available: !isSelf,
+				disabled: userDeactivate.isPending || userReactivate.isPending,
+				onSelect: (): void => accessConfirm.request(),
 			},
 			{
 				id: ROW_ACTION.DELETE,

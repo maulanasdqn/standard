@@ -5,7 +5,7 @@ import { USER_MESSAGE } from "@app/messages";
 import { PERMISSION } from "@app/permissions";
 import { userListInputSchema } from "@app/schemas";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
+import { Plus, Send } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { searchLenient } from "#/libs/table/search-lenient.ts";
 import { roleListOptions } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
@@ -31,12 +31,20 @@ const UsersPage: FC = (): ReactElement => {
 			<div className="flex items-center justify-between">
 				<h1 className="text-xl font-semibold">{USER_MESSAGE.TITLE}</h1>
 				<Guard permissions={[PERMISSION.USER_CREATE]}>
-					<Button asChild size="sm">
-						<Link to="/users/create">
-							<Plus className="mr-1 size-4" />
-							{USER_MESSAGE.NEW_USER}
-						</Link>
-					</Button>
+					<div className="flex items-center gap-2">
+						<Button asChild size="sm" variant="outline">
+							<Link to="/users/invite">
+								<Send className="mr-1 size-4" />
+								{USER_MESSAGE.INVITE_USER}
+							</Link>
+						</Button>
+						<Button asChild size="sm">
+							<Link to="/users/create">
+								<Plus className="mr-1 size-4" />
+								{USER_MESSAGE.NEW_USER}
+							</Link>
+						</Button>
+					</div>
 				</Guard>
 			</div>
 			<UserTable

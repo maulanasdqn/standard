@@ -14,6 +14,8 @@ import { containsWhere } from "#/platform/db/search.ts";
 import { dbActive } from "#/platform/db/transaction.ts";
 import { isUniqueViolation } from "#/platform/db/unique-violation.ts";
 import { session, user } from "#/platform/db/tables/auth.ts";
+import { userAdminOpsOf } from "#/user/infrastructure/user-admin-ops.ts";
+import { userPatchOf } from "#/user/infrastructure/user-patch.ts";
 
 const CREDENTIAL_PROVIDER_ID = "credential";
 const USER_PROVISIONING_METHOD = "admin";
@@ -130,12 +132,15 @@ export const userRepoLayer = Layer.effect(
 				try: async () => {
 					const [row] = await dbActive(db)
 						.update(user)
-						.set(D.merge(patch, { updatedAt: new Date() }))
+						.set(D.merge(userPatchOf(patch), { updatedAt: new Date() }))
 						.where(eq(user.id, id))
 						.returning();
 					return row ?? null;
 				},
-				catch: (cause) => new EDatabase({ cause }),
+				catch: (cause) =>
+					isUniqueViolation(cause)
+						? new EConflict({ message: USER_MESSAGE.EMAIL_TAKEN })
+						: new EDatabase({ cause }),
 			});
 
 		const remove: TUserRepo["remove"] = (id) =>
@@ -169,6 +174,7 @@ export const userRepoLayer = Layer.effect(
 			update,
 			remove,
 			resetPassword,
+			...userAdminOpsOf(db, auth),
 		});
 	}),
 );

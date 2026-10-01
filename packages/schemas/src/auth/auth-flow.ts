@@ -44,6 +44,7 @@ export type TResetPasswordInput = z.infer<typeof resetPasswordInputSchema>;
 
 export const resetPasswordSearchSchema = z.object({
 	token: z.string().optional(),
+	invite: z.coerce.boolean().optional(),
 	error: z.string().optional(),
 });
 export type TResetPasswordSearch = z.infer<typeof resetPasswordSearchSchema>;

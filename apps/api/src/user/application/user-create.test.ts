@@ -1,6 +1,7 @@
 import { ROLE } from "@app/permissions";
 import type { TUserCreateInput } from "@app/schemas";
 import { Effect, Layer } from "effect";
+import { userRepoFake } from "#/user/application/user-fakes.ts";
 import { describe, expect, it, type Mock, vi } from "vitest";
 import { ACTIVITY_ACTION, ACTIVITY_DETAIL } from "@app/activity";
 import { EConflict } from "#/shared/errors.ts";
@@ -22,6 +23,7 @@ const row: TUserRow = {
 	emailVerified: false,
 	image: null,
 	role: ROLE.MEMBER,
+	deactivatedAt: null,
 	createdAt: new Date("2026-01-01T00:00:00Z"),
 	updatedAt: new Date("2026-01-01T00:00:00Z"),
 };
@@ -39,18 +41,7 @@ const layerBuild = (
 	insert: Mock,
 ): Layer.Layer<TUserRepoId | TCustomRoleRepoId | TActivityRecorderId> =>
 	Layer.mergeAll(
-		Layer.succeed(
-			UserRepo,
-			UserRepo.of({
-				list: vi.fn(),
-				findById: vi.fn(),
-				findByEmail,
-				create,
-				update: vi.fn(),
-				remove: vi.fn(),
-				resetPassword: vi.fn(),
-			}),
-		),
+		Layer.succeed(UserRepo, userRepoFake({ findByEmail, create })),
 		Layer.succeed(
 			CustomRoleRepo,
 			CustomRoleRepo.of({

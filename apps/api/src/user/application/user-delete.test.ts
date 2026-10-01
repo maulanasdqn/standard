@@ -1,6 +1,7 @@
 import { ACTIVITY_ACTION, ACTIVITY_DETAIL } from "@app/activity";
 import { ROLE } from "@app/permissions";
 import { Effect, Layer } from "effect";
+import { userRepoFake } from "#/user/application/user-fakes.ts";
 import { describe, expect, it, type Mock, vi } from "vitest";
 import { EForbidden, ENotFound } from "#/shared/errors.ts";
 import { userDelete } from "#/user/application/user-delete.ts";
@@ -24,6 +25,7 @@ const target: TUserRow = {
 	emailVerified: false,
 	image: null,
 	role: ROLE.MEMBER,
+	deactivatedAt: null,
 	createdAt: new Date("2026-01-01T00:00:00Z"),
 	updatedAt: new Date("2026-01-01T00:00:00Z"),
 };
@@ -42,15 +44,7 @@ const layerBuild = (
 	Layer.mergeAll(
 		Layer.succeed(
 			UserRepo,
-			UserRepo.of({
-				list: vi.fn(),
-				findById: mocks.findById,
-				findByEmail: vi.fn(),
-				create: vi.fn(),
-				update: vi.fn(),
-				remove: mocks.remove,
-				resetPassword: vi.fn(),
-			}),
+			userRepoFake({ findById: mocks.findById, remove: mocks.remove }),
 		),
 		Layer.succeed(
 			ActivityRecorder,

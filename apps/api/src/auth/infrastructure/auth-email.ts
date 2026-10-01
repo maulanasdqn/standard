@@ -46,7 +46,9 @@ export const authEmailOptionsOf = (
 		},
 		onPasswordReset: async ({ user }): Promise<void> => {
 			await deps.markVerified(user.id);
-			await deps.events.passwordRecovered(user);
+			await (user.emailVerified
+				? deps.events.passwordRecovered(user)
+				: deps.events.emailVerified(user));
 		},
 	},
 	emailVerification: {

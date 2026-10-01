@@ -105,4 +105,10 @@ export const AUTH_MESSAGE = {
 	SESSION_REVOKED: "Signed out of that device.",
 	SESSIONS_REVOKED: "Signed out of every other device.",
 	SESSION_REVOKE_FAILED: "Could not sign that session out. Please try again.",
+	ACCOUNT_DEACTIVATED:
+		"This account has been deactivated. Contact your administrator if you think this is a mistake.",
+	INVITE_SET_TITLE: "Set your password",
+	INVITE_SET_DESCRIPTION: "Choose a password to finish setting up your account",
+	INVITE_SET_DONE: "Password set. Sign in with your new password.",
+	INVITE_SET_ACTION: "Set password",
 } as const;

@@ -9,6 +9,7 @@ import type { TResetPasswordForm } from "#/routes/_public/reset-password/_hooks/
 
 type TResetPasswordFormProps = {
 	reset: TResetPasswordForm;
+	invite: boolean;
 };
 
 export const ResetPasswordForm: FC<TResetPasswordFormProps> = (
@@ -21,8 +22,16 @@ export const ResetPasswordForm: FC<TResetPasswordFormProps> = (
 			<Stagger className="flex flex-col gap-6">
 				<StaggerItem>
 					<AuthHeading
-						title={AUTH_MESSAGE.RESET_TITLE}
-						description={AUTH_MESSAGE.RESET_DESCRIPTION}
+						title={
+							props.invite
+								? AUTH_MESSAGE.INVITE_SET_TITLE
+								: AUTH_MESSAGE.RESET_TITLE
+						}
+						description={
+							props.invite
+								? AUTH_MESSAGE.INVITE_SET_DESCRIPTION
+								: AUTH_MESSAGE.RESET_DESCRIPTION
+						}
 					/>
 				</StaggerItem>
 				<div className="grid gap-5">
@@ -67,7 +76,11 @@ export const ResetPasswordForm: FC<TResetPasswordFormProps> = (
 							{(isSubmitting) => (
 								<AuthSubmit
 									pending={isSubmitting}
-									label={AUTH_MESSAGE.PASSWORD_UPDATE}
+									label={
+										props.invite
+											? AUTH_MESSAGE.INVITE_SET_ACTION
+											: AUTH_MESSAGE.PASSWORD_UPDATE
+									}
 									pendingLabel={AUTH_MESSAGE.PASSWORD_UPDATING}
 								/>
 							)}

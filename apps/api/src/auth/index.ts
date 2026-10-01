@@ -8,6 +8,7 @@ import { authMount } from "#/auth/presentation/mount-auth.ts";
 
 export { AuthService, authMount };
 export type { TAuthServiceId };
+export type { TAuth } from "#/auth/infrastructure/better-auth.ts";
 
 export const authModule: {
 	layer: typeof authServiceLayer;

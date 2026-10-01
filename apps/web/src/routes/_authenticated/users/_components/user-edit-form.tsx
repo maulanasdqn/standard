@@ -49,6 +49,26 @@ export const UserEditForm: FC<TUserEditFormProps> = (props): ReactElement => {
 							/>
 						)}
 					</form.Field>
+					<form.Field name="email">
+						{(field) => (
+							<UserTextField
+								id={field.name}
+								type="email"
+								label={USER_MESSAGE.COLUMN_EMAIL}
+								placeholder={USER_MESSAGE.EMAIL_PLACEHOLDER}
+								value={field.state.value}
+								errors={field.state.meta.errors}
+								disabled={isSelf}
+								hint={
+									isSelf
+										? USER_MESSAGE.SELF_EMAIL_CHANGE
+										: USER_MESSAGE.EMAIL_CHANGE_HINT
+								}
+								onBlur={field.handleBlur}
+								onChange={field.handleChange}
+							/>
+						)}
+					</form.Field>
 					<form.Field name="role">
 						{(field) => (
 							<UserRoleField

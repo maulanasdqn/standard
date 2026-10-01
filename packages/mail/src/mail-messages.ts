@@ -19,6 +19,17 @@ export const MAIL_MESSAGE = {
 	PASSWORD_CHANGED_ACTION: "Reset password",
 	PASSWORD_CHANGED_FOOTER:
 		"If this was you, there is nothing else to do. If it was not, reset your password right away using the link above.",
+	INVITE_SUBJECT: "You have been invited",
+	INVITE_BODY:
+		"An administrator created an account for you. Choose a password to start using it.",
+	INVITE_ACTION: "Accept invitation",
+	INVITE_EXPIRY:
+		"This invitation expires in 7 days. If you were not expecting it, you can ignore this email.",
+	ACCOUNT_DEACTIVATED_SUBJECT: "Your account was deactivated",
+	ACCOUNT_DEACTIVATED_BODY:
+		"An administrator deactivated your account, so you can no longer sign in and every session you had was signed out.",
+	ACCOUNT_DEACTIVATED_FOOTER:
+		"If you think this is a mistake, contact your administrator.",
 	SEND_FAILED: "Could not send an email.",
 	PASSWORD_RESET_FAILED: "Could not send the password reset email.",
 } as const;

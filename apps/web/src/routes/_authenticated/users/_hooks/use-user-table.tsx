@@ -18,6 +18,8 @@ import {
 	useConfirmedAction,
 } from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
 import { UserActionsCell } from "#/routes/_authenticated/users/_components/user-actions-cell.tsx";
+import { UserStatusBadge } from "#/routes/_authenticated/users/_components/user-status-badge.tsx";
+import { userStatusOf } from "#/routes/_authenticated/users/_utils/user-status.ts";
 import { UserRoleCell } from "#/routes/_authenticated/users/_components/user-role-cell.tsx";
 import type { TRoleOption } from "#/routes/_authenticated/users/_hooks/use-role-options.ts";
 import {
@@ -79,6 +81,13 @@ export const useUserTable = (input: TUserTableInput): TUserTable => {
 								roleChange.request({ id: context.row.original.id, role })
 							}
 						/>
+					),
+				}),
+				helper.display({
+					id: "status",
+					header: USER_MESSAGE.COLUMN_STATUS,
+					cell: (context): ReactElement => (
+						<UserStatusBadge status={userStatusOf(context.row.original)} />
 					),
 				}),
 				helper.accessor("createdAt", {

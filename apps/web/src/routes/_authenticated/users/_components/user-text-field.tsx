@@ -11,6 +11,8 @@ type TUserTextFieldProps = {
 	type?: "text" | "email" | "password";
 	placeholder?: string;
 	autoComplete?: string;
+	hint?: string;
+	disabled?: boolean;
 	onBlur: () => void;
 	onChange: (value: string) => void;
 };
@@ -27,9 +29,13 @@ export const UserTextField: FC<TUserTextFieldProps> = (props): ReactElement => {
 				value={props.value}
 				placeholder={props.placeholder}
 				autoComplete={props.autoComplete}
+				disabled={props.disabled}
 				onBlur={props.onBlur}
 				onChange={(event) => props.onChange(event.target.value)}
 			/>
+			{props.hint && (
+				<p className="text-xs text-muted-foreground">{props.hint}</p>
+			)}
 			<FieldError errors={props.errors} />
 		</div>
 	);

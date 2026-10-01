@@ -1,5 +1,6 @@
 import type {
 	TUserCreateInput,
+	TUserInviteInput,
 	TUserListInput,
 	TUserPasswordResetInput,
 	TUserUpdateInput,
@@ -17,6 +18,16 @@ export type TUserRow = TBaseRow & {
 	emailVerified: boolean;
 	image: string | null;
 	role: string;
+	deactivatedAt: Date | null;
+};
+
+export type TUserSessionRow = {
+	id: string;
+	ipAddress: string | null;
+	userAgent: string | null;
+	createdAt: Date;
+	updatedAt: Date;
+	expiresAt: Date;
 };
 
 export type TUserRepo = {
@@ -28,9 +39,22 @@ export type TUserRepo = {
 	) => Effect.Effect<TUserRow, EAuth | EConflict>;
 	update: (
 		input: TUserUpdateInput,
-	) => Effect.Effect<TUserRow | null, EDatabase>;
+	) => Effect.Effect<TUserRow | null, EDatabase | EConflict>;
 	remove: (id: string) => Effect.Effect<boolean, EDatabase>;
 	resetPassword: (input: TUserPasswordResetInput) => Effect.Effect<void, EAuth>;
+	invite: (
+		input: TUserInviteInput,
+	) => Effect.Effect<TUserRow, EAuth | EConflict>;
+	deactivate: (id: string) => Effect.Effect<TUserRow | null, EDatabase>;
+	reactivate: (id: string) => Effect.Effect<TUserRow | null, EDatabase>;
+	sessions: (
+		userId: string,
+	) => Effect.Effect<readonly TUserSessionRow[], EDatabase>;
+	sessionRevoke: (
+		userId: string,
+		sessionId: string,
+	) => Effect.Effect<boolean, EDatabase>;
+	sessionsRevoke: (userId: string) => Effect.Effect<void, EDatabase>;
 };
 
 export type TUserRepoId = TServiceId<typeof REPO_TAG.USER>;
