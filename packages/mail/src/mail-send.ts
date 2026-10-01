@@ -6,6 +6,7 @@ export const MAIL_EVENT = { SEND_FAILED: "mail.send.failed" } as const;
 export const MAIL_TEMPLATE = {
 	PASSWORD_RESET: "password-reset",
 	EMAIL_VERIFICATION: "email-verification",
+	PASSWORD_CHANGED: "password-changed",
 } as const;
 
 export type TMailTemplate = (typeof MAIL_TEMPLATE)[keyof typeof MAIL_TEMPLATE];

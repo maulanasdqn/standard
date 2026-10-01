@@ -34,7 +34,15 @@ export const ACTIVITY_ACTION_LABEL = {
 	[ACTIVITY_ACTION.ROLE_CREATE]: "Role created",
 	[ACTIVITY_ACTION.ROLE_UPDATE]: "Role updated",
 	[ACTIVITY_ACTION.ROLE_DELETE]: "Role deleted",
+	[ACTIVITY_ACTION.USER_SIGN_UP]: "Signed up",
+	[ACTIVITY_ACTION.USER_EMAIL_VERIFY]: "Email confirmed",
+	[ACTIVITY_ACTION.USER_PROFILE_UPDATE]: "Profile updated",
+	[ACTIVITY_ACTION.USER_PASSWORD_CHANGE]: "Password changed",
+	[ACTIVITY_ACTION.USER_PASSWORD_RECOVER]: "Password reset by email",
 	[ACTIVITY_ACTION.SESSION_CREATE]: "Signed in",
+	[ACTIVITY_ACTION.SESSION_DELETE]: "Signed out",
+	[ACTIVITY_ACTION.SESSION_FAIL]: "Sign-in failed",
+	[ACTIVITY_ACTION.SESSION_REVOKE]: "Sessions revoked",
 } as const satisfies Record<TActivityAction, string>;
 
 export const ACTIVITY_DETAIL_LABEL = {

@@ -1,6 +1,6 @@
 import { passwordSchema } from "@app/schemas";
 import { A, D } from "@mobily/ts-belt";
-import { APIError, createAuthMiddleware } from "better-auth/api";
+import { APIError } from "better-auth/api";
 import { match, P } from "ts-pattern";
 import { z } from "zod";
 
@@ -37,14 +37,12 @@ const weaknessOf = (password: unknown): string | undefined =>
 		)
 		.otherwise((): undefined => undefined);
 
-export const passwordStrengthHook = createAuthMiddleware(
-	async (ctx): Promise<void> =>
-		match(weaknessOf(passwordOf(ctx.path, ctx.body)))
-			.with(P.nullish, (): undefined => undefined)
-			.otherwise((message): never => {
-				throw new APIError("BAD_REQUEST", {
-					code: PASSWORD_WEAK_CODE,
-					message,
-				});
-			}),
-);
+export const passwordStrengthAssert = (path: string, body: unknown): void =>
+	match(weaknessOf(passwordOf(path, body)))
+		.with(P.nullish, (): undefined => undefined)
+		.otherwise((message): never => {
+			throw new APIError("BAD_REQUEST", {
+				code: PASSWORD_WEAK_CODE,
+				message,
+			});
+		});

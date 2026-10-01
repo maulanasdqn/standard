@@ -13,6 +13,12 @@ export const MAIL_MESSAGE = {
 	EMAIL_VERIFICATION_ACTION: "Confirm email",
 	EMAIL_VERIFICATION_EXPIRY:
 		"This link expires in 24 hours. If you did not create an account, you can ignore this email.",
+	PASSWORD_CHANGED_SUBJECT: "Your password was changed",
+	PASSWORD_CHANGED_BODY:
+		"The password for your account was just changed, and your other sessions were signed out.",
+	PASSWORD_CHANGED_ACTION: "Reset password",
+	PASSWORD_CHANGED_FOOTER:
+		"If this was you, there is nothing else to do. If it was not, reset your password right away using the link above.",
 	SEND_FAILED: "Could not send an email.",
 	PASSWORD_RESET_FAILED: "Could not send the password reset email.",
 } as const;

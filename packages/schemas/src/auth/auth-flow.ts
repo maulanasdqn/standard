@@ -52,3 +52,12 @@ export const verifyEmailSearchSchema = z.object({
 	error: z.string().optional(),
 });
 export type TVerifyEmailSearch = z.infer<typeof verifyEmailSearchSchema>;
+
+export const profileUpdateInputSchema = z.object({
+	name: z
+		.string()
+		.trim()
+		.min(1, VALIDATION_MESSAGE.NAME_REQUIRED)
+		.max(NAME_MAX),
+});
+export type TProfileUpdateInput = z.infer<typeof profileUpdateInputSchema>;
