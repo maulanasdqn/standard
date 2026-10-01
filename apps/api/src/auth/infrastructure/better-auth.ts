@@ -8,7 +8,8 @@ import type { TDb } from "#/platform/db/client.ts";
 import { dbActiveProxy } from "#/platform/db/transaction.ts";
 import { match, P } from "ts-pattern";
 import { authEmailOptionsOf } from "#/auth/infrastructure/auth-email.ts";
-import { passwordStrengthHook } from "#/auth/infrastructure/auth-password-hook.ts";
+import { authEventsOf } from "#/auth/infrastructure/auth-events.ts";
+import { authHooksOf } from "#/auth/infrastructure/auth-hooks.ts";
 import { authPluginsOf } from "#/auth/infrastructure/auth-plugins.ts";
 import { userVerifiedMark } from "#/auth/infrastructure/user-verified-mark.ts";
 import { env } from "#/platform/config/env.ts";
@@ -42,8 +43,14 @@ type TAuthOptions = Omit<BetterAuthOptions, "user"> & {
 
 export type TAuth = Auth<TAuthOptions>;
 
-export const authCreate = (deps: TCreateAuthOptions): TAuth =>
-	betterAuth<TAuthOptions>({
+export const authCreate = (deps: TCreateAuthOptions): TAuth => {
+	const events = authEventsOf({
+		activityRepo: deps.activityRepo,
+		mailer: deps.mailer,
+		webOrigin: env.WEB_ORIGIN,
+	});
+
+	return betterAuth<TAuthOptions>({
 		baseURL: env.BETTER_AUTH_URL,
 		secret: env.BETTER_AUTH_SECRET,
 		trustedOrigins: [...originsOf(env.WEB_ORIGIN, env.AUTH_TRUSTED_ORIGINS)],
@@ -60,10 +67,11 @@ export const authCreate = (deps: TCreateAuthOptions): TAuth =>
 		},
 		...authEmailOptionsOf({
 			mailer: deps.mailer,
+			events,
 			markVerified: (userId: string): Promise<void> =>
 				userVerifiedMark(deps.db, userId),
 		}),
-		hooks: { before: passwordStrengthHook },
+		hooks: authHooksOf(events),
 		user: {
 			additionalFields: {
 				role: { type: "string", defaultValue: ROLE.VIEWER, input: false },
@@ -84,3 +92,4 @@ export const authCreate = (deps: TCreateAuthOptions): TAuth =>
 			},
 		},
 	});
+};

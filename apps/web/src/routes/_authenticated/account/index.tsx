@@ -3,6 +3,8 @@ import { AUTH_MESSAGE } from "@app/messages";
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
 import { AccountSummary } from "#/routes/_authenticated/account/_components/account-summary.tsx";
+import { ProfileForm } from "#/routes/_authenticated/account/_components/profile-form.tsx";
+import { SessionsCard } from "#/routes/_authenticated/account/_components/sessions-card.tsx";
 import { PasswordChangeForm } from "#/routes/_authenticated/account/_components/password-change-form.tsx";
 import { RouteSkeleton } from "#/routes/_components/route-skeleton.tsx";
 import { PageHeaderSkeleton } from "@app/components/skeleton/page-header-skeleton";
@@ -19,7 +21,13 @@ const AccountPage: FC = (): ReactElement => {
 				<AccountSummary />
 			</StaggerItem>
 			<StaggerItem>
+				<ProfileForm />
+			</StaggerItem>
+			<StaggerItem>
 				<PasswordChangeForm />
+			</StaggerItem>
+			<StaggerItem>
+				<SessionsCard />
 			</StaggerItem>
 		</Stagger>
 	);

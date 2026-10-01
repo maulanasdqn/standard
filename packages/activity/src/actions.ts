@@ -22,7 +22,15 @@ export const ACTIVITY_ACTION = {
 	ROLE_CREATE: "role.create",
 	ROLE_UPDATE: "role.update",
 	ROLE_DELETE: "role.delete",
+	USER_SIGN_UP: "user.sign_up",
+	USER_EMAIL_VERIFY: "user.email_verify",
+	USER_PROFILE_UPDATE: "user.profile_update",
+	USER_PASSWORD_CHANGE: "user.password_change",
+	USER_PASSWORD_RECOVER: "user.password_recover",
 	SESSION_CREATE: "session.create",
+	SESSION_DELETE: "session.delete",
+	SESSION_FAIL: "session.fail",
+	SESSION_REVOKE: "session.revoke",
 } as const;
 
 export type TActivityAction =
