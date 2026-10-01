@@ -45,7 +45,7 @@
 		"better-auth": "catalog:",
 		"drizzle-orm": "catalog:",
 		"effect": "4.0.0-rc.117",
-		"hono": "^4.13.9",
+		"hono": "^4.13.10",
 		"ioredis": "^6.0.0",
 		"pg": "catalog:",
 		"ts-pattern": "catalog:",
