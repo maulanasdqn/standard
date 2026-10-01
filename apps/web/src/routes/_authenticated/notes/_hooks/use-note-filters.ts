@@ -1,7 +1,12 @@
 import type { TNoteListSearch } from "@app/schemas";
-import { A, D } from "@mobily/ts-belt";
+import { D } from "@mobily/ts-belt";
 import { getRouteApi } from "@tanstack/react-router";
-import { useState } from "react";
+import {
+	blankToUndefined,
+	definedCount,
+	type TFilterPanel,
+	useFilterPanel,
+} from "#/routes/_authenticated/_hooks/use-filter-panel.ts";
 
 const listRouteApi = getRouteApi("/_authenticated/notes/");
 
@@ -18,20 +23,6 @@ const EMPTY: TNoteFilterValues = {
 	attachments: undefined,
 };
 
-export type TNoteFilters = {
-	draft: TNoteFilterValues;
-	activeCount: number;
-	open: boolean;
-	onOpenChange: (open: boolean) => void;
-	onDraftChange: (patch: Partial<TNoteFilterValues>) => void;
-	onApply: () => void;
-	onReset: () => void;
-	onClear: () => void;
-};
-
-const blankToUndefined = (value: string | undefined): string | undefined =>
-	value === "" ? undefined : value;
-
 const normalize = (values: TNoteFilterValues): TNoteFilterValues => {
 	const dateFrom = blankToUndefined(values.dateFrom);
 	const dateTo = blankToUndefined(values.dateTo);
@@ -45,42 +36,25 @@ const normalize = (values: TNoteFilterValues): TNoteFilterValues => {
 	};
 };
 
-const countActive = (values: TNoteFilterValues): number =>
-	A.length(
-		A.filter(
-			[values.title, values.dateFrom ?? values.dateTo, values.attachments],
-			(value) => value !== undefined,
-		),
-	);
+const count = (values: TNoteFilterValues): number =>
+	definedCount([
+		values.title,
+		values.dateFrom ?? values.dateTo,
+		values.attachments,
+	]);
 
-export const useNoteFilters = (): TNoteFilters => {
+export const useNoteFilters = (): TFilterPanel<TNoteFilterValues> => {
 	const navigate = listRouteApi.useNavigate();
 	const search = listRouteApi.useSearch();
-	const applied = normalize(D.selectKeys(search, D.keys(EMPTY)));
-	const [draft, setDraft] = useState<TNoteFilterValues>(applied);
-	const [open, setOpen] = useState(false);
 
-	const commit = (values: TNoteFilterValues): void =>
-		void navigate({
-			search: (prev) =>
-				D.merge(D.merge(prev, EMPTY), D.merge(values, { page: 1 })),
-		});
-
-	return {
-		draft,
-		activeCount: countActive(applied),
-		open,
-		onOpenChange: (next: boolean): void => {
-			setDraft(applied);
-			setOpen(next);
-		},
-		onDraftChange: (patch: Partial<TNoteFilterValues>): void =>
-			setDraft((current) => D.merge(current, patch)),
-		onApply: (): void => {
-			commit(normalize(draft));
-			setOpen(false);
-		},
-		onReset: (): void => setDraft(EMPTY),
-		onClear: (): void => commit(EMPTY),
-	};
+	return useFilterPanel({
+		applied: normalize(D.selectKeys(search, D.keys(EMPTY))),
+		empty: EMPTY,
+		normalize,
+		count,
+		commit: (values): void =>
+			void navigate({
+				search: (prev) => ({ ...prev, ...EMPTY, ...values, page: 1 }),
+			}),
+	});
 };

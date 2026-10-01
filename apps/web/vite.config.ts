@@ -1,10 +1,11 @@
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import viteReact from "@vitejs/plugin-react";
-import { defineConfig, type Plugin } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
 import { THEME, THEME_STORAGE_KEY } from "./src/libs/theme/theme.ts";
 
-const API_URL = process.env.VITE_API_URL ?? "http://localhost:3001";
+const DEFAULT_API_URL = "http://localhost:3001";
+const ALL_ENV_PREFIXES = "";
 
 const THEME_PLACEHOLDER = {
 	STORAGE_KEY: "__THEME_STORAGE_KEY__",
@@ -19,25 +20,31 @@ const themeScriptPlugin = (): Plugin => ({
 			.replaceAll(THEME_PLACEHOLDER.LIGHT, THEME.LIGHT),
 });
 
-export default defineConfig({
-	resolve: { tsconfigPaths: true },
-	plugins: [
-		tailwindcss(),
-		tanstackRouter({
-			target: "react",
-			autoCodeSplitting: true,
-			routesDirectory: "./src/routes",
-			generatedRouteTree: "./src/routeTree.gen.ts",
-			routeFileIgnorePattern:
-				"^(_apis|_components|_data|_hooks|_constants|_utils)",
-		}),
-		viteReact(),
-		themeScriptPlugin(),
-	],
-	server: {
-		proxy: {
-			"/api": { target: API_URL, changeOrigin: true },
-			"/rpc": { target: API_URL, changeOrigin: true },
+export default defineConfig(({ mode }) => {
+	const fileEnv = loadEnv(mode, process.cwd(), ALL_ENV_PREFIXES);
+	const apiUrl =
+		process.env.VITE_API_URL ?? fileEnv.VITE_API_URL ?? DEFAULT_API_URL;
+
+	return {
+		resolve: { tsconfigPaths: true },
+		plugins: [
+			tailwindcss(),
+			tanstackRouter({
+				target: "react",
+				autoCodeSplitting: true,
+				routesDirectory: "./src/routes",
+				generatedRouteTree: "./src/routeTree.gen.ts",
+				routeFileIgnorePattern:
+					"^(_apis|_components|_data|_hooks|_constants|_utils)",
+			}),
+			viteReact(),
+			themeScriptPlugin(),
+		],
+		server: {
+			proxy: {
+				"/api": { target: apiUrl, changeOrigin: true },
+				"/rpc": { target: apiUrl, changeOrigin: true },
+			},
 		},
-	},
+	};
 });

@@ -46,9 +46,6 @@ export const USER_MESSAGE = {
 		"The user can sign in with the given password right away.",
 	UPDATE_CONFIRM_TITLE: "Save these user changes?",
 	UPDATE_CONFIRM_DESCRIPTION: "The changes apply to the account immediately.",
-	ROLE_CHANGE_CONFIRM_TITLE: "Change this user's role?",
-	ROLE_CHANGE_CONFIRM_DESCRIPTION:
-		"The user's permissions change on their next request.",
 	PASSWORD_RESET_CONFIRM_TITLE: "Reset this user's password?",
 	PASSWORD_RESET_CONFIRM_DESCRIPTION:
 		"The current password stops working immediately.",
@@ -109,4 +106,8 @@ export const USER_MESSAGE = {
 		"They can sign in with just their password until they set it up again. They get an email about it.",
 	TWO_FACTOR_ON: "On",
 	TWO_FACTOR_OFF: "Off",
+	FILTER_ROLE: "Role",
+	FILTER_STATUS: "Status",
+	FILTER_TWO_FACTOR: "Two-factor",
+	FILTER_CREATED: "Created",
 } as const;

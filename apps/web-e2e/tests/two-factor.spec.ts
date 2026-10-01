@@ -40,7 +40,7 @@ test("a user turns on two-factor and then signs in with a code", async ({
 	await page.getByRole("link", { name: AUTH_MESSAGE.CONTINUE }).click();
 	await expect(page).toHaveURL(/\/dashboard/);
 
-	await page.goto("/account");
+	await page.goto("/account?tab=security");
 	await page
 		.getByRole("button", { name: AUTH_MESSAGE.TWO_FACTOR_TURN_ON })
 		.click();

@@ -1,8 +1,7 @@
 import { USER_MESSAGE } from "@app/messages";
 import { D } from "@mobily/ts-belt";
-import { and, count, eq, or, type SQL } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 import { Effect, Layer } from "effect";
-import { match, P } from "ts-pattern";
 import { EAuth, EConflict, EDatabase } from "#/shared/errors.ts";
 import { offsetFor, orderFor } from "#/shared/pagination.ts";
 import { USER_SORT, type TUserSort } from "@app/schemas";
@@ -10,11 +9,11 @@ import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { UserRepo, type TUserRepo, type TUserRow } from "#/user/domain/user.ts";
 import { AuthService } from "#/auth/index.ts";
 import { DbService } from "#/platform/db/db-service.ts";
-import { containsWhere } from "#/platform/db/search.ts";
 import { dbActive } from "#/platform/db/transaction.ts";
 import { isUniqueViolation } from "#/platform/db/unique-violation.ts";
 import { session, user } from "#/platform/db/tables/auth.ts";
 import { userAdminOpsOf } from "#/user/infrastructure/user-admin-ops.ts";
+import { userListWhere } from "#/user/infrastructure/user-list-where.ts";
 import { userPatchOf } from "#/user/infrastructure/user-patch.ts";
 
 const CREDENTIAL_PROVIDER_ID = "credential";
@@ -27,33 +26,15 @@ const SORT_COLUMN: Record<TUserSort, AnyPgColumn> = {
 	[USER_SORT.CREATED_AT]: user.createdAt,
 };
 
-const searchWhere = (search: string | undefined): SQL | undefined =>
-	match(search)
-		.with(P.nonNullable, (value) =>
-			or(containsWhere(user.name, value), containsWhere(user.email, value)),
-		)
-		.otherwise(() => undefined);
-
-const roleWhere = (role: string | undefined): SQL | undefined =>
-	match(role)
-		.with(P.nonNullable, (value) => eq(user.role, value))
-		.otherwise(() => undefined);
-
 export const userRepoLayer = Layer.effect(
 	UserRepo,
 	Effect.gen(function* () {
 		const { db } = yield* DbService;
 		const { auth } = yield* AuthService;
 
-		const list: TUserRepo["list"] = ({
-			page,
-			pageSize,
-			search,
-			role,
-			sortBy,
-			sortDir,
-		}) => {
-			const where = and(searchWhere(search), roleWhere(role));
+		const list: TUserRepo["list"] = (input) => {
+			const { page, pageSize, sortBy, sortDir } = input;
+			const where = userListWhere(input);
 
 			return Effect.tryPromise({
 				try: async () => {

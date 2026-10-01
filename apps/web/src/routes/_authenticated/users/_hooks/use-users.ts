@@ -18,6 +18,7 @@ import type {
 	TClientInputs,
 	TClientOutputs,
 } from "#/libs/orpc/types.ts";
+import { withInstantRange } from "#/libs/table/day-range.ts";
 import type { TListChange } from "#/libs/table/list-patch.ts";
 
 type TUserIn = TClientInputs["user"];
@@ -50,7 +51,8 @@ export const userGetOptions = (
 export const useUserList = (): UseSuspenseQueryResult<
 	TUserOut["list"],
 	TUserErr["list"]
-> => useSuspenseQuery(userListOptions(listRouteApi.useSearch()));
+> =>
+	useSuspenseQuery(userListOptions(withInstantRange(listRouteApi.useSearch())));
 
 export const useUserGet = (): UseSuspenseQueryResult<
 	TUserOut["get"],

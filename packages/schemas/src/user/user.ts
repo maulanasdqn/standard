@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { userIdSchema } from "../auth/auth.ts";
 import { passwordSchema } from "../auth/password.ts";
+import { dayRangeShape, instantRangeShape } from "../shared/date-range.ts";
+import { USER_STATUS, USER_TWO_FACTOR_FILTER } from "./user-admin.ts";
 import { baseSchema, type TEntityOf } from "../shared/base-schema.ts";
 import { paginated, paginationSchema } from "../shared/pagination.ts";
 import { searchQuerySchema } from "../shared/search.ts";
@@ -53,9 +55,15 @@ export const USER_SORT = {
 
 export type TUserSort = (typeof USER_SORT)[keyof typeof USER_SORT];
 
-export const userListInputSchema = paginationSchema.extend({
+const userListBaseSchema = paginationSchema.extend({
 	search: searchQuerySchema.optional(),
 	role: z.string().optional(),
+	status: z
+		.enum([USER_STATUS.ACTIVE, USER_STATUS.PENDING, USER_STATUS.DEACTIVATED])
+		.optional(),
+	twoFactor: z
+		.enum([USER_TWO_FACTOR_FILTER.ON, USER_TWO_FACTOR_FILTER.OFF])
+		.optional(),
 	sortBy: z
 		.enum([
 			USER_SORT.NAME,
@@ -66,7 +74,12 @@ export const userListInputSchema = paginationSchema.extend({
 		.default(USER_SORT.CREATED_AT),
 	sortDir: sortDirectionSchema.default(SORT_DIRECTION.ASC),
 });
+
+export const userListInputSchema = userListBaseSchema.extend(instantRangeShape);
 export type TUserListInput = z.infer<typeof userListInputSchema>;
+
+export const userListSearchSchema = userListBaseSchema.extend(dayRangeShape);
+export type TUserListSearch = z.infer<typeof userListSearchSchema>;
 
 export const userListSchema = paginated(userSchema);
 export type TUserList = z.infer<typeof userListSchema>;

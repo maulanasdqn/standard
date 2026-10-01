@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
 	render,
 	waitFor,
+	within,
 	type RenderResult,
 	screen,
 } from "@testing-library/react";
@@ -12,6 +13,10 @@ import type { ReactElement } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { UserTable } from "#/routes/_authenticated/users/_components/user-table.tsx";
 import type { TRoleOption } from "#/routes/_authenticated/users/_hooks/use-role-options.ts";
+
+vi.mock("#/routes/_authenticated/users/_components/user-filters.tsx", () => ({
+	UserFilters: (): ReactElement => <button type="button">Filters</button>,
+}));
 
 const ACTIONS_LABEL = "user actions";
 const CREATED_AT = "2026-01-02T03:04:00.000Z";
@@ -85,14 +90,14 @@ describe("UserTable with rows", () => {
 		).not.toBeInTheDocument();
 	});
 
-	it("offers the role as a select to someone who can edit users", async (): Promise<void> => {
+	it("shows the role as plain text to someone who can edit users too", async (): Promise<void> => {
 		renderWithPermissions([PERMISSION.USER_UPDATE]);
 
 		await waitFor((): void => {
-			expect(
-				screen.getByRole("combobox", { name: `Role for ${user.name}` }),
-			).toBeVisible();
+			expect(screen.getByText(MEMBER_LABEL)).toBeVisible();
 		});
+		const row = screen.getByRole("row", { name: /ada@test\.app/i });
+		expect(within(row).queryByRole("combobox")).not.toBeInTheDocument();
 	});
 
 	it("gives the row its actions cell", async (): Promise<void> => {

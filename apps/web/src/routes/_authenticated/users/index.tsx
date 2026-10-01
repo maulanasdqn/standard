@@ -3,10 +3,11 @@ import { checkRoutePermissions } from "#/libs/auth/route-guard.ts";
 import { Button } from "@app/components/ui/button";
 import { USER_MESSAGE } from "@app/messages";
 import { PERMISSION } from "@app/permissions";
-import { userListInputSchema } from "@app/schemas";
+import { userListSearchSchema } from "@app/schemas";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Plus, Send } from "lucide-react";
 import type { FC, ReactElement } from "react";
+import { withInstantRange } from "#/libs/table/day-range.ts";
 import { searchLenient } from "#/libs/table/search-lenient.ts";
 import { roleListOptions } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
 import { UserTable } from "#/routes/_authenticated/users/_components/user-table.tsx";
@@ -18,7 +19,7 @@ import {
 } from "#/routes/_authenticated/users/_hooks/use-users.ts";
 import { ListPageSkeleton } from "#/routes/_components/list-page-skeleton.tsx";
 
-const userSearchValidate = searchLenient(userListInputSchema);
+const userSearchValidate = searchLenient(userListSearchSchema);
 
 const UsersPage: FC = (): ReactElement => {
 	const { data } = useUserList();
@@ -68,7 +69,9 @@ export const Route = createFileRoute("/_authenticated/users/")({
 	loaderDeps: ({ search }) => ({ search }),
 	loader: ({ context, deps }) =>
 		Promise.all([
-			context.queryClient.ensureQueryData(userListOptions(deps.search)),
+			context.queryClient.ensureQueryData(
+				userListOptions(withInstantRange(deps.search)),
+			),
 			context.queryClient.ensureQueryData(roleListOptions()),
 		]),
 	component: UsersPage,

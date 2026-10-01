@@ -13,6 +13,10 @@ import type { ReactElement } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { RoleList } from "#/routes/_authenticated/roles/_components/role-list.tsx";
 
+vi.mock("#/routes/_authenticated/roles/_components/role-filters.tsx", () => ({
+	RoleFilters: (): ReactElement => <button type="button">Filters</button>,
+}));
+
 const ACTIONS_LABEL = "role actions";
 
 vi.mock(

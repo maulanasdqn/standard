@@ -11,10 +11,14 @@ import {
 	roleListOptions,
 	useRoleList,
 } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
+import { searchLenient } from "#/libs/table/search-lenient.ts";
+import { roleListSearchSchema } from "#/routes/_authenticated/roles/_constants/role-filter.ts";
+import { rolesFiltered } from "#/routes/_authenticated/roles/_utils/role-filter.ts";
 import { ListPageSkeleton } from "#/routes/_components/list-page-skeleton.tsx";
 
 const RolesPage: FC = (): ReactElement => {
 	const { data } = useRoleList();
+	const search = Route.useSearch();
 
 	return (
 		<div className="flex flex-col gap-6">
@@ -29,7 +33,7 @@ const RolesPage: FC = (): ReactElement => {
 					</Button>
 				</Guard>
 			</div>
-			<RoleList roles={data.items} />
+			<RoleList roles={rolesFiltered(data.items, search)} />
 		</div>
 	);
 };
@@ -39,6 +43,7 @@ const RolesPending: FC = (): ReactElement => (
 );
 
 export const Route = createFileRoute("/_authenticated/roles/")({
+	validateSearch: searchLenient(roleListSearchSchema),
 	beforeLoad: checkRoutePermissions({ permissions: [PERMISSION.ROLE_READ] }),
 	loader: ({ context }) =>
 		context.queryClient.ensureQueryData(roleListOptions()),

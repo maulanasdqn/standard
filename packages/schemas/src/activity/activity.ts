@@ -1,4 +1,5 @@
 import { ACTIVITY_ACTION, ACTIVITY_RESOURCE_TYPE } from "@app/activity";
+import { dayRangeShape, instantRangeShape } from "../shared/date-range.ts";
 import { z } from "zod";
 import { eventSchema, type TEventOf } from "../shared/base-schema.ts";
 import { paginated, paginationSchema } from "../shared/pagination.ts";
@@ -35,7 +36,7 @@ export const ACTIVITY_SORT = {
 
 export type TActivitySort = (typeof ACTIVITY_SORT)[keyof typeof ACTIVITY_SORT];
 
-export const activityListInputSchema = paginationSchema.extend({
+const activityListBaseSchema = paginationSchema.extend({
 	action: z.string().optional(),
 	resourceType: z.string().optional(),
 	actorId: z.string().optional(),
@@ -48,7 +49,14 @@ export const activityListInputSchema = paginationSchema.extend({
 		.default(ACTIVITY_SORT.CREATED_AT),
 	sortDir: sortDirectionSchema.default(SORT_DIRECTION.DESC),
 });
+
+export const activityListInputSchema =
+	activityListBaseSchema.extend(instantRangeShape);
 export type TActivityListInput = z.infer<typeof activityListInputSchema>;
+
+export const activityListSearchSchema =
+	activityListBaseSchema.extend(dayRangeShape);
+export type TActivityListSearch = z.infer<typeof activityListSearchSchema>;
 
 export const activityListSchema = paginated(activitySchema);
 export type TActivityList = z.infer<typeof activityListSchema>;
