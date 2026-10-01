@@ -28,16 +28,17 @@ import {
 } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useSession } from "#/libs/auth/use-session.ts";
-import { useSessionSignOut } from "#/routes/_authenticated/_hooks/use-session-sign-out.ts";
+import { ConfirmDialog } from "#/routes/_authenticated/_components/confirm-dialog.tsx";
+import { useSignOutConfirm } from "#/routes/_authenticated/_hooks/use-sign-out-confirm.ts";
 import { useTheme } from "#/routes/_authenticated/_hooks/use-theme.ts";
 import { Switch } from "@app/components/ui/switch";
-import { APP_MESSAGE, NAV_MESSAGE } from "@app/messages";
+import { APP_MESSAGE, AUTH_MESSAGE, NAV_MESSAGE } from "@app/messages";
 import { AppLogo } from "#/routes/_components/app-logo.tsx";
 import { AppSidebarNav } from "#/routes/_authenticated/_components/app-sidebar-nav.tsx";
 
 export const AppSidebar: FC = (): ReactElement => {
 	const session = useSession();
-	const signOut = useSessionSignOut();
+	const signOutConfirm = useSignOutConfirm();
 	const theme = useTheme();
 
 	return (
@@ -69,7 +70,7 @@ export const AppSidebar: FC = (): ReactElement => {
 			<SidebarFooter>
 				<SidebarMenu>
 					<SidebarMenuItem>
-						<DropdownMenu>
+						<DropdownMenu modal={false}>
 							<DropdownMenuTrigger asChild>
 								<SidebarMenuButton size="lg">
 									<div className="bg-sidebar-accent text-sidebar-accent-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
@@ -108,12 +109,21 @@ export const AppSidebar: FC = (): ReactElement => {
 										className="pointer-events-none ml-auto"
 									/>
 								</DropdownMenuItem>
-								<DropdownMenuItem onClick={() => void signOut()}>
+								<DropdownMenuItem onSelect={() => signOutConfirm.request()}>
 									<LogOut />
 									{NAV_MESSAGE.SIGN_OUT}
 								</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>
+						<ConfirmDialog
+							open={signOutConfirm.open}
+							title={AUTH_MESSAGE.SIGN_OUT_CONFIRM_TITLE}
+							description={AUTH_MESSAGE.SIGN_OUT_CONFIRM_DESCRIPTION}
+							confirmLabel={NAV_MESSAGE.SIGN_OUT}
+							destructive
+							onOpenChange={signOutConfirm.onOpenChange}
+							onConfirm={signOutConfirm.onConfirm}
+						/>
 					</SidebarMenuItem>
 				</SidebarMenu>
 			</SidebarFooter>
