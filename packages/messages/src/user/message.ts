@@ -12,10 +12,10 @@ export const USER_MESSAGE = {
 	CREATE_DESCRIPTION:
 		"Create an account with a name, email, password, and role. The user can sign in right away.",
 	EDIT_DESCRIPTION:
-		"Update the name or role. Changes apply as soon as you confirm.",
+		"Update the details, manage access and sign the user out of their devices.",
 	DETAILS_TITLE: "Account details",
 	DETAILS_DESCRIPTION:
-		"The email is the sign-in identity and cannot be changed here.",
+		"The email is the sign-in identity. A new address has to be confirmed before the user can sign in again.",
 	CREATE_DETAILS_DESCRIPTION: "The user signs in with this email and password.",
 	PASSWORD_TITLE: "Reset password",
 	PASSWORD_DESCRIPTION:
@@ -24,8 +24,8 @@ export const USER_MESSAGE = {
 	NEW_PASSWORD: "New password",
 	NAME_PLACEHOLDER: "Full name",
 	EMAIL_PLACEHOLDER: "name@example.com",
-	PASSWORD_PLACEHOLDER: "At least 8 characters",
-	NEW_PASSWORD_PLACEHOLDER: "At least 8 characters",
+	PASSWORD_PLACEHOLDER: "8+ characters, upper, lower and a number",
+	NEW_PASSWORD_PLACEHOLDER: "8+ characters, upper, lower and a number",
 	SEARCH_PLACEHOLDER: "Search by name or email",
 	SEARCH_LABEL: "Search users",
 	BACK_TO_USERS: "Back to users",
@@ -58,4 +58,43 @@ export const USER_MESSAGE = {
 	DELETE_CONFIRM_TITLE: "Delete this user?",
 	DELETE_CONFIRM_DESCRIPTION:
 		"The account and everything it owns will be removed permanently.",
+	SELF_EMAIL_CHANGE: "You can't change your own email address here.",
+	SELF_DEACTIVATE: "You can't deactivate your own account.",
+	SESSION_NOT_FOUND: "That session no longer exists.",
+	INVITE_USER: "Invite User",
+	INVITE_TITLE: "Invite user",
+	INVITE_DESCRIPTION:
+		"They get an email with a link to choose their own password. The link expires in 7 days.",
+	INVITE_ACTION: "Send invitation",
+	INVITING: "Sending…",
+	INVITED: "Invitation sent.",
+	COLUMN_STATUS: "Status",
+	STATUS_ACTIVE: "Active",
+	STATUS_PENDING: "Pending",
+	STATUS_DEACTIVATED: "Deactivated",
+	ACTION_DEACTIVATE: "Deactivate",
+	ACTION_REACTIVATE: "Reactivate",
+	DEACTIVATED: "User deactivated and signed out everywhere.",
+	REACTIVATED: "User reactivated.",
+	DEACTIVATE_CONFIRM_TITLE: "Deactivate this user?",
+	DEACTIVATE_CONFIRM_DESCRIPTION:
+		"They are signed out everywhere at once and can no longer sign in until you reactivate them. They get an email about it.",
+	REACTIVATE_CONFIRM_TITLE: "Reactivate this user?",
+	REACTIVATE_CONFIRM_DESCRIPTION: "They will be able to sign in again.",
+	ACCESS_TITLE: "Access",
+	ACCESS_ACTIVE_DESCRIPTION:
+		"This user can sign in. Deactivating them signs them out everywhere and blocks sign-in without deleting anything.",
+	ACCESS_DEACTIVATED_DESCRIPTION:
+		"This user is deactivated and cannot sign in. Reactivate them to restore access.",
+	ACCESS_PENDING_DESCRIPTION:
+		"This user has not confirmed their email address yet, so they cannot sign in.",
+	EMAIL_CHANGE_HINT:
+		"Changing the email signs this user out until they confirm the new address.",
+	SESSIONS_TITLE: "Sessions",
+	SESSIONS_DESCRIPTION: "Devices where this user is signed in.",
+	SESSIONS_EMPTY: "This user is not signed in anywhere.",
+	SESSION_REVOKE: "Sign out",
+	SESSIONS_REVOKE_ALL: "Sign out everywhere",
+	SESSION_REVOKED: "Session signed out.",
+	SESSIONS_REVOKED: "Signed out everywhere.",
 } as const;

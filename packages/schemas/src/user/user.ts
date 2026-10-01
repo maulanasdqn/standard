@@ -12,6 +12,7 @@ export const userSchema = baseSchema(userIdSchema).extend({
 	emailVerified: z.boolean(),
 	image: z.string().nullable(),
 	role: z.string().min(1),
+	deactivatedAt: z.iso.datetime().nullable(),
 });
 export type TUser = TEntityOf<z.infer<typeof userSchema>>;
 
@@ -26,6 +27,7 @@ export type TUserCreateInput = z.infer<typeof userCreateInputSchema>;
 export const userUpdateInputSchema = z.object({
 	id: userIdSchema,
 	name: z.string().min(1).max(100).optional(),
+	email: z.email().optional(),
 	role: z.string().min(1).optional(),
 });
 export type TUserUpdateInput = z.infer<typeof userUpdateInputSchema>;

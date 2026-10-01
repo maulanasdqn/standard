@@ -7,6 +7,8 @@ export const MAIL_TEMPLATE = {
 	PASSWORD_RESET: "password-reset",
 	EMAIL_VERIFICATION: "email-verification",
 	PASSWORD_CHANGED: "password-changed",
+	INVITE: "invite",
+	ACCOUNT_DEACTIVATED: "account-deactivated",
 } as const;
 
 export type TMailTemplate = (typeof MAIL_TEMPLATE)[keyof typeof MAIL_TEMPLATE];

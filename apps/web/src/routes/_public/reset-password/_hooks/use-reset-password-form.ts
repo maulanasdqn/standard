@@ -24,7 +24,10 @@ export type TResetPasswordForm = TFormHook<
 	linkInvalid: boolean;
 };
 
-export const useResetPasswordForm = (token: string): TResetPasswordForm => {
+export const useResetPasswordForm = (
+	token: string,
+	invite: boolean,
+): TResetPasswordForm => {
 	const navigate = useNavigate();
 	const [serverError, setServerError] = useState<string | null>(null);
 	const [linkInvalid, setLinkInvalid] = useState(false);
@@ -43,7 +46,9 @@ export const useResetPasswordForm = (token: string): TResetPasswordForm => {
 			});
 			await match(error)
 				.with(P.nullish, async (): Promise<void> => {
-					toast.success(AUTH_MESSAGE.RESET_DONE);
+					toast.success(
+						invite ? AUTH_MESSAGE.INVITE_SET_DONE : AUTH_MESSAGE.RESET_DONE,
+					);
 					await navigate({ to: "/login" });
 				})
 				.with(

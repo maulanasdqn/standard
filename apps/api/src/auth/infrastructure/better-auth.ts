@@ -12,6 +12,8 @@ import { authEventsOf } from "#/auth/infrastructure/auth-events.ts";
 import { authHooksOf } from "#/auth/infrastructure/auth-hooks.ts";
 import { authPluginsOf } from "#/auth/infrastructure/auth-plugins.ts";
 import { userVerifiedMark } from "#/auth/infrastructure/user-verified-mark.ts";
+import { sessionGuardOf } from "#/auth/infrastructure/session-guard.ts";
+import { AUTH_MESSAGE } from "@app/messages";
 import { env } from "#/platform/config/env.ts";
 import { originsOf } from "#/platform/http/origins.ts";
 
@@ -80,6 +82,7 @@ export const authCreate = (deps: TCreateAuthOptions): TAuth => {
 		databaseHooks: {
 			session: {
 				create: {
+					before: sessionGuardOf(deps.db, AUTH_MESSAGE.ACCOUNT_DEACTIVATED),
 					after: async (session): Promise<void> => {
 						await deps.activityRepo.insert({
 							actorId: session.userId,

@@ -1,5 +1,8 @@
-import { type TUser, userUpdateInputSchema } from "@app/schemas";
-import { D } from "@mobily/ts-belt";
+import {
+	type TUser,
+	type TUserUpdateInput,
+	userUpdateInputSchema,
+} from "@app/schemas";
 import { useNavigate } from "@tanstack/react-router";
 import type { z } from "zod";
 import {
@@ -12,7 +15,7 @@ import {
 } from "#/routes/_authenticated/users/_hooks/use-users.ts";
 
 const userEditFormSchema = userUpdateInputSchema
-	.pick({ name: true, role: true })
+	.pick({ name: true, email: true, role: true })
 	.required();
 
 type TUserEditFormValues = z.input<typeof userEditFormSchema>;
@@ -25,6 +28,19 @@ type TUserEditForm = TConfirmedForm<
 	isSelf: boolean;
 };
 
+const userUpdateOf = (
+	user: TUser,
+	value: TUserEditFormValues,
+): TUserUpdateInput => ({
+	id: user.id,
+	name: value.name,
+	role: value.role,
+	email:
+		value.email.toLowerCase() === user.email.toLowerCase()
+			? undefined
+			: value.email,
+});
+
 export const useUserEditForm = (user: TUser): TUserEditForm => {
 	const navigate = useNavigate();
 	const userUpdate = useUserUpdate();
@@ -32,6 +48,7 @@ export const useUserEditForm = (user: TUser): TUserEditForm => {
 
 	const defaultValues: TUserEditFormValues = {
 		name: user.name,
+		email: user.email,
 		role: user.role,
 	};
 
@@ -39,7 +56,7 @@ export const useUserEditForm = (user: TUser): TUserEditForm => {
 		defaultValues,
 		schema: userEditFormSchema,
 		run: (value): void =>
-			userUpdate.mutate(D.merge(value, { id: user.id }), {
+			userUpdate.mutate(userUpdateOf(user, value), {
 				onSuccess: () => void navigate({ to: "/users" }),
 			}),
 	});

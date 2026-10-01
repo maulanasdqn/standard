@@ -13,6 +13,7 @@ import {
 } from "@app/activity";
 import {
 	type EBadRequest,
+	type EConflict,
 	type EDatabase,
 	EForbidden,
 	ENotFound,
@@ -28,6 +29,10 @@ import {
 	type TUserRepoId,
 	type TUserRow,
 } from "#/user/domain/user.ts";
+import {
+	type TUserNotifierId,
+	UserNotifier,
+} from "#/user/domain/user-notifier.ts";
 
 const changedTo = (previous: string, next: string): string | undefined =>
 	previous === next ? undefined : next;
@@ -38,6 +43,11 @@ const updateDetails = (previous: TUserRow, next: TUserRow): TActivityDetails =>
 		[ACTIVITY_DETAIL.PREVIOUS_ROLE]: activityDetailPrevious(
 			previous.role,
 			next.role,
+		),
+		[ACTIVITY_DETAIL.EMAIL]: changedTo(previous.email, next.email),
+		[ACTIVITY_DETAIL.PREVIOUS_EMAIL]: activityDetailPrevious(
+			previous.email,
+			next.email,
 		),
 		[ACTIVITY_DETAIL.NAME]: changedTo(previous.name, next.name),
 		[ACTIVITY_DETAIL.PREVIOUS_NAME]: activityDetailPrevious(
@@ -51,11 +61,16 @@ export const userUpdate = Effect.fn("userUpdate")(function* (
 	actorId: string,
 ): Effect.fn.Return<
 	TUser,
-	ENotFound | EForbidden | EBadRequest | EDatabase,
-	TUserRepoId | TCustomRoleRepoId | TActivityRecorderId
+	ENotFound | EForbidden | EBadRequest | EConflict | EDatabase,
+	TUserRepoId | TCustomRoleRepoId | TActivityRecorderId | TUserNotifierId
 > {
 	const userRepo = yield* UserRepo;
 	const activityRepo = yield* ActivityRecorder;
+	const notifier = yield* UserNotifier;
+
+	if (input.email !== undefined && input.id === actorId) {
+		return yield* new EForbidden({ message: USER_MESSAGE.SELF_EMAIL_CHANGE });
+	}
 
 	if (input.role !== undefined && input.id === actorId) {
 		return yield* new EForbidden({ message: USER_MESSAGE.SELF_ROLE_CHANGE });
@@ -75,6 +90,11 @@ export const userUpdate = Effect.fn("userUpdate")(function* (
 
 	if (updated === null) {
 		return yield* new ENotFound({ message: USER_MESSAGE.NOT_FOUND });
+	}
+
+	if (updated.email !== previous.email) {
+		yield* userRepo.sessionsRevoke(updated.id);
+		yield* notifier.emailVerify(updated);
 	}
 
 	yield* activityRepo.insert({

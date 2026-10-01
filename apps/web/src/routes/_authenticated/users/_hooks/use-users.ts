@@ -32,7 +32,7 @@ export type TUserSearch = {
 const listRouteApi = getRouteApi("/_authenticated/users/");
 const editRouteApi = getRouteApi("/_authenticated/users/$userId");
 
-const userAndRoleKeys = (): readonly (readonly unknown[])[] => [
+export const userAndRoleKeys = (): readonly (readonly unknown[])[] => [
 	orpc.user.key(),
 	orpc.role.key(),
 ];

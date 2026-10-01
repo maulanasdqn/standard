@@ -9,6 +9,7 @@ export const ACTIVITY_DETAIL = {
 	PERMISSIONS_ADDED: "permissionsAdded",
 	PERMISSIONS_REMOVED: "permissionsRemoved",
 	EMAIL: "email",
+	PREVIOUS_EMAIL: "previousEmail",
 	ROLE: "role",
 	PREVIOUS_ROLE: "previousRole",
 	NAME: "name",

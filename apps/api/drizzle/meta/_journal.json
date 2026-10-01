@@ -71,6 +71,13 @@
       "when": 1790818151963,
       "tag": "0009_verify_existing_users",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1790820617233,
+      "tag": "0010_user_deactivated_at",
+      "breakpoints": true
     }
   ]
 }

@@ -4,6 +4,8 @@ import type { LucideIcon } from "lucide-react";
 export const ROW_ACTION = {
 	VIEW: "view",
 	EDIT: "edit",
+	DEACTIVATE: "deactivate",
+	REACTIVATE: "reactivate",
 	DELETE: "delete",
 } as const;
 

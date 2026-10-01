@@ -1,10 +1,13 @@
 import {
 	userCreateInputSchema,
 	userIdInputSchema,
+	userInviteInputSchema,
 	userListInputSchema,
 	userListSchema,
 	userPasswordResetInputSchema,
 	userSchema,
+	userSessionListSchema,
+	userSessionRevokeInputSchema,
 	userUpdateInputSchema,
 } from "@app/schemas";
 import { oc } from "@orpc/contract";
@@ -42,4 +45,34 @@ export const userContract = {
 		.route({ method: HTTP_METHOD.POST, path: ROUTE_PATH.USER_PASSWORD })
 		.input(userPasswordResetInputSchema)
 		.output(z.object({ id: z.uuid() })),
+
+	invite: oc
+		.route({ method: HTTP_METHOD.POST, path: ROUTE_PATH.USER_INVITE })
+		.input(userInviteInputSchema)
+		.output(userSchema),
+
+	deactivate: oc
+		.route({ method: HTTP_METHOD.POST, path: ROUTE_PATH.USER_DEACTIVATE })
+		.input(userIdInputSchema)
+		.output(userSchema),
+
+	reactivate: oc
+		.route({ method: HTTP_METHOD.POST, path: ROUTE_PATH.USER_REACTIVATE })
+		.input(userIdInputSchema)
+		.output(userSchema),
+
+	sessions: oc
+		.route({ method: HTTP_METHOD.GET, path: ROUTE_PATH.USER_SESSIONS })
+		.input(userIdInputSchema)
+		.output(userSessionListSchema),
+
+	sessionRevoke: oc
+		.route({ method: HTTP_METHOD.DELETE, path: ROUTE_PATH.USER_SESSION })
+		.input(userSessionRevokeInputSchema)
+		.output(z.object({ id: z.string() })),
+
+	sessionsRevoke: oc
+		.route({ method: HTTP_METHOD.DELETE, path: ROUTE_PATH.USER_SESSIONS })
+		.input(userIdInputSchema)
+		.output(z.object({ id: z.string() })),
 };

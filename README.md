@@ -65,7 +65,7 @@ Seed logins: `admin@test.app` / `Password123`, `member@test.app` / `Password123`
 
 Mail sent in development is caught by mailpit, read it at `http://localhost:8025`.
 
-Anyone can create an account at `/register`. A new account has to confirm its email address before it can sign in, so in development open the confirmation link from mailpit. Forgotten passwords are reset from `/forgot-password` the same way. Passwords need at least 8 characters with an uppercase letter, a lowercase letter and a number. Seeded users and users an admin creates start out confirmed.
+Anyone can create an account at `/register`. A new account has to confirm its email address before it can sign in, so in development open the confirmation link from mailpit. Forgotten passwords are reset from `/forgot-password` the same way. Passwords need at least 8 characters with an uppercase letter, a lowercase letter and a number. Seeded users and users an admin creates start out confirmed. Admins can also invite someone by email, who then chooses their own password, deactivate a user (which signs them out everywhere and blocks sign-in without deleting anything), see and revoke a user's sessions, and change a user's email, which the user then has to confirm.
 
 Uploaded images go to the local object store, whose console is at `http://localhost:9101/rustfs/console/` with the same credentials as the api.
 

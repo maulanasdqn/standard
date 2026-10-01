@@ -35,6 +35,7 @@ const user: TUser = {
 	emailVerified: true,
 	image: null,
 	role: "member",
+	deactivatedAt: null,
 	createdAt: CREATED_AT,
 	updatedAt: CREATED_AT,
 };

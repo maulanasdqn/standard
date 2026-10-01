@@ -8,6 +8,8 @@ import type { FC, ReactElement } from "react";
 import { FormPage } from "#/routes/_authenticated/_components/form-page.tsx";
 import { roleListOptions } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
 import { UserEditForm } from "#/routes/_authenticated/users/_components/user-edit-form.tsx";
+import { UserAccessCard } from "#/routes/_authenticated/users/_components/user-access-card.tsx";
+import { UserSessionsCard } from "#/routes/_authenticated/users/_components/user-sessions-card.tsx";
 import { UserPasswordResetForm } from "#/routes/_authenticated/users/_components/user-password-reset-form.tsx";
 import { useRoleOptions } from "#/routes/_authenticated/users/_hooks/use-role-options.ts";
 import {
@@ -43,14 +45,18 @@ const UserEditPage: FC = (): ReactElement => {
 				</dl>
 			}
 		>
-			<Guard permissions={[PERMISSION.USER_UPDATE]}>
-				<UserEditForm user={data} roleOptions={roleOptions} />
-			</Guard>
-			{!isSelf(data.id) && (
+			<div className="flex flex-col gap-6">
 				<Guard permissions={[PERMISSION.USER_UPDATE]}>
-					<UserPasswordResetForm user={data} />
+					<UserEditForm user={data} roleOptions={roleOptions} />
 				</Guard>
-			)}
+				{!isSelf(data.id) && (
+					<Guard permissions={[PERMISSION.USER_UPDATE]}>
+						<UserPasswordResetForm user={data} />
+						<UserAccessCard user={data} />
+						<UserSessionsCard userId={data.id} />
+					</Guard>
+				)}
+			</div>
 		</FormPage>
 	);
 };

@@ -1,6 +1,11 @@
 import { ACTIVITY_ACTION, ACTIVITY_DETAIL } from "@app/activity";
 import { PERMISSION, ROLE } from "@app/permissions";
 import { Effect, Layer } from "effect";
+import {
+	type TUserNotifierId,
+	userNotifierFakeLayer,
+	userRepoFakeLayer,
+} from "#/user/application/user-fakes.ts";
 import { describe, expect, it, type Mock, vi } from "vitest";
 import { CustomRoleRepo, type TCustomRoleRepoId } from "#/role/index.ts";
 import {
@@ -9,11 +14,7 @@ import {
 } from "#/shared/activity-recorder.ts";
 import { EBadRequest, EForbidden, ENotFound } from "#/shared/errors.ts";
 import { userUpdate } from "#/user/application/user-update.ts";
-import {
-	UserRepo,
-	type TUserRepoId,
-	type TUserRow,
-} from "#/user/domain/user.ts";
+import type { TUserRepoId, TUserRow } from "#/user/domain/user.ts";
 
 const ACTOR_ID = "22222222-2222-4222-8222-222222222222";
 const USER_ID = "11111111-1111-4111-8111-111111111111";
@@ -27,6 +28,7 @@ const row: TUserRow = {
 	emailVerified: false,
 	image: null,
 	role: ROLE.MEMBER,
+	deactivatedAt: null,
 	createdAt: new Date("2026-01-01T00:00:00Z"),
 	updatedAt: new Date("2026-01-01T00:00:00Z"),
 };
@@ -62,20 +64,11 @@ const mocksBuild = (
 
 const layerBuild = (
 	mocks: TMocks,
-): Layer.Layer<TUserRepoId | TCustomRoleRepoId | TActivityRecorderId> =>
+): Layer.Layer<
+	TUserRepoId | TCustomRoleRepoId | TActivityRecorderId | TUserNotifierId
+> =>
 	Layer.mergeAll(
-		Layer.succeed(
-			UserRepo,
-			UserRepo.of({
-				list: vi.fn(),
-				findById: mocks.findById,
-				findByEmail: vi.fn(),
-				create: vi.fn(),
-				update: mocks.update,
-				remove: vi.fn(),
-				resetPassword: vi.fn(),
-			}),
-		),
+		userRepoFakeLayer({ findById: mocks.findById, update: mocks.update }),
 		Layer.succeed(
 			CustomRoleRepo,
 			CustomRoleRepo.of({
@@ -91,6 +84,7 @@ const layerBuild = (
 			ActivityRecorder,
 			ActivityRecorder.of({ insert: mocks.insert }),
 		),
+		userNotifierFakeLayer(),
 	);
 
 describe("userUpdate", () => {

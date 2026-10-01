@@ -14,7 +14,10 @@ const ResetPasswordPage: FC = (): ReactElement => {
 			{match(search)
 				.with({ error: P.string }, () => <ResetLinkInvalid />)
 				.with({ token: P.string }, (found) => (
-					<ResetPasswordPanel token={found.token} />
+					<ResetPasswordPanel
+						token={found.token}
+						invite={found.invite === true}
+					/>
 				))
 				.otherwise(() => (
 					<ResetLinkInvalid />

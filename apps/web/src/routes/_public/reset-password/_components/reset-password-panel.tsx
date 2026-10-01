@@ -5,16 +5,17 @@ import { useResetPasswordForm } from "#/routes/_public/reset-password/_hooks/use
 
 type TResetPasswordPanelProps = {
 	token: string;
+	invite: boolean;
 };
 
 export const ResetPasswordPanel: FC<TResetPasswordPanelProps> = (
 	props,
 ): ReactElement => {
-	const reset = useResetPasswordForm(props.token);
+	const reset = useResetPasswordForm(props.token, props.invite);
 
 	return reset.linkInvalid ? (
 		<ResetLinkInvalid />
 	) : (
-		<ResetPasswordForm reset={reset} />
+		<ResetPasswordForm reset={reset} invite={props.invite} />
 	);
 };

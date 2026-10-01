@@ -5,6 +5,12 @@ import { userGet } from "#/user/application/user-get.ts";
 import { userList } from "#/user/application/user-list.ts";
 import { userPasswordReset } from "#/user/application/user-password-reset.ts";
 import { userUpdate } from "#/user/application/user-update.ts";
+import { userDeactivate } from "#/user/application/user-deactivate.ts";
+import { userInvite } from "#/user/application/user-invite.ts";
+import { userReactivate } from "#/user/application/user-reactivate.ts";
+import { userSessionList } from "#/user/application/user-session-list.ts";
+import { userSessionRevoke } from "#/user/application/user-session-revoke.ts";
+import { userSessionsRevoke } from "#/user/application/user-sessions-revoke.ts";
 import { implementer, permissionGuarded } from "#/platform/orpc/implementer.ts";
 import {
 	effectRun,
@@ -50,6 +56,52 @@ const userRouter = implementer.user.router({
 		effectRunTransactional(
 			context.runtime,
 			userPasswordReset(input, context.session.user.id),
+		),
+	),
+
+	invite: permissionGuarded(PERMISSION.USER_CREATE).user.invite.handler(
+		({ input, context }) =>
+			effectRunTransactional(
+				context.runtime,
+				userInvite(input, context.session.user.id),
+			),
+	),
+
+	deactivate: permissionGuarded(PERMISSION.USER_UPDATE).user.deactivate.handler(
+		({ input, context }) =>
+			effectRunTransactional(
+				context.runtime,
+				userDeactivate(input, context.session.user.id),
+			),
+	),
+
+	reactivate: permissionGuarded(PERMISSION.USER_UPDATE).user.reactivate.handler(
+		({ input, context }) =>
+			effectRunTransactional(
+				context.runtime,
+				userReactivate(input, context.session.user.id),
+			),
+	),
+
+	sessions: permissionGuarded(PERMISSION.USER_UPDATE).user.sessions.handler(
+		({ input, context }) => effectRun(context.runtime, userSessionList(input)),
+	),
+
+	sessionRevoke: permissionGuarded(
+		PERMISSION.USER_UPDATE,
+	).user.sessionRevoke.handler(({ input, context }) =>
+		effectRunTransactional(
+			context.runtime,
+			userSessionRevoke(input, context.session.user.id),
+		),
+	),
+
+	sessionsRevoke: permissionGuarded(
+		PERMISSION.USER_UPDATE,
+	).user.sessionsRevoke.handler(({ input, context }) =>
+		effectRunTransactional(
+			context.runtime,
+			userSessionsRevoke(input, context.session.user.id),
 		),
 	),
 });

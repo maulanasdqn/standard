@@ -10,6 +10,7 @@ export const AUTH_ERROR_CODE = {
 		"USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL",
 	INVALID_TOKEN: "INVALID_TOKEN",
 	PASSWORD_TOO_WEAK: "PASSWORD_TOO_WEAK",
+	ACCOUNT_DEACTIVATED: "ACCOUNT_DEACTIVATED",
 } as const;
 
 export type TAuthError = {
@@ -31,6 +32,10 @@ export const signInErrorMessage = (error: TAuthError): string =>
 		.with(
 			AUTH_ERROR_CODE.EMAIL_NOT_VERIFIED,
 			(): string => AUTH_MESSAGE.EMAIL_NOT_VERIFIED,
+		)
+		.with(
+			AUTH_ERROR_CODE.ACCOUNT_DEACTIVATED,
+			(): string => AUTH_MESSAGE.ACCOUNT_DEACTIVATED,
 		)
 		.otherwise((): string => AUTH_MESSAGE.SIGN_IN_FAILED);
 
