@@ -62,3 +62,14 @@ export const profileUpdateInputSchema = z.object({
 		.max(NAME_MAX),
 });
 export type TProfileUpdateInput = z.infer<typeof profileUpdateInputSchema>;
+
+export const twoFactorSearchSchema = z.object({
+	redirect: z.string().optional(),
+});
+export type TTwoFactorSearch = z.infer<typeof twoFactorSearchSchema>;
+
+export const twoFactorCodeInputSchema = z.object({
+	code: z.string().trim().min(1, VALIDATION_MESSAGE.CODE_REQUIRED),
+	trustDevice: z.boolean(),
+});
+export type TTwoFactorCodeInput = z.infer<typeof twoFactorCodeInputSchema>;

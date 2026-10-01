@@ -1,3 +1,4 @@
+import { twoFactorClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
 const API_BASE = import.meta.env.DEV
@@ -7,4 +8,5 @@ const API_BASE = import.meta.env.DEV
 export const authClient = createAuthClient({
 	baseURL: API_BASE,
 	fetchOptions: { credentials: "include" },
+	plugins: [twoFactorClient()],
 });

@@ -30,6 +30,12 @@ export const MAIL_MESSAGE = {
 		"An administrator deactivated your account, so you can no longer sign in and every session you had was signed out.",
 	ACCOUNT_DEACTIVATED_FOOTER:
 		"If you think this is a mistake, contact your administrator.",
+	TWO_FACTOR_OFF_SUBJECT: "Two-factor authentication was turned off",
+	TWO_FACTOR_OFF_BODY:
+		"Two-factor authentication was just turned off for your account, so signing in now needs only your password.",
+	TWO_FACTOR_OFF_ACTION: "Review your account",
+	TWO_FACTOR_OFF_FOOTER:
+		"If this was not you, change your password and turn two-factor authentication back on.",
 	SEND_FAILED: "Could not send an email.",
 	PASSWORD_RESET_FAILED: "Could not send the password reset email.",
 } as const;

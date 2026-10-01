@@ -32,6 +32,7 @@ const row: TUserRow = {
 	image: null,
 	role: ROLE.MEMBER,
 	deactivatedAt: new Date("2026-01-02T00:00:00Z"),
+	twoFactorEnabled: false,
 	createdAt: new Date("2026-01-01T00:00:00Z"),
 	updatedAt: new Date("2026-01-01T00:00:00Z"),
 };

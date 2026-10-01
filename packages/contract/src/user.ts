@@ -71,6 +71,11 @@ export const userContract = {
 		.input(userSessionRevokeInputSchema)
 		.output(z.object({ id: z.string() })),
 
+	twoFactorReset: oc
+		.route({ method: HTTP_METHOD.DELETE, path: ROUTE_PATH.USER_TWO_FACTOR })
+		.input(userIdInputSchema)
+		.output(userSchema),
+
 	sessionsRevoke: oc
 		.route({ method: HTTP_METHOD.DELETE, path: ROUTE_PATH.USER_SESSIONS })
 		.input(userIdInputSchema)

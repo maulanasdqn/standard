@@ -77,3 +77,13 @@ export const useUserSessionsRevoke = (): UseMutationResult<
 		message: USER_MESSAGE.SESSIONS_REVOKED,
 		invalidates: userAndRoleKeys(),
 	});
+
+export const useUserTwoFactorReset = (): UseMutationResult<
+	TUserOut["twoFactorReset"],
+	TUserErr["twoFactorReset"],
+	TUserIn["twoFactorReset"]
+> =>
+	useProcedureMutation(orpc.user.twoFactorReset, {
+		message: USER_MESSAGE.TWO_FACTOR_RESET_DONE,
+		invalidates: userAndRoleKeys(),
+	});

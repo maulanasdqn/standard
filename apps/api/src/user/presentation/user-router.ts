@@ -10,6 +10,7 @@ import { userInvite } from "#/user/application/user-invite.ts";
 import { userReactivate } from "#/user/application/user-reactivate.ts";
 import { userSessionList } from "#/user/application/user-session-list.ts";
 import { userSessionRevoke } from "#/user/application/user-session-revoke.ts";
+import { userTwoFactorReset } from "#/user/application/user-two-factor-reset.ts";
 import { userSessionsRevoke } from "#/user/application/user-sessions-revoke.ts";
 import { implementer, permissionGuarded } from "#/platform/orpc/implementer.ts";
 import {
@@ -93,6 +94,15 @@ const userRouter = implementer.user.router({
 		effectRunTransactional(
 			context.runtime,
 			userSessionRevoke(input, context.session.user.id),
+		),
+	),
+
+	twoFactorReset: permissionGuarded(
+		PERMISSION.USER_UPDATE,
+	).user.twoFactorReset.handler(({ input, context }) =>
+		effectRunTransactional(
+			context.runtime,
+			userTwoFactorReset(input, context.session.user.id),
 		),
 	),
 

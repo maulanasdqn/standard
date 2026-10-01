@@ -9,6 +9,7 @@ export const user = pgTable("user", {
 	image: text("image"),
 	role: text("role").notNull().default(ROLE.VIEWER),
 	deactivatedAt: timestamp("deactivated_at", { withTimezone: true }),
+	twoFactorEnabled: boolean("two_factor_enabled").default(false),
 	createdAt: timestamp("created_at", { withTimezone: true })
 		.notNull()
 		.defaultNow(),

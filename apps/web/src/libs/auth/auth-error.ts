@@ -11,6 +11,8 @@ export const AUTH_ERROR_CODE = {
 	INVALID_TOKEN: "INVALID_TOKEN",
 	PASSWORD_TOO_WEAK: "PASSWORD_TOO_WEAK",
 	ACCOUNT_DEACTIVATED: "ACCOUNT_DEACTIVATED",
+	INVALID_TWO_FACTOR_COOKIE: "INVALID_TWO_FACTOR_COOKIE",
+	TOO_MANY_ATTEMPTS: "TOO_MANY_ATTEMPTS_REQUEST_NEW_CODE",
 } as const;
 
 export type TAuthError = {
@@ -72,3 +74,15 @@ export const passwordChangeErrorMessage = (error: TAuthError): string =>
 			weakPasswordMessage(error, AUTH_MESSAGE.PASSWORD_CHANGE_FAILED),
 		)
 		.otherwise((): string => AUTH_MESSAGE.PASSWORD_CHANGE_FAILED);
+
+export const twoFactorErrorMessage = (error: TAuthError): string =>
+	match(error.code)
+		.with(
+			AUTH_ERROR_CODE.INVALID_TWO_FACTOR_COOKIE,
+			(): string => AUTH_MESSAGE.TWO_FACTOR_EXPIRED,
+		)
+		.with(
+			AUTH_ERROR_CODE.TOO_MANY_ATTEMPTS,
+			(): string => AUTH_MESSAGE.TWO_FACTOR_TOO_MANY,
+		)
+		.otherwise((): string => AUTH_MESSAGE.TWO_FACTOR_INVALID_CODE);

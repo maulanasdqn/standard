@@ -4,6 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
 import { AccountSummary } from "#/routes/_authenticated/account/_components/account-summary.tsx";
 import { ProfileForm } from "#/routes/_authenticated/account/_components/profile-form.tsx";
+import { TwoFactorCard } from "#/routes/_authenticated/account/_components/two-factor-card.tsx";
 import { SessionsCard } from "#/routes/_authenticated/account/_components/sessions-card.tsx";
 import { PasswordChangeForm } from "#/routes/_authenticated/account/_components/password-change-form.tsx";
 import { RouteSkeleton } from "#/routes/_components/route-skeleton.tsx";
@@ -25,6 +26,9 @@ const AccountPage: FC = (): ReactElement => {
 			</StaggerItem>
 			<StaggerItem>
 				<PasswordChangeForm />
+			</StaggerItem>
+			<StaggerItem>
+				<TwoFactorCard />
 			</StaggerItem>
 			<StaggerItem>
 				<SessionsCard />

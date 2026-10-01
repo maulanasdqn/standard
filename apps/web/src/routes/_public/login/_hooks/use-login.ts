@@ -6,6 +6,7 @@ import { useSelector } from "@tanstack/react-store";
 import type { FormEvent } from "react";
 import { match, P } from "ts-pattern";
 import { signInErrorMessage } from "#/libs/auth/auth-error.ts";
+import { isTwoFactorPending } from "#/libs/auth/two-factor.ts";
 import { verificationResendIfNeeded } from "#/libs/auth/verification-resend.ts";
 import type {
 	TFormHook,
@@ -46,10 +47,13 @@ export const useLoginForm = (): TLoginForm => {
 		},
 		onSubmit: async ({ value }) => {
 			loginError.clear();
-			const { error: signInError } = await authClient.signIn.email(value);
+			const { data, error: signInError } = await authClient.signIn.email(value);
 
-			await match(signInError)
-				.with(P.nullish, async () => {
+			await match({ error: signInError, pending: isTwoFactorPending(data) })
+				.with({ error: P.nullish, pending: true }, async () => {
+					await navigate({ to: "/two-factor", search: { redirect } });
+				})
+				.with({ error: P.nullish }, async () => {
 					const resolution = await sessionRefresh();
 
 					await match(resolution)
@@ -63,9 +67,9 @@ export const useLoginForm = (): TLoginForm => {
 							await navigate({ href: returnToResolve(redirect) });
 						});
 				})
-				.otherwise(async (found) => {
-					await verificationResendIfNeeded(found, value.email);
-					loginError.set(signInErrorMessage(found));
+				.otherwise(async ({ error: found }) => {
+					await verificationResendIfNeeded(found ?? {}, value.email);
+					loginError.set(signInErrorMessage(found ?? {}));
 				});
 		},
 	});

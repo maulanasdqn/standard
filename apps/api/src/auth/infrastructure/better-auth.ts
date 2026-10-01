@@ -13,7 +13,7 @@ import { authHooksOf } from "#/auth/infrastructure/auth-hooks.ts";
 import { authPluginsOf } from "#/auth/infrastructure/auth-plugins.ts";
 import { userVerifiedMark } from "#/auth/infrastructure/user-verified-mark.ts";
 import { sessionGuardOf } from "#/auth/infrastructure/session-guard.ts";
-import { AUTH_MESSAGE } from "@app/messages";
+import { APP_MESSAGE, AUTH_MESSAGE } from "@app/messages";
 import { env } from "#/platform/config/env.ts";
 import { originsOf } from "#/platform/http/origins.ts";
 
@@ -58,6 +58,7 @@ export const authCreate = (deps: TCreateAuthOptions): TAuth => {
 		trustedOrigins: [...originsOf(env.WEB_ORIGIN, env.AUTH_TRUSTED_ORIGINS)],
 		database: drizzleAdapter(dbActiveProxy(deps.db), { provider: "pg" }),
 		plugins: authPluginsOf({
+			appName: APP_MESSAGE.NAME,
 			jwtEnabled: env.AUTH_JWT_ENABLED,
 			issuer: env.BETTER_AUTH_URL,
 			audience: env.BETTER_AUTH_URL,
