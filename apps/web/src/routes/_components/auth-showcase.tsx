@@ -6,9 +6,9 @@ import { A } from "@mobily/ts-belt";
 import { GalleryVerticalEnd } from "lucide-react";
 import { motion } from "motion/react";
 import type { FC, ReactElement } from "react";
-import { SHOWCASE_ORBS } from "#/routes/_public/login/_constants/showcase.ts";
+import { SHOWCASE_ORBS } from "#/routes/_constants/showcase.ts";
 
-export const LoginShowcase: FC = (): ReactElement => (
+export const AuthShowcase: FC = (): ReactElement => (
 	<div className="relative hidden overflow-hidden bg-muted lg:block">
 		{A.map(SHOWCASE_ORBS, (orb) => (
 			<motion.div

@@ -1,12 +1,13 @@
 import { Stagger, StaggerItem } from "@app/components/motion/stagger";
-import { Button } from "@app/components/ui/button";
-import { FieldError, hasFieldError } from "@app/components/ui/field-error";
-import { Input } from "@app/components/ui/input";
-import { Label } from "@app/components/ui/label";
-import { Loader2 } from "lucide-react";
-import type { FC, ReactElement } from "react";
-import { useLoginForm } from "#/routes/_public/login/_hooks/use-login.ts";
+import { FieldError } from "@app/components/ui/field-error";
 import { AUTH_MESSAGE } from "@app/messages";
+import { Link } from "@tanstack/react-router";
+import type { FC, ReactElement } from "react";
+import { AuthField } from "#/routes/_components/auth-field.tsx";
+import { AuthFooterLink } from "#/routes/_components/auth-footer-link.tsx";
+import { AuthHeading } from "#/routes/_components/auth-heading.tsx";
+import { AuthSubmit } from "#/routes/_components/auth-submit.tsx";
+import { useLoginForm } from "#/routes/_public/login/_hooks/use-login.ts";
 
 export const LoginForm: FC = (): ReactElement => {
 	const { form, serverError, onSubmit } = useLoginForm();
@@ -14,50 +15,52 @@ export const LoginForm: FC = (): ReactElement => {
 	return (
 		<form onSubmit={onSubmit}>
 			<Stagger className="flex flex-col gap-6">
-				<StaggerItem className="flex flex-col items-center gap-2 text-center">
-					<h1 className="text-2xl font-bold">{AUTH_MESSAGE.LOGIN_TITLE}</h1>
-					<p className="text-muted-foreground text-sm text-balance">
-						{AUTH_MESSAGE.LOGIN_DESCRIPTION}
-					</p>
+				<StaggerItem>
+					<AuthHeading
+						title={AUTH_MESSAGE.LOGIN_TITLE}
+						description={AUTH_MESSAGE.LOGIN_DESCRIPTION}
+					/>
 				</StaggerItem>
 				<div className="grid gap-6">
 					<StaggerItem>
 						<form.Field name="email">
 							{(field) => (
-								<div className="grid gap-1.5">
-									<Label htmlFor={field.name}>{AUTH_MESSAGE.FIELD_EMAIL}</Label>
-									<Input
-										id={field.name}
-										type="email"
-										placeholder={AUTH_MESSAGE.EMAIL_PLACEHOLDER}
-										aria-invalid={hasFieldError(field.state.meta.errorMap)}
-										value={field.state.value}
-										onBlur={field.handleBlur}
-										onChange={(e) => field.handleChange(e.target.value)}
-									/>
-									<FieldError errorMap={field.state.meta.errorMap} />
-								</div>
+								<AuthField
+									id={field.name}
+									label={AUTH_MESSAGE.FIELD_EMAIL}
+									type="email"
+									autoComplete="email"
+									placeholder={AUTH_MESSAGE.EMAIL_PLACEHOLDER}
+									value={field.state.value}
+									errorMap={field.state.meta.errorMap}
+									onBlur={field.handleBlur}
+									onChange={field.handleChange}
+								/>
 							)}
 						</form.Field>
 					</StaggerItem>
 					<StaggerItem>
 						<form.Field name="password">
 							{(field) => (
-								<div className="grid gap-1.5">
-									<Label htmlFor={field.name}>
-										{AUTH_MESSAGE.FIELD_PASSWORD}
-									</Label>
-									<Input
-										id={field.name}
-										type="password"
-										placeholder={AUTH_MESSAGE.PASSWORD_PLACEHOLDER}
-										aria-invalid={hasFieldError(field.state.meta.errorMap)}
-										value={field.state.value}
-										onBlur={field.handleBlur}
-										onChange={(e) => field.handleChange(e.target.value)}
-									/>
-									<FieldError errorMap={field.state.meta.errorMap} />
-								</div>
+								<AuthField
+									id={field.name}
+									label={AUTH_MESSAGE.FIELD_PASSWORD}
+									type="password"
+									autoComplete="current-password"
+									placeholder={AUTH_MESSAGE.PASSWORD_PLACEHOLDER}
+									value={field.state.value}
+									errorMap={field.state.meta.errorMap}
+									onBlur={field.handleBlur}
+									onChange={field.handleChange}
+									labelAside={
+										<Link
+											to="/forgot-password"
+											className="text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+										>
+											{AUTH_MESSAGE.FORGOT_PASSWORD_LINK}
+										</Link>
+									}
+								/>
 							)}
 						</form.Field>
 					</StaggerItem>
@@ -65,18 +68,20 @@ export const LoginForm: FC = (): ReactElement => {
 					<StaggerItem>
 						<form.Subscribe selector={(state) => state.isSubmitting}>
 							{(isSubmitting) => (
-								<Button
-									type="submit"
-									className="w-full"
-									disabled={isSubmitting}
-								>
-									{isSubmitting && <Loader2 className="animate-spin" />}
-									{isSubmitting
-										? AUTH_MESSAGE.SIGNING_IN
-										: AUTH_MESSAGE.LOGIN_ACTION}
-								</Button>
+								<AuthSubmit
+									pending={isSubmitting}
+									label={AUTH_MESSAGE.LOGIN_ACTION}
+									pendingLabel={AUTH_MESSAGE.SIGNING_IN}
+								/>
 							)}
 						</form.Subscribe>
+					</StaggerItem>
+					<StaggerItem>
+						<AuthFooterLink
+							prompt={AUTH_MESSAGE.NO_ACCOUNT}
+							label={AUTH_MESSAGE.SIGN_UP_LINK}
+							to="/register"
+						/>
 					</StaggerItem>
 				</div>
 			</Stagger>

@@ -1,4 +1,4 @@
-import { mailHtmlBuild, mailLinkBuild, mailTextBuild } from "./mail-body.ts";
+import { actionMailBuild } from "./action-mail.ts";
 import { MAIL_MESSAGE } from "./mail-messages.ts";
 import type { TMailMessage } from "./mailer.ts";
 
@@ -9,26 +9,15 @@ export type TPasswordResetMailInput = {
 	brand: string;
 };
 
-const signatureOf = (brand: string): string =>
-	`${MAIL_MESSAGE.SIGNATURE_PREFIX} ${brand}`;
-
 export const passwordResetMailBuild = (
 	input: TPasswordResetMailInput,
-): TMailMessage => ({
-	to: input.to,
-	subject: MAIL_MESSAGE.PASSWORD_RESET_SUBJECT,
-	text: mailTextBuild([
-		`${MAIL_MESSAGE.GREETING} ${input.name},`,
-		MAIL_MESSAGE.PASSWORD_RESET_BODY,
-		input.url,
-		MAIL_MESSAGE.PASSWORD_RESET_EXPIRY,
-		signatureOf(input.brand),
-	]),
-	html: mailHtmlBuild([
-		`${MAIL_MESSAGE.GREETING} ${input.name},`,
-		MAIL_MESSAGE.PASSWORD_RESET_BODY,
-		mailLinkBuild(MAIL_MESSAGE.PASSWORD_RESET_ACTION, input.url),
-		MAIL_MESSAGE.PASSWORD_RESET_EXPIRY,
-		signatureOf(input.brand),
-	]),
-});
+): TMailMessage =>
+	actionMailBuild({
+		to: input.to,
+		name: input.name,
+		brand: input.brand,
+		subject: MAIL_MESSAGE.PASSWORD_RESET_SUBJECT,
+		body: [MAIL_MESSAGE.PASSWORD_RESET_BODY],
+		action: { label: MAIL_MESSAGE.PASSWORD_RESET_ACTION, url: input.url },
+		footer: MAIL_MESSAGE.PASSWORD_RESET_EXPIRY,
+	});

@@ -1,6 +1,7 @@
 import { VALIDATION_MESSAGE } from "@app/messages";
 import { z } from "zod";
 import { permissionSchema } from "../permission/permission.ts";
+import { passwordSchema } from "./password.ts";
 
 export const userIdSchema = z.union([z.uuid(), z.string().length(32)]);
 
@@ -22,10 +23,7 @@ export const passwordChangeInputSchema = z.object({
 	currentPassword: z
 		.string()
 		.min(1, VALIDATION_MESSAGE.CURRENT_PASSWORD_REQUIRED),
-	newPassword: z
-		.string()
-		.min(8, VALIDATION_MESSAGE.PASSWORD_TOO_SHORT)
-		.max(128, VALIDATION_MESSAGE.PASSWORD_TOO_LONG),
+	newPassword: passwordSchema,
 });
 export type TPasswordChangeInput = z.infer<typeof passwordChangeInputSchema>;
 

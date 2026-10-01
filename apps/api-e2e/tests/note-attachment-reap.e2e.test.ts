@@ -16,7 +16,7 @@ import { SEED_CREDENTIALS, signIn } from "../support/sign-in.ts";
 const DOOMED_USER: TUserCreateInput = {
 	name: "E2E Attachment Owner",
 	email: "e2e-attachment-owner@test.app",
-	password: "e2e-password-123",
+	password: "E2e-password-123",
 	role: ROLE.MEMBER,
 };
 

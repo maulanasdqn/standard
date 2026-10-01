@@ -8,7 +8,7 @@ import { SEED_CREDENTIALS, signIn } from "../support/sign-in.ts";
 const NEW_USER: TUserCreateInput = {
 	name: "E2E User",
 	email: "e2e-user@test.app",
-	password: "e2e-password-123",
+	password: "E2e-password-123",
 	role: ROLE.MEMBER,
 };
 
@@ -70,7 +70,7 @@ describe("users REST endpoints", () => {
 		const target: TUserCreateInput = {
 			name: "E2E Reset",
 			email: "e2e-reset@test.app",
-			password: "old-password-123",
+			password: "Old-password-123",
 			role: ROLE.VIEWER,
 		};
 		const created = await apiJson<TUser>({
@@ -84,7 +84,7 @@ describe("users REST endpoints", () => {
 			path: `/users/${created.id}/password`,
 			cookie: adminCookie,
 			method: "POST",
-			body: { password: "new-password-456" },
+			body: { password: "New-password-456" },
 		});
 		expect(reset.status).toBe(200);
 
@@ -96,7 +96,7 @@ describe("users REST endpoints", () => {
 
 		const newCookie = await signIn({
 			email: target.email,
-			password: "new-password-456",
+			password: "New-password-456",
 		});
 		const me = await apiJson<TMe>({ path: "/me", cookie: newCookie });
 		expect(me.user.id).toBe(created.id);

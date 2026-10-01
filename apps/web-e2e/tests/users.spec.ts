@@ -20,11 +20,11 @@ import { createUser } from "../support/users.ts";
 const NEW_USER: TUserCreateInput = {
 	name: "E2E User",
 	email: "e2e-user@test.app",
-	password: "e2e-password-123",
+	password: "E2e-password-123",
 	role: ROLE_KEY.MEMBER,
 };
 const RENAMED = "E2E Renamed";
-const RESET_PASSWORD = "e2e-reset-456";
+const RESET_PASSWORD = "E2e-reset-456";
 
 test.describe.configure({ mode: "serial" });
 

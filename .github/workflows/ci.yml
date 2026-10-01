@@ -93,10 +93,22 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
+      mailpit:
+        image: axllent/mailpit:v1.31
+        ports:
+          - 1025:1025
+          - 8025:8025
+        options: >-
+          --health-cmd "/mailpit readyz"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     env:
       DATABASE_URL: postgres://app:app@localhost:5432/app
       REDIS_URL: redis://localhost:6379
       RABBITMQ_URL: amqp://app:app@localhost:5672
+      SMTP_URL: smtp://localhost:1025
+      MAILPIT_URL: http://localhost:8025
       STORAGE_ENDPOINT: http://localhost:9100
       STORAGE_BUCKET: standard
       STORAGE_ACCESS_KEY_ID: app
@@ -153,10 +165,22 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
+      mailpit:
+        image: axllent/mailpit:v1.31
+        ports:
+          - 1025:1025
+          - 8025:8025
+        options: >-
+          --health-cmd "/mailpit readyz"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     env:
       DATABASE_URL: postgres://app:app@localhost:5432/app
       REDIS_URL: redis://localhost:6379
       RABBITMQ_URL: amqp://app:app@localhost:5672
+      SMTP_URL: smtp://localhost:1025
+      MAILPIT_URL: http://localhost:8025
       STORAGE_ENDPOINT: http://localhost:9100
       STORAGE_BUCKET: standard
       STORAGE_ACCESS_KEY_ID: app

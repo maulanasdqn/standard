@@ -64,6 +64,13 @@
       "when": 1790582570058,
       "tag": "0008_crud_permissions",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1790818151963,
+      "tag": "0009_verify_existing_users",
+      "breakpoints": true
     }
   ]
 }

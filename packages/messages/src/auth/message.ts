@@ -33,10 +33,55 @@ export const AUTH_MESSAGE = {
 	EMAIL_PLACEHOLDER: "m@example.com",
 	PASSWORD_PLACEHOLDER: "Your password",
 	CURRENT_PASSWORD_PLACEHOLDER: "Your current password",
-	NEW_PASSWORD_PLACEHOLDER: "At least 8 characters",
+	NEW_PASSWORD_PLACEHOLDER: "Choose a new password",
 	CONFIRM_PASSWORD_PLACEHOLDER: "Repeat the new password",
 	SESSION_UNVERIFIED:
 		"Sign-in succeeded, but the session could not be verified. Please try again.",
 	SESSION_UNREACHABLE:
 		"Sign-in succeeded, but the server is unreachable. You are still signed in, so try again once the connection is back.",
+	FORGOT_PASSWORD_LINK: "Forgot password?",
+	NO_ACCOUNT: "Don't have an account?",
+	SIGN_UP_LINK: "Sign up",
+	HAVE_ACCOUNT: "Already have an account?",
+	SIGN_IN_LINK: "Sign in",
+	BACK_TO_SIGN_IN: "Back to sign in",
+	FIELD_PASSWORD_CONFIRM: "Confirm password",
+	NAME_PLACEHOLDER: "Your name",
+	PASSWORD_RULE_HINT:
+		"At least 8 characters, with an uppercase letter, a lowercase letter and a number.",
+	REGISTER_TITLE: "Create an account",
+	REGISTER_DESCRIPTION: "Enter your details below to get started",
+	REGISTER_ACTION: "Create account",
+	REGISTERING: "Creating account…",
+	REGISTER_FAILED: "Could not create your account just now. Please try again.",
+	EMAIL_TAKEN: "An account with this email already exists.",
+	CHECK_EMAIL_TITLE: "Check your email",
+	CHECK_EMAIL_DESCRIPTION:
+		"We sent a confirmation link to your email address. Open it to finish creating your account.",
+	EMAIL_NOT_VERIFIED:
+		"Confirm your email address before signing in. We just sent you a new link.",
+	FORGOT_TITLE: "Forgot your password?",
+	FORGOT_DESCRIPTION:
+		"Enter your email and we will send you a link to reset it",
+	FORGOT_ACTION: "Send reset link",
+	FORGOT_SENDING: "Sending…",
+	FORGOT_SENT:
+		"If an account exists for that email, a reset link is on its way. Check your inbox.",
+	FORGOT_FAILED: "Could not send the reset link just now. Please try again.",
+	RESET_TITLE: "Choose a new password",
+	RESET_DESCRIPTION: "Your new password replaces the old one everywhere",
+	RESET_DONE: "Password updated. Sign in with your new password.",
+	RESET_LINK_INVALID: "This reset link is invalid or has expired.",
+	RESET_FAILED: "Could not update your password just now. Please try again.",
+	REQUEST_NEW_LINK: "Request a new link",
+	VERIFY_SUCCESS_TITLE: "Email confirmed",
+	VERIFY_SUCCESS_DESCRIPTION: "Your account is ready to use.",
+	VERIFY_FAILED_TITLE: "This link no longer works",
+	VERIFY_FAILED_DESCRIPTION:
+		"Confirmation links expire after 24 hours. Sign in and we will send you a new one.",
+	CONTINUE: "Continue",
+	VERIFICATION_RESEND: "Resend email",
+	VERIFICATION_RESENT: "We sent you a new confirmation link.",
+	VERIFICATION_RESEND_FAILED:
+		"Could not send a new link just now. Please try again in a moment.",
 } as const;
