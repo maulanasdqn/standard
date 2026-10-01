@@ -28,6 +28,7 @@ export const userRepoFake = (overrides: Partial<TUserRepo>): TUserRepo =>
 		sessions: vi.fn(),
 		sessionRevoke: vi.fn(),
 		sessionsRevoke: vi.fn(),
+		twoFactorReset: vi.fn(),
 		...overrides,
 	});
 
@@ -38,6 +39,7 @@ export const userNotifierFake = (
 		invite: vi.fn(),
 		deactivated: vi.fn(),
 		emailVerify: vi.fn(),
+		twoFactorReset: vi.fn(),
 		...overrides,
 	});
 

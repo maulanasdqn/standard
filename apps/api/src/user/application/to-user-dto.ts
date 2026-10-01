@@ -10,6 +10,7 @@ export const toUserDto = (row: TUserRow): TUser =>
 		image: row.image,
 		role: row.role,
 		deactivatedAt: row.deactivatedAt?.toISOString() ?? null,
+		twoFactorEnabled: row.twoFactorEnabled ?? false,
 		createdAt: row.createdAt.toISOString(),
 		updatedAt: row.updatedAt.toISOString(),
 	});

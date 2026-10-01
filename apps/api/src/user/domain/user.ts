@@ -19,6 +19,7 @@ export type TUserRow = TBaseRow & {
 	image: string | null;
 	role: string;
 	deactivatedAt: Date | null;
+	twoFactorEnabled: boolean | null;
 };
 
 export type TUserSessionRow = {
@@ -55,6 +56,7 @@ export type TUserRepo = {
 		sessionId: string,
 	) => Effect.Effect<boolean, EDatabase>;
 	sessionsRevoke: (userId: string) => Effect.Effect<void, EDatabase>;
+	twoFactorReset: (id: string) => Effect.Effect<TUserRow | null, EDatabase>;
 };
 
 export type TUserRepoId = TServiceId<typeof REPO_TAG.USER>;

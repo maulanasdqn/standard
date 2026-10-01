@@ -7,6 +7,7 @@ export type TUserNotifier = {
 	invite: (user: TUserRow) => Effect.Effect<void>;
 	deactivated: (user: TUserRow) => Effect.Effect<void>;
 	emailVerify: (user: TUserRow) => Effect.Effect<void>;
+	twoFactorReset: (user: TUserRow) => Effect.Effect<void>;
 };
 
 export type TUserNotifierId = TServiceId<typeof REPO_TAG.USER_NOTIFIER>;

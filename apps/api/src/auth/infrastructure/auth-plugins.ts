@@ -1,9 +1,11 @@
 import { ROLE } from "@app/permissions";
 import type { BetterAuthPlugin } from "better-auth";
-import { jwt } from "better-auth/plugins";
+import { jwt, twoFactor } from "better-auth/plugins";
 import { match, P } from "ts-pattern";
 
 const SECONDS_PER_DAY = 86_400;
+const BACKUP_CODE_COUNT = 10;
+const TRUSTED_DEVICE_SECONDS = 30 * SECONDS_PER_DAY;
 
 export const JWT_POLICY = {
 	EXPIRATION_TIME: "15m",
@@ -14,6 +16,7 @@ export const JWT_POLICY = {
 type TPermissionsFor = (role: string) => Promise<readonly string[]>;
 
 type TAuthPluginsOptions = {
+	appName: string;
 	jwtEnabled: boolean;
 	issuer: string;
 	audience: string;
@@ -72,9 +75,18 @@ const jwtPluginOf = (options: TAuthPluginsOptions): BetterAuthPlugin =>
 		},
 	});
 
+const twoFactorPluginOf = (issuer: string): BetterAuthPlugin =>
+	twoFactor({
+		issuer,
+		backupCodeOptions: { amount: BACKUP_CODE_COUNT },
+		trustDeviceMaxAge: TRUSTED_DEVICE_SECONDS,
+	});
+
 export const authPluginsOf = (
 	options: TAuthPluginsOptions,
-): BetterAuthPlugin[] =>
-	match(options.jwtEnabled)
+): BetterAuthPlugin[] => [
+	twoFactorPluginOf(options.appName),
+	...match(options.jwtEnabled)
 		.with(false, (): BetterAuthPlugin[] => [])
-		.otherwise((): BetterAuthPlugin[] => [jwtPluginOf(options)]);
+		.otherwise((): BetterAuthPlugin[] => [jwtPluginOf(options)]),
+];

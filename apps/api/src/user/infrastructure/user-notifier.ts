@@ -3,6 +3,7 @@ import {
 	inviteMailBuild,
 	MAIL_TEMPLATE,
 	mailSendSafe,
+	twoFactorOffMailBuild,
 } from "@app/mail";
 import { APP_MESSAGE } from "@app/messages";
 import { Effect, Layer } from "effect";
@@ -19,6 +20,7 @@ const RESET_TOKEN_PREFIX = "reset-password:";
 const INVITE_LANDING = "/reset-password?invite=true";
 const INVITE_TOKEN_PREFIX = "inv";
 const VERIFY_LANDING = "/verify-email";
+const ACCOUNT_LANDING = "/account";
 const NOTIFY_FAILED = "user.notify.failed";
 
 const inviteToken = (): string =>
@@ -76,6 +78,20 @@ export const userNotifierLayer = Layer.effect(
 						accountDeactivatedMailBuild({
 							to: target.email,
 							name: target.name,
+							brand: APP_MESSAGE.NAME,
+						}),
+					),
+				),
+			twoFactorReset: (target) =>
+				quietly(MAIL_TEMPLATE.TWO_FACTOR_OFF, () =>
+					mailSendSafe(
+						mailer,
+						logger,
+						MAIL_TEMPLATE.TWO_FACTOR_OFF,
+						twoFactorOffMailBuild({
+							to: target.email,
+							name: target.name,
+							accountUrl: `${env.WEB_ORIGIN}${ACCOUNT_LANDING}`,
 							brand: APP_MESSAGE.NAME,
 						}),
 					),

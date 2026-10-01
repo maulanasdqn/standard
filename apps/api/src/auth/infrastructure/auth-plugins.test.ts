@@ -11,6 +11,7 @@ const USER = { id: "u1", email: "a@b.test", name: "A", role: ROLE.ADMIN };
 const SESSION = { id: "s1" };
 const AUTH_URL = "https://api.example.test";
 const JWT_PLUGIN_ID = "jwt";
+const TWO_FACTOR_PLUGIN_ID = "two-factor";
 
 type TJwtPlugin = ReturnType<typeof jwt>;
 
@@ -19,6 +20,7 @@ const permissionsFor = vi.fn(
 );
 
 const OPTIONS = {
+	appName: "Test App",
 	jwtEnabled: true,
 	issuer: AUTH_URL,
 	audience: AUTH_URL,
@@ -33,14 +35,19 @@ const jwtPluginOf = (
 		| undefined;
 
 describe("authPluginsOf", () => {
-	it("adds nothing while JWT issuing is off", (): void => {
-		expect(authPluginsOf({ ...OPTIONS, jwtEnabled: false })).toEqual([]);
+	it("adds only two-factor while JWT issuing is off", (): void => {
+		const ids = A.map(
+			authPluginsOf({ ...OPTIONS, jwtEnabled: false }),
+			(plugin) => plugin.id,
+		);
+
+		expect(ids).toEqual([TWO_FACTOR_PLUGIN_ID]);
 	});
 
-	it("adds only the jwt plugin, never one that exposes the session token", (): void => {
+	it("adds two-factor and jwt, never a plugin that exposes the session token", (): void => {
 		const ids = A.map(authPluginsOf(OPTIONS), (plugin) => plugin.id);
 
-		expect(ids).toEqual([JWT_PLUGIN_ID]);
+		expect(ids).toEqual([TWO_FACTOR_PLUGIN_ID, JWT_PLUGIN_ID]);
 	});
 
 	it("does not sign a token on every session read", (): void => {

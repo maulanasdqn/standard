@@ -4,6 +4,7 @@ import { Effect } from "effect";
 import type { TAuth } from "#/auth/index.ts";
 import type { TDb } from "#/platform/db/client.ts";
 import { session, user } from "#/platform/db/tables/auth.ts";
+import { twoFactor } from "#/platform/db/tables/two-factor.ts";
 import { dbActive } from "#/platform/db/transaction.ts";
 import { isUniqueViolation } from "#/platform/db/unique-violation.ts";
 import { EAuth, EConflict, EDatabase } from "#/shared/errors.ts";
@@ -19,6 +20,7 @@ type TUserAdminOps = Pick<
 	| "sessions"
 	| "sessionRevoke"
 	| "sessionsRevoke"
+	| "twoFactorReset"
 >;
 
 export const userAdminOpsOf = (db: TDb, auth: TAuth): TUserAdminOps => {
@@ -104,5 +106,18 @@ export const userAdminOpsOf = (db: TDb, auth: TAuth): TUserAdminOps => {
 				catch: (cause) => new EDatabase({ cause }),
 			}),
 		sessionsRevoke,
+		twoFactorReset: (id) =>
+			Effect.tryPromise({
+				try: async (): Promise<TUserRow | null> => {
+					await dbActive(db).delete(twoFactor).where(eq(twoFactor.userId, id));
+					const [row] = await dbActive(db)
+						.update(user)
+						.set({ twoFactorEnabled: false, updatedAt: new Date() })
+						.where(eq(user.id, id))
+						.returning();
+					return row ?? null;
+				},
+				catch: (cause) => new EDatabase({ cause }),
+			}),
 	};
 };

@@ -25,6 +25,7 @@ export const ROUTE_PATH = {
 	USER_REACTIVATE: `${RESOURCE.USERS}/{id}/reactivate`,
 	USER_SESSIONS: `${RESOURCE.USERS}/{id}/sessions`,
 	USER_SESSION: `${RESOURCE.USERS}/{id}/sessions/{sessionId}`,
+	USER_TWO_FACTOR: `${RESOURCE.USERS}/{id}/two-factor`,
 	ROLES: RESOURCE.ROLES,
 	ROLE: `${RESOURCE.ROLES}/{key}`,
 } as const;

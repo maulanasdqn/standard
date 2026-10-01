@@ -19,6 +19,8 @@ export const AUTH_EVENT_PATH = {
 	REVOKE_SESSION: "/revoke-session",
 	REVOKE_OTHER_SESSIONS: "/revoke-other-sessions",
 	REVOKE_SESSIONS: "/revoke-sessions",
+	TWO_FACTOR_VERIFY: "/two-factor/verify-totp",
+	TWO_FACTOR_DISABLE: "/two-factor/disable",
 } as const;
 
 const REVOKE_PATHS: readonly string[] = [
@@ -55,6 +57,18 @@ const afterSuccess = async (
 			AUTH_EVENT_PATH.CHANGE_PASSWORD,
 			async (): Promise<void> =>
 				user ? events.passwordChanged(user) : undefined,
+		)
+		.with(
+			AUTH_EVENT_PATH.TWO_FACTOR_VERIFY,
+			async (): Promise<void> =>
+				ctx.context.session
+					? events.twoFactorEnabled(ctx.context.session.user)
+					: undefined,
+		)
+		.with(
+			AUTH_EVENT_PATH.TWO_FACTOR_DISABLE,
+			async (): Promise<void> =>
+				user ? events.twoFactorDisabled(user) : undefined,
 		)
 		.with(AUTH_EVENT_PATH.UPDATE_USER, async (): Promise<void> => {
 			const body = nameBodySchema.safeParse(ctx.body);

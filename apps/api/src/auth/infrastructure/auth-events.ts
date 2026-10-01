@@ -10,12 +10,14 @@ import {
 	MAIL_TEMPLATE,
 	mailSendSafe,
 	passwordChangedMailBuild,
+	twoFactorOffMailBuild,
 	type TMailer,
 } from "@app/mail";
 import { APP_MESSAGE } from "@app/messages";
 import { logger } from "#/platform/observability/logger.ts";
 
 const FORGOT_PASSWORD_PATH = "/forgot-password";
+const ACCOUNT_PATH = "/account";
 const AUTH_EVENT_FAILED = "auth.event.record_failed";
 
 export type TAuthEventUser = {
@@ -43,6 +45,8 @@ export type TAuthEvents = {
 	passwordChanged: (user: TAuthEventUser) => Promise<void>;
 	passwordRecovered: (user: TAuthEventUser) => Promise<void>;
 	sessionsRevoked: (userId: string, sessionId: string) => Promise<void>;
+	twoFactorEnabled: (user: TAuthEventUser) => Promise<void>;
+	twoFactorDisabled: (user: TAuthEventUser) => Promise<void>;
 };
 
 export const authEventsOf = (deps: TAuthEventsDeps): TAuthEvents => {
@@ -126,5 +130,21 @@ export const authEventsOf = (deps: TAuthEventsDeps): TAuthEvents => {
 		},
 		sessionsRevoked: (userId, sessionId) =>
 			record(sessionEntry(ACTIVITY_ACTION.SESSION_REVOKE, userId, sessionId)),
+		twoFactorEnabled: (user) =>
+			record(userEntry(ACTIVITY_ACTION.USER_TWO_FACTOR_ENABLE, user)),
+		twoFactorDisabled: async (user) => {
+			await record(userEntry(ACTIVITY_ACTION.USER_TWO_FACTOR_DISABLE, user));
+			await mailSendSafe(
+				deps.mailer,
+				logger,
+				MAIL_TEMPLATE.TWO_FACTOR_OFF,
+				twoFactorOffMailBuild({
+					to: user.email,
+					name: user.name,
+					accountUrl: `${deps.webOrigin}${ACCOUNT_PATH}`,
+					brand: APP_MESSAGE.NAME,
+				}),
+			);
+		},
 	};
 };

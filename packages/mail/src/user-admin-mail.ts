@@ -37,3 +37,26 @@ export const accountDeactivatedMailBuild = (
 		body: [MAIL_MESSAGE.ACCOUNT_DEACTIVATED_BODY],
 		footer: MAIL_MESSAGE.ACCOUNT_DEACTIVATED_FOOTER,
 	});
+
+export type TTwoFactorOffMailInput = {
+	to: string;
+	name: string;
+	accountUrl: string;
+	brand: string;
+};
+
+export const twoFactorOffMailBuild = (
+	input: TTwoFactorOffMailInput,
+): TMailMessage =>
+	actionMailBuild({
+		to: input.to,
+		name: input.name,
+		brand: input.brand,
+		subject: MAIL_MESSAGE.TWO_FACTOR_OFF_SUBJECT,
+		body: [MAIL_MESSAGE.TWO_FACTOR_OFF_BODY],
+		action: {
+			label: MAIL_MESSAGE.TWO_FACTOR_OFF_ACTION,
+			url: input.accountUrl,
+		},
+		footer: MAIL_MESSAGE.TWO_FACTOR_OFF_FOOTER,
+	});

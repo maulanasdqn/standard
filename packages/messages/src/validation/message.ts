@@ -9,6 +9,7 @@ export const VALIDATION_MESSAGE = {
 	PASSWORD_NEEDS_DIGIT: "Include a number.",
 	PASSWORDS_MISMATCH: "The passwords do not match.",
 	NAME_REQUIRED: "Enter your name.",
+	CODE_REQUIRED: "Enter the code.",
 	ROLE_KEY_RESERVED: "This key is reserved. Choose another one.",
 	ROLE_KEY_FORMAT:
 		"Use 2-50 lowercase letters, digits, hyphens or underscores, starting with a letter.",

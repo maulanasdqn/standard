@@ -36,6 +36,7 @@ const user: TUser = {
 	image: null,
 	role: "member",
 	deactivatedAt: null,
+	twoFactorEnabled: false,
 	createdAt: CREATED_AT,
 	updatedAt: CREATED_AT,
 };

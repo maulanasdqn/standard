@@ -97,4 +97,16 @@ export const USER_MESSAGE = {
 	SESSIONS_REVOKE_ALL: "Sign out everywhere",
 	SESSION_REVOKED: "Session signed out.",
 	SESSIONS_REVOKED: "Signed out everywhere.",
+	SELF_TWO_FACTOR_RESET: "Turn your own two-factor off from your account page.",
+	TWO_FACTOR_TITLE: "Two-factor authentication",
+	TWO_FACTOR_ON_DESCRIPTION:
+		"This user signs in with a code from their authenticator app. Turn it off only if they have lost both their device and their backup codes.",
+	TWO_FACTOR_OFF_DESCRIPTION: "This user signs in with their password only.",
+	TWO_FACTOR_RESET: "Turn off two-factor",
+	TWO_FACTOR_RESET_DONE: "Two-factor turned off for this user.",
+	TWO_FACTOR_RESET_CONFIRM_TITLE: "Turn off two-factor for this user?",
+	TWO_FACTOR_RESET_CONFIRM_DESCRIPTION:
+		"They can sign in with just their password until they set it up again. They get an email about it.",
+	TWO_FACTOR_ON: "On",
+	TWO_FACTOR_OFF: "Off",
 } as const;

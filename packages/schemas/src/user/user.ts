@@ -13,6 +13,7 @@ export const userSchema = baseSchema(userIdSchema).extend({
 	image: z.string().nullable(),
 	role: z.string().min(1),
 	deactivatedAt: z.iso.datetime().nullable(),
+	twoFactorEnabled: z.boolean(),
 });
 export type TUser = TEntityOf<z.infer<typeof userSchema>>;
 
