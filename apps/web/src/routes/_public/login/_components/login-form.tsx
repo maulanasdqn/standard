@@ -1,3 +1,4 @@
+import { SIGN_UP_ENABLED } from "@app/schemas";
 import { Stagger, StaggerItem } from "@app/components/motion/stagger";
 import { FieldError } from "@app/components/ui/field-error";
 import { AUTH_MESSAGE } from "@app/messages";
@@ -5,7 +6,6 @@ import { Link } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
 import { AuthField } from "#/routes/_components/auth-field.tsx";
 import { AuthFooterLink } from "#/routes/_components/auth-footer-link.tsx";
-import { SIGN_UP_ENABLED } from "#/libs/auth/sign-up.ts";
 import { AuthHeading } from "#/routes/_components/auth-heading.tsx";
 import { AuthSubmit } from "#/routes/_components/auth-submit.tsx";
 import { useLoginForm } from "#/routes/_public/login/_hooks/use-login.ts";

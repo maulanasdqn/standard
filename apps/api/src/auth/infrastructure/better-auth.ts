@@ -1,3 +1,4 @@
+import { SIGN_UP_ENABLED } from "@app/schemas";
 import { type Auth, type BetterAuthOptions, betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import type { TActivityRepo } from "@app/activity";
@@ -73,7 +74,7 @@ export const authCreate = (deps: TCreateAuthOptions): TAuth => {
 			events,
 			markVerified: (userId: string): Promise<void> =>
 				userVerifiedMark(deps.db, userId),
-			signUpEnabled: env.AUTH_SIGN_UP_ENABLED,
+			signUpEnabled: SIGN_UP_ENABLED,
 		}),
 		hooks: authHooksOf(events),
 		user: {

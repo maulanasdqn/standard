@@ -136,10 +136,6 @@ export const envSchema = z
 			blankAsUndefined,
 			z.stringbool().default(false),
 		),
-		AUTH_SIGN_UP_ENABLED: z.preprocess(
-			blankAsUndefined,
-			z.stringbool().default(false),
-		),
 		SEED_PASSWORD: z.preprocess(
 			blankAsUndefined,
 			userCreateInputSchema.shape.password.optional(),

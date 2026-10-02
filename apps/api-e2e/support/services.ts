@@ -48,7 +48,6 @@ export const apiEnv = (
 	BETTER_AUTH_URL: `http://127.0.0.1:${E2E_PORT}`,
 	BETTER_AUTH_SECRET: "e2e-test-secret-please-do-not-use-in-prod",
 	WEB_ORIGIN: "http://localhost:5173",
-	AUTH_SIGN_UP_ENABLED: "true",
 	STORAGE_ENDPOINT,
 	STORAGE_BUCKET,
 	STORAGE_ACCESS_KEY_ID:

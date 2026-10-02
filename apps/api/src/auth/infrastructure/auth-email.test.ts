@@ -1,9 +1,7 @@
 import type { TMailer } from "@app/mail";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { authEmailOptionsOf } from "#/auth/infrastructure/auth-email.ts";
 import type { TAuthEvents } from "#/auth/infrastructure/auth-events.ts";
-
-vi.mock("#/platform/observability/logger.ts", () => ({ logger: {} }));
 
 const optionsWith = (
 	signUpEnabled: boolean,

@@ -24,7 +24,6 @@ export default defineConfig({
 		timeout: WEB_SERVER_TIMEOUT_MS,
 		env: {
 			VITE_API_URL: process.env.VITE_API_URL ?? "http://127.0.0.1:3108",
-			VITE_AUTH_SIGN_UP_ENABLED: "true",
 		},
 	},
 });

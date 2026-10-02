@@ -78,24 +78,12 @@ describe("cookieDomainValid", () => {
 });
 
 describe("envSchema auth settings", () => {
-	it("keeps sign-up, JWT issuing and the shared cookie domain off by default", (): void => {
+	it("keeps JWT issuing and the shared cookie domain off by default", (): void => {
 		const parsed = envSchema.safeParse(ENV);
 
-		expect(parsed.data?.AUTH_SIGN_UP_ENABLED).toBe(false);
 		expect(parsed.data?.AUTH_JWT_ENABLED).toBe(false);
 		expect(parsed.data?.AUTH_COOKIE_DOMAIN).toBeUndefined();
 		expect(parsed.data?.AUTH_TRUSTED_ORIGINS).toEqual([]);
-	});
-
-	it("turns sign-up on only when it is asked for", (): void => {
-		expect(
-			envSchema.safeParse({ ...ENV, AUTH_SIGN_UP_ENABLED: "true" }).data
-				?.AUTH_SIGN_UP_ENABLED,
-		).toBe(true);
-		expect(
-			envSchema.safeParse({ ...ENV, AUTH_SIGN_UP_ENABLED: "" }).data
-				?.AUTH_SIGN_UP_ENABLED,
-		).toBe(false);
 	});
 
 	it("accepts HTTPS trusted origins with wildcards in production", (): void => {
