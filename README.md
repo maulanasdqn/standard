@@ -43,10 +43,10 @@ packages/
 
 ## Getting Started
 
-Requires [moon](https://moonrepo.dev/docs/install) + [proto](https://moonrepo.dev/proto), or Node 24 / pnpm 11 directly.
+Requires [moon](https://moonrepo.dev/docs/install) + [proto](https://moonrepo.dev/proto), or Node 24 / pnpm 11 directly. `.prototools` pins every tool, proto included, and `make install` stops with the version to upgrade to when proto is older than the pin.
 
 ```sh
-pnpm install
+make install                          # checks proto, then pnpm install
 cp apps/api/.env.example apps/api/.env # and apps/web/.env.example to apps/web/.env
 make setup                            # docker services, migrate and seed
 make up                               # start api + web together
@@ -104,6 +104,7 @@ make ci                               # everything CI runs, on affected projects
 moon run :check                       # biome check (format + lint)
 moon run :build                       # tsc --noEmit, every project
 moon run :test                        # unit tests
+moon run web:test -- --coverage.reportsDirectory=coverage/second  # a run beside another one, with its own coverage folder
 moon run api:db-generate              # generate drizzle migration
 moon ci                               # what CI runs
 ```
