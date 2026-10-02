@@ -1,8 +1,8 @@
 import { NOTE_MESSAGE } from "@app/messages";
 import { expect, type Page, test } from "@playwright/test";
-import { SEED_CREDENTIALS } from "../support/credentials.ts";
-import { signIn } from "../support/sign-in.ts";
-import { confirmAction } from "../support/confirm.ts";
+import { SEED_CREDENTIALS } from "../../support/credentials.ts";
+import { signIn } from "../../support/sign-in.ts";
+import { confirmAction } from "../../support/confirm.ts";
 
 const NEW_NOTE = "New Note";
 const WRITER_NOTE = "Written by a note:create holder";

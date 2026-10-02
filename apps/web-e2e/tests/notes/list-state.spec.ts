@@ -1,9 +1,9 @@
 import { NOTE_MESSAGE, TABLE_MESSAGE } from "@app/messages";
 import { expect, type Page, test } from "@playwright/test";
-import { SEED_CREDENTIALS } from "../support/credentials.ts";
-import { createNote } from "../support/notes.ts";
-import { selectOption } from "../support/select.ts";
-import { signIn } from "../support/sign-in.ts";
+import { SEED_CREDENTIALS } from "../../support/credentials.ts";
+import { createNote } from "./notes-support.ts";
+import { selectOption } from "../../support/select.ts";
+import { signIn } from "../../support/sign-in.ts";
 
 const FIRST_NOTE = "Alpha list note";
 const LAST_NOTE = "Zulu list note";

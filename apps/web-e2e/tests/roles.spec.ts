@@ -9,7 +9,6 @@ import {
 } from "../support/access.ts";
 import { SEED_CREDENTIALS } from "../support/credentials.ts";
 import {
-	ADMIN_NAV_LABELS,
 	expectNavHidden,
 	expectNavVisible,
 	NAV_LABEL,
@@ -20,15 +19,14 @@ import { chooseRowAction } from "../support/row-menu.ts";
 import { rowWithCell } from "../support/table.ts";
 import { confirmAction } from "../support/confirm.ts";
 import { createUser } from "../support/users.ts";
-import { createNote } from "../support/notes.ts";
 
 const FIXED_NOTICE = ROLE_MESSAGE.FIXED;
 
 const NEW_ROLE: TRoleCreateInput = {
 	key: "e2e-reviewer",
 	label: "E2E Reviewer",
-	description: "Reads notes, nothing else.",
-	permissions: [PERMISSION_KEY.NOTE_READ],
+	description: "Reads the activity log, nothing else.",
+	permissions: [PERMISSION_KEY.ACTIVITY_READ],
 };
 const RENAMED_LABEL = "Reviewer Plus";
 
@@ -88,7 +86,7 @@ test.describe("roles admin flow", () => {
 			.fill(NEW_ROLE.description ?? "");
 		await page
 			.getByRole("checkbox", {
-				name: PERMISSION_LABEL[PERMISSION_KEY.NOTE_READ],
+				name: PERMISSION_LABEL[PERMISSION_KEY.ACTIVITY_READ],
 			})
 			.check();
 		await page
@@ -105,7 +103,7 @@ test.describe("roles admin flow", () => {
 		).toBeVisible();
 	});
 
-	test("edits the custom role's label and grants note:create", async (): Promise<void> => {
+	test("edits the custom role's label and grants user:read", async (): Promise<void> => {
 		await chooseRowAction(
 			page,
 			rowWithCell(page, NEW_ROLE.key),
@@ -120,7 +118,7 @@ test.describe("roles admin flow", () => {
 		await page.getByLabel("Label", { exact: true }).fill(RENAMED_LABEL);
 		await page
 			.getByRole("checkbox", {
-				name: PERMISSION_LABEL[PERMISSION_KEY.NOTE_CREATE],
+				name: PERMISSION_LABEL[PERMISSION_KEY.USER_READ],
 			})
 			.check();
 		await page.getByRole("button", { name: ROLE_MESSAGE.SAVE_CHANGES }).click();
@@ -146,10 +144,17 @@ test.describe("roles admin flow", () => {
 		await signOut(page);
 		await signIn(page, { email: REVIEWER.email, password: REVIEWER.password });
 
-		await expectNavVisible(page, [NAV_LABEL.DASHBOARD, NAV_LABEL.NOTES]);
-		await expectNavHidden(page, ADMIN_NAV_LABELS);
+		await expectNavVisible(page, [NAV_LABEL.DASHBOARD, NAV_LABEL.ACTIVITY]);
+		await expectNavHidden(page, [
+			NAV_LABEL.USERS,
+			NAV_LABEL.ROLES,
+			NAV_LABEL.PERMISSIONS,
+		]);
 
-		await createNote(page, "Reviewer note");
+		await page.goto("/activity");
+		await expect(
+			page.getByRole("heading", { name: NAV_LABEL.ACTIVITY }),
+		).toBeVisible();
 
 		await page.goto("/roles");
 		await expect(

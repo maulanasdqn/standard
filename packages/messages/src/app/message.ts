@@ -1,6 +1,5 @@
 export const APP_MESSAGE = {
 	NAME: "Standard",
-	NAVIGATION: "Navigation",
 	ROOT_MISSING: "Root element not found",
 	LOADING: "Loading…",
 	CANCEL: "Cancel",
