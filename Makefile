@@ -1,6 +1,7 @@
 COMPOSE := docker compose -f docker-compose.dev.yml
+PROTO_PINNED := $(shell sed -n 's/^proto = "\(.*\)"/\1/p' .prototools)
 
-.PHONY: help install setup services services-stop services-logs dev up \
+.PHONY: help install toolchain setup services services-stop services-logs dev up \
 	api web worker db-migrate db-seed db-generate db-push db-studio \
 	check lint format test build ci browsers e2e e2e-api e2e-web clean \
 	image image-run staging-up staging-down staging-migrate
@@ -8,8 +9,16 @@ COMPOSE := docker compose -f docker-compose.dev.yml
 help: ## List the available targets
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-16s %s\n", $$1, $$2}'
 
-install: ## Install workspace dependencies
+install: toolchain ## Install workspace dependencies
 	pnpm install
+
+toolchain: ## Check that proto is at least the version pinned in .prototools
+	@if ! command -v proto >/dev/null 2>&1; then \
+		echo "proto is not installed, so moon tasks need Node and pnpm on PATH"; \
+	elif [ "$$(printf '%s\n%s\n' "$(PROTO_PINNED)" "$$(proto --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -n 1)" | sort -V | head -n 1)" != "$(PROTO_PINNED)" ]; then \
+		echo "proto $(PROTO_PINNED) or newer is required, found $$(proto --version). Run: proto upgrade"; \
+		exit 1; \
+	fi
 
 setup: services db-migrate db-seed ## Start the services, migrate and seed
 

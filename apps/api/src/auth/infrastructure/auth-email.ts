@@ -17,6 +17,7 @@ type TAuthEmailDeps = {
 	mailer: TMailer;
 	events: TAuthEvents;
 	markVerified: (userId: string) => Promise<void>;
+	signUpEnabled: boolean;
 };
 
 type TAuthEmailOptions = Pick<
@@ -29,6 +30,7 @@ export const authEmailOptionsOf = (
 ): TAuthEmailOptions => ({
 	emailAndPassword: {
 		enabled: true,
+		disableSignUp: !deps.signUpEnabled,
 		requireEmailVerification: true,
 		revokeSessionsOnPasswordReset: true,
 		sendResetPassword: async ({ user, url }): Promise<void> => {

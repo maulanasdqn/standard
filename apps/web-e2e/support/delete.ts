@@ -1,5 +1,6 @@
 import { APP_MESSAGE } from "@app/messages";
 import type { Locator, Page } from "@playwright/test";
+import { confirmAction } from "./confirm.ts";
 import { chooseRowAction, openRowMenu } from "./row-menu.ts";
 
 export const deleteFromRow = async (
@@ -7,10 +8,7 @@ export const deleteFromRow = async (
 	row: Locator,
 ): Promise<void> => {
 	await chooseRowAction(page, row, APP_MESSAGE.DELETE);
-	await page
-		.getByRole("alertdialog")
-		.getByRole("button", { name: APP_MESSAGE.DELETE })
-		.click();
+	await confirmAction(page, APP_MESSAGE.DELETE);
 };
 
 export const deleteItemOf = async (

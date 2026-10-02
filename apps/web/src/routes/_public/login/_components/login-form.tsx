@@ -1,3 +1,4 @@
+import { SIGN_UP_ENABLED } from "@app/schemas";
 import { Stagger, StaggerItem } from "@app/components/motion/stagger";
 import { FieldError } from "@app/components/ui/field-error";
 import { AUTH_MESSAGE } from "@app/messages";
@@ -76,13 +77,15 @@ export const LoginForm: FC = (): ReactElement => {
 							)}
 						</form.Subscribe>
 					</StaggerItem>
-					<StaggerItem>
-						<AuthFooterLink
-							prompt={AUTH_MESSAGE.NO_ACCOUNT}
-							label={AUTH_MESSAGE.SIGN_UP_LINK}
-							to="/register"
-						/>
-					</StaggerItem>
+					{SIGN_UP_ENABLED && (
+						<StaggerItem>
+							<AuthFooterLink
+								prompt={AUTH_MESSAGE.NO_ACCOUNT}
+								label={AUTH_MESSAGE.SIGN_UP_LINK}
+								to="/register"
+							/>
+						</StaggerItem>
+					)}
 				</div>
 			</Stagger>
 		</form>

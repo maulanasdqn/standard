@@ -23,7 +23,7 @@ const themeScriptPlugin = (): Plugin => ({
 export default defineConfig(({ mode }) => {
 	const fileEnv = loadEnv(mode, process.cwd(), ALL_ENV_PREFIXES);
 	const apiUrl =
-		process.env.VITE_API_URL ?? fileEnv.VITE_API_URL ?? DEFAULT_API_URL;
+		process.env.VITE_API_URL || fileEnv.VITE_API_URL || DEFAULT_API_URL;
 
 	return {
 		resolve: { tsconfigPaths: true },

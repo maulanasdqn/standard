@@ -1,3 +1,4 @@
+import { Guard } from "@app/components/guard/guard";
 import { Button } from "@app/components/ui/button";
 import {
 	Card,
@@ -5,12 +6,12 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@app/components/ui/card";
-import { Guard } from "@app/components/guard/guard";
 import { DASHBOARD_MESSAGE } from "@app/messages";
-import { PERMISSION } from "@app/permissions";
+import { A } from "@mobily/ts-belt";
 import { Link } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import type { FC, ReactElement } from "react";
+import { DASHBOARD_ACTIONS } from "#/routes/_authenticated/dashboard/_constants/widgets.ts";
 
 export const QuickActions: FC = (): ReactElement => (
 	<Card>
@@ -20,22 +21,16 @@ export const QuickActions: FC = (): ReactElement => (
 			</CardTitle>
 		</CardHeader>
 		<CardContent className="flex flex-col gap-2">
-			<Guard permissions={[PERMISSION.NOTE_CREATE]}>
-				<Button variant="outline" size="sm" className="justify-start" asChild>
-					<Link to="/notes/create">
-						<Plus className="size-4" />
-						{DASHBOARD_MESSAGE.CREATE_NOTE}
-					</Link>
-				</Button>
-			</Guard>
-			<Guard permissions={[PERMISSION.USER_CREATE, PERMISSION.ROLE_READ]}>
-				<Button variant="outline" size="sm" className="justify-start" asChild>
-					<Link to="/users/create">
-						<Plus className="size-4" />
-						{DASHBOARD_MESSAGE.CREATE_USER}
-					</Link>
-				</Button>
-			</Guard>
+			{A.map(DASHBOARD_ACTIONS, (action) => (
+				<Guard key={action.label} permissions={action.permissions}>
+					<Button variant="outline" size="sm" className="justify-start" asChild>
+						<Link to={action.to}>
+							<Plus className="size-4" />
+							{action.label}
+						</Link>
+					</Button>
+				</Guard>
+			))}
 		</CardContent>
 	</Card>
 );

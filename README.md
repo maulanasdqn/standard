@@ -43,10 +43,10 @@ packages/
 
 ## Getting Started
 
-Requires [moon](https://moonrepo.dev/docs/install) + [proto](https://moonrepo.dev/proto), or Node 24 / pnpm 11 directly.
+Requires [moon](https://moonrepo.dev/docs/install) + [proto](https://moonrepo.dev/proto), or Node 24 / pnpm 11 directly. `.prototools` pins every tool, proto included, and `make install` stops with the version to upgrade to when proto is older than the pin.
 
 ```sh
-pnpm install
+make install                          # checks proto, then pnpm install
 cp apps/api/.env.example apps/api/.env # and apps/web/.env.example to apps/web/.env
 make setup                            # docker services, migrate and seed
 make up                               # start api + web together
@@ -65,7 +65,7 @@ Seed logins: `admin@test.app` / `Password123`, `member@test.app` / `Password123`
 
 Mail sent in development is caught by mailpit, read it at `http://localhost:8025`.
 
-Anyone can create an account at `/register`. A new account has to confirm its email address before it can sign in, so in development open the confirmation link from mailpit. Forgotten passwords are reset from `/forgot-password` the same way. Passwords need at least 8 characters with an uppercase letter, a lowercase letter and a number. Seeded users and users an admin creates start out confirmed. Admins can also invite someone by email, who then chooses their own password, deactivate a user (which signs them out everywhere and blocks sign-in without deleting anything), see and revoke a user's sessions, and change a user's email, which the user then has to confirm. Anyone can turn on two-factor authentication from the Account page with an authenticator app; signing in then asks for a 6-digit code or one of ten single-use backup codes, and a device can be trusted for 30 days. An admin can turn it off for a user who has lost both their device and their codes.
+Anyone can create an account at `/register` while `SIGN_UP_ENABLED` in `@app/schemas` is `true`. An app where only an admin adds people sets it to `false`, which makes the API refuse sign-up, redirects `/register` to `/login` and hides the sign-up link. A new account has to confirm its email address before it can sign in, so in development open the confirmation link from mailpit. Forgotten passwords are reset from `/forgot-password` the same way. Passwords need at least 8 characters with an uppercase letter, a lowercase letter and a number. Seeded users and users an admin creates start out confirmed. Admins can also invite someone by email, who then chooses their own password, deactivate a user (which signs them out everywhere and blocks sign-in without deleting anything), see and revoke a user's sessions, and change a user's email, which the user then has to confirm. Anyone can turn on two-factor authentication from the Account page with an authenticator app; signing in then asks for a 6-digit code or one of ten single-use backup codes, and a device can be trusted for 30 days. An admin can turn it off for a user who has lost both their device and their codes.
 
 Uploaded images go to the local object store, whose console is at `http://localhost:9101/rustfs/console/` with the same credentials as the api.
 
@@ -104,6 +104,7 @@ make ci                               # everything CI runs, on affected projects
 moon run :check                       # biome check (format + lint)
 moon run :build                       # tsc --noEmit, every project
 moon run :test                        # unit tests
+moon run web:test -- --coverage.reportsDirectory=coverage/second  # a run beside another one, with its own coverage folder
 moon run api:db-generate              # generate drizzle migration
 moon ci                               # what CI runs
 ```

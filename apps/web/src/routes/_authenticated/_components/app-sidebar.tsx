@@ -9,9 +9,6 @@ import {
 	Sidebar,
 	SidebarContent,
 	SidebarFooter,
-	SidebarGroup,
-	SidebarGroupContent,
-	SidebarGroupLabel,
 	SidebarHeader,
 	SidebarMenu,
 	SidebarMenuButton,
@@ -60,12 +57,7 @@ export const AppSidebar: FC = (): ReactElement => {
 				</SidebarMenu>
 			</SidebarHeader>
 			<SidebarContent>
-				<SidebarGroup>
-					<SidebarGroupLabel>{APP_MESSAGE.NAVIGATION}</SidebarGroupLabel>
-					<SidebarGroupContent>
-						<AppSidebarNav />
-					</SidebarGroupContent>
-				</SidebarGroup>
+				<AppSidebarNav />
 			</SidebarContent>
 			<SidebarFooter>
 				<SidebarMenu>

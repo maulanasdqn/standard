@@ -70,3 +70,17 @@ _hooks/*.ts         useQuery, useMutation, form state, derived values
 ```
 
 The split is the rule, not a convention: a component that calls `useQuery` is a review finding.
+
+The shell picks a module up from two registries, and nothing else in the shell names a module:
+
+| File | What the module adds |
+|---|---|
+| `apps/web/src/routes/_authenticated/_constants/nav.ts` | Its entry in one of `NAV_GROUPS`, with the permissions that show it. A group with no entry the role can see is hidden, and the deepest entry that matches the address is the one highlighted, so `/x/y` beside `/x` works |
+| `apps/web/src/routes/_authenticated/dashboard/_constants/widgets.ts` | A stat card in `DASHBOARD_STATS` and a shortcut in `DASHBOARD_ACTIONS`, each with its permissions. Both are optional |
+
+## Browser tests
+
+A module's browser tests live in their own folder, `apps/web-e2e/tests/<module>/`, with any helper
+they need beside them. The specs outside those folders cover the shell and the identity features
+only, so deleting a module is deleting its folder. `notes` shows the layout; an app that does not
+want the reference module removes `tests/notes/` along with the module itself.
