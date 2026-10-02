@@ -11,6 +11,13 @@ make image        # build, tagged with the root package.json version and latest
 make image-run    # run it against the local services
 ```
 
+The web build fixes the API address at build time from `VITE_API_URL`. Left unset or empty, the web calls the origin it was loaded from, which is what the image relies on: the API serves the built web through `WEB_DIST_PATH`, so one build answers on whatever address fronts it, a demo link included. Set `VITE_API_URL` only when the API lives on another origin. To serve a local build the same way without the image, build it with the value emptied and point the API at the output with `WEB_DIST_PATH=../web/dist` in `apps/api/.env`:
+
+```sh
+VITE_API_URL= moon run web:build
+make api                          # the web and the API on :3001
+```
+
 The image is tagged with the root `package.json` version, which is the same value `/health` reports at runtime. That is what lets you confirm which build is actually live rather than which build you believe you deployed.
 
 ## Releases

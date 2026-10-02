@@ -6,7 +6,7 @@ import { createTanstackQueryUtils } from "@orpc/tanstack-query";
 
 const API_BASE = import.meta.env.DEV
 	? window.location.origin
-	: (import.meta.env.VITE_API_URL ?? window.location.origin);
+	: import.meta.env.VITE_API_URL || window.location.origin;
 
 const link = new RPCLink({
 	url: `${API_BASE}/rpc`,
