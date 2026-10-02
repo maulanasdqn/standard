@@ -1,58 +1,31 @@
 import { Stagger, StaggerItem } from "@app/components/motion/stagger";
-import { Button } from "@app/components/ui/button";
-import { ERROR_MESSAGE } from "@app/messages";
-import {
-	type ErrorComponentProps,
-	Link,
-	useRouter,
-	useRouterState,
-} from "@tanstack/react-router";
+import type { ErrorComponentProps } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
 import { match } from "ts-pattern";
 import { isForbidden } from "#/libs/auth/forbidden.ts";
 import { isServerUnreachable } from "#/libs/auth/server-unreachable.ts";
-
-type TErrorCopy = {
-	title: string;
-	body: string;
-	next: string;
-};
-
-const UNREACHABLE_COPY: TErrorCopy = {
-	title: ERROR_MESSAGE.SERVER_UNREACHABLE_TITLE,
-	body: ERROR_MESSAGE.SERVER_UNREACHABLE_BODY,
-	next: ERROR_MESSAGE.SERVER_UNREACHABLE_NEXT,
-};
-
-const FORBIDDEN_COPY: TErrorCopy = {
-	title: ERROR_MESSAGE.FORBIDDEN_TITLE,
-	body: ERROR_MESSAGE.FORBIDDEN_BODY,
-	next: ERROR_MESSAGE.FORBIDDEN_NEXT,
-};
-
-const UNEXPECTED_COPY: TErrorCopy = {
-	title: ERROR_MESSAGE.UNEXPECTED_TITLE,
-	body: ERROR_MESSAGE.UNEXPECTED_BODY,
-	next: ERROR_MESSAGE.UNEXPECTED_NEXT,
-};
+import { isRecordNotFound } from "#/libs/orpc/record-not-found.ts";
+import { RouteErrorAction } from "#/routes/_components/route-error-action.tsx";
+import {
+	ROUTE_ERROR_COPY,
+	ROUTE_ERROR_KIND,
+	type TRouteErrorKind,
+} from "#/routes/_constants/route-error.ts";
 
 const ERROR_TITLE_ID = "route-error-title";
+
+const routeErrorKind = (error: unknown): TRouteErrorKind =>
+	match(error)
+		.when(isForbidden, () => ROUTE_ERROR_KIND.FORBIDDEN)
+		.when(isRecordNotFound, () => ROUTE_ERROR_KIND.RECORD_MISSING)
+		.when(isServerUnreachable, () => ROUTE_ERROR_KIND.UNREACHABLE)
+		.otherwise(() => ROUTE_ERROR_KIND.UNEXPECTED);
 
 export const RouteErrorScreen: FC<ErrorComponentProps> = (
 	props,
 ): ReactElement => {
-	const router = useRouter();
-	const isRetrying = useRouterState({ select: (state) => state.isLoading });
-
-	const forbidden = isForbidden(props.error);
-
-	const copy = match({
-		forbidden,
-		unreachable: isServerUnreachable(props.error),
-	})
-		.with({ forbidden: true }, () => FORBIDDEN_COPY)
-		.with({ unreachable: true }, () => UNREACHABLE_COPY)
-		.otherwise(() => UNEXPECTED_COPY);
+	const kind = routeErrorKind(props.error);
+	const copy = ROUTE_ERROR_COPY[kind];
 
 	return (
 		<section
@@ -76,22 +49,7 @@ export const RouteErrorScreen: FC<ErrorComponentProps> = (
 					</p>
 				</StaggerItem>
 				<StaggerItem>
-					{match(forbidden)
-						.with(true, () => (
-							<Button asChild>
-								<Link to="/">{ERROR_MESSAGE.GO_HOME}</Link>
-							</Button>
-						))
-						.otherwise(() => (
-							<Button
-								onClick={() => void router.invalidate()}
-								disabled={isRetrying}
-							>
-								{match(isRetrying)
-									.with(true, () => ERROR_MESSAGE.RETRYING)
-									.otherwise(() => ERROR_MESSAGE.RETRY)}
-							</Button>
-						))}
+					<RouteErrorAction kind={kind} />
 				</StaggerItem>
 			</Stagger>
 		</section>

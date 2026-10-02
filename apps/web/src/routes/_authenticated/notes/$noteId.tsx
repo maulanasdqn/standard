@@ -23,7 +23,6 @@ const NoteEditPage: FC = (): ReactElement => {
 		<FormPage
 			parentLabel={NOTE_MESSAGE.TITLE}
 			parentTo="/notes"
-			backLabel={NOTE_MESSAGE.BACK_TO_NOTES}
 			title={NOTE_MESSAGE.EDIT_NOTE}
 			description={NOTE_MESSAGE.EDIT_DESCRIPTION}
 			meta={

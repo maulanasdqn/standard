@@ -17,7 +17,6 @@ const UserInvitePage: FC = (): ReactElement => {
 		<FormPage
 			parentLabel={USER_MESSAGE.TITLE}
 			parentTo="/users"
-			backLabel={USER_MESSAGE.BACK_TO_USERS}
 			title={USER_MESSAGE.INVITE_TITLE}
 			description={USER_MESSAGE.INVITE_DESCRIPTION}
 		>

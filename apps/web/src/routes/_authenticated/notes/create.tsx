@@ -12,7 +12,6 @@ const NoteCreatePage: FC = (): ReactElement => (
 	<FormPage
 		parentLabel={NOTE_MESSAGE.TITLE}
 		parentTo="/notes"
-		backLabel={NOTE_MESSAGE.BACK_TO_NOTES}
 		title={NOTE_MESSAGE.NEW_NOTE}
 		description={NOTE_MESSAGE.CREATE_DESCRIPTION}
 	>

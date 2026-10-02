@@ -1,4 +1,4 @@
-import { Label } from "@app/components/ui/label";
+import { Field } from "@app/components/ui/field";
 import {
 	Select,
 	SelectContent,
@@ -26,25 +26,26 @@ type TFilterSelectProps = {
 };
 
 export const FilterSelect: FC<TFilterSelectProps> = (props): ReactElement => (
-	<div className="grid gap-1.5">
-		<Label htmlFor={props.id}>{props.label}</Label>
-		<Select
-			value={props.value ?? ANY_VALUE}
-			onValueChange={(value) =>
-				props.onChange(value === ANY_VALUE ? undefined : value)
-			}
-		>
-			<SelectTrigger id={props.id} className="w-full">
-				<SelectValue />
-			</SelectTrigger>
-			<SelectContent>
-				<SelectItem value={ANY_VALUE}>{TABLE_MESSAGE.FILTER_ANY}</SelectItem>
-				{A.map(props.options, (option) => (
-					<SelectItem key={option.value} value={option.value}>
-						{option.label}
-					</SelectItem>
-				))}
-			</SelectContent>
-		</Select>
-	</div>
+	<Field id={props.id} label={props.label}>
+		{(control): ReactElement => (
+			<Select
+				value={props.value ?? ANY_VALUE}
+				onValueChange={(value) =>
+					props.onChange(value === ANY_VALUE ? undefined : value)
+				}
+			>
+				<SelectTrigger {...control} className="w-full">
+					<SelectValue />
+				</SelectTrigger>
+				<SelectContent>
+					<SelectItem value={ANY_VALUE}>{TABLE_MESSAGE.FILTER_ANY}</SelectItem>
+					{A.map(props.options, (option) => (
+						<SelectItem key={option.value} value={option.value}>
+							{option.label}
+						</SelectItem>
+					))}
+				</SelectContent>
+			</Select>
+		)}
+	</Field>
 );

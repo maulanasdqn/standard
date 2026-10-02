@@ -33,7 +33,7 @@ import { useSignOutConfirm } from "#/routes/_authenticated/_hooks/use-sign-out-c
 import { useTheme } from "#/routes/_authenticated/_hooks/use-theme.ts";
 import { Switch } from "@app/components/ui/switch";
 import { APP_MESSAGE, AUTH_MESSAGE, NAV_MESSAGE } from "@app/messages";
-import { AppLogo } from "#/routes/_components/app-logo.tsx";
+import { BrandMark } from "#/routes/_components/brand-mark.tsx";
 import { AppSidebarNav } from "#/routes/_authenticated/_components/app-sidebar-nav.tsx";
 
 export const AppSidebar: FC = (): ReactElement => {
@@ -48,7 +48,7 @@ export const AppSidebar: FC = (): ReactElement => {
 					<SidebarMenuItem>
 						<SidebarMenuButton size="lg" asChild>
 							<Link to="/dashboard">
-								<AppLogo className="size-8" />
+								<BrandMark className="size-8!" />
 								<div className="grid flex-1 text-left text-sm leading-tight">
 									<span className="truncate font-medium">
 										{APP_MESSAGE.NAME}

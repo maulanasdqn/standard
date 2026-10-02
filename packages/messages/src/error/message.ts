@@ -13,6 +13,12 @@ export const ERROR_MESSAGE = {
 	FORBIDDEN_NEXT: "If you think you should, ask an administrator to grant it.",
 	NOT_FOUND_TITLE: "Page not found",
 	NOT_FOUND_BODY: "That page doesn't exist, or it has moved.",
+	RECORD_NOT_FOUND_TITLE: "This record no longer exists",
+	RECORD_NOT_FOUND_BODY:
+		"It may have been deleted, or the link you followed is out of date.",
+	RECORD_NOT_FOUND_NEXT:
+		"Head back to the list to find what you were looking for.",
+	BACK_TO_LIST: "Back to the list",
 	RETRY: "Try again",
 	RETRYING: "Retrying…",
 	GO_HOME: "Back to home",

@@ -1,7 +1,7 @@
 import { Button } from "@app/components/ui/button";
+import { Field } from "@app/components/ui/field";
 import { FieldError } from "@app/components/ui/field-error";
 import { Input } from "@app/components/ui/input";
-import { Label } from "@app/components/ui/label";
 import type { FC, ReactElement } from "react";
 import { usePasswordChangeForm } from "#/routes/_authenticated/account/_hooks/use-password-change-form.ts";
 import { Card, CardContent } from "@app/components/ui/card";
@@ -19,59 +19,65 @@ export const PasswordChangeForm: FC = (): ReactElement => {
 					<h2 className="font-medium">{AUTH_MESSAGE.PASSWORD_CHANGE_TITLE}</h2>
 					<form.Field name="currentPassword">
 						{(field) => (
-							<div className="flex flex-col gap-1">
-								<Label htmlFor={field.name}>
-									{AUTH_MESSAGE.FIELD_CURRENT_PASSWORD}
-								</Label>
-								<Input
-									id={field.name}
-									type="password"
-									autoComplete="current-password"
-									placeholder={AUTH_MESSAGE.CURRENT_PASSWORD_PLACEHOLDER}
-									value={field.state.value}
-									onBlur={field.handleBlur}
-									onChange={(event) => field.handleChange(event.target.value)}
-								/>
-								<FieldError errors={field.state.meta.errors} />
-							</div>
+							<Field
+								id={field.name}
+								label={AUTH_MESSAGE.FIELD_CURRENT_PASSWORD}
+								errors={field.state.meta.errors}
+							>
+								{(control): ReactElement => (
+									<Input
+										{...control}
+										type="password"
+										autoComplete="current-password"
+										placeholder={AUTH_MESSAGE.CURRENT_PASSWORD_PLACEHOLDER}
+										value={field.state.value}
+										onBlur={field.handleBlur}
+										onChange={(event) => field.handleChange(event.target.value)}
+									/>
+								)}
+							</Field>
 						)}
 					</form.Field>
 					<form.Field name="newPassword">
 						{(field) => (
-							<div className="flex flex-col gap-1">
-								<Label htmlFor={field.name}>
-									{AUTH_MESSAGE.FIELD_NEW_PASSWORD}
-								</Label>
-								<Input
-									id={field.name}
-									type="password"
-									autoComplete="new-password"
-									placeholder={AUTH_MESSAGE.NEW_PASSWORD_PLACEHOLDER}
-									value={field.state.value}
-									onBlur={field.handleBlur}
-									onChange={(event) => field.handleChange(event.target.value)}
-								/>
-								<FieldError errors={field.state.meta.errors} />
-							</div>
+							<Field
+								id={field.name}
+								label={AUTH_MESSAGE.FIELD_NEW_PASSWORD}
+								errors={field.state.meta.errors}
+							>
+								{(control): ReactElement => (
+									<Input
+										{...control}
+										type="password"
+										autoComplete="new-password"
+										placeholder={AUTH_MESSAGE.NEW_PASSWORD_PLACEHOLDER}
+										value={field.state.value}
+										onBlur={field.handleBlur}
+										onChange={(event) => field.handleChange(event.target.value)}
+									/>
+								)}
+							</Field>
 						)}
 					</form.Field>
 					<form.Field name="confirmPassword">
 						{(field) => (
-							<div className="flex flex-col gap-1">
-								<Label htmlFor={field.name}>
-									{AUTH_MESSAGE.FIELD_CONFIRM_PASSWORD}
-								</Label>
-								<Input
-									id={field.name}
-									type="password"
-									autoComplete="new-password"
-									placeholder={AUTH_MESSAGE.CONFIRM_PASSWORD_PLACEHOLDER}
-									value={field.state.value}
-									onBlur={field.handleBlur}
-									onChange={(event) => field.handleChange(event.target.value)}
-								/>
-								<FieldError errors={field.state.meta.errors} />
-							</div>
+							<Field
+								id={field.name}
+								label={AUTH_MESSAGE.FIELD_CONFIRM_PASSWORD}
+								errors={field.state.meta.errors}
+							>
+								{(control): ReactElement => (
+									<Input
+										{...control}
+										type="password"
+										autoComplete="new-password"
+										placeholder={AUTH_MESSAGE.CONFIRM_PASSWORD_PLACEHOLDER}
+										value={field.state.value}
+										onBlur={field.handleBlur}
+										onChange={(event) => field.handleChange(event.target.value)}
+									/>
+								)}
+							</Field>
 						)}
 					</form.Field>
 					<FieldError errors={serverError ? [{ message: serverError }] : []} />

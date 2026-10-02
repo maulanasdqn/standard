@@ -1,5 +1,6 @@
 export const APP_MESSAGE = {
 	NAME: "Standard",
+	TAGLINE: "Ship the product, not the plumbing.",
 	NAVIGATION: "Navigation",
 	ROOT_MISSING: "Root element not found",
 	LOADING: "Loading…",

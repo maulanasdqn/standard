@@ -30,7 +30,6 @@ const UserEditPage: FC = (): ReactElement => {
 		<FormPage
 			parentLabel={USER_MESSAGE.TITLE}
 			parentTo="/users"
-			backLabel={USER_MESSAGE.BACK_TO_USERS}
 			title={USER_MESSAGE.EDIT_USER}
 			description={USER_MESSAGE.EDIT_DESCRIPTION}
 			meta={

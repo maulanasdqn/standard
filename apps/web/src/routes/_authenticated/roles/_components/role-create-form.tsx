@@ -7,9 +7,9 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@app/components/ui/card";
+import { Field } from "@app/components/ui/field";
 import { FieldError } from "@app/components/ui/field-error";
 import { Input } from "@app/components/ui/input";
-import { Label } from "@app/components/ui/label";
 import { Textarea } from "@app/components/ui/textarea";
 import { APP_MESSAGE, ROLE_MESSAGE } from "@app/messages";
 import { Link } from "@tanstack/react-router";
@@ -36,49 +36,59 @@ export const RoleCreateForm: FC = (): ReactElement => {
 					<div className="grid gap-6 sm:grid-cols-2">
 						<form.Field name="label">
 							{(field) => (
-								<div className="flex flex-col gap-2">
-									<Label htmlFor={field.name}>{ROLE_MESSAGE.FIELD_LABEL}</Label>
-									<Input
-										id={field.name}
-										placeholder={ROLE_MESSAGE.LABEL_PLACEHOLDER}
-										value={field.state.value}
-										onBlur={field.handleBlur}
-										onChange={(event) => onLabelChange(event.target.value)}
-									/>
-									<FieldError errors={field.state.meta.errors} />
-								</div>
+								<Field
+									id={field.name}
+									label={ROLE_MESSAGE.FIELD_LABEL}
+									errors={field.state.meta.errors}
+								>
+									{(control): ReactElement => (
+										<Input
+											{...control}
+											placeholder={ROLE_MESSAGE.LABEL_PLACEHOLDER}
+											value={field.state.value}
+											onBlur={field.handleBlur}
+											onChange={(event) => onLabelChange(event.target.value)}
+										/>
+									)}
+								</Field>
 							)}
 						</form.Field>
 						<form.Field name="key">
 							{(field) => (
-								<div className="flex flex-col gap-2">
-									<Label htmlFor={field.name}>{ROLE_MESSAGE.FIELD_KEY}</Label>
-									<Input
-										id={field.name}
-										placeholder={ROLE_MESSAGE.KEY_PLACEHOLDER}
-										value={field.state.value}
-										disabled
-									/>
-									<FieldError errors={field.state.meta.errors} />
-								</div>
+								<Field
+									id={field.name}
+									label={ROLE_MESSAGE.FIELD_KEY}
+									errors={field.state.meta.errors}
+								>
+									{(control): ReactElement => (
+										<Input
+											{...control}
+											placeholder={ROLE_MESSAGE.KEY_PLACEHOLDER}
+											value={field.state.value}
+											disabled
+										/>
+									)}
+								</Field>
 							)}
 						</form.Field>
 					</div>
 					<form.Field name="description">
 						{(field) => (
-							<div className="flex flex-col gap-2">
-								<Label htmlFor={field.name}>
-									{ROLE_MESSAGE.FIELD_DESCRIPTION}
-								</Label>
-								<Textarea
-									id={field.name}
-									placeholder={ROLE_MESSAGE.DESCRIPTION_PLACEHOLDER}
-									value={field.state.value ?? ""}
-									onBlur={field.handleBlur}
-									onChange={(event) => field.handleChange(event.target.value)}
-								/>
-								<FieldError errors={field.state.meta.errors} />
-							</div>
+							<Field
+								id={field.name}
+								label={ROLE_MESSAGE.FIELD_DESCRIPTION}
+								errors={field.state.meta.errors}
+							>
+								{(control): ReactElement => (
+									<Textarea
+										{...control}
+										placeholder={ROLE_MESSAGE.DESCRIPTION_PLACEHOLDER}
+										value={field.state.value ?? ""}
+										onBlur={field.handleBlur}
+										onChange={(event) => field.handleChange(event.target.value)}
+									/>
+								)}
+							</Field>
 						)}
 					</form.Field>
 					<form.Field name="permissions">

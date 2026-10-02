@@ -12,7 +12,6 @@ const RoleCreatePage: FC = (): ReactElement => (
 	<FormPage
 		parentLabel={ROLE_MESSAGE.TITLE}
 		parentTo="/roles"
-		backLabel={ROLE_MESSAGE.BACK_TO_ROLES}
 		title={ROLE_MESSAGE.NEW_ROLE}
 		description={ROLE_MESSAGE.CREATE_DESCRIPTION}
 	>
