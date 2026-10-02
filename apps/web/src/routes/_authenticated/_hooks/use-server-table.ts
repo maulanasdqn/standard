@@ -1,6 +1,7 @@
 import { SORT_DIRECTION, type TSortDirection } from "@app/schemas";
 import { A, O } from "@mobily/ts-belt";
 import {
+	type ColumnVisibilityState,
 	type PaginationState,
 	type ReactTable,
 	type RowData,
@@ -23,6 +24,7 @@ export type TServerTableOptions<TData extends RowData, TSort extends string> = {
 	sortDir: TSortDirection;
 	sortKeys: readonly TSort[];
 	onChange: TListChange<TSort>;
+	initialColumnVisibility?: ColumnVisibilityState;
 };
 
 const resolveSorting = (
@@ -61,6 +63,7 @@ export const useServerTable = <TData extends RowData, TSort extends string>(
 		enableMultiSort: false,
 		enableSortingRemoval: false,
 		rowCount: options.total,
+		initialState: { columnVisibility: options.initialColumnVisibility ?? {} },
 		state: { sorting, pagination },
 		onSortingChange: (updater): void => {
 			const first = A.head(resolveSorting(updater, sorting));

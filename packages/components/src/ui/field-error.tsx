@@ -5,9 +5,13 @@ import { MOTION_DURATION } from "../motion/motion-tokens.ts";
 
 type TErrorMap = Partial<Record<string, unknown>>;
 
-type TFieldErrorProps = {
+export type TFieldErrorSource = {
 	errors?: ReadonlyArray<unknown>;
 	errorMap?: TErrorMap;
+};
+
+type TFieldErrorProps = TFieldErrorSource & {
+	id?: string;
 };
 
 const firstIssue = (value: unknown): unknown =>
@@ -15,7 +19,7 @@ const firstIssue = (value: unknown): unknown =>
 		.with(P.array(), (issues) => issues[0])
 		.otherwise(() => undefined);
 
-const resolve = (props: TFieldErrorProps): unknown =>
+const resolve = (props: TFieldErrorSource): unknown =>
 	match(props.errorMap)
 		.with(P.nullish, () => firstIssue(props.errors))
 		.otherwise((errorMap) =>
@@ -33,14 +37,19 @@ const issueMessage = (issue: unknown): string | undefined =>
 		.with({ message: P.string }, (found) => found.message)
 		.otherwise(() => undefined);
 
+export const fieldErrorMessage = (
+	source: TFieldErrorSource,
+): string | undefined => issueMessage(resolve(source));
+
 export const FieldError: FC<TFieldErrorProps> = (props): ReactElement => {
-	const message = issueMessage(resolve(props));
+	const message = fieldErrorMessage(props);
 
 	return (
 		<AnimatePresence initial={false}>
 			{message !== undefined && (
 				<motion.p
 					key={message}
+					id={props.id}
 					role="alert"
 					className="text-xs text-destructive"
 					initial={{ opacity: 0, y: -4, x: -2 }}

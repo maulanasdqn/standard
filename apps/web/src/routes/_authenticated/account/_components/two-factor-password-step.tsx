@@ -1,6 +1,6 @@
 import { Button } from "@app/components/ui/button";
+import { Field } from "@app/components/ui/field";
 import { Input } from "@app/components/ui/input";
-import { Label } from "@app/components/ui/label";
 import { APP_MESSAGE, AUTH_MESSAGE } from "@app/messages";
 import type { FC, ReactElement } from "react";
 import type { TOwnTwoFactor } from "#/routes/_authenticated/account/_hooks/use-own-two-factor.ts";
@@ -21,21 +21,24 @@ export const TwoFactorPasswordStep: FC<TTwoFactorPasswordStepProps> = (
 			props.twoFactor.submitPassword();
 		}}
 	>
-		<div className="flex flex-1 flex-col gap-1.5">
-			<Label htmlFor={PASSWORD_ID}>
-				{AUTH_MESSAGE.TWO_FACTOR_PASSWORD_PROMPT}
-			</Label>
-			<Input
-				id={PASSWORD_ID}
-				type="password"
-				autoComplete="current-password"
-				placeholder={AUTH_MESSAGE.PASSWORD_PLACEHOLDER}
-				value={props.twoFactor.password}
-				onChange={(event) =>
-					props.twoFactor.onPasswordChange(event.target.value)
-				}
-			/>
-		</div>
+		<Field
+			id={PASSWORD_ID}
+			label={AUTH_MESSAGE.TWO_FACTOR_PASSWORD_PROMPT}
+			className="flex-1"
+		>
+			{(control): ReactElement => (
+				<Input
+					{...control}
+					type="password"
+					autoComplete="current-password"
+					placeholder={AUTH_MESSAGE.PASSWORD_PLACEHOLDER}
+					value={props.twoFactor.password}
+					onChange={(event) =>
+						props.twoFactor.onPasswordChange(event.target.value)
+					}
+				/>
+			)}
+		</Field>
 		<div className="flex gap-2">
 			<Button type="button" variant="outline" onClick={props.twoFactor.cancel}>
 				{APP_MESSAGE.CANCEL}

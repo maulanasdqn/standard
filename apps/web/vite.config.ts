@@ -35,7 +35,7 @@ export default defineConfig(({ mode }) => {
 				routesDirectory: "./src/routes",
 				generatedRouteTree: "./src/routeTree.gen.ts",
 				routeFileIgnorePattern:
-					"^(_apis|_components|_data|_hooks|_constants|_utils)",
+					"^(_apis|_components|_data|_hooks|_constants|_stores|_utils)",
 			}),
 			viteReact(),
 			themeScriptPlugin(),

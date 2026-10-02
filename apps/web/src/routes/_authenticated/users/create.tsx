@@ -17,7 +17,6 @@ const UserCreatePage: FC = (): ReactElement => {
 		<FormPage
 			parentLabel={USER_MESSAGE.TITLE}
 			parentTo="/users"
-			backLabel={USER_MESSAGE.BACK_TO_USERS}
 			title={USER_MESSAGE.NEW_USER}
 			description={USER_MESSAGE.CREATE_DESCRIPTION}
 		>

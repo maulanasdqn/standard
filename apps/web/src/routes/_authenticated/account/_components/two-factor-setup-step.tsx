@@ -1,6 +1,6 @@
 import { Button } from "@app/components/ui/button";
+import { Field } from "@app/components/ui/field";
 import { Input } from "@app/components/ui/input";
-import { Label } from "@app/components/ui/label";
 import { APP_MESSAGE, AUTH_MESSAGE } from "@app/messages";
 import { QRCodeSVG } from "qrcode.react";
 import type { FC, ReactElement } from "react";
@@ -38,17 +38,20 @@ export const TwoFactorSetupStep: FC<TTwoFactorSetupStepProps> = (
 					{props.twoFactor.manualKey}
 				</code>
 			</div>
-			<div className="flex flex-col gap-1.5">
-				<Label htmlFor={CODE_ID}>{AUTH_MESSAGE.FIELD_TWO_FACTOR_CODE}</Label>
-				<Input
-					id={CODE_ID}
-					inputMode="numeric"
-					autoComplete="one-time-code"
-					placeholder={AUTH_MESSAGE.TWO_FACTOR_CODE_PLACEHOLDER}
-					value={props.twoFactor.code}
-					onChange={(event) => props.twoFactor.onCodeChange(event.target.value)}
-				/>
-			</div>
+			<Field id={CODE_ID} label={AUTH_MESSAGE.FIELD_TWO_FACTOR_CODE}>
+				{(control): ReactElement => (
+					<Input
+						{...control}
+						inputMode="numeric"
+						autoComplete="one-time-code"
+						placeholder={AUTH_MESSAGE.TWO_FACTOR_CODE_PLACEHOLDER}
+						value={props.twoFactor.code}
+						onChange={(event) =>
+							props.twoFactor.onCodeChange(event.target.value)
+						}
+					/>
+				)}
+			</Field>
 			<div className="flex gap-2">
 				<Button
 					type="button"

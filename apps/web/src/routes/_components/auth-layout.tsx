@@ -2,7 +2,7 @@ import { FadeIn } from "@app/components/motion/fade-in";
 import { APP_MESSAGE } from "@app/messages";
 import { Link } from "@tanstack/react-router";
 import type { FC, ReactElement, ReactNode } from "react";
-import { AppLogo } from "#/routes/_components/app-logo.tsx";
+import { BrandMark } from "#/routes/_components/brand-mark.tsx";
 import { AuthShowcase } from "#/routes/_components/auth-showcase.tsx";
 
 type TAuthLayoutProps = {
@@ -14,7 +14,7 @@ export const AuthLayout: FC<TAuthLayoutProps> = (props): ReactElement => (
 		<div className="flex flex-col gap-4 p-6 md:p-10">
 			<FadeIn className="flex justify-center gap-2 md:justify-start">
 				<Link to="/" className="group flex items-center gap-2 font-medium">
-					<AppLogo className="size-6 transition-transform duration-300 group-hover:rotate-12" />
+					<BrandMark className="size-6 transition-transform duration-300 group-hover:rotate-12" />
 					{APP_MESSAGE.NAME}
 				</Link>
 			</FadeIn>

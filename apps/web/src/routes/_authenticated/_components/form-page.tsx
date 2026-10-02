@@ -15,7 +15,7 @@ import type { FC, ReactElement, ReactNode } from "react";
 type TFormPageProps = {
 	parentLabel: string;
 	parentTo: LinkProps["to"];
-	backLabel: string;
+	backLabel?: string;
 	title: string;
 	description: string;
 	meta?: ReactNode;
@@ -47,12 +47,14 @@ export const FormPage: FC<TFormPageProps> = (props): ReactElement => (
 					</h1>
 					<p className="text-sm text-muted-foreground">{props.description}</p>
 				</div>
-				<Button variant="ghost" size="sm" className="group/back" asChild>
-					<Link to={props.parentTo}>
-						<ArrowLeft className="transition-transform group-hover/back:-translate-x-0.5" />
-						{props.backLabel}
-					</Link>
-				</Button>
+				{props.backLabel !== undefined && (
+					<Button variant="ghost" size="sm" className="group/back" asChild>
+						<Link to={props.parentTo}>
+							<ArrowLeft className="transition-transform group-hover/back:-translate-x-0.5" />
+							{props.backLabel}
+						</Link>
+					</Button>
+				)}
 			</div>
 			{props.meta}
 		</StaggerItem>

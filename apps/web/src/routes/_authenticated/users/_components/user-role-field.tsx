@@ -1,5 +1,4 @@
-import { FieldError } from "@app/components/ui/field-error";
-import { Label } from "@app/components/ui/label";
+import { Field } from "@app/components/ui/field";
 import {
 	Select,
 	SelectContent,
@@ -27,28 +26,30 @@ export const UserRoleField: FC<TUserRoleFieldProps> = (props): ReactElement => {
 	const { disabled = false } = props;
 
 	return (
-		<div className="flex flex-col gap-2">
-			<Label htmlFor={props.id}>{USER_MESSAGE.COLUMN_ROLE}</Label>
-			<Select
-				value={props.value}
-				disabled={disabled}
-				onValueChange={props.onChange}
-			>
-				<SelectTrigger id={props.id} className="w-full" onBlur={props.onBlur}>
-					<SelectValue />
-				</SelectTrigger>
-				<SelectContent>
-					{A.map(props.roleOptions, (option) => (
-						<SelectItem key={option.value} value={option.value}>
-							{option.label}
-						</SelectItem>
-					))}
-				</SelectContent>
-			</Select>
-			{props.hint && (
-				<p className="text-xs text-muted-foreground">{props.hint}</p>
+		<Field
+			id={props.id}
+			label={USER_MESSAGE.COLUMN_ROLE}
+			description={props.hint}
+			errors={props.errors}
+		>
+			{(control): ReactElement => (
+				<Select
+					value={props.value}
+					disabled={disabled}
+					onValueChange={props.onChange}
+				>
+					<SelectTrigger {...control} className="w-full" onBlur={props.onBlur}>
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>
+						{A.map(props.roleOptions, (option) => (
+							<SelectItem key={option.value} value={option.value}>
+								{option.label}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
 			)}
-			<FieldError errors={props.errors} />
-		</div>
+		</Field>
 	);
 };

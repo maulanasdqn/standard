@@ -1,5 +1,5 @@
+import { Field } from "@app/components/ui/field";
 import { Input } from "@app/components/ui/input";
-import { Label } from "@app/components/ui/label";
 import { NOTE_MESSAGE, TABLE_MESSAGE } from "@app/messages";
 import { NOTE_ATTACHMENT_FILTER, NOTE_DATE_FIELD } from "@app/schemas";
 import type { FC, ReactElement } from "react";
@@ -37,17 +37,16 @@ export const NoteFilterFields: FC<TNoteFilterFieldsProps> = (
 	props,
 ): ReactElement => (
 	<>
-		<div className="grid gap-1.5">
-			<Label htmlFor={NOTE_FILTER_FIELD_ID.TITLE}>
-				{NOTE_MESSAGE.FILTER_TITLE}
-			</Label>
-			<Input
-				id={NOTE_FILTER_FIELD_ID.TITLE}
-				placeholder={NOTE_MESSAGE.FILTER_TITLE_PLACEHOLDER}
-				value={props.values.title ?? ""}
-				onChange={(event) => props.onChange({ title: event.target.value })}
-			/>
-		</div>
+		<Field id={NOTE_FILTER_FIELD_ID.TITLE} label={NOTE_MESSAGE.FILTER_TITLE}>
+			{(control): ReactElement => (
+				<Input
+					{...control}
+					placeholder={NOTE_MESSAGE.FILTER_TITLE_PLACEHOLDER}
+					value={props.values.title ?? ""}
+					onChange={(event) => props.onChange({ title: event.target.value })}
+				/>
+			)}
+		</Field>
 		<DateRangeFields
 			idPrefix={NOTE_FILTER_FIELD_ID.DATE}
 			label={TABLE_MESSAGE.FILTER_DATE}

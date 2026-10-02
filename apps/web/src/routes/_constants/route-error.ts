@@ -1,0 +1,40 @@
+import { ERROR_MESSAGE } from "@app/messages";
+
+export const ROUTE_ERROR_KIND = {
+	FORBIDDEN: "forbidden",
+	RECORD_MISSING: "record-missing",
+	UNREACHABLE: "unreachable",
+	UNEXPECTED: "unexpected",
+} as const;
+
+export type TRouteErrorKind =
+	(typeof ROUTE_ERROR_KIND)[keyof typeof ROUTE_ERROR_KIND];
+
+export type TRouteErrorCopy = {
+	title: string;
+	body: string;
+	next: string;
+};
+
+export const ROUTE_ERROR_COPY: Record<TRouteErrorKind, TRouteErrorCopy> = {
+	[ROUTE_ERROR_KIND.FORBIDDEN]: {
+		title: ERROR_MESSAGE.FORBIDDEN_TITLE,
+		body: ERROR_MESSAGE.FORBIDDEN_BODY,
+		next: ERROR_MESSAGE.FORBIDDEN_NEXT,
+	},
+	[ROUTE_ERROR_KIND.RECORD_MISSING]: {
+		title: ERROR_MESSAGE.RECORD_NOT_FOUND_TITLE,
+		body: ERROR_MESSAGE.RECORD_NOT_FOUND_BODY,
+		next: ERROR_MESSAGE.RECORD_NOT_FOUND_NEXT,
+	},
+	[ROUTE_ERROR_KIND.UNREACHABLE]: {
+		title: ERROR_MESSAGE.SERVER_UNREACHABLE_TITLE,
+		body: ERROR_MESSAGE.SERVER_UNREACHABLE_BODY,
+		next: ERROR_MESSAGE.SERVER_UNREACHABLE_NEXT,
+	},
+	[ROUTE_ERROR_KIND.UNEXPECTED]: {
+		title: ERROR_MESSAGE.UNEXPECTED_TITLE,
+		body: ERROR_MESSAGE.UNEXPECTED_BODY,
+		next: ERROR_MESSAGE.UNEXPECTED_NEXT,
+	},
+};

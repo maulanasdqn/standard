@@ -16,7 +16,6 @@ export const RolePage: FC<TRolePageProps> = (props): ReactElement => (
 	<FormPage
 		parentLabel={ROLE_MESSAGE.TITLE}
 		parentTo="/roles"
-		backLabel={ROLE_MESSAGE.BACK_TO_ROLES}
 		title={props.role.label}
 		description={
 			props.readOnly

@@ -28,7 +28,6 @@ export const USER_MESSAGE = {
 	NEW_PASSWORD_PLACEHOLDER: "8+ characters, upper, lower and a number",
 	SEARCH_PLACEHOLDER: "Search by name or email",
 	SEARCH_LABEL: "Search users",
-	BACK_TO_USERS: "Back to users",
 	CREATE_ACTION: "Create user",
 	SAVE_CHANGES: "Save changes",
 	RESET_ACTION: "Reset password",

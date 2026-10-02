@@ -6,12 +6,13 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@app/components/ui/card";
-import { FieldError } from "@app/components/ui/field-error";
+import { Field } from "@app/components/ui/field";
 import { Input } from "@app/components/ui/input";
-import { Label } from "@app/components/ui/label";
 import { AUTH_MESSAGE } from "@app/messages";
 import type { FC, ReactElement } from "react";
 import { useProfileForm } from "#/routes/_authenticated/account/_hooks/use-profile-form.ts";
+
+const PROFILE_NAME_ID = "profile-name";
 
 export const ProfileForm: FC = (): ReactElement => {
 	const { form, onSubmit } = useProfileForm();
@@ -29,18 +30,23 @@ export const ProfileForm: FC = (): ReactElement => {
 				>
 					<form.Field name="name">
 						{(field) => (
-							<div className="flex flex-1 flex-col gap-1">
-								<Label htmlFor="profile-name">{AUTH_MESSAGE.FIELD_NAME}</Label>
-								<Input
-									id="profile-name"
-									autoComplete="name"
-									placeholder={AUTH_MESSAGE.NAME_PLACEHOLDER}
-									value={field.state.value}
-									onBlur={field.handleBlur}
-									onChange={(event) => field.handleChange(event.target.value)}
-								/>
-								<FieldError errorMap={field.state.meta.errorMap} />
-							</div>
+							<Field
+								id={PROFILE_NAME_ID}
+								label={AUTH_MESSAGE.FIELD_NAME}
+								errorMap={field.state.meta.errorMap}
+								className="flex-1"
+							>
+								{(control): ReactElement => (
+									<Input
+										{...control}
+										autoComplete="name"
+										placeholder={AUTH_MESSAGE.NAME_PLACEHOLDER}
+										value={field.state.value}
+										onBlur={field.handleBlur}
+										onChange={(event) => field.handleChange(event.target.value)}
+									/>
+								)}
+							</Field>
 						)}
 					</form.Field>
 					<form.Subscribe

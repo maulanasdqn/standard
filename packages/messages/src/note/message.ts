@@ -32,7 +32,6 @@ export const NOTE_MESSAGE = {
 		"The title shows in the list; the body holds the full text.",
 	TITLE_PLACEHOLDER: "What is this note about?",
 	BODY_PLACEHOLDER: "Write the note here",
-	BACK_TO_NOTES: "Back to notes",
 	SAVE_CHANGES: "Save changes",
 	CREATING: "Adding…",
 	SAVING: "Saving…",
