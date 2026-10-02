@@ -73,6 +73,7 @@ export const authCreate = (deps: TCreateAuthOptions): TAuth => {
 			events,
 			markVerified: (userId: string): Promise<void> =>
 				userVerifiedMark(deps.db, userId),
+			signUpEnabled: env.AUTH_SIGN_UP_ENABLED,
 		}),
 		hooks: authHooksOf(events),
 		user: {

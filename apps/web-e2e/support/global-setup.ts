@@ -24,6 +24,7 @@ const env = {
 	STORAGE_SECRET_ACCESS_KEY:
 		process.env.STORAGE_SECRET_ACCESS_KEY ?? "appsecret",
 	WEB_ORIGIN: "http://127.0.0.1:5273",
+	AUTH_SIGN_UP_ENABLED: "true",
 };
 
 const waitForHealth = async (timeoutMs = 15_000): Promise<void> => {

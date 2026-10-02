@@ -1,4 +1,4 @@
-import { NOTE_MESSAGE, ROLE_MESSAGE, USER_MESSAGE } from "@app/messages";
+import { ROLE_MESSAGE, USER_MESSAGE } from "@app/messages";
 import type { TRoleCreateInput, TUserCreateInput } from "@app/schemas";
 import { expect, type Page, test } from "@playwright/test";
 import {
@@ -11,12 +11,9 @@ import { confirmAction } from "../support/confirm.ts";
 import { SEED_CREDENTIALS } from "../support/credentials.ts";
 import { deleteFromRow, deleteItemOf } from "../support/delete.ts";
 import { closeRowMenu } from "../support/row-menu.ts";
-import { createNote } from "../support/notes.ts";
 import { signIn } from "../support/sign-in.ts";
 import { rowWithCell } from "../support/table.ts";
 import { createUser } from "../support/users.ts";
-
-const DOOMED_NOTE = "Doomed note";
 
 const DOOMED_USER: TUserCreateInput = {
 	name: "E2E Doomed",
@@ -29,7 +26,7 @@ const DOOMED_ROLE: TRoleCreateInput = {
 	key: "e2e-doomed",
 	label: "E2E Doomed",
 	description: "About to go.",
-	permissions: [PERMISSION_KEY.NOTE_READ],
+	permissions: [PERMISSION_KEY.ACTIVITY_READ],
 };
 
 test.describe.configure({ mode: "serial" });
@@ -44,15 +41,6 @@ test.describe("deleting from the lists", () => {
 
 	test.afterAll(async (): Promise<void> => {
 		await page.close();
-	});
-
-	test("deletes a note after the confirmation", async (): Promise<void> => {
-		await createNote(page, DOOMED_NOTE);
-
-		await deleteFromRow(page, page.getByRole("row", { name: DOOMED_NOTE }));
-
-		await expect(page.getByText(NOTE_MESSAGE.DELETED)).toBeVisible();
-		await expect(page.getByText(DOOMED_NOTE, { exact: true })).toHaveCount(0);
 	});
 
 	test("deletes another user but never offers to delete the signed-in one", async (): Promise<void> => {
@@ -79,7 +67,7 @@ test.describe("deleting from the lists", () => {
 			.fill(DOOMED_ROLE.description ?? "");
 		await page
 			.getByRole("checkbox", {
-				name: PERMISSION_LABEL[PERMISSION_KEY.NOTE_READ],
+				name: PERMISSION_LABEL[PERMISSION_KEY.ACTIVITY_READ],
 			})
 			.check();
 		await page

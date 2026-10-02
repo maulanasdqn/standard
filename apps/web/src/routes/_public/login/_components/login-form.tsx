@@ -5,6 +5,7 @@ import { Link } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
 import { AuthField } from "#/routes/_components/auth-field.tsx";
 import { AuthFooterLink } from "#/routes/_components/auth-footer-link.tsx";
+import { SIGN_UP_ENABLED } from "#/libs/auth/sign-up.ts";
 import { AuthHeading } from "#/routes/_components/auth-heading.tsx";
 import { AuthSubmit } from "#/routes/_components/auth-submit.tsx";
 import { useLoginForm } from "#/routes/_public/login/_hooks/use-login.ts";
@@ -76,13 +77,15 @@ export const LoginForm: FC = (): ReactElement => {
 							)}
 						</form.Subscribe>
 					</StaggerItem>
-					<StaggerItem>
-						<AuthFooterLink
-							prompt={AUTH_MESSAGE.NO_ACCOUNT}
-							label={AUTH_MESSAGE.SIGN_UP_LINK}
-							to="/register"
-						/>
-					</StaggerItem>
+					{SIGN_UP_ENABLED && (
+						<StaggerItem>
+							<AuthFooterLink
+								prompt={AUTH_MESSAGE.NO_ACCOUNT}
+								label={AUTH_MESSAGE.SIGN_UP_LINK}
+								to="/register"
+							/>
+						</StaggerItem>
+					)}
 				</div>
 			</Stagger>
 		</form>

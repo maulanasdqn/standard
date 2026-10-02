@@ -18,6 +18,6 @@ export const FIXED_ROLE_KEYS: readonly TRole[] = [
 ];
 
 export const PERMISSION_KEY = {
-	NOTE_READ: "note:read",
-	NOTE_CREATE: "note:create",
+	USER_READ: "user:read",
+	ACTIVITY_READ: "activity:read",
 } as const satisfies Record<string, TPermission>;

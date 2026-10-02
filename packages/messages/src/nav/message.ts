@@ -1,4 +1,6 @@
 export const NAV_MESSAGE = {
+	GROUP_WORKSPACE: "Workspace",
+	GROUP_ADMINISTRATION: "Administration",
 	DASHBOARD: "Dashboard",
 	NOTES: "Notes",
 	USERS: "Users",

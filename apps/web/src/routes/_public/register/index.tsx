@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
 import { match, P } from "ts-pattern";
+import { SIGN_UP_ENABLED } from "#/libs/auth/sign-up.ts";
 import { AuthLayout } from "#/routes/_components/auth-layout.tsx";
 import { CheckEmail } from "#/routes/_public/register/_components/check-email.tsx";
 import { RegisterForm } from "#/routes/_public/register/_components/register-form.tsx";
@@ -21,5 +22,12 @@ const RegisterPage: FC = (): ReactElement => {
 };
 
 export const Route = createFileRoute("/_public/register/")({
+	beforeLoad: (): void => {
+		match(SIGN_UP_ENABLED)
+			.with(false, () => {
+				throw redirect({ to: "/login" });
+			})
+			.otherwise(() => undefined);
+	},
 	component: RegisterPage,
 });

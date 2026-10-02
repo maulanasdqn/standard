@@ -1,6 +1,6 @@
 import { NOTE_MESSAGE } from "@app/messages";
 import { expect, type Page } from "@playwright/test";
-import { confirmAction } from "./confirm.ts";
+import { confirmAction } from "../../support/confirm.ts";
 
 export const createNote = async (page: Page, title: string): Promise<void> => {
 	await page.goto("/notes/create");
