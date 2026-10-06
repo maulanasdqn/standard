@@ -1,43 +1,40 @@
 ## Severity Legend
 
-<!-- Review format in table -->
+- **P0**: Blocker, must fix before merge
+- **P1**: High, fix or explicitly track before merge
+- **P2**: Medium, fix in this PR or a quick follow-up
+- **P3**: Low, optional cleanup
 
-| Severity | Meaning | Impact on Existing/This PR | Effort |
-|----------|---------|------------------------------|--------|
-| P0 | **Blocker**, must fix before merge: data loss, security hole, full outage, broken build | Existing | High |
-| P1 | **High**, should fix or explicitly track as a follow-up before merge: significant incorrect behavior | This PR | Medium |
-| P2 | **Medium**, fix in this PR or a quick follow-up: misleading UX, missing test coverage | This PR | Medium |
-| P3 | **Low**, nice-to-have or cleanup: dead code, defensive-but-redundant guards | This PR | Low |
-
-Every review covers all three sections below. A section with nothing to report says "None." and is never deleted.
+Keep all four sections. Replace example rows, order findings P0 to P3, and write "None." if empty. Scope is `This PR` for changes introduced here or `Existing feature` for pre-existing behavior.
 
 ## 1. Functional
 
-<!-- Does it work, and does it do what the PR says it does? -->
+Check correctness, changelog coverage, security, performance, and tests.
 
-Covers correctness (logic errors, edge cases, nullish paths, error handling, races), whether every Changelog bullet is actually implemented, security and performance regressions, and test coverage for the new behavior.
-
-| Severity | File | Finding | Suggested fix |
-|----------|------|---------|---------------|
-| P1 | `apps/api/src/...` | ... | ... |
+| Severity | Scope | File | Finding | Fix |
+|----------|-------|------|---------|-----|
+| P1 | This PR | `path:line` | ... | ... |
 
 ## 2. Clean Code
 
-<!-- Checked against .claude/skills/ts-conventions/SKILL.md -->
+Follow the repo's skills and conventions, including `.claude/skills/ts-conventions/SKILL.md`; use clean code best practices where no repo rule applies.
 
-Covers the project conventions: no plain strings (user-facing copy in `@app/messages`, domain keys in a shared const object, referenced at every call site including `.with(...)` arms and `z.literal(...)`), arrow functions only (the `function` keyword is for generators alone), files ≤ 200 lines with one responsibility, `T`/`I`/`E` naming prefixes, ts-pattern for conditionals and ts-belt for arrays/objects, explicit return types, no comments, logic in hooks/use-cases rather than JSX, and API layering (domain / application / infrastructure / presentation), plus duplication, dead code, and naming.
-
-| Severity | File | Finding | Suggested fix |
-|----------|------|---------|---------------|
-| P3 | `apps/web/src/...` | ... | ... |
+| Severity | Scope | File | Finding | Fix |
+|----------|-------|------|---------|-----|
+| P3 | Existing feature | `path:line` | ... | ... |
 
 ## 3. Feature Suggestions
 
-<!-- Non-blocking. Tag each as `this-pr` or `follow-up`. -->
-
-`this-pr` is a gap in the feature as shipped (missing empty/loading/error state, accessibility, confusing copy). `follow-up` is an idea worth doing later but deliberately out of scope: a candidate issue, never a reason to hold the merge.
+Non-blocking ideas for UX, accessibility, and feature gaps.
 
 | Scope | Suggestion | Why |
 |-------|------------|-----|
-| this-pr | ... | ... |
-| follow-up | ... | ... |
+| This PR | ... | ... |
+
+## 4. Confirmation
+
+List each change, its intent, and its risk / impact. Check only confirmed changes; leave unintended changes or unresolved risks unchecked.
+
+- [x] 1. `path:line`: ...; Intent: ...; Risk / impact: ...
+- [x] 2. `path:line`: ...; Intent: ...; Risk / impact: ...
+- [x] 3. `path:line`: ...; Intent: ...; Risk / impact: ...
