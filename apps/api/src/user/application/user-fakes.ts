@@ -1,4 +1,5 @@
-import { Layer } from "effect";
+import { Effect, Layer } from "effect";
+import { CustomRoleRepo, type TCustomRoleRepoId } from "#/role/index.ts";
 import { vi } from "vitest";
 import {
 	type TUserRepo,
@@ -52,3 +53,16 @@ export const userNotifierFakeLayer = (
 export const userRepoFakeLayer = (
 	overrides: Partial<TUserRepo>,
 ): Layer.Layer<TUserRepoId> => Layer.succeed(UserRepo, userRepoFake(overrides));
+
+export const customRoleRepoFakeLayer = (): Layer.Layer<TCustomRoleRepoId> =>
+	Layer.succeed(
+		CustomRoleRepo,
+		CustomRoleRepo.of({
+			memberCounts: vi.fn(),
+			list: vi.fn(),
+			findByKey: vi.fn().mockReturnValue(Effect.succeed(null)),
+			create: vi.fn(),
+			update: vi.fn(),
+			remove: vi.fn(),
+		}),
+	);

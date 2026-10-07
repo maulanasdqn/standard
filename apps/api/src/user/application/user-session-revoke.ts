@@ -8,17 +8,24 @@ import {
 } from "#/shared/activity-recorder.ts";
 import { type EDatabase, ENotFound } from "#/shared/errors.ts";
 import { UserRepo, type TUserRepoId } from "#/user/domain/user.ts";
+import type { TActorAuthority } from "#/shared/session.ts";
+import { userTargetEnsure } from "#/user/application/user-target-ensure.ts";
+import type { TCustomRoleRepoId } from "#/role/index.ts";
+import type { EForbidden } from "#/shared/errors.ts";
 
 export const userSessionRevoke = Effect.fn("userSessionRevoke")(function* (
 	input: TUserSessionRevokeInput,
 	actorId: string,
+	authority: TActorAuthority,
 ): Effect.fn.Return<
 	{ id: string },
-	ENotFound | EDatabase,
-	TUserRepoId | TActivityRecorderId
+	ENotFound | EForbidden | EDatabase,
+	TUserRepoId | TActivityRecorderId | TCustomRoleRepoId
 > {
 	const userRepo = yield* UserRepo;
 	const activityRepo = yield* ActivityRecorder;
+
+	yield* userTargetEnsure(input.id, authority);
 
 	const removed = yield* userRepo.sessionRevoke(input.id, input.sessionId);
 

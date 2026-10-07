@@ -1,3 +1,6 @@
+import type { TCustomRoleRepoId } from "#/role/index.ts";
+import { customRoleRepoFakeLayer } from "#/user/application/user-fakes.ts";
+import { ADMIN_AUTHORITY } from "#/shared/authority-fakes.ts";
 import { ACTIVITY_ACTION, ACTIVITY_DETAIL } from "@app/activity";
 import { ROLE } from "@app/permissions";
 import { Effect, Layer } from "effect";
@@ -41,8 +44,9 @@ const mocksBuild = (found: TUserRow | null): TMocks => ({
 
 const layerBuild = (
 	mocks: TMocks,
-): Layer.Layer<TUserRepoId | TActivityRecorderId> =>
+): Layer.Layer<TUserRepoId | TActivityRecorderId | TCustomRoleRepoId> =>
 	Layer.mergeAll(
+		customRoleRepoFakeLayer(),
 		Layer.succeed(
 			UserRepo,
 			userRepoFake({ findById: mocks.findById, remove: mocks.remove }),
@@ -58,7 +62,7 @@ describe("userDelete", () => {
 		const mocks = mocksBuild(target);
 
 		const error = await Effect.runPromise(
-			userDelete({ id: ACTOR_ID }, ACTOR_ID).pipe(
+			userDelete({ id: ACTOR_ID }, ACTOR_ID, ADMIN_AUTHORITY).pipe(
 				Effect.provide(layerBuild(mocks)),
 				Effect.flip,
 			),
@@ -72,7 +76,7 @@ describe("userDelete", () => {
 		const mocks = mocksBuild(null);
 
 		const error = await Effect.runPromise(
-			userDelete({ id: TARGET_ID }, ACTOR_ID).pipe(
+			userDelete({ id: TARGET_ID }, ACTOR_ID, ADMIN_AUTHORITY).pipe(
 				Effect.provide(layerBuild(mocks)),
 				Effect.flip,
 			),
@@ -86,7 +90,7 @@ describe("userDelete", () => {
 		const mocks = mocksBuild(target);
 
 		await Effect.runPromise(
-			userDelete({ id: TARGET_ID }, ACTOR_ID).pipe(
+			userDelete({ id: TARGET_ID }, ACTOR_ID, ADMIN_AUTHORITY).pipe(
 				Effect.provide(layerBuild(mocks)),
 			),
 		);
@@ -101,5 +105,19 @@ describe("userDelete", () => {
 				},
 			}),
 		);
+	});
+
+	it("refuses to delete someone whose role is beyond the actor's own", async (): Promise<void> => {
+		const mocks = mocksBuild({ ...target, role: ROLE.SUPERADMIN });
+
+		const error = await Effect.runPromise(
+			userDelete({ id: TARGET_ID }, ACTOR_ID, ADMIN_AUTHORITY).pipe(
+				Effect.provide(layerBuild(mocks)),
+				Effect.flip,
+			),
+		);
+
+		expect(error).toBeInstanceOf(EForbidden);
+		expect(mocks.remove).not.toHaveBeenCalled();
 	});
 });

@@ -13,7 +13,14 @@ import {
 	activityDetails,
 	type TActivityDetails,
 } from "@app/activity";
-import { EBadRequest, type EDatabase, ENotFound } from "#/shared/errors.ts";
+import {
+	EBadRequest,
+	type EDatabase,
+	EForbidden,
+	ENotFound,
+} from "#/shared/errors.ts";
+import type { TActorAuthority } from "#/shared/session.ts";
+import { permissionsWithin } from "#/role/application/role-authority.ts";
 import {
 	ActivityRecorder,
 	type TActivityRecorderId,
@@ -51,9 +58,10 @@ const updateDetails = (
 export const roleUpdate = Effect.fn("roleUpdate")(function* (
 	input: TRoleUpdateInput,
 	actorId: string,
+	authority: TActorAuthority,
 ): Effect.fn.Return<
 	TRoleDto,
-	ENotFound | EBadRequest | EDatabase,
+	ENotFound | EBadRequest | EForbidden | EDatabase,
 	TCustomRoleRepoId | TActivityRecorderId
 > {
 	const customRoleRepo = yield* CustomRoleRepo;
@@ -63,10 +71,22 @@ export const roleUpdate = Effect.fn("roleUpdate")(function* (
 		return yield* new EBadRequest({ message: ROLE_MESSAGE.FIXED });
 	}
 
+	if (input.key === authority.role) {
+		return yield* new EForbidden({ message: ROLE_MESSAGE.OWN_ROLE });
+	}
+
 	const previous = yield* customRoleRepo.findByKey(input.key);
 
 	if (previous === null) {
 		return yield* new ENotFound({ message: ROLE_MESSAGE.NOT_FOUND });
+	}
+
+	const granting = [...previous.permissions, ...(input.permissions ?? [])];
+
+	if (!permissionsWithin(authority, granting)) {
+		return yield* new EForbidden({
+			message: ROLE_MESSAGE.PERMISSIONS_BEYOND_ACTOR,
+		});
 	}
 
 	const updated = yield* customRoleRepo.update(input);

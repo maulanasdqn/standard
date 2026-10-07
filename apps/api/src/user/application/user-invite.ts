@@ -24,13 +24,17 @@ import {
 	type TUserNotifierId,
 	UserNotifier,
 } from "#/user/domain/user-notifier.ts";
+import type { TActorAuthority } from "#/shared/session.ts";
+import { roleWithinEnsure } from "#/role/index.ts";
+import type { EForbidden } from "#/shared/errors.ts";
 
 export const userInvite = Effect.fn("userInvite")(function* (
 	input: TUserInviteInput,
 	actorId: string,
+	authority: TActorAuthority,
 ): Effect.fn.Return<
 	TUser,
-	EConflict | EBadRequest | EDatabase | EAuth,
+	EConflict | EBadRequest | EForbidden | EDatabase | EAuth,
 	TUserRepoId | TCustomRoleRepoId | TActivityRecorderId | TUserNotifierId
 > {
 	const userRepo = yield* UserRepo;
@@ -38,6 +42,11 @@ export const userInvite = Effect.fn("userInvite")(function* (
 	const notifier = yield* UserNotifier;
 
 	yield* roleEnsure(input.role);
+	yield* roleWithinEnsure(
+		authority,
+		input.role,
+		USER_MESSAGE.ROLE_BEYOND_ACTOR,
+	);
 
 	const existing = yield* userRepo.findByEmail(input.email);
 

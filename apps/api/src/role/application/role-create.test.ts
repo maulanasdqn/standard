@@ -1,3 +1,6 @@
+import { USER_MANAGER_AUTHORITY } from "#/shared/authority-fakes.ts";
+import { EForbidden } from "#/shared/errors.ts";
+import { ADMIN_AUTHORITY } from "#/shared/authority-fakes.ts";
 import { ACTIVITY_ACTION, ACTIVITY_DETAIL } from "@app/activity";
 import { PERMISSION, ROLE } from "@app/permissions";
 import type { TRoleCreateInput } from "@app/schemas";
@@ -69,7 +72,7 @@ describe("roleCreate", () => {
 		const mocks = mocksBuild(null);
 
 		const error = await Effect.runPromise(
-			roleCreate({ ...input, key: ROLE.ADMIN }, ACTOR_ID).pipe(
+			roleCreate({ ...input, key: ROLE.ADMIN }, ACTOR_ID, ADMIN_AUTHORITY).pipe(
 				Effect.provide(layerBuild(mocks)),
 				Effect.flip,
 			),
@@ -84,7 +87,7 @@ describe("roleCreate", () => {
 		const mocks = mocksBuild(row);
 
 		const error = await Effect.runPromise(
-			roleCreate(input, ACTOR_ID).pipe(
+			roleCreate(input, ACTOR_ID, ADMIN_AUTHORITY).pipe(
 				Effect.provide(layerBuild(mocks)),
 				Effect.flip,
 			),
@@ -98,7 +101,9 @@ describe("roleCreate", () => {
 		const mocks = mocksBuild(null);
 
 		const result = await Effect.runPromise(
-			roleCreate(input, ACTOR_ID).pipe(Effect.provide(layerBuild(mocks))),
+			roleCreate(input, ACTOR_ID, ADMIN_AUTHORITY).pipe(
+				Effect.provide(layerBuild(mocks)),
+			),
 		);
 
 		expect(result).toMatchObject({
@@ -120,5 +125,19 @@ describe("roleCreate", () => {
 				},
 			}),
 		);
+	});
+
+	it("refuses a permission the actor does not hold", async (): Promise<void> => {
+		const mocks = mocksBuild(null);
+
+		const error = await Effect.runPromise(
+			roleCreate(input, ACTOR_ID, USER_MANAGER_AUTHORITY).pipe(
+				Effect.provide(layerBuild(mocks)),
+				Effect.flip,
+			),
+		);
+
+		expect(error).toBeInstanceOf(EForbidden);
+		expect(mocks.create).not.toHaveBeenCalled();
 	});
 });

@@ -1,3 +1,5 @@
+import { USER_MANAGER_AUTHORITY } from "#/shared/authority-fakes.ts";
+import { ADMIN_AUTHORITY } from "#/shared/authority-fakes.ts";
 import { ACTIVITY_ACTION, ACTIVITY_DETAIL } from "@app/activity";
 import { PERMISSION, ROLE } from "@app/permissions";
 import type { TRoleUpdateInput } from "@app/schemas";
@@ -14,7 +16,7 @@ import {
 	ActivityRecorder,
 	type TActivityRecorderId,
 } from "#/shared/activity-recorder.ts";
-import { EBadRequest, ENotFound } from "#/shared/errors.ts";
+import { EBadRequest, EForbidden, ENotFound } from "#/shared/errors.ts";
 
 const ACTOR_ID = "22222222-2222-4222-8222-222222222222";
 const KEY = "reviewer";
@@ -87,10 +89,11 @@ describe("roleUpdate", () => {
 		const mocks = mocksBuild(row, {});
 
 		const error = await Effect.runPromise(
-			roleUpdate({ ...input, key: ROLE.MEMBER }, ACTOR_ID).pipe(
-				Effect.provide(layerBuild(mocks)),
-				Effect.flip,
-			),
+			roleUpdate(
+				{ ...input, key: ROLE.MEMBER },
+				ACTOR_ID,
+				ADMIN_AUTHORITY,
+			).pipe(Effect.provide(layerBuild(mocks)), Effect.flip),
 		);
 
 		expect(error).toBeInstanceOf(EBadRequest);
@@ -101,7 +104,7 @@ describe("roleUpdate", () => {
 		const mocks = mocksBuild(null, {}, null);
 
 		const error = await Effect.runPromise(
-			roleUpdate(input, ACTOR_ID).pipe(
+			roleUpdate(input, ACTOR_ID, ADMIN_AUTHORITY).pipe(
 				Effect.provide(layerBuild(mocks)),
 				Effect.flip,
 			),
@@ -115,7 +118,9 @@ describe("roleUpdate", () => {
 		const mocks = mocksBuild(row, { [KEY]: MEMBERS });
 
 		const result = await Effect.runPromise(
-			roleUpdate(input, ACTOR_ID).pipe(Effect.provide(layerBuild(mocks))),
+			roleUpdate(input, ACTOR_ID, ADMIN_AUTHORITY).pipe(
+				Effect.provide(layerBuild(mocks)),
+			),
 		);
 
 		expect(result).toMatchObject({
@@ -143,7 +148,9 @@ describe("roleUpdate", () => {
 		const mocks = mocksBuild(row, {}, row);
 
 		await Effect.runPromise(
-			roleUpdate(input, ACTOR_ID).pipe(Effect.provide(layerBuild(mocks))),
+			roleUpdate(input, ACTOR_ID, ADMIN_AUTHORITY).pipe(
+				Effect.provide(layerBuild(mocks)),
+			),
 		);
 
 		expect(mocks.insert).toHaveBeenCalledWith(
@@ -151,5 +158,49 @@ describe("roleUpdate", () => {
 				metadata: { [ACTIVITY_DETAIL.LABEL]: input.label },
 			}),
 		);
+	});
+
+	it("refuses to change the role the actor holds", async (): Promise<void> => {
+		const mocks = mocksBuild(row, {});
+
+		const error = await Effect.runPromise(
+			roleUpdate(input, ACTOR_ID, { ...ADMIN_AUTHORITY, role: KEY }).pipe(
+				Effect.provide(layerBuild(mocks)),
+				Effect.flip,
+			),
+		);
+
+		expect(error).toBeInstanceOf(EForbidden);
+		expect(mocks.update).not.toHaveBeenCalled();
+	});
+
+	it("refuses to add a permission the actor does not hold", async (): Promise<void> => {
+		const mocks = mocksBuild(row, {}, { ...previousRow, permissions: [] });
+
+		const error = await Effect.runPromise(
+			roleUpdate(
+				{ key: KEY, permissions: [PERMISSION.ROLE_DELETE] },
+				ACTOR_ID,
+				USER_MANAGER_AUTHORITY,
+			).pipe(Effect.provide(layerBuild(mocks)), Effect.flip),
+		);
+
+		expect(error).toBeInstanceOf(EForbidden);
+		expect(mocks.update).not.toHaveBeenCalled();
+	});
+
+	it("refuses to edit a role that holds more than the actor", async (): Promise<void> => {
+		const mocks = mocksBuild(row, {});
+
+		const error = await Effect.runPromise(
+			roleUpdate(
+				{ key: KEY, label: "Renamed" },
+				ACTOR_ID,
+				USER_MANAGER_AUTHORITY,
+			).pipe(Effect.provide(layerBuild(mocks)), Effect.flip),
+		);
+
+		expect(error).toBeInstanceOf(EForbidden);
+		expect(mocks.update).not.toHaveBeenCalled();
 	});
 });

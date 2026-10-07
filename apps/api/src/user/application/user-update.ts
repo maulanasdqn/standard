@@ -33,6 +33,9 @@ import {
 	type TUserNotifierId,
 	UserNotifier,
 } from "#/user/domain/user-notifier.ts";
+import type { TActorAuthority } from "#/shared/session.ts";
+import { userTargetEnsure } from "#/user/application/user-target-ensure.ts";
+import { roleWithinEnsure } from "#/role/index.ts";
 
 const changedTo = (previous: string, next: string): string | undefined =>
 	previous === next ? undefined : next;
@@ -59,6 +62,7 @@ const updateDetails = (previous: TUserRow, next: TUserRow): TActivityDetails =>
 export const userUpdate = Effect.fn("userUpdate")(function* (
 	input: TUserUpdateInput,
 	actorId: string,
+	authority: TActorAuthority,
 ): Effect.fn.Return<
 	TUser,
 	ENotFound | EForbidden | EBadRequest | EConflict | EDatabase,
@@ -78,13 +82,15 @@ export const userUpdate = Effect.fn("userUpdate")(function* (
 
 	yield* match(input.role)
 		.with(P.nullish, () => Effect.void)
-		.otherwise((role) => roleEnsure(role));
+		.otherwise((role) =>
+			roleEnsure(role).pipe(
+				Effect.andThen(
+					roleWithinEnsure(authority, role, USER_MESSAGE.ROLE_BEYOND_ACTOR),
+				),
+			),
+		);
 
-	const previous = yield* userRepo.findById(input.id);
-
-	if (previous === null) {
-		return yield* new ENotFound({ message: USER_MESSAGE.NOT_FOUND });
-	}
+	const previous = yield* userTargetEnsure(input.id, authority);
 
 	const updated = yield* userRepo.update(input);
 

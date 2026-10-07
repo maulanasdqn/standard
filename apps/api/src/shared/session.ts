@@ -19,3 +19,13 @@ export const SESSION_STATE = {
 } as const;
 
 export type TSessionState = (typeof SESSION_STATE)[keyof typeof SESSION_STATE];
+
+export type TActorAuthority = {
+	role: string;
+	permissions: readonly TPermission[];
+};
+
+export const actorAuthorityOf = (session: TSession): TActorAuthority => ({
+	role: session.user.role,
+	permissions: session.permissions,
+});
