@@ -1,5 +1,6 @@
 import {
 	accountDeactivatedMailBuild,
+	emailChangedMailBuild,
 	inviteMailBuild,
 	MAIL_TEMPLATE,
 	mailSendSafe,
@@ -78,6 +79,20 @@ export const userNotifierLayer = Layer.effect(
 						accountDeactivatedMailBuild({
 							to: target.email,
 							name: target.name,
+							brand: APP_MESSAGE.NAME,
+						}),
+					),
+				),
+			emailChanged: (target, previousEmail) =>
+				quietly(MAIL_TEMPLATE.EMAIL_CHANGED, () =>
+					mailSendSafe(
+						mailer,
+						logger,
+						MAIL_TEMPLATE.EMAIL_CHANGED,
+						emailChangedMailBuild({
+							to: previousEmail,
+							name: target.name,
+							newEmail: target.email,
 							brand: APP_MESSAGE.NAME,
 						}),
 					),
