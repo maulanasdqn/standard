@@ -1,16 +1,17 @@
-import { ALL_PERMISSIONS, type TPermission } from "@app/permissions";
-import { A, S } from "@mobily/ts-belt";
+import {
+	ALL_PERMISSIONS,
+	permissionResourceOf,
+	type TPermission,
+} from "@app/permissions";
+import { A } from "@mobily/ts-belt";
 
 export type TPermissionGroup = {
 	resource: string;
 	permissions: readonly TPermission[];
 };
 
-const permissionResource = (permission: TPermission): string =>
-	A.head(S.split(permission, ":")) ?? permission;
-
 const RESOURCES: readonly string[] = A.uniq(
-	A.map(ALL_PERMISSIONS, permissionResource),
+	A.map(ALL_PERMISSIONS, permissionResourceOf),
 );
 
 export const PERMISSION_GROUPS: readonly TPermissionGroup[] = A.map(
@@ -19,7 +20,7 @@ export const PERMISSION_GROUPS: readonly TPermissionGroup[] = A.map(
 		resource,
 		permissions: A.filter(
 			ALL_PERMISSIONS,
-			(permission) => permissionResource(permission) === resource,
+			(permission) => permissionResourceOf(permission) === resource,
 		),
 	}),
 );

@@ -6,13 +6,14 @@ export const RESERVED_ROLE_KEY = {
 	CREATE: "create",
 } as const;
 
-const roleKeySchema = z
+const roleKeyFormatSchema = z
 	.string()
-	.regex(/^[a-z][a-z0-9_-]{1,49}$/, VALIDATION_MESSAGE.ROLE_KEY_FORMAT)
-	.refine(
-		(key): boolean => key !== RESERVED_ROLE_KEY.CREATE,
-		VALIDATION_MESSAGE.ROLE_KEY_RESERVED,
-	);
+	.regex(/^[a-z][a-z0-9_-]{1,49}$/, VALIDATION_MESSAGE.ROLE_KEY_FORMAT);
+
+const roleKeySchema = roleKeyFormatSchema.refine(
+	(key): boolean => key !== RESERVED_ROLE_KEY.CREATE,
+	VALIDATION_MESSAGE.ROLE_KEY_RESERVED,
+);
 
 export const roleSchema = z.object({
 	key: z.string().min(1),
@@ -33,14 +34,14 @@ export const roleCreateInputSchema = z.object({
 export type TRoleCreateInput = z.infer<typeof roleCreateInputSchema>;
 
 export const roleUpdateInputSchema = z.object({
-	key: z.string().min(1),
+	key: roleKeyFormatSchema,
 	label: z.string().min(1).max(100).optional(),
 	description: z.string().max(500).nullable().optional(),
 	permissions: z.array(permissionSchema).optional(),
 });
 export type TRoleUpdateInput = z.infer<typeof roleUpdateInputSchema>;
 
-export const roleKeyInputSchema = z.object({ key: z.string().min(1) });
+export const roleKeyInputSchema = z.object({ key: roleKeyFormatSchema });
 export type TRoleKeyInput = z.infer<typeof roleKeyInputSchema>;
 
 export const roleListSchema = z.object({
