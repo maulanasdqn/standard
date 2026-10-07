@@ -1,6 +1,6 @@
 ---
 name: ts-conventions
-description: Apply this project's TypeScript conventions. Load this BEFORE writing or editing any .ts/.tsx file in this repo, including a one-line change, and re-check it before calling the work done. Covers the React component signature (`const X: FC<TProps> = (props): ReactElement =>`, props read as `props.x`), arrow functions only (no `function` keyword except generators), no plain strings (user-facing copy in @app/messages, domain keys in shared const objects), 200-line file limit, logic/UI separation, T/I/E naming prefixes, ts-pattern for conditionals, ts-belt for arrays/objects, Effect for apps/api business logic, explicit return types everywhere, and no em dashes anywhere in the repository.
+description: Apply this project's TypeScript conventions. Load this BEFORE writing or editing any .ts/.tsx file in this repo, including a one-line change, and re-check it before calling the work done. Covers the React component signature (`const X: FC<TProps> = (props): ReactElement =>`, props read as `props.x`), arrow functions only (no `function` keyword except generators), no plain strings (user-facing copy in @app/messages, or a shared package's own messages file, domain keys in shared const objects), 200-line file limit, logic/UI separation, T/I/E naming prefixes, ts-pattern for conditionals, ts-belt for arrays/objects, Effect for apps/api business logic, explicit return types everywhere, and no em dashes anywhere in the repository.
 ---
 
 # TypeScript conventions
@@ -69,7 +69,7 @@ Every string that carries meaning is named by a shared constant and referenced f
 
 Two categories, two homes:
 
-**User-facing copy** (labels, status text, error messages, empty states, button text) lives in `@app/messages`, one `SCREAMING_SNAKE` const object per feature in `packages/messages/src/<feature>/message.ts`, declared `as const` and re-exported from the package index.
+**User-facing copy** (labels, status text, error messages, empty states, button text) in an app lives in `@app/messages`. A shared package keeps its copy in its own messages file instead (`@app/mail`, `@app/storage`, `@app/components`), for the reason `AGENTS.md` gives under "Package layers". In `@app/messages` the copy is one `SCREAMING_SNAKE` const object per feature in `packages/messages/src/<feature>/message.ts`, declared `as const` and re-exported from the package index.
 
 ```ts
 export const HEALTH_MESSAGE = {
@@ -101,7 +101,7 @@ That last set matters because TypeScript does not protect you here: rename the v
 
 **Two catalogues are shared by every app in the workspace**, and their keys have a fixed shape so a second app can add to them without colliding with the first:
 
-- A permission key is `<resource>:<action>` in the central app (`note:read`, `user:update`) and `<app>:<resource>:<action>` in any other app. Lower-case, a hyphen inside a segment if needed, never a space. The key goes in `PERMISSION` in `@app/permissions`, its label in `PERMISSION_LABEL` in `@app/messages`, and a grant in `ROLE_PERMISSIONS` when a fixed role should hold it
+- A permission key is `<resource>:<action>` in the central app (`note:read`, `user:update`) and `<app>:<resource>:<action>` in any other app. Lower-case, an underscore inside a segment if needed (`user:password_reset`), never a hyphen or a space, the same as an activity action. The key goes in `PERMISSION` in `@app/permissions`, its label in `PERMISSION_LABEL` in `@app/messages`, and a grant in `ROLE_PERMISSIONS` when a fixed role should hold it
 - An activity action is `<resource>.<action>` in the central app (`note.create`, `user.password_reset`) and `<app>.<resource>.<action>` in any other app. The resource type goes in `ACTIVITY_RESOURCE_TYPE` and the action in `ACTIVITY_ACTION`, both in `@app/activity`, with the labels in `ACTIVITY_ACTION_LABEL` and `ACTIVITY_ENTITY_LABEL` in `@app/messages`
 
 ## File size
