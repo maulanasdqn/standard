@@ -36,6 +36,12 @@ export const MAIL_MESSAGE = {
 	TWO_FACTOR_OFF_ACTION: "Review your account",
 	TWO_FACTOR_OFF_FOOTER:
 		"If this was not you, change your password and turn two-factor authentication back on.",
+	EMAIL_CHANGED_SUBJECT: "The email address on your account was changed",
+	EMAIL_CHANGED_BODY:
+		"An administrator changed the email address on your account, so you now sign in with the new address and every session you had was signed out.",
+	EMAIL_CHANGED_NEW_ADDRESS: "New address:",
+	EMAIL_CHANGED_FOOTER:
+		"If you did not expect this, contact your administrator.",
 	SEND_FAILED: "Could not send an email.",
 	PASSWORD_RESET_FAILED: "Could not send the password reset email.",
 } as const;

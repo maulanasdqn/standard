@@ -39,6 +39,7 @@ export const userNotifierFake = (
 		invite: vi.fn(),
 		deactivated: vi.fn(),
 		emailVerify: vi.fn(),
+		emailChanged: vi.fn(),
 		twoFactorReset: vi.fn(),
 		...overrides,
 	});
