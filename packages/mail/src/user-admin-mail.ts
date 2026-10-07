@@ -60,3 +60,25 @@ export const twoFactorOffMailBuild = (
 		},
 		footer: MAIL_MESSAGE.TWO_FACTOR_OFF_FOOTER,
 	});
+
+export type TEmailChangedMailInput = {
+	to: string;
+	name: string;
+	newEmail: string;
+	brand: string;
+};
+
+export const emailChangedMailBuild = (
+	input: TEmailChangedMailInput,
+): TMailMessage =>
+	actionMailBuild({
+		to: input.to,
+		name: input.name,
+		brand: input.brand,
+		subject: MAIL_MESSAGE.EMAIL_CHANGED_SUBJECT,
+		body: [
+			MAIL_MESSAGE.EMAIL_CHANGED_BODY,
+			`${MAIL_MESSAGE.EMAIL_CHANGED_NEW_ADDRESS} ${input.newEmail}`,
+		],
+		footer: MAIL_MESSAGE.EMAIL_CHANGED_FOOTER,
+	});

@@ -95,6 +95,7 @@ export const userUpdate = Effect.fn("userUpdate")(function* (
 	if (updated.email !== previous.email) {
 		yield* userRepo.sessionsRevoke(updated.id);
 		yield* notifier.emailVerify(updated);
+		yield* notifier.emailChanged(updated, previous.email);
 	}
 
 	yield* activityRepo.insert({

@@ -12,6 +12,12 @@ describe("isRecordNotFound", () => {
 		);
 	});
 
+	it("treats an id the API rejects as malformed as a missing record", (): void => {
+		expect(isRecordNotFound(new ORPCError(ORPC_ERROR_CODE.BAD_REQUEST))).toBe(
+			true,
+		);
+	});
+
 	it("does not treat another API failure as a missing record", (): void => {
 		expect(isRecordNotFound(new ORPCError("FORBIDDEN"))).toBe(false);
 		expect(isRecordNotFound(new ORPCError("INTERNAL_SERVER_ERROR"))).toBe(

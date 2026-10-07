@@ -10,6 +10,7 @@ export const MAIL_TEMPLATE = {
 	INVITE: "invite",
 	ACCOUNT_DEACTIVATED: "account-deactivated",
 	TWO_FACTOR_OFF: "two-factor-off",
+	EMAIL_CHANGED: "email-changed",
 } as const;
 
 export type TMailTemplate = (typeof MAIL_TEMPLATE)[keyof typeof MAIL_TEMPLATE];

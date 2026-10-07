@@ -41,12 +41,14 @@ type TMocks = {
 	update: Mock;
 	sessionsRevoke: Mock;
 	emailVerify: Mock;
+	emailChanged: Mock;
 };
 
 const mocksBuild = (updated: TUserRow): TMocks => ({
 	update: vi.fn().mockReturnValue(Effect.succeed(updated)),
 	sessionsRevoke: vi.fn().mockReturnValue(Effect.void),
 	emailVerify: vi.fn().mockReturnValue(Effect.void),
+	emailChanged: vi.fn().mockReturnValue(Effect.void),
 });
 
 const layerBuild = (
@@ -82,7 +84,10 @@ const layerBuild = (
 		),
 		Layer.succeed(
 			UserNotifier,
-			userNotifierFake({ emailVerify: mocks.emailVerify }),
+			userNotifierFake({
+				emailVerify: mocks.emailVerify,
+				emailChanged: mocks.emailChanged,
+			}),
 		),
 	);
 
@@ -99,6 +104,7 @@ describe("userUpdate email changes", () => {
 
 		expect(mocks.sessionsRevoke).toHaveBeenCalledWith(USER_ID);
 		expect(mocks.emailVerify).toHaveBeenCalledWith(moved);
+		expect(mocks.emailChanged).toHaveBeenCalledWith(moved, row.email);
 	});
 
 	it("refuses to let the actor change their own email", async (): Promise<void> => {
@@ -126,5 +132,6 @@ describe("userUpdate email changes", () => {
 
 		expect(mocks.sessionsRevoke).not.toHaveBeenCalled();
 		expect(mocks.emailVerify).not.toHaveBeenCalled();
+		expect(mocks.emailChanged).not.toHaveBeenCalled();
 	});
 });

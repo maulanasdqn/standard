@@ -7,6 +7,7 @@ export type TUserNotifier = {
 	invite: (user: TUserRow) => Effect.Effect<void>;
 	deactivated: (user: TUserRow) => Effect.Effect<void>;
 	emailVerify: (user: TUserRow) => Effect.Effect<void>;
+	emailChanged: (user: TUserRow, previousEmail: string) => Effect.Effect<void>;
 	twoFactorReset: (user: TUserRow) => Effect.Effect<void>;
 };
 
