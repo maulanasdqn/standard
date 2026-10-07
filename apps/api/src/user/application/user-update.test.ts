@@ -1,3 +1,5 @@
+import { SUPERADMIN_AUTHORITY } from "#/shared/authority-fakes.ts";
+import { ADMIN_AUTHORITY } from "#/shared/authority-fakes.ts";
 import { ACTIVITY_ACTION, ACTIVITY_DETAIL } from "@app/activity";
 import { PERMISSION, ROLE } from "@app/permissions";
 import { Effect, Layer } from "effect";
@@ -93,10 +95,11 @@ describe("userUpdate", () => {
 		const mocks = mocksBuild(row, null);
 
 		const error = await Effect.runPromise(
-			userUpdate({ id: ACTOR_ID, role: ROLE.VIEWER }, ACTOR_ID).pipe(
-				Effect.provide(layerBuild(mocks)),
-				Effect.flip,
-			),
+			userUpdate(
+				{ id: ACTOR_ID, role: ROLE.VIEWER },
+				ACTOR_ID,
+				ADMIN_AUTHORITY,
+			).pipe(Effect.provide(layerBuild(mocks)), Effect.flip),
 		);
 
 		expect(error).toBeInstanceOf(EForbidden);
@@ -110,9 +113,11 @@ describe("userUpdate", () => {
 		});
 
 		const result = await Effect.runPromise(
-			userUpdate({ id: ACTOR_ID, name: NEW_NAME }, ACTOR_ID).pipe(
-				Effect.provide(layerBuild(mocks)),
-			),
+			userUpdate(
+				{ id: ACTOR_ID, name: NEW_NAME },
+				ACTOR_ID,
+				ADMIN_AUTHORITY,
+			).pipe(Effect.provide(layerBuild(mocks))),
 		);
 
 		expect(result.name).toBe(NEW_NAME);
@@ -123,10 +128,11 @@ describe("userUpdate", () => {
 		const mocks = mocksBuild(row, null);
 
 		const error = await Effect.runPromise(
-			userUpdate({ id: USER_ID, role: "ghost" }, ACTOR_ID).pipe(
-				Effect.provide(layerBuild(mocks)),
-				Effect.flip,
-			),
+			userUpdate(
+				{ id: USER_ID, role: "ghost" },
+				ACTOR_ID,
+				ADMIN_AUTHORITY,
+			).pipe(Effect.provide(layerBuild(mocks)), Effect.flip),
 		);
 
 		expect(error).toBeInstanceOf(EBadRequest);
@@ -137,10 +143,11 @@ describe("userUpdate", () => {
 		const mocks = mocksBuild(null, null, null);
 
 		const error = await Effect.runPromise(
-			userUpdate({ id: USER_ID, name: NEW_NAME }, ACTOR_ID).pipe(
-				Effect.provide(layerBuild(mocks)),
-				Effect.flip,
-			),
+			userUpdate(
+				{ id: USER_ID, name: NEW_NAME },
+				ACTOR_ID,
+				ADMIN_AUTHORITY,
+			).pipe(Effect.provide(layerBuild(mocks)), Effect.flip),
 		);
 
 		expect(error).toBeInstanceOf(ENotFound);
@@ -151,9 +158,11 @@ describe("userUpdate", () => {
 		const mocks = mocksBuild({ ...row, role: CUSTOM_ROLE }, customRole);
 
 		const result = await Effect.runPromise(
-			userUpdate({ id: USER_ID, role: CUSTOM_ROLE }, ACTOR_ID).pipe(
-				Effect.provide(layerBuild(mocks)),
-			),
+			userUpdate(
+				{ id: USER_ID, role: CUSTOM_ROLE },
+				ACTOR_ID,
+				ADMIN_AUTHORITY,
+			).pipe(Effect.provide(layerBuild(mocks))),
 		);
 
 		expect(result.role).toBe(CUSTOM_ROLE);
@@ -177,9 +186,11 @@ describe("userUpdate", () => {
 		const mocks = mocksBuild({ ...row, name: NEW_NAME }, null);
 
 		await Effect.runPromise(
-			userUpdate({ id: USER_ID, name: NEW_NAME }, ACTOR_ID).pipe(
-				Effect.provide(layerBuild(mocks)),
-			),
+			userUpdate(
+				{ id: USER_ID, name: NEW_NAME },
+				ACTOR_ID,
+				ADMIN_AUTHORITY,
+			).pipe(Effect.provide(layerBuild(mocks))),
 		);
 
 		expect(mocks.findByKey).not.toHaveBeenCalled();
@@ -191,5 +202,49 @@ describe("userUpdate", () => {
 				},
 			}),
 		);
+	});
+
+	it("refuses to give a role beyond the actor's own", async (): Promise<void> => {
+		const mocks = mocksBuild(row, null);
+
+		const error = await Effect.runPromise(
+			userUpdate(
+				{ id: USER_ID, role: ROLE.SUPERADMIN },
+				ACTOR_ID,
+				ADMIN_AUTHORITY,
+			).pipe(Effect.provide(layerBuild(mocks)), Effect.flip),
+		);
+
+		expect(error).toBeInstanceOf(EForbidden);
+		expect(mocks.update).not.toHaveBeenCalled();
+	});
+
+	it("refuses to change someone whose role is beyond the actor's own", async (): Promise<void> => {
+		const mocks = mocksBuild(row, null, { ...row, role: ROLE.SUPERADMIN });
+
+		const error = await Effect.runPromise(
+			userUpdate(
+				{ id: USER_ID, name: NEW_NAME },
+				ACTOR_ID,
+				ADMIN_AUTHORITY,
+			).pipe(Effect.provide(layerBuild(mocks)), Effect.flip),
+		);
+
+		expect(error).toBeInstanceOf(EForbidden);
+		expect(mocks.update).not.toHaveBeenCalled();
+	});
+
+	it("lets a superadmin promote someone to superadmin", async (): Promise<void> => {
+		const mocks = mocksBuild({ ...row, role: ROLE.SUPERADMIN }, null);
+
+		await Effect.runPromise(
+			userUpdate(
+				{ id: USER_ID, role: ROLE.SUPERADMIN },
+				ACTOR_ID,
+				SUPERADMIN_AUTHORITY,
+			).pipe(Effect.provide(layerBuild(mocks))),
+		);
+
+		expect(mocks.update).toHaveBeenCalled();
 	});
 });

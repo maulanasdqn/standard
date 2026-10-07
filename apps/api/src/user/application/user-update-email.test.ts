@@ -1,3 +1,4 @@
+import { ADMIN_AUTHORITY } from "#/shared/authority-fakes.ts";
 import { ROLE } from "@app/permissions";
 import { Effect, Layer } from "effect";
 import {
@@ -97,9 +98,11 @@ describe("userUpdate email changes", () => {
 		const mocks = mocksBuild(moved);
 
 		await Effect.runPromise(
-			userUpdate({ id: USER_ID, email: moved.email }, ACTOR_ID).pipe(
-				Effect.provide(layerBuild(mocks)),
-			),
+			userUpdate(
+				{ id: USER_ID, email: moved.email },
+				ACTOR_ID,
+				ADMIN_AUTHORITY,
+			).pipe(Effect.provide(layerBuild(mocks))),
 		);
 
 		expect(mocks.sessionsRevoke).toHaveBeenCalledWith(USER_ID);
@@ -111,10 +114,11 @@ describe("userUpdate email changes", () => {
 		const mocks = mocksBuild(row);
 
 		const error = await Effect.runPromise(
-			userUpdate({ id: ACTOR_ID, email: "self@test.app" }, ACTOR_ID).pipe(
-				Effect.flip,
-				Effect.provide(layerBuild(mocks)),
-			),
+			userUpdate(
+				{ id: ACTOR_ID, email: "self@test.app" },
+				ACTOR_ID,
+				ADMIN_AUTHORITY,
+			).pipe(Effect.flip, Effect.provide(layerBuild(mocks))),
 		);
 
 		expect(error._tag).toBe("EForbidden");
@@ -125,9 +129,11 @@ describe("userUpdate email changes", () => {
 		const mocks = mocksBuild({ ...row, name: "Renamed" });
 
 		await Effect.runPromise(
-			userUpdate({ id: USER_ID, name: "Renamed" }, ACTOR_ID).pipe(
-				Effect.provide(layerBuild(mocks)),
-			),
+			userUpdate(
+				{ id: USER_ID, name: "Renamed" },
+				ACTOR_ID,
+				ADMIN_AUTHORITY,
+			).pipe(Effect.provide(layerBuild(mocks))),
 		);
 
 		expect(mocks.sessionsRevoke).not.toHaveBeenCalled();

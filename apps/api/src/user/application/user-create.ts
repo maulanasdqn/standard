@@ -21,19 +21,28 @@ import {
 } from "#/shared/activity-recorder.ts";
 import type { TCustomRoleRepoId } from "#/role/index.ts";
 import { UserRepo, type TUserRepoId } from "#/user/domain/user.ts";
+import type { TActorAuthority } from "#/shared/session.ts";
+import { roleWithinEnsure } from "#/role/index.ts";
+import type { EForbidden } from "#/shared/errors.ts";
 
 export const userCreate = Effect.fn("userCreate")(function* (
 	input: TUserCreateInput,
 	actorId: string,
+	authority: TActorAuthority,
 ): Effect.fn.Return<
 	TUser,
-	EConflict | EBadRequest | EDatabase | EAuth,
+	EConflict | EBadRequest | EForbidden | EDatabase | EAuth,
 	TUserRepoId | TCustomRoleRepoId | TActivityRecorderId
 > {
 	const userRepo = yield* UserRepo;
 	const activityRepo = yield* ActivityRecorder;
 
 	yield* roleEnsure(input.role);
+	yield* roleWithinEnsure(
+		authority,
+		input.role,
+		USER_MESSAGE.ROLE_BEYOND_ACTOR,
+	);
 
 	const existing = yield* userRepo.findByEmail(input.email);
 

@@ -2,6 +2,10 @@ export const USER_MESSAGE = {
 	NOT_FOUND: "This user could not be found.",
 	EMAIL_TAKEN: "A user with this email already exists.",
 	SELF_ROLE_CHANGE: "You can't change your own role.",
+	ROLE_BEYOND_ACTOR:
+		"You can only give a role whose permissions you hold yourself.",
+	TARGET_BEYOND_ACTOR:
+		"You can only manage people whose role you could give yourself.",
 	SELF_DELETE: "You can't delete your own account.",
 	SELF_PASSWORD_RESET: "Change your own password from your account page.",
 	PASSWORD_RESET: "Password reset. Share the new password with the user.",

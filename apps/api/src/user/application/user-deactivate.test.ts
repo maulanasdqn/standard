@@ -1,3 +1,6 @@
+import type { TCustomRoleRepoId } from "#/role/index.ts";
+import { customRoleRepoFakeLayer } from "#/user/application/user-fakes.ts";
+import { ADMIN_AUTHORITY } from "#/shared/authority-fakes.ts";
 import { ACTIVITY_ACTION } from "@app/activity";
 import { ROLE } from "@app/permissions";
 import { Effect, Layer } from "effect";
@@ -38,12 +41,14 @@ const row: TUserRow = {
 };
 
 type TMocks = {
+	findById: Mock;
 	deactivate: Mock;
 	insert: Mock;
 	deactivated: Mock;
 };
 
 const mocksBuild = (result: TUserRow | null): TMocks => ({
+	findById: vi.fn().mockReturnValue(Effect.succeed(result)),
 	deactivate: vi.fn().mockReturnValue(Effect.succeed(result)),
 	insert: vi.fn().mockReturnValue(Effect.succeed(undefined)),
 	deactivated: vi.fn().mockReturnValue(Effect.void),
@@ -51,9 +56,18 @@ const mocksBuild = (result: TUserRow | null): TMocks => ({
 
 const layerBuild = (
 	mocks: TMocks,
-): Layer.Layer<TUserRepoId | TActivityRecorderId | TUserNotifierId> =>
+): Layer.Layer<
+	TUserRepoId | TActivityRecorderId | TUserNotifierId | TCustomRoleRepoId
+> =>
 	Layer.mergeAll(
-		Layer.succeed(UserRepo, userRepoFake({ deactivate: mocks.deactivate })),
+		customRoleRepoFakeLayer(),
+		Layer.succeed(
+			UserRepo,
+			userRepoFake({
+				findById: mocks.findById,
+				deactivate: mocks.deactivate,
+			}),
+		),
 		Layer.succeed(
 			ActivityRecorder,
 			ActivityRecorder.of({ insert: mocks.insert }),
@@ -69,7 +83,7 @@ describe("userDeactivate", () => {
 		const mocks = mocksBuild(row);
 
 		const error = await Effect.runPromise(
-			userDeactivate({ id: ACTOR_ID }, ACTOR_ID).pipe(
+			userDeactivate({ id: ACTOR_ID }, ACTOR_ID, ADMIN_AUTHORITY).pipe(
 				Effect.flip,
 				Effect.provide(layerBuild(mocks)),
 			),
@@ -83,7 +97,7 @@ describe("userDeactivate", () => {
 		const mocks = mocksBuild(null);
 
 		const error = await Effect.runPromise(
-			userDeactivate({ id: USER_ID }, ACTOR_ID).pipe(
+			userDeactivate({ id: USER_ID }, ACTOR_ID, ADMIN_AUTHORITY).pipe(
 				Effect.flip,
 				Effect.provide(layerBuild(mocks)),
 			),
@@ -97,7 +111,7 @@ describe("userDeactivate", () => {
 		const mocks = mocksBuild(row);
 
 		const result = await Effect.runPromise(
-			userDeactivate({ id: USER_ID }, ACTOR_ID).pipe(
+			userDeactivate({ id: USER_ID }, ACTOR_ID, ADMIN_AUTHORITY).pipe(
 				Effect.provide(layerBuild(mocks)),
 			),
 		);

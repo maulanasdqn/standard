@@ -10,7 +10,9 @@ import {
 	activityDetails,
 } from "@app/activity";
 import { A } from "@mobily/ts-belt";
-import { EConflict, type EDatabase } from "#/shared/errors.ts";
+import { EConflict, type EDatabase, EForbidden } from "#/shared/errors.ts";
+import type { TActorAuthority } from "#/shared/session.ts";
+import { permissionsWithin } from "#/role/application/role-authority.ts";
 import {
 	ActivityRecorder,
 	type TActivityRecorderId,
@@ -23,13 +25,20 @@ import {
 export const roleCreate = Effect.fn("roleCreate")(function* (
 	input: TRoleCreateInput,
 	actorId: string,
+	authority: TActorAuthority,
 ): Effect.fn.Return<
 	TRoleDto,
-	EConflict | EDatabase,
+	EConflict | EForbidden | EDatabase,
 	TCustomRoleRepoId | TActivityRecorderId
 > {
 	const customRoleRepo = yield* CustomRoleRepo;
 	const activityRepo = yield* ActivityRecorder;
+
+	if (!permissionsWithin(authority, input.permissions)) {
+		return yield* new EForbidden({
+			message: ROLE_MESSAGE.PERMISSIONS_BEYOND_ACTOR,
+		});
+	}
 
 	const taken = yield* roleExists(input.key);
 

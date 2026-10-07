@@ -18,14 +18,18 @@ import {
 	type TUserNotifierId,
 	UserNotifier,
 } from "#/user/domain/user-notifier.ts";
+import type { TActorAuthority } from "#/shared/session.ts";
+import { userTargetEnsure } from "#/user/application/user-target-ensure.ts";
+import type { TCustomRoleRepoId } from "#/role/index.ts";
 
 export const userDeactivate = Effect.fn("userDeactivate")(function* (
 	input: TUserIdInput,
 	actorId: string,
+	authority: TActorAuthority,
 ): Effect.fn.Return<
 	TUser,
 	ENotFound | EForbidden | EDatabase,
-	TUserRepoId | TActivityRecorderId | TUserNotifierId
+	TUserRepoId | TActivityRecorderId | TUserNotifierId | TCustomRoleRepoId
 > {
 	const userRepo = yield* UserRepo;
 	const activityRepo = yield* ActivityRecorder;
@@ -34,6 +38,8 @@ export const userDeactivate = Effect.fn("userDeactivate")(function* (
 	if (input.id === actorId) {
 		return yield* new EForbidden({ message: USER_MESSAGE.SELF_DEACTIVATE });
 	}
+
+	yield* userTargetEnsure(input.id, authority);
 
 	const row = yield* userRepo.deactivate(input.id);
 

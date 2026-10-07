@@ -144,4 +144,20 @@ describe("users REST endpoints", () => {
 		});
 		expect(response.status).toBe(403);
 	});
+
+	it("refuses to let an admin create a superadmin", async (): Promise<void> => {
+		const response = await apiFetch({
+			path: "/users",
+			cookie: adminCookie,
+			method: "POST",
+			body: {
+				name: "E2E Escalation",
+				email: "e2e-escalation@test.app",
+				password: "Escalation-password-123",
+				role: ROLE.SUPERADMIN,
+			},
+		});
+
+		expect(response.status).toBe(403);
+	});
 });

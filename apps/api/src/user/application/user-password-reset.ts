@@ -11,21 +11,25 @@ import {
 	type EAuth,
 	type EDatabase,
 	EForbidden,
-	ENotFound,
+	type ENotFound,
 } from "#/shared/errors.ts";
 import {
 	ActivityRecorder,
 	type TActivityRecorderId,
 } from "#/shared/activity-recorder.ts";
 import { UserRepo, type TUserRepoId } from "#/user/domain/user.ts";
+import type { TActorAuthority } from "#/shared/session.ts";
+import { userTargetEnsure } from "#/user/application/user-target-ensure.ts";
+import type { TCustomRoleRepoId } from "#/role/index.ts";
 
 export const userPasswordReset = Effect.fn("userPasswordReset")(function* (
 	input: TUserPasswordResetInput,
 	actorId: string,
+	authority: TActorAuthority,
 ): Effect.fn.Return<
 	{ id: string },
 	ENotFound | EForbidden | EDatabase | EAuth,
-	TUserRepoId | TActivityRecorderId
+	TUserRepoId | TActivityRecorderId | TCustomRoleRepoId
 > {
 	const userRepo = yield* UserRepo;
 	const activityRepo = yield* ActivityRecorder;
@@ -34,11 +38,7 @@ export const userPasswordReset = Effect.fn("userPasswordReset")(function* (
 		return yield* new EForbidden({ message: USER_MESSAGE.SELF_PASSWORD_RESET });
 	}
 
-	const existing = yield* userRepo.findById(input.id);
-
-	if (existing === null) {
-		return yield* new ENotFound({ message: USER_MESSAGE.NOT_FOUND });
-	}
+	const existing = yield* userTargetEnsure(input.id, authority);
 
 	yield* userRepo.resetPassword(input);
 	yield* activityRepo.insert({

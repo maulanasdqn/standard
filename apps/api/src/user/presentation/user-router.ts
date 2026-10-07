@@ -13,6 +13,7 @@ import { userSessionRevoke } from "#/user/application/user-session-revoke.ts";
 import { userTwoFactorReset } from "#/user/application/user-two-factor-reset.ts";
 import { userSessionsRevoke } from "#/user/application/user-sessions-revoke.ts";
 import { implementer, permissionGuarded } from "#/platform/orpc/implementer.ts";
+import { actorAuthorityOf } from "#/shared/session.ts";
 import {
 	effectRun,
 	effectRunTransactional,
@@ -31,7 +32,11 @@ const userRouter = implementer.user.router({
 		({ input, context }) =>
 			effectRunTransactional(
 				context.runtime,
-				userCreate(input, context.session.user.id),
+				userCreate(
+					input,
+					context.session.user.id,
+					actorAuthorityOf(context.session),
+				),
 			),
 	),
 
@@ -39,7 +44,11 @@ const userRouter = implementer.user.router({
 		({ input, context }) =>
 			effectRunTransactional(
 				context.runtime,
-				userUpdate(input, context.session.user.id),
+				userUpdate(
+					input,
+					context.session.user.id,
+					actorAuthorityOf(context.session),
+				),
 			),
 	),
 
@@ -47,7 +56,11 @@ const userRouter = implementer.user.router({
 		({ input, context }) =>
 			effectRunTransactional(
 				context.runtime,
-				userDelete(input, context.session.user.id),
+				userDelete(
+					input,
+					context.session.user.id,
+					actorAuthorityOf(context.session),
+				),
 			),
 	),
 
@@ -56,7 +69,11 @@ const userRouter = implementer.user.router({
 	).user.resetPassword.handler(({ input, context }) =>
 		effectRunTransactional(
 			context.runtime,
-			userPasswordReset(input, context.session.user.id),
+			userPasswordReset(
+				input,
+				context.session.user.id,
+				actorAuthorityOf(context.session),
+			),
 		),
 	),
 
@@ -64,7 +81,11 @@ const userRouter = implementer.user.router({
 		({ input, context }) =>
 			effectRunTransactional(
 				context.runtime,
-				userInvite(input, context.session.user.id),
+				userInvite(
+					input,
+					context.session.user.id,
+					actorAuthorityOf(context.session),
+				),
 			),
 	),
 
@@ -72,7 +93,11 @@ const userRouter = implementer.user.router({
 		({ input, context }) =>
 			effectRunTransactional(
 				context.runtime,
-				userDeactivate(input, context.session.user.id),
+				userDeactivate(
+					input,
+					context.session.user.id,
+					actorAuthorityOf(context.session),
+				),
 			),
 	),
 
@@ -80,7 +105,11 @@ const userRouter = implementer.user.router({
 		({ input, context }) =>
 			effectRunTransactional(
 				context.runtime,
-				userReactivate(input, context.session.user.id),
+				userReactivate(
+					input,
+					context.session.user.id,
+					actorAuthorityOf(context.session),
+				),
 			),
 	),
 
@@ -93,7 +122,11 @@ const userRouter = implementer.user.router({
 	).user.sessionRevoke.handler(({ input, context }) =>
 		effectRunTransactional(
 			context.runtime,
-			userSessionRevoke(input, context.session.user.id),
+			userSessionRevoke(
+				input,
+				context.session.user.id,
+				actorAuthorityOf(context.session),
+			),
 		),
 	),
 
@@ -102,7 +135,11 @@ const userRouter = implementer.user.router({
 	).user.twoFactorReset.handler(({ input, context }) =>
 		effectRunTransactional(
 			context.runtime,
-			userTwoFactorReset(input, context.session.user.id),
+			userTwoFactorReset(
+				input,
+				context.session.user.id,
+				actorAuthorityOf(context.session),
+			),
 		),
 	),
 
@@ -111,7 +148,11 @@ const userRouter = implementer.user.router({
 	).user.sessionsRevoke.handler(({ input, context }) =>
 		effectRunTransactional(
 			context.runtime,
-			userSessionsRevoke(input, context.session.user.id),
+			userSessionsRevoke(
+				input,
+				context.session.user.id,
+				actorAuthorityOf(context.session),
+			),
 		),
 	),
 });

@@ -5,6 +5,7 @@ import { roleGet } from "#/role/application/role-get.ts";
 import { roleList } from "#/role/application/role-list.ts";
 import { roleUpdate } from "#/role/application/role-update.ts";
 import { implementer, permissionGuarded } from "#/platform/orpc/implementer.ts";
+import { actorAuthorityOf } from "#/shared/session.ts";
 import {
 	effectRun,
 	effectRunTransactional,
@@ -23,7 +24,11 @@ const roleRouter = implementer.role.router({
 		({ input, context }) =>
 			effectRunTransactional(
 				context.runtime,
-				roleCreate(input, context.session.user.id),
+				roleCreate(
+					input,
+					context.session.user.id,
+					actorAuthorityOf(context.session),
+				),
 			),
 	),
 
@@ -31,7 +36,11 @@ const roleRouter = implementer.role.router({
 		({ input, context }) =>
 			effectRunTransactional(
 				context.runtime,
-				roleUpdate(input, context.session.user.id),
+				roleUpdate(
+					input,
+					context.session.user.id,
+					actorAuthorityOf(context.session),
+				),
 			),
 	),
 

@@ -14,17 +14,24 @@ import {
 import { type EDatabase, ENotFound } from "#/shared/errors.ts";
 import { toUserDto } from "#/user/application/to-user-dto.ts";
 import { UserRepo, type TUserRepoId } from "#/user/domain/user.ts";
+import type { TActorAuthority } from "#/shared/session.ts";
+import { userTargetEnsure } from "#/user/application/user-target-ensure.ts";
+import type { TCustomRoleRepoId } from "#/role/index.ts";
+import type { EForbidden } from "#/shared/errors.ts";
 
 export const userReactivate = Effect.fn("userReactivate")(function* (
 	input: TUserIdInput,
 	actorId: string,
+	authority: TActorAuthority,
 ): Effect.fn.Return<
 	TUser,
-	ENotFound | EDatabase,
-	TUserRepoId | TActivityRecorderId
+	ENotFound | EForbidden | EDatabase,
+	TUserRepoId | TActivityRecorderId | TCustomRoleRepoId
 > {
 	const userRepo = yield* UserRepo;
 	const activityRepo = yield* ActivityRecorder;
+
+	yield* userTargetEnsure(input.id, authority);
 
 	const row = yield* userRepo.reactivate(input.id);
 

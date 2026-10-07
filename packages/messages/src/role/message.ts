@@ -24,6 +24,8 @@ export const ROLE_MESSAGE = {
 	NOT_FOUND: "This role could not be found.",
 	KEY_TAKEN: "A role with this key already exists.",
 	FIXED: "Fixed roles are defined in code and can't be changed here.",
+	PERMISSIONS_BEYOND_ACTOR: "You can only grant permissions you hold yourself.",
+	OWN_ROLE: "You can't change the role you hold.",
 	IN_USE: "This role is still assigned to users and can't be deleted.",
 	EMPTY: "No roles yet.",
 	KEY_PLACEHOLDER: "reviewer",

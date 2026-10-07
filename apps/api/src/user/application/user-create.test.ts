@@ -1,3 +1,4 @@
+import { ADMIN_AUTHORITY } from "#/shared/authority-fakes.ts";
 import { ROLE } from "@app/permissions";
 import type { TUserCreateInput } from "@app/schemas";
 import { Effect, Layer } from "effect";
@@ -64,7 +65,7 @@ describe("userCreate", () => {
 		const insert = vi.fn().mockReturnValue(Effect.succeed(undefined));
 
 		const result = await Effect.runPromise(
-			userCreate(input, ACTOR_ID).pipe(
+			userCreate(input, ACTOR_ID, ADMIN_AUTHORITY).pipe(
 				Effect.provide(layerBuild(findByEmail, create, insert)),
 			),
 		);
@@ -88,7 +89,7 @@ describe("userCreate", () => {
 		const create = vi.fn();
 
 		const error = await Effect.runPromise(
-			userCreate(input, ACTOR_ID).pipe(
+			userCreate(input, ACTOR_ID, ADMIN_AUTHORITY).pipe(
 				Effect.provide(layerBuild(findByEmail, create, vi.fn())),
 				Effect.flip,
 			),

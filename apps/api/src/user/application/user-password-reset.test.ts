@@ -1,3 +1,6 @@
+import type { TCustomRoleRepoId } from "#/role/index.ts";
+import { customRoleRepoFakeLayer } from "#/user/application/user-fakes.ts";
+import { ADMIN_AUTHORITY } from "#/shared/authority-fakes.ts";
 import { ACTIVITY_ACTION, ACTIVITY_DETAIL } from "@app/activity";
 import { ROLE } from "@app/permissions";
 import { Effect, Layer } from "effect";
@@ -37,8 +40,9 @@ const layerBuild = (
 	findById: Mock,
 	resetPassword: Mock,
 	insert: Mock = vi.fn(),
-): Layer.Layer<TUserRepoId | TActivityRecorderId> =>
+): Layer.Layer<TUserRepoId | TActivityRecorderId | TCustomRoleRepoId> =>
 	Layer.mergeAll(
+		customRoleRepoFakeLayer(),
 		Layer.succeed(UserRepo, userRepoFake({ findById, resetPassword })),
 		Layer.succeed(ActivityRecorder, ActivityRecorder.of({ insert })),
 	);
@@ -48,10 +52,11 @@ describe("userPasswordReset", () => {
 		const resetPassword = vi.fn();
 
 		const error = await Effect.runPromise(
-			userPasswordReset({ id: ACTOR_ID, password: PASSWORD }, ACTOR_ID).pipe(
-				Effect.provide(layerBuild(vi.fn(), resetPassword)),
-				Effect.flip,
-			),
+			userPasswordReset(
+				{ id: ACTOR_ID, password: PASSWORD },
+				ACTOR_ID,
+				ADMIN_AUTHORITY,
+			).pipe(Effect.provide(layerBuild(vi.fn(), resetPassword)), Effect.flip),
 		);
 
 		expect(error).toBeInstanceOf(EForbidden);
@@ -63,10 +68,11 @@ describe("userPasswordReset", () => {
 		const resetPassword = vi.fn();
 
 		const error = await Effect.runPromise(
-			userPasswordReset({ id: TARGET_ID, password: PASSWORD }, ACTOR_ID).pipe(
-				Effect.provide(layerBuild(findById, resetPassword)),
-				Effect.flip,
-			),
+			userPasswordReset(
+				{ id: TARGET_ID, password: PASSWORD },
+				ACTOR_ID,
+				ADMIN_AUTHORITY,
+			).pipe(Effect.provide(layerBuild(findById, resetPassword)), Effect.flip),
 		);
 
 		expect(error).toBeInstanceOf(ENotFound);
@@ -79,9 +85,11 @@ describe("userPasswordReset", () => {
 		const insert = vi.fn().mockReturnValue(Effect.succeed(undefined));
 
 		await Effect.runPromise(
-			userPasswordReset({ id: TARGET_ID, password: PASSWORD }, ACTOR_ID).pipe(
-				Effect.provide(layerBuild(findById, resetPassword, insert)),
-			),
+			userPasswordReset(
+				{ id: TARGET_ID, password: PASSWORD },
+				ACTOR_ID,
+				ADMIN_AUTHORITY,
+			).pipe(Effect.provide(layerBuild(findById, resetPassword, insert))),
 		);
 
 		expect(insert).toHaveBeenCalledWith(
