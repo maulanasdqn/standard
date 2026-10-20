@@ -1,3 +1,4 @@
+import { webPathOf } from "@app/contract";
 import { NOTE_MESSAGE, TABLE_MESSAGE } from "@app/messages";
 import { expect, type Page, test } from "@playwright/test";
 import { SEED_CREDENTIALS } from "../../support/credentials.ts";
@@ -27,7 +28,7 @@ test.describe("the list keeps its state in the address", () => {
 	});
 
 	test("puts the search in the address and restores it after a reload", async (): Promise<void> => {
-		await page.goto("/notes");
+		await page.goto(webPathOf("/notes"));
 		const searchBox = page.getByLabel(NOTE_MESSAGE.SEARCH_PLACEHOLDER);
 		await searchBox.fill(SEARCH_TEXT);
 		await searchBox.press("Enter");
@@ -45,7 +46,7 @@ test.describe("the list keeps its state in the address", () => {
 	});
 
 	test("puts the sort in the address and toggles its direction", async (): Promise<void> => {
-		await page.goto("/notes");
+		await page.goto(webPathOf("/notes"));
 		const titleSort = page.getByRole("button", {
 			name: NOTE_MESSAGE.COLUMN_TITLE,
 			exact: true,
@@ -62,7 +63,7 @@ test.describe("the list keeps its state in the address", () => {
 	});
 
 	test("puts the page size in the address and keeps it after a reload", async (): Promise<void> => {
-		await page.goto("/notes");
+		await page.goto(webPathOf("/notes"));
 		const pageSizeSelect = page
 			.locator("div", { hasText: TABLE_MESSAGE.ROWS_PER_PAGE })
 			.getByRole("combobox")

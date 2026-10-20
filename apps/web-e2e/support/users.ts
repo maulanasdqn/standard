@@ -1,3 +1,4 @@
+import { webPathOf } from "@app/contract";
 import { AUTH_MESSAGE, USER_MESSAGE } from "@app/messages";
 import type { TUserCreateInput } from "@app/schemas";
 import { expect, type Page } from "@playwright/test";
@@ -9,7 +10,7 @@ export const createUser = async (
 	user: TUserCreateInput,
 	roleLabel: string,
 ): Promise<void> => {
-	await page.goto("/users/create");
+	await page.goto(webPathOf("/users/create"));
 	await page.getByLabel("Name", { exact: true }).fill(user.name);
 	await page
 		.getByLabel(AUTH_MESSAGE.FIELD_EMAIL, { exact: true })

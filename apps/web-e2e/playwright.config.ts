@@ -1,3 +1,4 @@
+import { WEB_BASE_PATH } from "@app/contract";
 import { defineConfig, devices } from "@playwright/test";
 
 const PORT = 5273;
@@ -19,7 +20,7 @@ export default defineConfig({
 	globalTeardown: "./support/global-teardown.ts",
 	webServer: {
 		command: `pnpm --filter @app/web exec vite build && pnpm --filter @app/web exec vite preview --host 127.0.0.1 --port ${PORT} --strictPort`,
-		url: BASE_URL,
+		url: `${BASE_URL}${WEB_BASE_PATH}/`,
 		reuseExistingServer: !process.env.CI,
 		timeout: WEB_SERVER_TIMEOUT_MS,
 		env: {

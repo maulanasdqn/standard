@@ -417,6 +417,9 @@ importers:
       '@app/activity':
         specifier: workspace:*
         version: link:../../packages/activity
+      '@app/contract':
+        specifier: workspace:*
+        version: link:../../packages/contract
       '@app/messages':
         specifier: workspace:*
         version: link:../../packages/messages

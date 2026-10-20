@@ -1,3 +1,4 @@
+import { webPathOf } from "@app/contract";
 import { AUTH_MESSAGE } from "@app/messages";
 import type { TLoginInput } from "@app/schemas";
 import { expect, type Page } from "@playwright/test";
@@ -6,7 +7,7 @@ const submitLogin = async (
 	page: Page,
 	{ email, password }: TLoginInput,
 ): Promise<void> => {
-	await page.goto("/login");
+	await page.goto(webPathOf("/login"));
 	await page.getByLabel(AUTH_MESSAGE.FIELD_EMAIL).pressSequentially(email);
 	await page
 		.getByLabel(AUTH_MESSAGE.FIELD_PASSWORD)

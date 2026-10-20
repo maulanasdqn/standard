@@ -1,3 +1,4 @@
+import { webPathOf } from "@app/contract";
 import { ERROR_MESSAGE, USER_MESSAGE } from "@app/messages";
 import type { TUserCreateInput } from "@app/schemas";
 import { expect, type Page, test } from "@playwright/test";
@@ -114,7 +115,7 @@ test.describe("users admin flow", () => {
 		await expectNavVisible(page, [NAV_LABEL.DASHBOARD]);
 		await expectNavHidden(page, ADMIN_NAV_LABELS);
 
-		await page.goto("/users");
+		await page.goto(webPathOf("/users"));
 		await expect(
 			page.getByRole("heading", { name: ERROR_MESSAGE.FORBIDDEN_TITLE }),
 		).toBeVisible();

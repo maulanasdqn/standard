@@ -1,3 +1,4 @@
+import { webPathOf } from "@app/contract";
 import { AUTH_MESSAGE } from "@app/messages";
 import { expect, test } from "@playwright/test";
 import { SEED_CREDENTIALS } from "../support/credentials.ts";
@@ -14,7 +15,7 @@ test("a user renames themselves and signs another device out", async ({
 	const page = await browser.newPage();
 	await signIn(page, SEED_CREDENTIALS.viewer);
 
-	await page.goto("/account");
+	await page.goto(webPathOf("/account"));
 	const name = page.getByLabel(AUTH_MESSAGE.FIELD_NAME, { exact: true });
 	await name.clear();
 	await name.pressSequentially(RENAMED);

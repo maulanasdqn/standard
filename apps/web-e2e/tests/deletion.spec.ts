@@ -1,3 +1,4 @@
+import { webPathOf } from "@app/contract";
 import { ROLE_MESSAGE, USER_MESSAGE } from "@app/messages";
 import type { TRoleCreateInput, TUserCreateInput } from "@app/schemas";
 import { expect, type Page, test } from "@playwright/test";
@@ -58,7 +59,7 @@ test.describe("deleting from the lists", () => {
 	});
 
 	test("deletes an unused custom role and offers no delete on a fixed one", async (): Promise<void> => {
-		await page.goto("/roles");
+		await page.goto(webPathOf("/roles"));
 		await page.getByRole("link", { name: ROLE_MESSAGE.NEW_ROLE }).click();
 		await expect(page).toHaveURL(/\/roles\/create$/);
 		await page.getByLabel("Label", { exact: true }).fill(DOOMED_ROLE.label);

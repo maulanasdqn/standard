@@ -13,6 +13,7 @@ import {
 	twoFactorOffMailBuild,
 	type TMailer,
 } from "@app/mail";
+import { webPathOf } from "@app/contract";
 import { APP_MESSAGE } from "@app/messages";
 import { logger } from "#/platform/observability/logger.ts";
 
@@ -78,7 +79,7 @@ export const authEventsOf = (deps: TAuthEventsDeps): TAuthEvents => {
 			passwordChangedMailBuild({
 				to: user.email,
 				name: user.name,
-				resetUrl: `${deps.webOrigin}${FORGOT_PASSWORD_PATH}`,
+				resetUrl: `${deps.webOrigin}${webPathOf(FORGOT_PASSWORD_PATH)}`,
 				brand: APP_MESSAGE.NAME,
 			}),
 		);
@@ -141,7 +142,7 @@ export const authEventsOf = (deps: TAuthEventsDeps): TAuthEvents => {
 				twoFactorOffMailBuild({
 					to: user.email,
 					name: user.name,
-					accountUrl: `${deps.webOrigin}${ACCOUNT_PATH}`,
+					accountUrl: `${deps.webOrigin}${webPathOf(ACCOUNT_PATH)}`,
 					brand: APP_MESSAGE.NAME,
 				}),
 			);

@@ -1,3 +1,5 @@
+import { webPathOf } from "@app/contract";
+
 export const AUTH_PATH = {
 	VERIFY_EMAIL: "/verify-email",
 	RESET_PASSWORD: "/reset-password",
@@ -6,4 +8,4 @@ export const AUTH_PATH = {
 export type TAuthPath = (typeof AUTH_PATH)[keyof typeof AUTH_PATH];
 
 export const authCallbackUrl = (path: TAuthPath): string =>
-	`${window.location.origin}${path}`;
+	`${window.location.origin}${webPathOf(path)}`;

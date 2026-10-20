@@ -9,6 +9,7 @@ import { userContract } from "./user.ts";
 
 export { HTTP_METHOD, type THttpMethod } from "./http-methods.ts";
 export { ROUTE_PATH, type TRoutePath } from "./route-paths.ts";
+export { WEB_BASE_PATH, webPathOf } from "./web-paths.ts";
 
 export const appContract = {
 	health: healthContract,

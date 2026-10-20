@@ -1,3 +1,4 @@
+import { webPathOf } from "@app/contract";
 import type { TUser } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
 import { beforeAll, describe, expect, it } from "vitest";
@@ -55,7 +56,7 @@ beforeAll(async (): Promise<void> => {
 		name: "Two Factor",
 		email,
 		password: PASSWORD,
-		callbackURL: `${WEB_ORIGIN}/verify-email`,
+		callbackURL: `${WEB_ORIGIN}${webPathOf("/verify-email")}`,
 	});
 	userId = ((await signedUp.json()) as { user: { id: string } }).user.id;
 	await fetch(await mailLinkWait(email, VERIFY_LINK), { redirect: "manual" });

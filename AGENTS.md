@@ -51,7 +51,7 @@ ellipsis, such as a placeholder in the pull request template, keeps it.
 
 ## Every change bumps the version
 
-Bump the version in the **root `package.json`** in the same commit as the change: patch for a fix, chore, or docs change; minor for a feature or behavior-changing refactor; major for a breaking change. It is the single source of truth for the workspace, re-exported as `APP_VERSION` by `@app/version` and served at `/health` on both the API and the web, so a deployed build can name itself. The per-package `version` fields do not matter; the packages are private and unpublished.
+Bump the version in the **root `package.json`** in the same commit as the change: patch for a fix, chore, or docs change; minor for a feature or behavior-changing refactor; major for a breaking change. It is the single source of truth for the workspace, re-exported as `APP_VERSION` by `@app/version` and served at `/api/health` on the API and `/app/health` on the web, so a deployed build can name itself. The per-package `version` fields do not matter; the packages are private and unpublished.
 
 ## PRs and reviews
 

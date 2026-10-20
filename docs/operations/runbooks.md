@@ -102,7 +102,7 @@ This used to present as a mass sign-out. An infrastructure failure was caught an
 
 ## A deploy made things worse
 
-1. Confirm which build is live: `curl -s https://<host>/health | jq .version`. The two versions on `/health`, web and API, differing means they were deployed out of step
+1. Confirm which build is live: `curl -s https://<host>/healthz | jq .version`. The two versions on `/app/health`, web and API, differing means they were deployed out of step
 2. Redeploy the previous image tag
 3. If the release carried a destructive migration, a code rollback is not enough. Go to [backup-restore.md](backup-restore.md)
 

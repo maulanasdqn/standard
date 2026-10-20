@@ -1,3 +1,4 @@
+import { webPathOf } from "@app/contract";
 import { TABLE_MESSAGE } from "@app/messages";
 import { ACTIVITY_ACTION } from "@app/activity";
 import { ACTIVITY_ACTION_LABEL } from "@app/messages";
@@ -26,7 +27,7 @@ test.describe("note activity", () => {
 	test("records a note creation attributed to the admin", async (): Promise<void> => {
 		await createNote(page, NOTE_TITLE);
 
-		await page.goto("/activity");
+		await page.goto(webPathOf("/activity"));
 		await expect(page.getByRole("heading", { name: "Activity" })).toBeVisible();
 
 		await page.getByRole("button", { name: TABLE_MESSAGE.FILTERS }).click();

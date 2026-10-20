@@ -114,7 +114,11 @@ export const envSchema = z
 			.default("development"),
 		PORT: z.coerce.number().int().default(3001),
 		WEB_ORIGIN: z.url().default("http://localhost:5173"),
-		WEB_DIST_PATH: z.string().optional(),
+		WEB_DIST_PATH: z.preprocess(blankAsUndefined, z.string().min(1).optional()),
+		LANDING_DIST_PATH: z.preprocess(
+			blankAsUndefined,
+			z.string().min(1).optional(),
+		),
 		API_REFERENCE_ENABLED: z.preprocess(
 			blankAsUndefined,
 			z.stringbool().optional(),

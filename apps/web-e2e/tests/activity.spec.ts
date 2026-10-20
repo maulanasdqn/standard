@@ -1,3 +1,4 @@
+import { webPathOf } from "@app/contract";
 import { ERROR_MESSAGE, TABLE_MESSAGE } from "@app/messages";
 import { ACTIVITY_ACTION } from "@app/activity";
 import { ACTIVITY_ACTION_LABEL } from "@app/messages";
@@ -35,7 +36,7 @@ test.describe("activity log", () => {
 	test("records a user creation attributed to the admin", async (): Promise<void> => {
 		await createUser(page, AUDITED_USER, ROLE_LABEL[ROLE_KEY.VIEWER]);
 
-		await page.goto("/activity");
+		await page.goto(webPathOf("/activity"));
 		await expect(page.getByRole("heading", { name: "Activity" })).toBeVisible();
 
 		await page.getByRole("button", { name: TABLE_MESSAGE.FILTERS }).click();
@@ -63,7 +64,7 @@ test.describe("activity log", () => {
 
 		await expectNavHidden(page, [NAV_LABEL.ACTIVITY]);
 
-		await page.goto("/activity");
+		await page.goto(webPathOf("/activity"));
 		await expect(
 			page.getByRole("heading", { name: ERROR_MESSAGE.FORBIDDEN_TITLE }),
 		).toBeVisible();

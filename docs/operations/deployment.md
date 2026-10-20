@@ -15,8 +15,10 @@ The web build fixes the API address at build time from `VITE_API_URL`. Left unse
 
 ```sh
 VITE_API_URL= moon run web:build
-make api                          # the web and the API on :3001
+make api                          # the web on :3001/app/ and the API on :3001
 ```
+
+The web lives under `/app`, the one value `WEB_BASE_PATH` in `@app/contract` that the Vite `base`, the router `basepath`, the API mount and every link the API mails (invites, verification, password and two-factor notices, through `webPathOf`) all read. That leaves the root of the origin free for a landing page without a second domain or a cookie scope to configure. `LANDING_DIST_PATH` points the API at a static landing build and serves it at `/`, with the web routes still answered by the web. Left unset, `/` redirects to `/app/`, so a deployment that needs no landing changes nothing but the address of its app.
 
 The image is tagged with the root `package.json` version, which is the same value `/health` reports at runtime. That is what lets you confirm which build is actually live rather than which build you believe you deployed.
 

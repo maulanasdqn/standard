@@ -1,3 +1,4 @@
+import { webPathOf } from "@app/contract";
 import { AUTH_MESSAGE } from "@app/messages";
 import { expect, type Page, test } from "@playwright/test";
 import { ROLE_KEY, ROLE_LABEL } from "../support/access.ts";
@@ -23,7 +24,7 @@ test.describe("account self-service", () => {
 	});
 
 	test("shows the signed-in member's details", async (): Promise<void> => {
-		await page.goto("/account");
+		await page.goto(webPathOf("/account"));
 		await expect(page.getByRole("heading", { name: "Account" })).toBeVisible();
 
 		const summary = page.getByRole("main").locator("dl");

@@ -1,3 +1,4 @@
+import { webPathOf } from "@app/contract";
 import { ERROR_MESSAGE, ROLE_MESSAGE } from "@app/messages";
 import type { TRoleCreateInput, TUserCreateInput } from "@app/schemas";
 import { expect, type Page, test } from "@playwright/test";
@@ -52,7 +53,7 @@ test.describe("roles admin flow", () => {
 	});
 
 	test("marks the fixed roles and keeps their edit page read-only", async (): Promise<void> => {
-		await page.goto("/roles");
+		await page.goto(webPathOf("/roles"));
 		await expect(page.getByRole("heading", { name: "Roles" })).toBeVisible();
 
 		await Promise.all(
@@ -77,7 +78,7 @@ test.describe("roles admin flow", () => {
 	});
 
 	test("creates a custom role with a single permission", async (): Promise<void> => {
-		await page.goto("/roles");
+		await page.goto(webPathOf("/roles"));
 		await page.getByRole("link", { name: ROLE_MESSAGE.NEW_ROLE }).click();
 		await expect(page).toHaveURL(/\/roles\/create$/);
 		await page.getByLabel("Label", { exact: true }).fill(NEW_ROLE.label);
@@ -151,12 +152,12 @@ test.describe("roles admin flow", () => {
 			NAV_LABEL.PERMISSIONS,
 		]);
 
-		await page.goto("/activity");
+		await page.goto(webPathOf("/activity"));
 		await expect(
 			page.getByRole("heading", { name: NAV_LABEL.ACTIVITY }),
 		).toBeVisible();
 
-		await page.goto("/roles");
+		await page.goto(webPathOf("/roles"));
 		await expect(
 			page.getByRole("heading", { name: ERROR_MESSAGE.FORBIDDEN_TITLE }),
 		).toBeVisible();
