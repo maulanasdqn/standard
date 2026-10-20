@@ -1,0 +1,26 @@
+---
+import { APP_MESSAGE, LANDING_MESSAGE } from "@app/messages";
+import { BUTTON_VARIANT } from "../lib/button.ts";
+import { APP_LINK } from "../lib/links.ts";
+import ButtonLink from "./ButtonLink.astro";
+---
+
+<section class="mx-auto max-w-6xl px-6 pb-20 pt-24 sm:pt-32">
+	<p class="text-sm font-medium text-muted-foreground">
+		{LANDING_MESSAGE.HERO_EYEBROW}
+	</p>
+	<h1 class="mt-4 max-w-3xl text-4xl font-semibold tracking-tight sm:text-6xl">
+		{APP_MESSAGE.TAGLINE}
+	</h1>
+	<p class="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
+		{LANDING_MESSAGE.HERO_LEDE}
+	</p>
+	<div class="mt-10 flex flex-wrap gap-3">
+		<ButtonLink href={APP_LINK.GET_STARTED} variant={BUTTON_VARIANT.PRIMARY}>
+			{LANDING_MESSAGE.GET_STARTED}
+		</ButtonLink>
+		<ButtonLink href={APP_LINK.SIGN_IN} variant={BUTTON_VARIANT.SECONDARY}>
+			{LANDING_MESSAGE.SIGN_IN}
+		</ButtonLink>
+	</div>
+</section>

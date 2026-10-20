@@ -1,0 +1,20 @@
+---
+import { APP_MESSAGE, LANDING_MESSAGE } from "@app/messages";
+import { APP_VERSION } from "@app/version";
+import { APP_LINK } from "../lib/links.ts";
+---
+
+<footer class="border-t">
+	<div
+		class="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-10 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between"
+	>
+		<p>
+			<span class="font-semibold text-foreground">{APP_MESSAGE.NAME}</span>
+			<span class="mx-2" aria-hidden="true">·</span>
+			{`${LANDING_MESSAGE.FOOTER_VERSION} ${APP_VERSION}`}
+		</p>
+		<a href={APP_LINK.SIGN_IN} class="transition-colors hover:text-foreground">
+			{LANDING_MESSAGE.SIGN_IN}
+		</a>
+	</div>
+</footer>

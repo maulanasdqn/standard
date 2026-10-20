@@ -24,6 +24,8 @@
 			"**/apps/web-e2e/tests/**/*",
 			"**/apps/web-e2e/support/**/*",
 			"**/apps/web-e2e/playwright.config.ts",
+			"**/apps/landing/*.config.ts",
+			"**/apps/landing/test/**/*",
 			"!**/apps/web/src/routeTree.gen.ts",
 			"!**/apps/web/src/styles.css"
 		]
@@ -57,7 +59,23 @@
 			"semicolons": "always"
 		}
 	},
+	"css": {
+		"parser": {
+			"tailwindDirectives": true
+		}
+	},
 	"overrides": [
+		{
+			"includes": ["**/*.astro"],
+			"linter": {
+				"rules": {
+					"correctness": {
+						"noUnusedVariables": "off",
+						"noUnusedImports": "off"
+					}
+				}
+			}
+		},
 		{
 			"includes": ["**/packages/components/src/ui/**"],
 			"linter": {

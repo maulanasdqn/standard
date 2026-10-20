@@ -1,0 +1,30 @@
+{
+	"name": "@app/landing",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "astro dev --port 4321",
+		"build": "astro build",
+		"preview": "astro preview --port 4321",
+		"typecheck": "astro check && tsc -p test/tsconfig.json",
+		"test": "vitest run"
+	},
+	"dependencies": {
+		"@app/components": "workspace:*",
+		"@app/contract": "workspace:*",
+		"@app/messages": "workspace:*",
+		"@app/version": "workspace:*",
+		"@mobily/ts-belt": "catalog:",
+		"@tailwindcss/vite": "^4.1.18",
+		"astro": "^7.3.5",
+		"tailwindcss": "^4.1.18",
+		"ts-pattern": "catalog:"
+	},
+	"devDependencies": {
+		"@astrojs/check": "^0.9.10",
+		"@types/node": "catalog:",
+		"typescript": "^6.0.3",
+		"vitest": "catalog:"
+	}
+}

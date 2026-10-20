@@ -1,6 +1,6 @@
 # Standard
 
-Full-stack TypeScript monorepo: moon + pnpm workspaces, Hono + oRPC + Effect (`apps/api`), TanStack Router SPA (`apps/web`), shared packages under `packages/`.
+Full-stack TypeScript monorepo: moon + pnpm workspaces, Hono + oRPC + Effect (`apps/api`), TanStack Router SPA under `/app` (`apps/web`), static Astro landing page at `/` (`apps/landing`), shared packages under `packages/`.
 
 ## Read this before you write
 
@@ -19,6 +19,11 @@ http, config) and `src/bootstrap/` (composition root). A module is reachable onl
 `moon run api:arch`, which `api:build` depends on. Every file inside a module belongs to one of the
 four layers, and `index.ts` is the only thing allowed to sit at the module root: a helper dropped
 next to it would answer to no layer rule at all.
+
+`apps/landing` is a static Astro site whose copy lives in `@app/messages`, like every other app's. The
+API serves it under a Content-Security-Policy that allows scripts and styles from the origin only, so
+a page carries no inline script, `<style>` element or `style` attribute, and the landing's own tests
+fail a build that does.
 
 ## Package layers
 

@@ -1,0 +1,27 @@
+---
+import { LANDING_MESSAGE } from "@app/messages";
+import ButtonLink from "../components/ButtonLink.astro";
+import Footer from "../components/Footer.astro";
+import Nav from "../components/Nav.astro";
+import Layout from "../layouts/Layout.astro";
+import { BUTTON_VARIANT } from "../lib/button.ts";
+import { HOME_PATH, SECTION_ID } from "../lib/links.ts";
+---
+
+<Layout title={LANDING_MESSAGE.NOT_FOUND_TITLE} noindex>
+	<Nav />
+	<main id={SECTION_ID.MAIN} class="mx-auto max-w-6xl px-6 py-32">
+		<h1 class="text-4xl font-semibold tracking-tight">
+			{LANDING_MESSAGE.NOT_FOUND_TITLE}
+		</h1>
+		<p class="mt-4 text-lg text-muted-foreground">
+			{LANDING_MESSAGE.NOT_FOUND_BODY}
+		</p>
+		<div class="mt-10">
+			<ButtonLink href={HOME_PATH} variant={BUTTON_VARIANT.SECONDARY}>
+				{LANDING_MESSAGE.NOT_FOUND_HOME}
+			</ButtonLink>
+		</div>
+	</main>
+	<Footer />
+</Layout>

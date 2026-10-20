@@ -1,0 +1,35 @@
+---
+import { A } from "@mobily/ts-belt";
+import { LANDING_MESSAGE, LANDING_STEPS } from "@app/messages";
+import { SECTION_ID } from "../lib/links.ts";
+import SectionHeader from "./SectionHeader.astro";
+
+const FIRST_STEP = 1;
+---
+
+<section id={SECTION_ID.STEPS} class="scroll-mt-20 border-t">
+	<div class="mx-auto max-w-6xl px-6 py-20 sm:py-24">
+		<SectionHeader
+			eyebrow={LANDING_MESSAGE.STEPS_EYEBROW}
+			title={LANDING_MESSAGE.STEPS_TITLE}
+		/>
+		<ol class="mt-12 grid gap-8 md:grid-cols-3">
+			{
+				A.mapWithIndex(LANDING_STEPS, (index, step) => (
+					<li>
+						<span
+							aria-hidden="true"
+							class="flex size-8 items-center justify-center rounded-full border text-sm font-semibold"
+						>
+							{index + FIRST_STEP}
+						</span>
+						<h3 class="mt-4 text-base font-semibold">{step.title}</h3>
+						<p class="mt-2 text-sm leading-relaxed text-muted-foreground">
+							{step.body}
+						</p>
+					</li>
+				))
+			}
+		</ol>
+	</div>
+</section>

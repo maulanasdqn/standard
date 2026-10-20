@@ -1,0 +1,28 @@
+---
+import { A } from "@mobily/ts-belt";
+import { LANDING_FEATURES, LANDING_MESSAGE } from "@app/messages";
+import { SECTION_ID } from "../lib/links.ts";
+import SectionHeader from "./SectionHeader.astro";
+---
+
+<section id={SECTION_ID.FEATURES} class="scroll-mt-20 border-t">
+	<div class="mx-auto max-w-6xl px-6 py-20 sm:py-24">
+		<SectionHeader
+			eyebrow={LANDING_MESSAGE.FEATURES_EYEBROW}
+			title={LANDING_MESSAGE.FEATURES_TITLE}
+			lede={LANDING_MESSAGE.FEATURES_LEDE}
+		/>
+		<ul class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+			{
+				A.map(LANDING_FEATURES, (feature) => (
+					<li class="rounded-lg border bg-card p-6 text-card-foreground">
+						<h3 class="text-base font-semibold">{feature.title}</h3>
+						<p class="mt-2 text-sm leading-relaxed text-muted-foreground">
+							{feature.body}
+						</p>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</section>

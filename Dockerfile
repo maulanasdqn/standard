@@ -8,6 +8,7 @@ FROM base AS manifests
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY patches ./patches
 COPY apps/api/package.json apps/api/
+COPY apps/landing/package.json apps/landing/
 COPY apps/web/package.json apps/web/
 COPY packages ./packages
 
@@ -15,8 +16,9 @@ FROM manifests AS deps
 RUN pnpm install --frozen-lockfile
 
 FROM deps AS build
+ARG LANDING_SITE_URL
 COPY . .
-RUN pnpm --filter @app/web build
+RUN pnpm --filter @app/web build && pnpm --filter @app/landing build
 
 FROM manifests AS production-deps
 RUN pnpm install --frozen-lockfile --prod --no-optional --filter-prod "@app/api..."
@@ -31,6 +33,7 @@ COPY --from=production-deps --chown=node:node /app/node_modules ./node_modules
 COPY --from=production-deps --chown=node:node /app/packages ./packages
 COPY --from=production-deps --chown=node:node /app/apps/api/node_modules ./apps/api/node_modules
 COPY --from=build --chown=node:node /app/apps/web/dist ./apps/web/dist
+COPY --from=build --chown=node:node /app/apps/landing/dist ./apps/landing/dist
 WORKDIR /app/apps/api
 EXPOSE 3001
 USER node

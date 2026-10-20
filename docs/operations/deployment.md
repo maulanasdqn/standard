@@ -20,6 +20,8 @@ make api                          # the web on :3001/app/ and the API on :3001
 
 The web lives under `/app`, the one value `WEB_BASE_PATH` in `@app/contract` that the Vite `base`, the router `basepath`, the API mount and every link the API mails (invites, verification, password and two-factor notices, through `webPathOf`) all read. That leaves the root of the origin free for a landing page without a second domain or a cookie scope to configure. `LANDING_DIST_PATH` points the API at a static landing build and serves it at `/`, with the web routes still answered by the web. Left unset, `/` redirects to `/app/`, so a deployment that needs no landing changes nothing but the address of its app.
 
+The image builds `apps/landing` either way, into `/app/apps/landing/dist`, and serves it only once `LANDING_DIST_PATH` points there. Build the image with `--build-arg LANDING_SITE_URL=https://<host>`, the public origin, because the landing is static and its canonical links, `og:url` and `sitemap.xml` are written at build time; left out, they name `http://localhost:4321`. The API sends every landing response with a Content-Security-Policy that allows scripts and styles from the origin only, so a landing page carries no inline script, style element or `style` attribute, and `apps/landing/test/content-security.test.ts` fails a build that does.
+
 The image is tagged with the root `package.json` version, which is the same value `/health` reports at runtime. That is what lets you confirm which build is actually live rather than which build you believe you deployed.
 
 ## Releases
