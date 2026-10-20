@@ -12,6 +12,7 @@ const NOT_FOUND = 404;
 const ASSET_FILE = "/assets/app-1a2b3c.js";
 const SHELL = "<html></html>";
 const CACHE_CONTROL_HEADER = "cache-control";
+const LOOKALIKE_PATH = `${WEB_BASE_PATH}lication`;
 
 const distFake = (): string => {
 	const root = mkdtempSync(join(tmpdir(), "web-dist-"));
@@ -77,8 +78,6 @@ describe("webDistMount", () => {
 
 		expect((await request(app, "/notes/abc")).status).toBe(NOT_FOUND);
 		expect((await request(app, ASSET_FILE)).status).toBe(NOT_FOUND);
-		expect((await request(app, `${WEB_BASE_PATH}lication`)).status).toBe(
-			NOT_FOUND,
-		);
+		expect((await request(app, LOOKALIKE_PATH)).status).toBe(NOT_FOUND);
 	});
 });

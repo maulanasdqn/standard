@@ -1,3 +1,4 @@
+import { webPathOf } from "@app/contract";
 import { describe, expect, it } from "vitest";
 import { BASE_URL } from "../support/client.ts";
 import { mailCount, mailLinkWait } from "../support/mailpit.ts";
@@ -27,7 +28,7 @@ const signUp = (email: string, password: string): Promise<Response> =>
 		name: "Flow Tester",
 		email,
 		password,
-		callbackURL: `${WEB_ORIGIN}/verify-email`,
+		callbackURL: `${WEB_ORIGIN}${webPathOf("/verify-email")}`,
 	});
 
 const signIn = (email: string, password: string): Promise<Response> =>
@@ -60,7 +61,9 @@ describe("self-service sign-up", () => {
 
 		const verified = await verify(email);
 		expect(verified.status).toBe(HTTP_STATUS.FOUND);
-		expect(verified.headers.get("location")).toBe(`${WEB_ORIGIN}/verify-email`);
+		expect(verified.headers.get("location")).toBe(
+			`${WEB_ORIGIN}${webPathOf("/verify-email")}`,
+		);
 		expect(verified.headers.get("set-cookie")).toContain("session_token");
 
 		expect((await signIn(email, STRONG_PASSWORD)).status).toBe(HTTP_STATUS.OK);
@@ -76,7 +79,7 @@ describe("forgotten password", () => {
 
 		const requested = await authPost("/request-password-reset", {
 			email,
-			redirectTo: `${WEB_ORIGIN}/reset-password`,
+			redirectTo: `${WEB_ORIGIN}${webPathOf("/reset-password")}`,
 		});
 		expect(requested.status).toBe(HTTP_STATUS.OK);
 
@@ -109,7 +112,7 @@ describe("forgotten password", () => {
 	it("answers the same way for an email that has no account", async (): Promise<void> => {
 		const response = await authPost("/request-password-reset", {
 			email: uniqueEmail(),
-			redirectTo: `${WEB_ORIGIN}/reset-password`,
+			redirectTo: `${WEB_ORIGIN}${webPathOf("/reset-password")}`,
 		});
 
 		expect(response.status).toBe(HTTP_STATUS.OK);

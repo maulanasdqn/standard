@@ -36,7 +36,7 @@ Notes: ...
 
 ## Version
 
-<!-- Every PR bumps the root package.json version: patch for fix/chore/docs, minor for feature/refactor, major for breaking. It is what /health serves on the API and the web. -->
+<!-- Every PR bumps the root package.json version: patch for fix/chore/docs, minor for feature/refactor, major for breaking. It is what /api/health serves on the API and /app/health on the web. -->
 
 - [ ] Root `package.json` version bumped: `0.0.0` -> `0.0.0`
 

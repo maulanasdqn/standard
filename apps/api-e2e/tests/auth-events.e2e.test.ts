@@ -1,3 +1,4 @@
+import { webPathOf } from "@app/contract";
 import { ACTIVITY_ACTION, type TActivityAction } from "@app/activity";
 import type { TActivityList } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
@@ -47,7 +48,7 @@ beforeAll(async (): Promise<void> => {
 		name: "Event Tester",
 		email,
 		password: PASSWORD,
-		callbackURL: `${WEB_ORIGIN}/verify-email`,
+		callbackURL: `${WEB_ORIGIN}${webPathOf("/verify-email")}`,
 	});
 	userId = ((await signedUp.json()) as { user: { id: string } }).user.id;
 	await fetch(await mailLinkWait(email, VERIFY_LINK), { redirect: "manual" });
