@@ -58,14 +58,14 @@ Or run them separately:
 
 ```sh
 make api                              # api on :3001
-make web                              # web on :5173
+make web                              # web on :5173/app/
 ```
 
 Seed logins: `admin@test.app` / `Password123`, `member@test.app` / `Password123`, `viewer@test.app` / `Password123`. That password is the default outside production only. With `NODE_ENV=production` the seed refuses to run unless `SEED_PASSWORD` is set, and then it creates the admin alone, with that password and no demo users or notes.
 
 Mail sent in development is caught by mailpit, read it at `http://localhost:8025`.
 
-Anyone can create an account at `/register` while `SIGN_UP_ENABLED` in `@app/schemas` is `true`. An app where only an admin adds people sets it to `false`, which makes the API refuse sign-up, redirects `/register` to `/login` and hides the sign-up link. A new account has to confirm its email address before it can sign in, so in development open the confirmation link from mailpit. Forgotten passwords are reset from `/forgot-password` the same way. Passwords need at least 8 characters with an uppercase letter, a lowercase letter and a number. Seeded users and users an admin creates start out confirmed. Admins can also invite someone by email, who then chooses their own password, deactivate a user (which signs them out everywhere and blocks sign-in without deleting anything), see and revoke a user's sessions, and change a user's email, which the user then has to confirm. Anyone can turn on two-factor authentication from the Account page with an authenticator app; signing in then asks for a 6-digit code or one of ten single-use backup codes, and a device can be trusted for 30 days. An admin can turn it off for a user who has lost both their device and their codes. Nobody can give a role or a permission they do not hold themselves, act on a user whose role they could not give, or edit the role they hold, and only a superadmin can make or manage another superadmin.
+Anyone can create an account at `/app/register` while `SIGN_UP_ENABLED` in `@app/schemas` is `true`. An app where only an admin adds people sets it to `false`, which makes the API refuse sign-up, redirects `/app/register` to `/app/login` and hides the sign-up link. A new account has to confirm its email address before it can sign in, so in development open the confirmation link from mailpit. Forgotten passwords are reset from `/app/forgot-password` the same way. Passwords need at least 8 characters with an uppercase letter, a lowercase letter and a number. Seeded users and users an admin creates start out confirmed. Admins can also invite someone by email, who then chooses their own password, deactivate a user (which signs them out everywhere and blocks sign-in without deleting anything), see and revoke a user's sessions, and change a user's email, which the user then has to confirm. Anyone can turn on two-factor authentication from the Account page with an authenticator app; signing in then asks for a 6-digit code or one of ten single-use backup codes, and a device can be trusted for 30 days. An admin can turn it off for a user who has lost both their device and their codes. Nobody can give a role or a permission they do not hold themselves, act on a user whose role they could not give, or edit the role they hold, and only a superadmin can make or manage another superadmin.
 
 Uploaded images go to the local object store, whose console is at `http://localhost:9101/rustfs/console/` with the same credentials as the api.
 
@@ -78,7 +78,7 @@ The root `package.json` version is the single source of truth for the workspace.
 | `health.check` over RPC, `GET /api/health` | `{ status: "ok", version }` |
 | `GET /healthz` | `{ status, version }`, liveness only: the process answers, nothing is probed |
 | `GET /ready` | `{ status, version, dependencies }`, and **503** when any dependency is down |
-| `/health` on the web (no auth) | its own version next to the API's |
+| `/app/health` on the web (no auth) | its own version next to the API's |
 | `GET /metrics` | Prometheus text: request counts and durations by method, matched route and status, plus process figures. Guarded by `METRICS_TOKEN`, and required to be in production. See [docs/operations/metrics.md](docs/operations/metrics.md) |
 
 The shape is `healthSchema` in `@app/schemas`, so the web page is typed against what the API returns; the two versions differing means web and API are deployed out of step.

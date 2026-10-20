@@ -1,3 +1,4 @@
+import { webPathOf } from "@app/contract";
 import { NOTE_MESSAGE } from "@app/messages";
 import { expect, type Page, test } from "@playwright/test";
 import { SEED_CREDENTIALS } from "../../support/credentials.ts";
@@ -25,7 +26,7 @@ test.describe("note write affordances follow the permission", () => {
 		page = await browser.newPage();
 		await signIn(page, SEED_CREDENTIALS.viewer);
 
-		await page.goto("/notes");
+		await page.goto(webPathOf("/notes"));
 		await expect(page.getByRole("heading", { name: "Notes" })).toBeVisible();
 
 		await expect(page.getByRole("link", { name: NEW_NOTE })).toHaveCount(0);
@@ -37,7 +38,7 @@ test.describe("note write affordances follow the permission", () => {
 		page = await browser.newPage();
 		await signIn(page, SEED_CREDENTIALS.admin);
 
-		await page.goto("/notes");
+		await page.goto(webPathOf("/notes"));
 		await page.getByRole("link", { name: NEW_NOTE }).click();
 
 		await expect(page).toHaveURL(/\/notes\/create/);
@@ -64,7 +65,7 @@ test.describe("editing a note twice in a row", () => {
 		page = await browser.newPage();
 		await signIn(page, SEED_CREDENTIALS.admin);
 
-		await page.goto("/notes");
+		await page.goto(webPathOf("/notes"));
 		await page.getByRole("link", { name: NEW_NOTE }).click();
 		await page.getByLabel("Title").fill(EDITED_NOTE);
 		await page.getByRole("button", { name: NEW_NOTE }).click();
@@ -109,7 +110,7 @@ test.describe("the list stays usable at its edges", () => {
 		page = await browser.newPage();
 		await signIn(page, SEED_CREDENTIALS.viewer);
 
-		await page.goto("/notes?page=0&sortBy=nonsense");
+		await page.goto(webPathOf("/notes?page=0&sortBy=nonsense"));
 
 		await expect(page.getByRole("heading", { name: "Notes" })).toBeVisible();
 		await expect(page).toHaveURL(/\/notes/);
@@ -121,7 +122,7 @@ test.describe("the list stays usable at its edges", () => {
 		page = await browser.newPage();
 		await signIn(page, SEED_CREDENTIALS.viewer);
 
-		await page.goto("/notes?search=nothing-has-this-title-zzz");
+		await page.goto(webPathOf("/notes?search=nothing-has-this-title-zzz"));
 
 		await expect(page.getByText(NOTE_MESSAGE.EMPTY)).toBeVisible();
 		await expect(

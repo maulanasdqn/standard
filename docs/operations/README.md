@@ -20,7 +20,7 @@ The workspace runs as two long-lived processes from one image:
 
 | Process | Command | Serves |
 |---|---|---|
-| API | `pnpm --filter @app/api start` | HTTP on `PORT`, and the built SPA when `WEB_DIST_PATH` is set |
+| API | `pnpm --filter @app/api start` | HTTP on `PORT`, the built SPA under `/app` when `WEB_DIST_PATH` is set, and a static landing at `/` when `LANDING_DIST_PATH` is set |
 | Worker | `pnpm --filter @app/api worker` | RabbitMQ consumers, no HTTP |
 
 The worker is not optional. Without it, published jobs accumulate in their queue and nothing drains the retry or dead-letter queues.

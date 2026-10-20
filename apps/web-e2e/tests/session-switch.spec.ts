@@ -1,3 +1,4 @@
+import { webPathOf } from "@app/contract";
 import { ERROR_MESSAGE } from "@app/messages";
 import { expect, test } from "@playwright/test";
 import { ROLE_KEY, ROLE_LABEL } from "../support/access.ts";
@@ -15,9 +16,9 @@ test("a second account signed in after a sign-out sees only its own data", async
 	page,
 }): Promise<void> => {
 	await signIn(page, SEED_CREDENTIALS.admin);
-	await page.goto("/users");
+	await page.goto(webPathOf("/users"));
 	await expect(page.getByRole("heading", { name: "Users" })).toBeVisible();
-	await page.goto("/account");
+	await page.goto(webPathOf("/account"));
 	await expect(page.getByRole("main").locator("dl")).toContainText(
 		SEED_CREDENTIALS.admin.email,
 	);
@@ -28,13 +29,13 @@ test("a second account signed in after a sign-out sees only its own data", async
 	await expectNavVisible(page, [NAV_LABEL.DASHBOARD]);
 	await expectNavHidden(page, ADMIN_NAV_LABELS);
 
-	await page.goto("/account");
+	await page.goto(webPathOf("/account"));
 	const summary = page.getByRole("main").locator("dl");
 	await expect(summary).toContainText(SEED_CREDENTIALS.viewer.email);
 	await expect(summary).toContainText(ROLE_LABEL[ROLE_KEY.VIEWER]);
 	await expect(summary).not.toContainText(SEED_CREDENTIALS.admin.email);
 
-	await page.goto("/users");
+	await page.goto(webPathOf("/users"));
 	await expect(
 		page.getByRole("heading", { name: ERROR_MESSAGE.FORBIDDEN_TITLE }),
 	).toBeVisible();

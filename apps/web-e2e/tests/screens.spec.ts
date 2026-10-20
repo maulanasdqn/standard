@@ -1,3 +1,4 @@
+import { webPathOf } from "@app/contract";
 import { ERROR_MESSAGE } from "@app/messages";
 import { expect, type Page, test } from "@playwright/test";
 import { SEED_CREDENTIALS } from "../support/credentials.ts";
@@ -18,7 +19,7 @@ test.describe("error screens", () => {
 	});
 
 	test("shows the not found screen for a route that does not exist", async (): Promise<void> => {
-		await page.goto("/nowhere-at-all");
+		await page.goto(webPathOf("/nowhere-at-all"));
 
 		await expect(
 			page.getByRole("heading", { name: ERROR_MESSAGE.NOT_FOUND_TITLE }),
@@ -29,7 +30,7 @@ test.describe("error screens", () => {
 	});
 
 	test("shows the forbidden screen on an admin page and keeps the address", async (): Promise<void> => {
-		await page.goto("/roles");
+		await page.goto(webPathOf("/roles"));
 
 		await expect(
 			page.getByRole("heading", { name: ERROR_MESSAGE.FORBIDDEN_TITLE }),
@@ -38,7 +39,7 @@ test.describe("error screens", () => {
 	});
 
 	test("takes the viewer back home from the not found screen", async (): Promise<void> => {
-		await page.goto("/nowhere-at-all");
+		await page.goto(webPathOf("/nowhere-at-all"));
 		await page.getByRole("link", { name: ERROR_MESSAGE.GO_HOME }).click();
 
 		await expect(page).toHaveURL(/\/dashboard/);

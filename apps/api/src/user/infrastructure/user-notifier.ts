@@ -6,6 +6,7 @@ import {
 	mailSendSafe,
 	twoFactorOffMailBuild,
 } from "@app/mail";
+import { webPathOf } from "@app/contract";
 import { APP_MESSAGE } from "@app/messages";
 import { Effect, Layer } from "effect";
 import { AuthService } from "#/auth/index.ts";
@@ -53,7 +54,9 @@ export const userNotifierLayer = Layer.effect(
 				value: target.id,
 				expiresAt: new Date(Date.now() + INVITE_EXPIRY_MS),
 			});
-			const landing = encodeURIComponent(`${env.WEB_ORIGIN}${INVITE_LANDING}`);
+			const landing = encodeURIComponent(
+				`${env.WEB_ORIGIN}${webPathOf(INVITE_LANDING)}`,
+			);
 			await mailSendSafe(
 				mailer,
 				logger,
@@ -106,7 +109,7 @@ export const userNotifierLayer = Layer.effect(
 						twoFactorOffMailBuild({
 							to: target.email,
 							name: target.name,
-							accountUrl: `${env.WEB_ORIGIN}${ACCOUNT_LANDING}`,
+							accountUrl: `${env.WEB_ORIGIN}${webPathOf(ACCOUNT_LANDING)}`,
 							brand: APP_MESSAGE.NAME,
 						}),
 					),
@@ -116,7 +119,7 @@ export const userNotifierLayer = Layer.effect(
 					auth.api.sendVerificationEmail({
 						body: {
 							email: target.email,
-							callbackURL: `${env.WEB_ORIGIN}${VERIFY_LANDING}`,
+							callbackURL: `${env.WEB_ORIGIN}${webPathOf(VERIFY_LANDING)}`,
 						},
 					}),
 				),

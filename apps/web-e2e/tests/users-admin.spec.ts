@@ -1,3 +1,4 @@
+import { webPathOf } from "@app/contract";
 import { AUTH_MESSAGE, USER_MESSAGE } from "@app/messages";
 import { expect, type Page, test } from "@playwright/test";
 import { SEED_CREDENTIALS } from "../support/credentials.ts";
@@ -18,7 +19,7 @@ const typeInto = async (
 };
 
 const signInAs = async (page: Page, email: string): Promise<void> => {
-	await page.goto("/login");
+	await page.goto(webPathOf("/login"));
 	await typeInto(page, AUTH_MESSAGE.FIELD_EMAIL, email);
 	await typeInto(page, AUTH_MESSAGE.FIELD_PASSWORD, PASSWORD);
 	await page.getByRole("button", { name: AUTH_MESSAGE.LOGIN_ACTION }).click();
@@ -31,7 +32,7 @@ test("an admin invites a user, who joins, and then deactivates them", async ({
 	const admin = await browser.newPage();
 	await signIn(admin, SEED_CREDENTIALS.admin);
 
-	await admin.goto("/users");
+	await admin.goto(webPathOf("/users"));
 	await admin.getByRole("link", { name: USER_MESSAGE.INVITE_USER }).click();
 	await expect(
 		admin.getByRole("heading", { name: USER_MESSAGE.INVITE_TITLE }),

@@ -1,3 +1,4 @@
+import { webPathOf } from "@app/contract";
 import { AUTH_MESSAGE } from "@app/messages";
 import { expect, type Page, test } from "@playwright/test";
 import { mailCount, mailLinkWait } from "../support/mailpit.ts";
@@ -19,7 +20,7 @@ const typeInto = async (
 };
 
 const register = async (page: Page, email: string): Promise<void> => {
-	await page.goto("/login");
+	await page.goto(webPathOf("/login"));
 	await page.getByRole("link", { name: AUTH_MESSAGE.SIGN_UP_LINK }).click();
 	await expect(
 		page.getByRole("heading", { name: AUTH_MESSAGE.REGISTER_TITLE }),
@@ -56,7 +57,7 @@ test("an unconfirmed account is told to confirm its email first", async ({
 	const email = uniqueEmail();
 	await register(page, email);
 
-	await page.goto("/login");
+	await page.goto(webPathOf("/login"));
 	await typeInto(page, AUTH_MESSAGE.FIELD_EMAIL, email);
 	await typeInto(page, AUTH_MESSAGE.FIELD_PASSWORD, STRONG_PASSWORD);
 	await page.getByRole("button", { name: AUTH_MESSAGE.LOGIN_ACTION }).click();
@@ -73,7 +74,7 @@ test("a forgotten password is reset through the emailed link", async ({
 	await page.context().clearCookies();
 	const before = await mailCount(email);
 
-	await page.goto("/login");
+	await page.goto(webPathOf("/login"));
 	await page
 		.getByRole("link", { name: AUTH_MESSAGE.FORGOT_PASSWORD_LINK })
 		.click();

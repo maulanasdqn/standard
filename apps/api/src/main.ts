@@ -27,6 +27,7 @@ import { orpcMount } from "#/platform/http/mount-orpc.ts";
 import { originMatcherOf, originsOf } from "#/platform/http/origins.ts";
 import { metricsMount } from "#/platform/http/mount-metrics.ts";
 import { observabilityMount } from "#/platform/http/mount-observability.ts";
+import { landingDistMount } from "#/platform/http/mount-landing-dist.ts";
 import { rateLimitMount } from "#/platform/http/mount-rate-limit.ts";
 import { webDistMount } from "#/platform/http/mount-web-dist.ts";
 import type { TORPCContext } from "#/platform/orpc/context.ts";
@@ -139,6 +140,10 @@ orpcMount({
 	buildContext,
 });
 webDistMount(app, env.WEB_DIST_PATH);
+landingDistMount(app, {
+	landingDistPath: env.LANDING_DIST_PATH,
+	webDistPath: env.WEB_DIST_PATH,
+});
 
 const server = serve({ fetch: app.fetch, port: env.PORT }, (info): void => {
 	logger.info({ port: info.port }, "api listening");
