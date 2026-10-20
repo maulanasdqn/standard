@@ -22,7 +22,8 @@ Full-stack TypeScript boilerplate: moon + pnpm workspaces, Hono + oRPC, Drizzle,
 apps/
   api/          Hono + oRPC + Drizzle + Effect, organised by module
   api-e2e/      API integration tests
-  web/          TanStack Router SPA
+  web/          TanStack Router SPA, served under /app
+  landing/      Astro landing page, served at / when LANDING_DIST_PATH is set
   web-e2e/      Playwright E2E
 packages/
   schemas/      Zod schemas shared by api + web
@@ -59,6 +60,7 @@ Or run them separately:
 ```sh
 make api                              # api on :3001
 make web                              # web on :5173/app/
+make landing                          # landing on :4321, with /app proxied to the web
 ```
 
 Seed logins: `admin@test.app` / `Password123`, `member@test.app` / `Password123`, `viewer@test.app` / `Password123`. That password is the default outside production only. With `NODE_ENV=production` the seed refuses to run unless `SEED_PASSWORD` is set, and then it creates the admin alone, with that password and no demo users or notes.
@@ -93,7 +95,7 @@ Every command goes through `make` or `moon`; nothing shells into a package direc
 make help                             # every target, with a one-line description
 make setup                            # services + migrate + seed
 make services | services-stop         # docker: postgres, redis, rabbitmq, mailpit, object store
-make api | web | worker               # run one process
+make api | web | landing | worker     # run one process
 make db-migrate | db-seed | db-studio # database
 make check | lint | test | build      # quality gates
 make e2e                              # api + web end-to-end

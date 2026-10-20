@@ -1,0 +1,14 @@
+---
+import { buttonClassOf, type TButtonVariant } from "../lib/button.ts";
+
+export type TButtonLinkProps = {
+	href: string;
+	variant: TButtonVariant;
+};
+
+type Props = TButtonLinkProps;
+
+const props = Astro.props;
+---
+
+<a href={props.href} class={buttonClassOf(props.variant)}><slot /></a>

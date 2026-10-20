@@ -2,7 +2,7 @@ COMPOSE := docker compose -f docker-compose.dev.yml
 PROTO_PINNED := $(shell sed -n 's/^proto = "\(.*\)"/\1/p' .prototools)
 
 .PHONY: help install toolchain setup services services-stop services-logs dev up \
-	api web worker db-migrate db-seed db-generate db-push db-studio \
+	api web landing worker db-migrate db-seed db-generate db-push db-studio \
 	check lint format test build ci browsers e2e e2e-api e2e-web clean \
 	image image-run staging-up staging-down staging-migrate
 
@@ -42,6 +42,9 @@ api: ## Run the api on :3001
 
 web: ## Run the web on :5173
 	moon run web:dev
+
+landing: ## Run the landing on :4321
+	moon run landing:dev
 
 worker: ## Run the RabbitMQ worker
 	moon run api:worker

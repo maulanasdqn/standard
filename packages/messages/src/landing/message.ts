@@ -1,0 +1,35 @@
+export const LANDING_MESSAGE = {
+	META_TITLE: "Standard: a full-stack TypeScript boilerplate",
+	META_DESCRIPTION:
+		"A full-stack TypeScript boilerplate with sign-in, roles, an activity log, background jobs and observability already wired, so a new product starts at its first feature.",
+	SKIP_TO_CONTENT: "Skip to content",
+	HOME_LINK: "Standard home",
+	PRIMARY_NAVIGATION: "Primary",
+	NAV_FEATURES: "Features",
+	NAV_STACK: "Stack",
+	NAV_STEPS: "How it works",
+	NAV_FAQ: "FAQ",
+	SIGN_IN: "Sign in",
+	GET_STARTED: "Get started",
+	HERO_EYEBROW: "Full-stack TypeScript boilerplate",
+	HERO_LEDE:
+		"Sign-in, roles, an activity log, background jobs, mail, file storage and observability are already wired and tested. Clone it, rename it, and spend the first week on the feature your users asked for.",
+	FEATURES_EYEBROW: "Features",
+	FEATURES_TITLE: "The parts every product needs, already done",
+	FEATURES_LEDE:
+		"Each one ships with its tests, so you change it with the same confidence you would have in code you wrote.",
+	STACK_EYEBROW: "Stack",
+	STACK_TITLE: "Typed from the database to the button",
+	STACK_LEDE:
+		"One router serves typed RPC to the web and a documented REST API to everyone else, and the same schemas validate both sides.",
+	STEPS_EYEBROW: "How it works",
+	STEPS_TITLE: "From clone to first feature",
+	FAQ_EYEBROW: "FAQ",
+	FAQ_TITLE: "Questions before you start",
+	CTA_TITLE: "Start at the first feature",
+	CTA_BODY: "Create an account to see the app this page sits in front of.",
+	FOOTER_VERSION: "Version",
+	NOT_FOUND_TITLE: "Page not found",
+	NOT_FOUND_BODY: "The page you asked for is not here.",
+	NOT_FOUND_HOME: "Back to the home page",
+} as const;

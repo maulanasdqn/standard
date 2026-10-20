@@ -1,0 +1,62 @@
+$schema: 'https://moonrepo.dev/schemas/project.json'
+
+id: 'landing'
+layer: 'application'
+language: 'typescript'
+tags: ['app']
+stack: 'frontend'
+
+tasks:
+  dev:
+    command: 'pnpm dev'
+    options:
+      persistent: true
+      runInCI: false
+
+  build:
+    command: 'pnpm build'
+    inputs:
+      - 'src/**/*'
+      - 'public/**/*'
+      - 'astro.config.ts'
+      - 'tsconfig.json'
+      - 'package.json'
+      - '/package.json'
+      - '$LANDING_SITE_URL'
+    outputs:
+      - 'dist'
+
+  preview:
+    command: 'pnpm preview'
+    deps:
+      - '~:build'
+    options:
+      persistent: true
+      runInCI: false
+
+  check:
+    deps:
+      - '~:typecheck'
+    inputs:
+      - 'test/**/*'
+
+  typecheck:
+    command: 'pnpm typecheck'
+    inputs:
+      - 'src/**/*'
+      - 'test/**/*'
+      - 'astro.config.ts'
+      - 'vitest.config.ts'
+      - 'tsconfig.json'
+      - 'package.json'
+
+  test:
+    command: 'pnpm test'
+    deps:
+      - '~:build'
+    inputs:
+      - 'src/**/*'
+      - 'test/**/*'
+      - 'dist/**/*'
+      - 'vitest.config.ts'
+      - 'package.json'

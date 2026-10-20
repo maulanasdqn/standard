@@ -1,0 +1,61 @@
+---
+import "../styles/global.css";
+import { APP_MESSAGE, LANDING_MESSAGE } from "@app/messages";
+import { anchorOf, SECTION_ID } from "../lib/links.ts";
+import {
+	jsonLdOf,
+	LANGUAGE,
+	OG_TYPE,
+	ROBOTS_META,
+	THEME_COLOR,
+	TWITTER_CARD,
+	websiteSchemaOf,
+} from "../lib/seo.ts";
+import { absoluteUrlOf, siteOf } from "../lib/site.ts";
+
+export type TLayoutProps = {
+	title?: string;
+	description?: string;
+	noindex?: boolean;
+};
+
+type Props = TLayoutProps;
+
+const props = Astro.props;
+const site = siteOf(Astro.site);
+const title = props.title ?? LANDING_MESSAGE.META_TITLE;
+const description = props.description ?? LANDING_MESSAGE.META_DESCRIPTION;
+const canonical = absoluteUrlOf(Astro.url.pathname, site);
+const robots = props.noindex ? ROBOTS_META.NOINDEX : ROBOTS_META.INDEX;
+const jsonLd = jsonLdOf(websiteSchemaOf(site.href));
+---
+
+<!doctype html>
+<html lang={LANGUAGE} class="dark">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<meta name="robots" content={robots} />
+		{!props.noindex && <link rel="canonical" href={canonical} />}
+		<meta name="theme-color" content={THEME_COLOR} />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta property="og:type" content={OG_TYPE} />
+		<meta property="og:site_name" content={APP_MESSAGE.NAME} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		{!props.noindex && <meta property="og:url" content={canonical} />}
+		<meta name="twitter:card" content={TWITTER_CARD} />
+		<script type="application/ld+json" set:html={jsonLd} />
+	</head>
+	<body class="min-h-screen font-sans antialiased">
+		<a
+			href={anchorOf(SECTION_ID.MAIN)}
+			class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:ring-2 focus:ring-ring"
+		>
+			{LANDING_MESSAGE.SKIP_TO_CONTENT}
+		</a>
+		<slot />
+	</body>
+</html>

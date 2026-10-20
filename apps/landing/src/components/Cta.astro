@@ -1,0 +1,24 @@
+---
+import { LANDING_MESSAGE } from "@app/messages";
+import { BUTTON_VARIANT } from "../lib/button.ts";
+import { APP_LINK } from "../lib/links.ts";
+import ButtonLink from "./ButtonLink.astro";
+---
+
+<section class="border-t">
+	<div class="mx-auto max-w-6xl px-6 py-20 sm:py-24">
+		<div class="rounded-xl border bg-card p-8 text-card-foreground sm:p-12">
+			<h2 class="text-2xl font-semibold tracking-tight sm:text-3xl">
+				{LANDING_MESSAGE.CTA_TITLE}
+			</h2>
+			<p class="mt-3 max-w-xl text-base text-muted-foreground">
+				{LANDING_MESSAGE.CTA_BODY}
+			</p>
+			<div class="mt-8">
+				<ButtonLink href={APP_LINK.GET_STARTED} variant={BUTTON_VARIANT.PRIMARY}>
+					{LANDING_MESSAGE.GET_STARTED}
+				</ButtonLink>
+			</div>
+		</div>
+	</div>
+</section>

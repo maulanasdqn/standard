@@ -9,6 +9,15 @@ export { DASHBOARD_MESSAGE } from "./dashboard/message.ts";
 export { AUTH_MESSAGE } from "./auth/message.ts";
 export { ERROR_MESSAGE } from "./error/message.ts";
 export { HEALTH_MESSAGE } from "./health/message.ts";
+export { LANDING_MESSAGE } from "./landing/message.ts";
+export {
+	LANDING_FAQ,
+	LANDING_FEATURES,
+	LANDING_STACK,
+	LANDING_STEPS,
+	type TLandingEntry,
+	type TLandingStackGroup,
+} from "./landing/sections.ts";
 export { NOTE_MESSAGE } from "./note/message.ts";
 export { NOTE_ATTACHMENT_MESSAGE } from "./note-attachment/message.ts";
 export { NAV_MESSAGE } from "./nav/message.ts";

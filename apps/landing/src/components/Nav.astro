@@ -1,0 +1,45 @@
+---
+import { A } from "@mobily/ts-belt";
+import { APP_MESSAGE, LANDING_MESSAGE } from "@app/messages";
+import { BUTTON_VARIANT } from "../lib/button.ts";
+import { anchorOf, APP_LINK, HOME_PATH, NAV_LINKS } from "../lib/links.ts";
+import ButtonLink from "./ButtonLink.astro";
+---
+
+<header
+	class="sticky top-0 z-40 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+>
+	<div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-6 px-6">
+		<a
+			href={HOME_PATH}
+			aria-label={LANDING_MESSAGE.HOME_LINK}
+			class="text-base font-semibold tracking-tight"
+		>
+			{APP_MESSAGE.NAME}
+		</a>
+		<nav aria-label={LANDING_MESSAGE.PRIMARY_NAVIGATION} class="hidden md:block">
+			<ul class="flex items-center gap-6 text-sm text-muted-foreground">
+				{
+					A.map(NAV_LINKS, (link) => (
+						<li>
+							<a href={anchorOf(link.id)} class="transition-colors hover:text-foreground">
+								{link.label}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+		<div class="flex items-center gap-3">
+			<a
+				href={APP_LINK.SIGN_IN}
+				class="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+			>
+				{LANDING_MESSAGE.SIGN_IN}
+			</a>
+			<ButtonLink href={APP_LINK.GET_STARTED} variant={BUTTON_VARIANT.PRIMARY}>
+				{LANDING_MESSAGE.GET_STARTED}
+			</ButtonLink>
+		</div>
+	</div>
+</header>

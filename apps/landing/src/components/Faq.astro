@@ -1,0 +1,35 @@
+---
+import { A } from "@mobily/ts-belt";
+import { LANDING_FAQ, LANDING_MESSAGE } from "@app/messages";
+import { SECTION_ID } from "../lib/links.ts";
+import SectionHeader from "./SectionHeader.astro";
+---
+
+<section id={SECTION_ID.FAQ} class="scroll-mt-20 border-t">
+	<div class="mx-auto max-w-6xl px-6 py-20 sm:py-24">
+		<SectionHeader
+			eyebrow={LANDING_MESSAGE.FAQ_EYEBROW}
+			title={LANDING_MESSAGE.FAQ_TITLE}
+		/>
+		<div class="mt-12 max-w-3xl divide-y border-y">
+			{
+				A.map(LANDING_FAQ, (entry) => (
+					<details class="group py-5">
+						<summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-base font-medium">
+							{entry.title}
+							<span
+								aria-hidden="true"
+								class="text-muted-foreground transition-transform group-open:rotate-45"
+							>
+								+
+							</span>
+						</summary>
+						<p class="mt-3 text-sm leading-relaxed text-muted-foreground">
+							{entry.body}
+						</p>
+					</details>
+				))
+			}
+		</div>
+	</div>
+</section>

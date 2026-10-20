@@ -12,3 +12,4 @@ apps/web/src/routeTree.gen.ts
 playwright-report/
 test-results/
 .turbo/
+.astro/
