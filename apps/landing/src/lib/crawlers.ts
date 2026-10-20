@@ -26,29 +26,24 @@ const SITEMAP_XML = {
 	CLOSE: "</urlset>",
 } as const;
 
+const linesOf = (lines: readonly string[]): string =>
+	`${A.join(lines, LINE_BREAK)}${LINE_BREAK}`;
+
 export const robotsOf = (site: URL): string =>
-	A.join(
-		[
-			ROBOTS.USER_AGENT,
-			ROBOTS.ALLOW,
-			`${ROBOTS.DISALLOW} ${WEB_BASE_PATH}/`,
-			`${ROBOTS.SITEMAP} ${absoluteUrlOf(SITEMAP_PATH, site)}`,
-			"",
-		],
-		LINE_BREAK,
-	);
+	linesOf([
+		ROBOTS.USER_AGENT,
+		ROBOTS.ALLOW,
+		`${ROBOTS.DISALLOW} ${WEB_BASE_PATH}/`,
+		`${ROBOTS.SITEMAP} ${absoluteUrlOf(SITEMAP_PATH, site)}`,
+	]);
 
 const sitemapEntryOf = (path: string, site: URL): string =>
 	`<url><loc>${absoluteUrlOf(path, site)}</loc></url>`;
 
 export const sitemapOf = (site: URL, paths: readonly string[]): string =>
-	A.join(
-		[
-			SITEMAP_XML.DECLARATION,
-			SITEMAP_XML.OPEN,
-			...A.map(paths, (path): string => sitemapEntryOf(path, site)),
-			SITEMAP_XML.CLOSE,
-			"",
-		],
-		LINE_BREAK,
-	);
+	linesOf([
+		SITEMAP_XML.DECLARATION,
+		SITEMAP_XML.OPEN,
+		...A.map(paths, (path): string => sitemapEntryOf(path, site)),
+		SITEMAP_XML.CLOSE,
+	]);

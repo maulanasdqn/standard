@@ -6,6 +6,12 @@ language: 'typescript'
 tags: ['app']
 stack: 'frontend'
 
+fileGroups:
+  workspace:
+    - '/package.json'
+    - '/packages/*/src/**/*'
+    - '/packages/components/theme.css'
+
 tasks:
   dev:
     command: 'pnpm dev'
@@ -21,7 +27,7 @@ tasks:
       - 'astro.config.ts'
       - 'tsconfig.json'
       - 'package.json'
-      - '/package.json'
+      - '@group(workspace)'
       - '$LANDING_SITE_URL'
     outputs:
       - 'dist'
@@ -49,6 +55,7 @@ tasks:
       - 'vitest.config.ts'
       - 'tsconfig.json'
       - 'package.json'
+      - '@group(workspace)'
 
   test:
     command: 'pnpm test'
@@ -60,3 +67,4 @@ tasks:
       - 'dist/**/*'
       - 'vitest.config.ts'
       - 'package.json'
+      - '@group(workspace)'
