@@ -13,7 +13,7 @@ Full-stack TypeScript monorepo: moon + pnpm workspaces, Hono + oRPC + Effect (`a
 | Running or operating the stack | `README.md` to run it locally, `docs/operations/` for everything else |
 
 `apps/api` is organised **by module, not by layer**: `src/<module>/` for each of `activity auth
-health note permission role user`, with `domain/`, `application/`, `infrastructure/` and
+health newsletter note permission role user`, with `domain/`, `application/`, `infrastructure/` and
 `presentation/` inside it, plus `src/shared/` (vocabulary), `src/platform/` (db, cache, queue, mail,
 http, config) and `src/bootstrap/` (composition root). A module is reachable only through its
 `index.ts`; the allowed edges live in `apps/api/scripts/architecture-rules.ts` and are enforced by

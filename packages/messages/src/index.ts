@@ -19,6 +19,7 @@ export {
 	type TLandingEntry,
 	type TLandingStackGroup,
 } from "./landing/sections.ts";
+export { NEWSLETTER_MESSAGE } from "./newsletter/message.ts";
 export { NOTE_MESSAGE } from "./note/message.ts";
 export { NOTE_ATTACHMENT_MESSAGE } from "./note-attachment/message.ts";
 export { NAV_MESSAGE } from "./nav/message.ts";

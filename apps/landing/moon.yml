@@ -9,6 +9,7 @@ stack: 'frontend'
 fileGroups:
   workspace:
     - '/package.json'
+    - '/packages/*/package.json'
     - '/packages/*/src/**/*'
     - '/packages/components/theme.css'
 

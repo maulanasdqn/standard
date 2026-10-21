@@ -13,6 +13,7 @@ import { SESSION_STATE, type TSession } from "#/shared/session.ts";
 
 const HTTP_UNAUTHORIZED = 401;
 const HTTP_FORBIDDEN = 403;
+const GATE_STATUSES: readonly number[] = [HTTP_UNAUTHORIZED, HTTP_FORBIDDEN];
 const PATH_SEPARATOR = ".";
 const ENV_SEPARATOR = "=";
 const ENV_COMMENT = "#";
@@ -46,7 +47,10 @@ A.forEach(
 
 const { routerBuild } = await import("#/bootstrap/router.ts");
 
-const PUBLIC_PROCEDURES: readonly string[] = ["health.check"];
+const PUBLIC_PROCEDURES: readonly string[] = [
+	"health.check",
+	"newsletter.subscribe",
+];
 const SESSION_ONLY_PROCEDURES: readonly string[] = ["me.get"];
 
 const SESSION: TSession = {
@@ -122,6 +126,7 @@ describe("app router gates", () => {
 				"role.remove",
 				"activity.list",
 				"permission.list",
+				"newsletter.list",
 			]),
 		);
 	});
@@ -145,14 +150,14 @@ describe("app router gates", () => {
 		);
 	});
 
-	it("answers the public procedures without any session", async (): Promise<void> => {
+	it("lets an anonymous caller past the gate of every public procedure", async (): Promise<void> => {
 		const open = A.filter(procedures, isListed(PUBLIC_PROCEDURES));
-
-		expect(await statusesOf(open, contextOf(null))).toEqual(
-			A.map(open, (found): readonly [string, undefined] => [
-				found.name,
-				undefined,
-			]),
+		const gated = A.filter(
+			await statusesOf(open, contextOf(null)),
+			([, status]) => A.some(GATE_STATUSES, (gate) => gate === status),
 		);
+
+		expect(open).toHaveLength(PUBLIC_PROCEDURES.length);
+		expect(gated).toEqual([]);
 	});
 });

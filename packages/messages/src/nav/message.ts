@@ -7,6 +7,7 @@ export const NAV_MESSAGE = {
 	ROLES: "Roles",
 	PERMISSIONS: "Permissions",
 	ACTIVITY: "Activity",
+	SUBSCRIBERS: "Subscribers",
 	ACCOUNT: "Account",
 	SIGN_OUT: "Sign out",
 } as const;

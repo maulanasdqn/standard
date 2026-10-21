@@ -31,6 +31,7 @@ Running the prune twice at once is harmless. Both passes delete rows that match,
 | Store | Retained | Why |
 |---|---|---|
 | `user`, `note`, `custom_role` | Indefinitely | Business records. Deleting them is a product decision, not an operations one |
+| `newsletter_subscriber` | Until an admin removes it | A sign-up is the reader's own request to hear from you, so it has no expiry. Removing one from `/app/subscribers` deletes the address and records which one went in the activity log |
 | `session`, `account`, `verification` | Managed by better-auth | Sessions expire on their own schedule, and a password reset already deletes the user's sessions |
 | Redis | Minutes to a day | Rate-limit counters expire with their window, job de-duplication claims after 24 hours. Nothing there is a record of anything |
 | RabbitMQ | Until acknowledged | Except the dead-letter queue, which holds until someone drains it. That is the point of it, and it is why the depth is alerted on rather than pruned |

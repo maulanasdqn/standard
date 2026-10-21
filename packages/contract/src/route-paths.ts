@@ -3,6 +3,7 @@ const RESOURCE = {
 	NOTE_ATTACHMENTS: "/note-attachments",
 	USERS: "/users",
 	ROLES: "/roles",
+	NEWSLETTER_SUBSCRIBERS: "/newsletter/subscribers",
 } as const;
 
 export const ROUTE_PATH = {
@@ -28,5 +29,8 @@ export const ROUTE_PATH = {
 	USER_TWO_FACTOR: `${RESOURCE.USERS}/{id}/two-factor`,
 	ROLES: RESOURCE.ROLES,
 	ROLE: `${RESOURCE.ROLES}/{key}`,
+	NEWSLETTER_SUBSCRIPTIONS: "/newsletter/subscriptions",
+	NEWSLETTER_SUBSCRIBERS: RESOURCE.NEWSLETTER_SUBSCRIBERS,
+	NEWSLETTER_SUBSCRIBER: `${RESOURCE.NEWSLETTER_SUBSCRIBERS}/{id}`,
 } as const;
 export type TRoutePath = (typeof ROUTE_PATH)[keyof typeof ROUTE_PATH];

@@ -19,6 +19,18 @@
 }
 
 @layer components {
+	.newsletter-status {
+		@apply mt-3 min-h-5 text-sm text-muted-foreground;
+	}
+
+	.newsletter-status[data-state="success"] {
+		@apply text-foreground;
+	}
+
+	.newsletter-status[data-state="error"] {
+		color: color-mix(in oklch, var(--destructive) 60%, white);
+	}
+
 	.prose pre[class*="language-"] {
 		@apply rounded-lg border bg-muted text-foreground;
 	}

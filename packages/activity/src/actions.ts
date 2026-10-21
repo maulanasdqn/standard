@@ -4,6 +4,7 @@ export const ACTIVITY_RESOURCE_TYPE = {
 	USER: "user",
 	ROLE: "role",
 	SESSION: "session",
+	NEWSLETTER_SUBSCRIBER: "newsletter_subscriber",
 } as const;
 
 export type TActivityResourceType =
@@ -37,6 +38,7 @@ export const ACTIVITY_ACTION = {
 	SESSION_DELETE: "session.delete",
 	SESSION_FAIL: "session.fail",
 	SESSION_REVOKE: "session.revoke",
+	NEWSLETTER_SUBSCRIBER_DELETE: "newsletter_subscriber.delete",
 } as const;
 
 export type TActivityAction =

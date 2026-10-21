@@ -289,6 +289,9 @@ importers:
       '@app/messages':
         specifier: workspace:*
         version: link:../../packages/messages
+      '@app/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
       '@app/version':
         specifier: workspace:*
         version: link:../../packages/version

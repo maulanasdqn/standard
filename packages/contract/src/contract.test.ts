@@ -58,6 +58,9 @@ describe("appContract", () => {
 				"role.remove",
 				"permission.list",
 				"activity.list",
+				"newsletter.subscribe",
+				"newsletter.list",
+				"newsletter.remove",
 			]),
 		);
 	});

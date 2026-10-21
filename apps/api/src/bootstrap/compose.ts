@@ -2,6 +2,7 @@ import { Layer, ManagedRuntime } from "effect";
 import { activityModule } from "#/activity/index.ts";
 import { authModule } from "#/auth/index.ts";
 import { healthModule } from "#/health/index.ts";
+import { newsletterModule } from "#/newsletter/index.ts";
 import { noteModule } from "#/note/index.ts";
 import { cacheServiceLayer } from "#/platform/cache/redis.ts";
 import { dbServiceLayer } from "#/platform/db/db-service.ts";
@@ -24,6 +25,7 @@ const moduleLayer = Layer.mergeAll(
 	activityModule.layer,
 	noteModule.layer,
 	roleModule.layer,
+	newsletterModule.layer,
 );
 
 export const AppLayer = userModule.layer.pipe(

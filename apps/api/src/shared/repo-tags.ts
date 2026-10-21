@@ -8,4 +8,5 @@ export const REPO_TAG = {
 	ACTIVITY: "app/ActivityRepo",
 	ACTIVITY_RECORDER: "app/ActivityRecorder",
 	ACTIVITY_PRUNER: "app/ActivityPruner",
+	NEWSLETTER_SUBSCRIBER: "app/NewsletterSubscriberRepo",
 } as const;

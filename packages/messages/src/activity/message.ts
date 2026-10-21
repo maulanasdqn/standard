@@ -47,6 +47,8 @@ export const ACTIVITY_ACTION_LABEL = {
 	[ACTIVITY_ACTION.SESSION_DELETE]: "Signed out",
 	[ACTIVITY_ACTION.SESSION_FAIL]: "Sign-in failed",
 	[ACTIVITY_ACTION.SESSION_REVOKE]: "Sessions revoked",
+	[ACTIVITY_ACTION.NEWSLETTER_SUBSCRIBER_DELETE]:
+		"Newsletter subscriber removed",
 } as const satisfies Record<TActivityAction, string>;
 
 export const ACTIVITY_DETAIL_LABEL = {
@@ -70,4 +72,5 @@ export const ACTIVITY_ENTITY_LABEL = {
 	[ACTIVITY_RESOURCE_TYPE.USER]: "User",
 	[ACTIVITY_RESOURCE_TYPE.ROLE]: "Role",
 	[ACTIVITY_RESOURCE_TYPE.SESSION]: "Session",
+	[ACTIVITY_RESOURCE_TYPE.NEWSLETTER_SUBSCRIBER]: "Newsletter subscriber",
 } as const satisfies Record<TActivityResourceType, string>;
