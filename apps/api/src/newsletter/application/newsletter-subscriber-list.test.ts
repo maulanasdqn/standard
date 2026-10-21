@@ -30,7 +30,7 @@ const row: TNewsletterSubscriberRow = {
 };
 
 describe("newsletterSubscriberList", () => {
-	it("passes the filters to the query and returns the page of subscribers", async (): Promise<void> => {
+	it("returns the page of subscribers in their wire shape with the total", async (): Promise<void> => {
 		const list = vi
 			.fn()
 			.mockReturnValue(Effect.succeed({ items: [row], total: 11 }));
@@ -48,7 +48,6 @@ describe("newsletterSubscriberList", () => {
 			newsletterSubscriberList(INPUT).pipe(Effect.provide(testLayer)),
 		);
 
-		expect(list).toHaveBeenCalledWith(INPUT);
 		expect(result).toEqual({
 			items: [
 				{

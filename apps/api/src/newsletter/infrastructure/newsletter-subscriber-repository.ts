@@ -1,43 +1,22 @@
-import {
-	NEWSLETTER_SORT,
-	type TNewsletterSort,
-	type TNewsletterStatus,
-	type TNewsletterSubscriberListInput,
-} from "@app/schemas";
-import { and, count, eq, type SQL } from "drizzle-orm";
+import { NEWSLETTER_SORT, type TNewsletterSort } from "@app/schemas";
+import { count, eq } from "drizzle-orm";
 import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { Effect, Layer } from "effect";
-import { match, P } from "ts-pattern";
 import { EDatabase } from "#/shared/errors.ts";
 import {
 	NewsletterSubscriberRepo,
 	type TNewsletterSubscriberRepo,
 } from "#/newsletter/domain/newsletter-subscriber.ts";
+import { newsletterSubscriberListWhere } from "#/newsletter/infrastructure/newsletter-subscriber-list-where.ts";
 import { offsetFor, orderFor } from "#/shared/pagination.ts";
 import { DbService } from "#/platform/db/db-service.ts";
 import { dbActive } from "#/platform/db/transaction.ts";
-import { containsWhere } from "#/platform/db/search.ts";
 import { newsletterSubscriber } from "#/platform/db/tables/newsletter-subscriber.ts";
 
 const SORT_COLUMN: Record<TNewsletterSort, AnyPgColumn> = {
 	[NEWSLETTER_SORT.EMAIL]: newsletterSubscriber.email,
 	[NEWSLETTER_SORT.CREATED_AT]: newsletterSubscriber.createdAt,
 };
-
-const searchWhere = (search: string | undefined): SQL | undefined =>
-	match(search)
-		.with(P.nonNullable, (value) =>
-			containsWhere(newsletterSubscriber.email, value),
-		)
-		.otherwise(() => undefined);
-
-const statusWhere = (status: TNewsletterStatus | undefined): SQL | undefined =>
-	match(status)
-		.with(P.nonNullable, (value) => eq(newsletterSubscriber.status, value))
-		.otherwise(() => undefined);
-
-const filterWhere = (input: TNewsletterSubscriberListInput): SQL | undefined =>
-	and(searchWhere(input.search), statusWhere(input.status));
 
 export const newsletterSubscriberRepoLayer = Layer.effect(
 	NewsletterSubscriberRepo,
@@ -60,7 +39,7 @@ export const newsletterSubscriberRepoLayer = Layer.effect(
 
 		const list: TNewsletterSubscriberRepo["list"] = (input) => {
 			const { page, pageSize, sortBy, sortDir } = input;
-			const where = filterWhere(input);
+			const where = newsletterSubscriberListWhere(input);
 
 			return Effect.tryPromise({
 				try: async () => {
