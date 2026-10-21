@@ -23,6 +23,7 @@ import { metrics } from "#/platform/observability/metrics.ts";
 import { authMount } from "#/auth/presentation/mount-auth.ts";
 import { healthModule, healthMount } from "#/health/index.ts";
 import { bodyLimitMount } from "#/platform/http/mount-body-limit.ts";
+import { secureHeadersMount } from "#/platform/http/mount-secure-headers.ts";
 import { orpcMount } from "#/platform/http/mount-orpc.ts";
 import { originMatcherOf, originsOf } from "#/platform/http/origins.ts";
 import { metricsMount } from "#/platform/http/mount-metrics.ts";
@@ -103,6 +104,8 @@ const EXIT_FAILURE = 1;
 const app = new Hono();
 
 app.use("*", requestId());
+
+secureHeadersMount(app);
 
 observabilityMount(app, { logger, metrics, tracing });
 
