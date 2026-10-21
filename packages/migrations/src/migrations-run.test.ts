@@ -29,6 +29,7 @@ const { migrationsRun } = await import("./index.ts");
 
 const OPTIONS = {
 	service: "api",
+	env: "test",
 	migrationsFolder: "/srv/app/drizzle",
 	databaseUrl: "postgres://app:app@localhost:5432/app",
 	migrationsSchema: "reporting",

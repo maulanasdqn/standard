@@ -4,8 +4,14 @@ import { migrate } from "drizzle-orm/node-postgres/migrator";
 import type { MigrationConfig } from "drizzle-orm/migrator";
 import { Pool } from "pg";
 
+const MIGRATIONS_LOG = {
+	STARTED: "running migrations",
+	APPLIED: "migrations applied",
+} as const;
+
 type TRunMigrationsOptions = {
 	service: string;
+	env: string;
 	migrationsFolder: string;
 	databaseUrl: string;
 	migrationsSchema: string;
@@ -25,16 +31,16 @@ export const migrationsRun = async (
 ): Promise<void> => {
 	const logger = loggerCreate({
 		service: options.service,
-		env: process.env.NODE_ENV ?? "development",
+		env: options.env,
 	});
 	const pool = new Pool({ connectionString: options.databaseUrl });
 	const db = drizzle(pool);
 	const config = migrationConfigOf(options);
 
 	try {
-		logger.info(config, "running migrations");
+		logger.info(config, MIGRATIONS_LOG.STARTED);
 		await migrate(db, config);
-		logger.info("migrations applied");
+		logger.info(MIGRATIONS_LOG.APPLIED);
 	} finally {
 		await pool.end();
 	}
