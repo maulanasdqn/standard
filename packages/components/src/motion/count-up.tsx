@@ -10,5 +10,9 @@ type TCountUpProps = {
 export const CountUp: FC<TCountUpProps> = (props): ReactElement => {
 	const count = useCountUp(props.value);
 
-	return <motion.span className={props.className}>{count}</motion.span>;
+	return (
+		<span ref={count.ref} className={props.className}>
+			<motion.span>{count.rounded}</motion.span>
+		</span>
+	);
 };

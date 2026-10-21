@@ -51,6 +51,19 @@
 			},
 			"suspicious": {
 				"noArrayIndexKey": "off"
+			},
+			"style": {
+				"noRestrictedImports": {
+					"level": "error",
+					"options": {
+						"paths": {
+							"react": {
+								"importNames": ["useEffect", "useLayoutEffect"],
+								"message": "useEffect is banned: seed a Store, read a useStore selector, or use a ref callback that returns its cleanup."
+							}
+						}
+					}
+				}
 			}
 		}
 	},
