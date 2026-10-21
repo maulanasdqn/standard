@@ -1,0 +1,44 @@
+---
+import { A } from "@mobily/ts-belt";
+import { BLOG_MESSAGE } from "@app/messages";
+import type { GetStaticPaths } from "astro";
+import BlogPage from "../../../../components/blog/BlogPage.astro";
+import PostList from "../../../../components/blog/PostList.astro";
+import SectionHeader from "../../../../components/SectionHeader.astro";
+import {
+	postsTagged,
+	publishedPosts,
+	type TPost,
+	tagsIn,
+} from "../../../../lib/blog/posts.ts";
+import { tagLabelOf, type TBlogTag } from "../../../../lib/blog/tags.ts";
+import { pageTitleOf } from "../../../../lib/seo.ts";
+
+export type TTagPageProps = {
+	tag: TBlogTag;
+	posts: readonly TPost[];
+};
+
+type Props = TTagPageProps;
+
+export const getStaticPaths = (async () => {
+	const posts = await publishedPosts();
+
+	return [
+		...A.map(tagsIn(posts), (tag) => ({
+			params: { tag },
+			props: { tag, posts: postsTagged(posts, tag) },
+		})),
+	];
+}) satisfies GetStaticPaths;
+
+const props = Astro.props;
+const heading = `${BLOG_MESSAGE.TAGGED} ${tagLabelOf(props.tag)}`;
+---
+
+<BlogPage title={pageTitleOf(heading)} description={BLOG_MESSAGE.INDEX_DESCRIPTION}>
+	<SectionHeader eyebrow={BLOG_MESSAGE.INDEX_TITLE} title={heading} />
+	<div class="mt-12">
+		<PostList posts={props.posts} />
+	</div>
+</BlogPage>

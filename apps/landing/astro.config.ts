@@ -15,6 +15,10 @@ const webRoutes = `^${WEB_BASE_PATH}(/|$)`;
 
 export default defineConfig({
 	site: process.env[ENV_KEY.SITE_URL] || DEFAULT_SITE_URL,
+	trailingSlash: "always",
+	markdown: {
+		syntaxHighlight: "prism",
+	},
 	build: {
 		inlineStylesheets: "never",
 	},

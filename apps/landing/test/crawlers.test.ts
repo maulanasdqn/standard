@@ -1,6 +1,13 @@
 import { WEB_BASE_PATH } from "@app/contract";
 import { A } from "@mobily/ts-belt";
 import { describe, expect, it } from "vitest";
+import { BLOG_DIR } from "../scripts/lib/paths.ts";
+import {
+	entriesOf,
+	postSourcesIn,
+	publishedOf,
+} from "../scripts/lib/post-source.ts";
+import { blogPathsOf } from "../src/lib/blog/paths.ts";
 import { LANDING_PAGES, SITEMAP_PATH } from "../src/lib/crawlers.ts";
 import { inDist, readDist } from "./support/dist.ts";
 import { linkHrefOf } from "./support/html.ts";
@@ -17,6 +24,16 @@ const sitemapUrls = (): readonly URL[] =>
 		[...readDist(SITEMAP).matchAll(LOC)],
 		([, loc]): URL => new URL(loc ?? ""),
 	);
+
+const posts = publishedOf(postSourcesIn(BLOG_DIR), new Date());
+
+const expectedPaths: readonly string[] = [
+	...LANDING_PAGES,
+	...blogPathsOf(entriesOf(posts)),
+];
+
+const sorted = (values: readonly string[]): readonly string[] =>
+	A.sort(values, (left, right) => left.localeCompare(right));
 
 const builtFileOf = (path: string): string =>
 	path.endsWith("/") ? `${path.slice(1)}${INDEX_FILE}` : path.slice(1);
@@ -36,10 +53,10 @@ describe("robots.txt", () => {
 });
 
 describe("sitemap.xml", () => {
-	it("lists every landing page, and each one is built", (): void => {
+	it("lists every page and published article, and each one is built", (): void => {
 		const paths = A.map(sitemapUrls(), (url) => url.pathname);
 
-		expect(paths).toEqual(LANDING_PAGES);
+		expect(sorted(paths)).toEqual(sorted(expectedPaths));
 		A.forEach(paths, (path) => {
 			expect(inDist(builtFileOf(path)), path).toBe(true);
 		});

@@ -45,12 +45,14 @@ tasks:
       - '~:typecheck'
     inputs:
       - 'test/**/*'
+      - 'scripts/**/*'
 
   typecheck:
     command: 'pnpm typecheck'
     inputs:
       - 'src/**/*'
       - 'test/**/*'
+      - 'scripts/**/*'
       - 'astro.config.ts'
       - 'vitest.config.ts'
       - 'tsconfig.json'
@@ -64,7 +66,21 @@ tasks:
     inputs:
       - 'src/**/*'
       - 'test/**/*'
+      - 'scripts/**/*'
+      - 'prompt/**/*'
       - 'dist/**/*'
       - 'vitest.config.ts'
       - 'package.json'
       - '@group(workspace)'
+
+  lint-content:
+    command: 'pnpm lint:content'
+    options:
+      cache: false
+      runInCI: false
+
+  new-post:
+    command: 'pnpm new-post'
+    options:
+      cache: false
+      runInCI: false

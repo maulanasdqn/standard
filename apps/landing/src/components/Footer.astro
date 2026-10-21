@@ -1,6 +1,7 @@
 ---
-import { APP_MESSAGE, LANDING_MESSAGE } from "@app/messages";
+import { APP_MESSAGE, BLOG_MESSAGE, LANDING_MESSAGE } from "@app/messages";
 import { APP_VERSION } from "@app/version";
+import { BLOG_PATH, RSS_PATH } from "../lib/blog/paths.ts";
 import { APP_LINK } from "../lib/links.ts";
 ---
 
@@ -13,8 +14,22 @@ import { APP_LINK } from "../lib/links.ts";
 			<span class="mx-2" aria-hidden="true">·</span>
 			{`${LANDING_MESSAGE.FOOTER_VERSION} ${APP_VERSION}`}
 		</p>
-		<a href={APP_LINK.SIGN_IN} class="transition-colors hover:text-foreground">
-			{LANDING_MESSAGE.SIGN_IN}
-		</a>
+		<ul class="flex gap-6">
+			<li>
+				<a href={BLOG_PATH} class="transition-colors hover:text-foreground">
+					{BLOG_MESSAGE.NAV_BLOG}
+				</a>
+			</li>
+			<li>
+				<a href={RSS_PATH} class="transition-colors hover:text-foreground">
+					{BLOG_MESSAGE.RSS}
+				</a>
+			</li>
+			<li>
+				<a href={APP_LINK.SIGN_IN} class="transition-colors hover:text-foreground">
+					{LANDING_MESSAGE.SIGN_IN}
+				</a>
+			</li>
+		</ul>
 	</div>
 </footer>

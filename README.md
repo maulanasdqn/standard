@@ -108,6 +108,7 @@ moon run :build                       # tsc --noEmit, every project
 moon run :test                        # unit tests
 moon run web:test -- --coverage.reportsDirectory=coverage/second  # a run beside another one, with its own coverage folder
 moon run api:db-generate              # generate drizzle migration
+moon run landing:new-post -- "<title>" # start a blog article and print its writing prompt
 moon ci                               # what CI runs
 ```
 
@@ -141,5 +142,6 @@ Releases are automatic and there is nothing to run by hand: every merge to `trun
 | [.claude/skills/ts-conventions/SKILL.md](.claude/skills/ts-conventions/SKILL.md) | The TypeScript ruleset, in full |
 | [docs/adding-a-module.md](docs/adding-a-module.md) | Every touchpoint a new module, endpoint or permission has to reach |
 | [docs/effect-services.md](docs/effect-services.md) | Why a service is a const and an error is a class |
+| [docs/blog.md](docs/blog.md) | Where articles live, how `new-post` starts one, and what the content checks enforce |
 | [docs/operations/](docs/operations/) | Deploying, backups, runbooks, alerting, credentials, retention, logging |
 | [docs/kpi/](docs/kpi/) | Where this repository stands against an external engineering standards rubric |

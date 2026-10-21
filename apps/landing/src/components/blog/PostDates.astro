@@ -1,0 +1,31 @@
+---
+import { formatDate } from "@app/format";
+import { BLOG_MESSAGE } from "@app/messages";
+
+export type TPostDatesProps = {
+	publishedAt: Date;
+	updatedAt?: Date;
+};
+
+type Props = TPostDatesProps;
+
+const props = Astro.props;
+---
+
+<p class="text-sm text-muted-foreground">
+	<span class="sr-only">{`${BLOG_MESSAGE.PUBLISHED} `}</span>
+	<time datetime={props.publishedAt.toISOString()}>
+		{formatDate(props.publishedAt)}
+	</time>
+	{
+		props.updatedAt && (
+			<span>
+				<span class="mx-2" aria-hidden="true">·</span>
+				{`${BLOG_MESSAGE.UPDATED} `}
+				<time datetime={props.updatedAt.toISOString()}>
+					{formatDate(props.updatedAt)}
+				</time>
+			</span>
+		)
+	}
+</p>

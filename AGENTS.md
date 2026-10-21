@@ -9,6 +9,7 @@ Full-stack TypeScript monorepo: moon + pnpm workspaces, Hono + oRPC + Effect (`a
 | Any `.ts` / `.tsx`, including a one-line change | `.claude/skills/ts-conventions/SKILL.md`, the full ruleset, non-negotiable |
 | Effect code in `apps/api` | `node_modules/effect/AGENTS.md`, which describes the installed v4 API rather than general Effect knowledge, then `docs/effect-services.md` for why this repository shapes services the way it does |
 | A new module, endpoint, table or permission | `docs/adding-a-module.md`, which lists every touchpoint, including the ones no directory listing reveals |
+| A blog article | `docs/blog.md`, then `moon run landing:new-post -- "<title>"`, which starts the draft and prints the writing prompt |
 | Running or operating the stack | `README.md` to run it locally, `docs/operations/` for everything else |
 
 `apps/api` is organised **by module, not by layer**: `src/<module>/` for each of `activity auth

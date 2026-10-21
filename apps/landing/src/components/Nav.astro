@@ -2,7 +2,7 @@
 import { A } from "@mobily/ts-belt";
 import { APP_MESSAGE, LANDING_MESSAGE } from "@app/messages";
 import { BUTTON_VARIANT } from "../lib/button.ts";
-import { anchorOf, APP_LINK, HOME_PATH, NAV_LINKS } from "../lib/links.ts";
+import { APP_LINK, HOME_PATH, NAV_LINKS } from "../lib/links.ts";
 import ButtonLink from "./ButtonLink.astro";
 ---
 
@@ -22,7 +22,7 @@ import ButtonLink from "./ButtonLink.astro";
 				{
 					A.map(NAV_LINKS, (link) => (
 						<li>
-							<a href={anchorOf(link.id)} class="transition-colors hover:text-foreground">
+							<a href={link.href} class="transition-colors hover:text-foreground">
 								{link.label}
 							</a>
 						</li>

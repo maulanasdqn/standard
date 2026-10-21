@@ -10,6 +10,9 @@ const DIST_MISSING = "dist/ is missing, so run moon run landing:build first";
 
 export const DIST = fileURLToPath(new URL("../../dist/", import.meta.url));
 export const SRC = fileURLToPath(new URL("../../src/", import.meta.url));
+export const SCRIPTS = fileURLToPath(
+	new URL("../../scripts/", import.meta.url),
+);
 
 export type TBuiltPage = {
 	readonly file: string;

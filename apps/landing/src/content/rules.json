@@ -1,0 +1,7 @@
+{
+	"titleMaxChars": 70,
+	"descriptionChars": [70, 160],
+	"tagCount": [1, 3],
+	"reservedSlugs": ["tags"],
+	"bannedCodePoints": [8211, 8212]
+}

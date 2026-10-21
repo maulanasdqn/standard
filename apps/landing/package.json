@@ -8,14 +8,19 @@
 		"build": "astro build",
 		"preview": "astro preview --port 4321",
 		"typecheck": "astro check && tsc -p test/tsconfig.json",
-		"test": "vitest run"
+		"test": "vitest run",
+		"lint:content": "node scripts/lint-content.ts",
+		"new-post": "node scripts/new-post.ts"
 	},
 	"dependencies": {
 		"@app/components": "workspace:*",
 		"@app/contract": "workspace:*",
+		"@app/format": "workspace:*",
 		"@app/messages": "workspace:*",
 		"@app/version": "workspace:*",
+		"@astrojs/rss": "^4.0.19",
 		"@mobily/ts-belt": "catalog:",
+		"@tailwindcss/typography": "^0.5.19",
 		"@tailwindcss/vite": "^4.1.18",
 		"astro": "^7.3.5",
 		"tailwindcss": "^4.1.18",
@@ -25,6 +30,7 @@
 		"@astrojs/check": "^0.9.10",
 		"@types/node": "catalog:",
 		"typescript": "^6.0.3",
-		"vitest": "catalog:"
+		"vitest": "catalog:",
+		"yaml": "^2.9.1"
 	}
 }

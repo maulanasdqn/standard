@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "@app/components/theme.css";
+@plugin "@tailwindcss/typography";
 
 @layer base {
 	* {
@@ -15,4 +16,47 @@
 			scroll-behavior: smooth;
 		}
 	}
+}
+
+@layer components {
+	.prose pre[class*="language-"] {
+		@apply rounded-lg border bg-muted text-foreground;
+	}
+
+	.prose .token.comment,
+	.prose .token.prolog {
+		@apply text-muted-foreground italic;
+	}
+
+	.prose .token.keyword,
+	.prose .token.builtin,
+	.prose .token.important {
+		color: var(--chart-1);
+	}
+
+	.prose .token.string,
+	.prose .token.char,
+	.prose .token.attr-value {
+		color: var(--chart-2);
+	}
+
+	.prose .token.function,
+	.prose .token.class-name {
+		color: var(--chart-3);
+	}
+
+	.prose .token.number,
+	.prose .token.boolean,
+	.prose .token.constant {
+		color: var(--chart-5);
+	}
+}
+
+.prose :where(code):not(:where(pre *)) {
+	@apply rounded bg-muted px-1.5 py-0.5 font-medium;
+}
+
+.prose :where(code):not(:where(pre *))::before,
+.prose :where(code):not(:where(pre *))::after {
+	content: none;
 }

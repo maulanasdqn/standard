@@ -1,0 +1,64 @@
+---
+import { A } from "@mobily/ts-belt";
+import { BLOG_MESSAGE } from "@app/messages";
+import type { GetStaticPaths } from "astro";
+import { render } from "astro:content";
+import BlogPage from "../../../components/blog/BlogPage.astro";
+import PostDates from "../../../components/blog/PostDates.astro";
+import TagList from "../../../components/blog/TagList.astro";
+import { BLOG_PATH, postPathOf } from "../../../lib/blog/paths.ts";
+import { publishedPosts, type TPost } from "../../../lib/blog/posts.ts";
+import { articleNodeOf, OG_TYPE, pageTitleOf } from "../../../lib/seo.ts";
+import { absoluteUrlOf, siteOf } from "../../../lib/site.ts";
+
+export type TPostPageProps = {
+	post: TPost;
+};
+
+type Props = TPostPageProps;
+
+export const getStaticPaths = (async () => [
+	...A.map(await publishedPosts(), (post) => ({
+		params: { slug: post.id },
+		props: { post },
+	})),
+]) satisfies GetStaticPaths;
+
+const post = Astro.props.post;
+const { Content } = await render(post);
+const article = articleNodeOf({
+	title: post.data.title,
+	description: post.data.description,
+	url: absoluteUrlOf(postPathOf(post.id), siteOf(Astro.site)),
+	publishedAt: post.data.publishedAt,
+	updatedAt: post.data.updatedAt,
+});
+---
+
+<BlogPage
+	title={pageTitleOf(post.data.title)}
+	description={post.data.description}
+	ogType={OG_TYPE.ARTICLE}
+	schemaNodes={[article]}
+>
+	<article>
+		<header>
+			<a href={BLOG_PATH} class="text-sm text-muted-foreground hover:text-foreground">
+				{BLOG_MESSAGE.ALL_ARTICLES}
+			</a>
+			<h1 class="mt-6 text-4xl font-semibold tracking-tight">{post.data.title}</h1>
+			<div class="mt-4">
+				<PostDates
+					publishedAt={post.data.publishedAt}
+					updatedAt={post.data.updatedAt}
+				/>
+			</div>
+			<div class="mt-4">
+				<TagList tags={post.data.tags} />
+			</div>
+		</header>
+		<div class="prose mt-12 max-w-none dark:prose-invert">
+			<Content />
+		</div>
+	</article>
+</BlogPage>
