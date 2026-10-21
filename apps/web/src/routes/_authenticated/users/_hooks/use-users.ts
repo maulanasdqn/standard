@@ -1,3 +1,4 @@
+import type { TSearchControl } from "#/libs/forms/use-search-form.ts";
 import { USER_MESSAGE } from "@app/messages";
 import type { TUserListInput, TUserSort } from "@app/schemas";
 import { D } from "@mobily/ts-belt";
@@ -24,11 +25,6 @@ import type { TListChange } from "#/libs/table/list-patch.ts";
 type TUserIn = TClientInputs["user"];
 type TUserOut = TClientOutputs["user"];
 type TUserErr = TClientErrors["user"];
-
-export type TUserSearch = {
-	value: string;
-	onChange: (next: string) => void;
-};
 
 const listRouteApi = getRouteApi("/_authenticated/users/");
 const editRouteApi = getRouteApi("/_authenticated/users/$userId");
@@ -59,7 +55,7 @@ export const useUserGet = (): UseSuspenseQueryResult<
 	TUserErr["get"]
 > => useSuspenseQuery(userGetOptions(editRouteApi.useParams().userId));
 
-export const useUserSearch = (): TUserSearch => {
+export const useUserSearch = (): TSearchControl => {
 	const navigate = listRouteApi.useNavigate();
 	const { search } = listRouteApi.useSearch();
 

@@ -9,6 +9,8 @@ import {
 } from "@app/schemas";
 import { render, type RenderResult, screen } from "@testing-library/react";
 import type { ReactElement } from "react";
+import type { TSearchControl } from "#/libs/forms/use-search-form.ts";
+import type { TSearchBoxProps } from "#/routes/_authenticated/_components/search-box.tsx";
 import { describe, expect, it, vi } from "vitest";
 import { SubscriberTable } from "#/routes/_authenticated/subscribers/_components/subscriber-table.tsx";
 
@@ -16,13 +18,21 @@ const ACTIONS_LABEL = "subscriber actions";
 const CREATED_AT = "2026-01-02T03:04:00.000Z";
 
 vi.mock(
-	"#/routes/_authenticated/subscribers/_components/subscriber-search.tsx",
-	() => ({
-		SubscriberSearch: (): ReactElement => (
-			<input aria-label="Search subscribers" />
-		),
+	"#/routes/_authenticated/subscribers/_hooks/use-subscribers.ts",
+	async (importOriginal) => ({
+		...(await importOriginal<Record<string, unknown>>()),
+		useSubscriberSearch: (): TSearchControl => ({
+			value: "",
+			onChange: vi.fn(),
+		}),
 	}),
 );
+
+vi.mock("#/routes/_authenticated/_components/search-box.tsx", () => ({
+	SearchBox: (props: TSearchBoxProps): ReactElement => (
+		<input aria-label={props.label} />
+	),
+}));
 
 vi.mock(
 	"#/routes/_authenticated/subscribers/_components/subscriber-actions-cell.tsx",

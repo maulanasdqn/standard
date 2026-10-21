@@ -8,14 +8,26 @@ import {
 	screen,
 } from "@testing-library/react";
 import type { ReactElement } from "react";
+import type { TSearchControl } from "#/libs/forms/use-search-form.ts";
+import type { TSearchBoxProps } from "#/routes/_authenticated/_components/search-box.tsx";
 import { describe, expect, it, vi } from "vitest";
 import { NoteTable } from "#/routes/_authenticated/notes/_components/note-table.tsx";
 
 const ACTIONS_LABEL = "note actions";
 const CREATED_AT = "2026-01-02T03:04:00.000Z";
 
-vi.mock("#/routes/_authenticated/notes/_components/note-search.tsx", () => ({
-	NoteSearch: (): ReactElement => <input aria-label="Search notes" />,
+vi.mock(
+	"#/routes/_authenticated/notes/_hooks/use-notes.ts",
+	async (importOriginal) => ({
+		...(await importOriginal<Record<string, unknown>>()),
+		useNoteSearch: (): TSearchControl => ({ value: "", onChange: vi.fn() }),
+	}),
+);
+
+vi.mock("#/routes/_authenticated/_components/search-box.tsx", () => ({
+	SearchBox: (props: TSearchBoxProps): ReactElement => (
+		<input aria-label={props.label} />
+	),
 }));
 
 vi.mock("#/routes/_authenticated/notes/_components/note-filters.tsx", () => ({

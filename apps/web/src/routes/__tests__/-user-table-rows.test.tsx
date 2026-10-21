@@ -10,6 +10,8 @@ import {
 	screen,
 } from "@testing-library/react";
 import type { ReactElement } from "react";
+import type { TSearchControl } from "#/libs/forms/use-search-form.ts";
+import type { TSearchBoxProps } from "#/routes/_authenticated/_components/search-box.tsx";
 import { describe, expect, it, vi } from "vitest";
 import { UserTable } from "#/routes/_authenticated/users/_components/user-table.tsx";
 import type { TRoleOption } from "#/routes/_authenticated/users/_hooks/use-role-options.ts";
@@ -22,8 +24,18 @@ const ACTIONS_LABEL = "user actions";
 const CREATED_AT = "2026-01-02T03:04:00.000Z";
 const MEMBER_LABEL = "Member";
 
-vi.mock("#/routes/_authenticated/users/_components/user-search.tsx", () => ({
-	UserSearch: (): ReactElement => <input aria-label="Search users" />,
+vi.mock(
+	"#/routes/_authenticated/users/_hooks/use-users.ts",
+	async (importOriginal) => ({
+		...(await importOriginal<Record<string, unknown>>()),
+		useUserSearch: (): TSearchControl => ({ value: "", onChange: vi.fn() }),
+	}),
+);
+
+vi.mock("#/routes/_authenticated/_components/search-box.tsx", () => ({
+	SearchBox: (props: TSearchBoxProps): ReactElement => (
+		<input aria-label={props.label} />
+	),
 }));
 
 vi.mock(

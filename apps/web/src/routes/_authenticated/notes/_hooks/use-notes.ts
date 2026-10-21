@@ -1,3 +1,4 @@
+import type { TSearchControl } from "#/libs/forms/use-search-form.ts";
 import { NOTE_MESSAGE } from "@app/messages";
 import type { TNoteListInput, TNoteSort } from "@app/schemas";
 import { D } from "@mobily/ts-belt";
@@ -28,11 +29,6 @@ type TNoteIn = TClientInputs["note"];
 type TNoteOut = TClientOutputs["note"];
 type TNoteErr = TClientErrors["note"];
 
-export type TNoteSearch = {
-	value: string;
-	onChange: (next: string) => void;
-};
-
 const listRouteApi = getRouteApi("/_authenticated/notes/");
 const editRouteApi = getRouteApi("/_authenticated/notes/$noteId");
 
@@ -62,7 +58,7 @@ export const useNoteGet = (): UseSuspenseQueryResult<
 	TNoteErr["get"]
 > => useSuspenseQuery(noteGetOptions(editRouteApi.useParams().noteId));
 
-export const useNoteSearch = (): TNoteSearch => {
+export const useNoteSearch = (): TSearchControl => {
 	const navigate = listRouteApi.useNavigate();
 	const { search } = listRouteApi.useSearch();
 

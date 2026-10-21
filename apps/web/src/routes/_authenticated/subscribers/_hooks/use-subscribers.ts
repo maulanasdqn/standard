@@ -1,3 +1,4 @@
+import type { TSearchControl } from "#/libs/forms/use-search-form.ts";
 import { NEWSLETTER_MESSAGE } from "@app/messages";
 import type {
 	TNewsletterSort,
@@ -26,11 +27,6 @@ type TNewsletterIn = TClientInputs["newsletter"];
 type TNewsletterOut = TClientOutputs["newsletter"];
 type TNewsletterErr = TClientErrors["newsletter"];
 
-export type TSubscriberSearch = {
-	value: string;
-	onChange: (next: string) => void;
-};
-
 const listRouteApi = getRouteApi("/_authenticated/subscribers/");
 
 export const subscriberListOptions = (
@@ -43,7 +39,7 @@ export const useSubscriberList = (): UseSuspenseQueryResult<
 	TNewsletterErr["list"]
 > => useSuspenseQuery(subscriberListOptions(listRouteApi.useSearch()));
 
-export const useSubscriberSearch = (): TSubscriberSearch => {
+export const useSubscriberSearch = (): TSearchControl => {
 	const navigate = listRouteApi.useNavigate();
 	const { search } = listRouteApi.useSearch();
 
