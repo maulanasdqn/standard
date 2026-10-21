@@ -31,7 +31,7 @@
 	.prose .token.keyword,
 	.prose .token.builtin,
 	.prose .token.important {
-		color: var(--chart-1);
+		color: color-mix(in oklch, var(--chart-1) 60%, white);
 	}
 
 	.prose .token.string,
@@ -48,7 +48,7 @@
 	.prose .token.number,
 	.prose .token.boolean,
 	.prose .token.constant {
-		color: var(--chart-5);
+		color: color-mix(in oklch, var(--chart-5) 70%, white);
 	}
 }
 
