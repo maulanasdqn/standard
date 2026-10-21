@@ -7,6 +7,7 @@ import {
 	Activity,
 	KeyRound,
 	LayoutDashboard,
+	Mail,
 	Shield,
 	StickyNote,
 	Users,
@@ -70,6 +71,12 @@ const ADMINISTRATION_ITEMS: readonly TNavItem[] = [
 		label: NAV_MESSAGE.ACTIVITY,
 		permissions: [PERMISSION.ACTIVITY_READ],
 		icon: Activity,
+	},
+	{
+		to: "/subscribers",
+		label: NAV_MESSAGE.SUBSCRIBERS,
+		permissions: [PERMISSION.NEWSLETTER_READ],
+		icon: Mail,
 	},
 ];
 

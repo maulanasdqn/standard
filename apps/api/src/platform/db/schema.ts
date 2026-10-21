@@ -1,6 +1,7 @@
 export * from "./tables/activity.ts";
 export * from "./tables/auth.ts";
 export * from "./tables/custom-role.ts";
+export * from "./tables/newsletter-subscriber.ts";
 export * from "./tables/note.ts";
 export * from "./tables/note-attachment.ts";
 export * from "./tables/two-factor.ts";

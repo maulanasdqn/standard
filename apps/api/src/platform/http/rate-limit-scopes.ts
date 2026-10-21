@@ -1,5 +1,6 @@
 export const RATE_LIMIT_SCOPE = {
 	AUTH: "auth",
+	NEWSLETTER: "newsletter",
 } as const;
 
 export type TRateLimitScope =

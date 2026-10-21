@@ -60,7 +60,7 @@ Or run them separately:
 ```sh
 make api                              # api on :3001
 make web                              # web on :5173/app/
-make landing                          # landing on :4321, with /app proxied to the web
+make landing                          # landing on :4321, with /app proxied to the web and /api to the api
 ```
 
 Seed logins: `admin@test.app` / `Password123`, `member@test.app` / `Password123`, `viewer@test.app` / `Password123`. That password is the default outside production only. With `NODE_ENV=production` the seed refuses to run unless `SEED_PASSWORD` is set, and then it creates the admin alone, with that password and no demo users or notes.
@@ -68,6 +68,8 @@ Seed logins: `admin@test.app` / `Password123`, `member@test.app` / `Password123`
 Mail sent in development is caught by mailpit, read it at `http://localhost:8025`.
 
 Anyone can create an account at `/app/register` while `SIGN_UP_ENABLED` in `@app/schemas` is `true`. An app where only an admin adds people sets it to `false`, which makes the API refuse sign-up, redirects `/app/register` to `/app/login` and hides the sign-up link. A new account has to confirm its email address before it can sign in, so in development open the confirmation link from mailpit. Forgotten passwords are reset from `/app/forgot-password` the same way. Passwords need at least 8 characters with an uppercase letter, a lowercase letter and a number. Seeded users and users an admin creates start out confirmed. Admins can also invite someone by email, who then chooses their own password, deactivate a user (which signs them out everywhere and blocks sign-in without deleting anything), see and revoke a user's sessions, and change a user's email, which the user then has to confirm. Anyone can turn on two-factor authentication from the Account page with an authenticator app; signing in then asks for a 6-digit code or one of ten single-use backup codes, and a device can be trusted for 30 days. An admin can turn it off for a user who has lost both their device and their codes. Nobody can give a role or a permission they do not hold themselves, act on a user whose role they could not give, or edit the role they hold, and only a superadmin can make or manage another superadmin.
+
+The landing page and every blog page carry a newsletter sign-up form. A sign-up is kept in its own `newsletter_subscriber` table rather than as a user, because a reader is not an account, and it starts as `pending`; signing up twice answers the same way and stores the address once. Admins see and remove sign-ups on `/app/subscribers` (`newsletter:read`, `newsletter:delete`), and the sign-up endpoint shares the API's rate limit window with its own budget. Nothing is mailed yet: there is no confirmation email and no sending step.
 
 Uploaded images go to the local object store, whose console is at `http://localhost:9101/rustfs/console/` with the same credentials as the api.
 

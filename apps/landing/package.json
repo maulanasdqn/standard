@@ -17,6 +17,7 @@
 		"@app/contract": "workspace:*",
 		"@app/format": "workspace:*",
 		"@app/messages": "workspace:*",
+		"@app/schemas": "workspace:*",
 		"@app/version": "workspace:*",
 		"@astrojs/rss": "^4.0.19",
 		"@mobily/ts-belt": "catalog:",

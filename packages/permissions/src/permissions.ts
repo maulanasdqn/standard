@@ -14,6 +14,8 @@ export const PERMISSION = {
 	ROLE_UPDATE: "role:update",
 	ROLE_DELETE: "role:delete",
 	ACTIVITY_READ: "activity:read",
+	NEWSLETTER_READ: "newsletter:read",
+	NEWSLETTER_DELETE: "newsletter:delete",
 } as const;
 
 export type TPermission = (typeof PERMISSION)[keyof typeof PERMISSION];

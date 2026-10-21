@@ -1,0 +1,10 @@
+---
+import { NEWSLETTER_SOURCE } from "@app/schemas";
+import NewsletterForm from "./NewsletterForm.astro";
+---
+
+<section class="border-t">
+	<div class="mx-auto max-w-6xl px-6 py-20 sm:py-24">
+		<NewsletterForm source={NEWSLETTER_SOURCE.LANDING} />
+	</div>
+</section>

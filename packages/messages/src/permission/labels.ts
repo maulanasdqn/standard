@@ -14,6 +14,8 @@ export const PERMISSION_LABEL = {
 	"role:update": "Edit roles",
 	"role:delete": "Delete roles",
 	"activity:read": "View the activity log",
+	"newsletter:read": "View newsletter subscribers",
+	"newsletter:delete": "Remove newsletter subscribers",
 } as const satisfies Record<TPermission, string>;
 
 export const ROLE_LABEL = {

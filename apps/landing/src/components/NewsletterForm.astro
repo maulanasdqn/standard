@@ -1,0 +1,64 @@
+---
+import { apiPathOf, ROUTE_PATH } from "@app/contract";
+import { NEWSLETTER_MESSAGE } from "@app/messages";
+import { NEWSLETTER_EMAIL_MAX, type TNewsletterSource } from "@app/schemas";
+import { BUTTON_VARIANT, buttonClassOf } from "../lib/button.ts";
+import { NEWSLETTER_FIELD, NEWSLETTER_HOOK } from "../lib/newsletter-hooks.ts";
+
+export type TNewsletterFormProps = {
+	source: TNewsletterSource;
+};
+
+type Props = TNewsletterFormProps;
+
+const props = Astro.props;
+const emailId = `newsletter-email-${props.source}`;
+const statusId = `newsletter-status-${props.source}`;
+const hooks = { [NEWSLETTER_HOOK.FORM]: true };
+const statusHooks = { [NEWSLETTER_HOOK.STATUS]: true };
+---
+
+<div class="rounded-xl border bg-card p-8 text-card-foreground sm:p-10">
+	<h2 class="text-xl font-semibold tracking-tight">
+		{NEWSLETTER_MESSAGE.FORM_TITLE}
+	</h2>
+	<p class="mt-2 max-w-xl text-sm text-muted-foreground">
+		{NEWSLETTER_MESSAGE.FORM_DESCRIPTION}
+	</p>
+	<form
+		method="post"
+		action={apiPathOf(ROUTE_PATH.NEWSLETTER_SUBSCRIPTIONS)}
+		class="mt-6"
+		{...hooks}
+	>
+		<input type="hidden" name={NEWSLETTER_FIELD.SOURCE} value={props.source} />
+		<label for={emailId} class="sr-only">{NEWSLETTER_MESSAGE.FORM_EMAIL_LABEL}</label>
+		<div class="flex flex-col gap-3 sm:flex-row">
+			<input
+				id={emailId}
+				name={NEWSLETTER_FIELD.EMAIL}
+				type="email"
+				required
+				autocomplete="email"
+				maxlength={NEWSLETTER_EMAIL_MAX}
+				placeholder={NEWSLETTER_MESSAGE.FORM_EMAIL_PLACEHOLDER}
+				aria-describedby={statusId}
+				class="h-10 w-full rounded-md border border-input bg-background px-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:max-w-sm"
+			/>
+			<button type="submit" class={buttonClassOf(BUTTON_VARIANT.PRIMARY)}>
+				{NEWSLETTER_MESSAGE.FORM_SUBMIT}
+			</button>
+		</div>
+		<p
+			id={statusId}
+			role="status"
+			class="newsletter-status"
+			{...statusHooks}
+		>
+		</p>
+	</form>
+</div>
+
+<script>
+	import "../scripts/newsletter-form.ts";
+</script>

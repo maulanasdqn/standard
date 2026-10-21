@@ -1,0 +1,32 @@
+export const NEWSLETTER_MESSAGE = {
+	TITLE: "Subscribers",
+	DESCRIPTION:
+		"Everyone who signed up for the newsletter from the landing page or the blog.",
+	NOT_FOUND: "This subscriber could not be found.",
+	EMPTY: "No subscribers yet.",
+	SEARCH_PLACEHOLDER: "Search by email",
+	COLUMN_EMAIL: "Email",
+	COLUMN_STATUS: "Status",
+	COLUMN_SOURCE: "Signed up from",
+	COLUMN_CREATED: "Signed up",
+	COLUMN_ACTIONS: "Actions",
+	STATUS_PENDING: "Pending",
+	STATUS_CONFIRMED: "Confirmed",
+	STATUS_UNSUBSCRIBED: "Unsubscribed",
+	SOURCE_LANDING: "Landing page",
+	SOURCE_BLOG: "Blog",
+	DELETE_CONFIRM_TITLE: "Remove this subscriber?",
+	DELETE_CONFIRM_DESCRIPTION:
+		"The address is deleted. They can sign up again from the landing page.",
+	DELETED: "Subscriber removed.",
+	FORM_TITLE: "Get new guides by email",
+	FORM_DESCRIPTION:
+		"One email when a new guide is published. No other mail, and your address is never shared.",
+	FORM_EMAIL_LABEL: "Email address",
+	FORM_EMAIL_PLACEHOLDER: "you@example.com",
+	FORM_SUBMIT: "Subscribe",
+	FORM_SUBMITTING: "Subscribing…",
+	FORM_SUCCESS: "Thanks, you are on the list.",
+	FORM_ERROR: "That did not work. Check the address and try again.",
+	FORM_RATE_LIMITED: "Too many attempts. Try again in a minute.",
+} as const;

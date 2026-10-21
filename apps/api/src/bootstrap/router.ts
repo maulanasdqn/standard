@@ -1,6 +1,7 @@
 import { activityModule } from "#/activity/index.ts";
 import { authModule } from "#/auth/index.ts";
 import { healthModule } from "#/health/index.ts";
+import { newsletterModule } from "#/newsletter/index.ts";
 import { noteModule } from "#/note/index.ts";
 import { permissionModule } from "#/permission/index.ts";
 import { roleModule } from "#/role/index.ts";
@@ -15,6 +16,7 @@ const appRouter = implementer.router({
 	role: roleModule.routerBuild(),
 	permission: permissionModule.routerBuild(),
 	activity: activityModule.routerBuild(),
+	newsletter: newsletterModule.routerBuild(),
 });
 
 export type TAppRouter = typeof appRouter;
