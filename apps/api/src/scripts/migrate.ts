@@ -1,5 +1,6 @@
 import { migrationsRun } from "@app/migrations";
 import { env } from "#/platform/config/env.ts";
+import { API_SERVICE } from "#/platform/observability/logger.ts";
 
 const MIGRATION_JOURNAL = {
 	SCHEMA: "drizzle",
@@ -7,7 +8,8 @@ const MIGRATION_JOURNAL = {
 } as const;
 
 await migrationsRun({
-	service: "api",
+	service: API_SERVICE,
+	env: env.NODE_ENV,
 	migrationsFolder: new URL("../../drizzle", import.meta.url).pathname,
 	databaseUrl: env.DATABASE_URL,
 	migrationsSchema: MIGRATION_JOURNAL.SCHEMA,

@@ -8,6 +8,7 @@ import { afterAll, describe, expect, it } from "vitest";
 import { E2E_DATABASE_URL } from "../support/services.ts";
 
 const SERVICE = "journal-e2e";
+const ENV = "test";
 const JOURNAL_TABLE = "__drizzle_migrations";
 const JOURNAL_SHARED = "journal_shared";
 const SCHEMA_PREFIX = "journal_";
@@ -54,6 +55,7 @@ const fixtureCreate = (name: string, when: number): TFixture => {
 const runInto = (fixture: TFixture, journalSchema: string): Promise<void> =>
 	migrationsRun({
 		service: SERVICE,
+		env: ENV,
 		migrationsFolder: fixture.path,
 		databaseUrl: E2E_DATABASE_URL,
 		migrationsSchema: journalSchema,
