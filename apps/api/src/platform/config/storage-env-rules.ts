@@ -1,5 +1,6 @@
 import { match } from "ts-pattern";
 import { z } from "zod";
+import { blankAsUndefined } from "#/platform/config/env-parsers.ts";
 
 const STORAGE_ENV_KEY = {
 	STORAGE_ENDPOINT: "STORAGE_ENDPOINT",
@@ -14,11 +15,6 @@ const STORAGE_ENV_MESSAGE = {
 const HTTPS_PROTOCOL = "https:";
 const DEFAULT_REGION = "auto";
 const DEFAULT_URL_EXPIRY_SECONDS = 900;
-
-const blankAsUndefined = (value: unknown): unknown =>
-	match(value)
-		.with("", (): undefined => undefined)
-		.otherwise((found): unknown => found);
 
 export const storageEnvShape = {
 	STORAGE_ENDPOINT: z.url(),

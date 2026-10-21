@@ -1,15 +1,21 @@
 import { LOGGER_LEVELS } from "@app/logger";
 import { userCreateInputSchema } from "@app/schemas";
 import { z } from "zod";
-import { A } from "@mobily/ts-belt";
 import { match, P } from "ts-pattern";
 import { authEnvRefine } from "#/platform/config/auth-env-rules.ts";
+import {
+	blankAsUndefined,
+	jsonObjectParse,
+	stringListParse,
+} from "#/platform/config/env-parsers.ts";
 import {
 	storageEnvRefine,
 	storageEnvShape,
 } from "#/platform/config/storage-env-rules.ts";
 
 export const NODE_ENV = {
+	DEVELOPMENT: "development",
+	TEST: "test",
 	PRODUCTION: "production",
 } as const;
 
@@ -25,17 +31,9 @@ const ENV_KEY = {
 
 const ENV_VALIDATION_MESSAGE = {
 	HTTPS_REQUIRED: "HTTPS is required in production.",
-	TRANSPORT_OPTIONS_INVALID_JSON: "LOG_TRANSPORT_OPTIONS must be valid JSON.",
-	TRANSPORT_OPTIONS_NOT_OBJECT:
-		"LOG_TRANSPORT_OPTIONS must be a JSON object, not an array, a string, or null.",
 	METRICS_TOKEN_REQUIRED:
 		"METRICS_TOKEN is required in production while METRICS_ENABLED is true, because /metrics is served on the same origin as the application.",
 } as const;
-
-const blankAsUndefined = (value: unknown): unknown =>
-	match(value)
-		.with("", (): undefined => undefined)
-		.otherwise((found): unknown => found);
 
 type TEnvKey = (typeof ENV_KEY)[keyof typeof ENV_KEY];
 
@@ -54,64 +52,11 @@ const httpsRequire = (
 			});
 		});
 
-type TJsonDecoded = { ok: true; value: unknown } | { ok: false };
-
-const isPlainObject = (value: unknown): value is Record<string, unknown> =>
-	typeof value === "object" && value !== null && !Array.isArray(value);
-
-const jsonDecode = (found: string): TJsonDecoded => {
-	try {
-		return { ok: true, value: JSON.parse(found) };
-	} catch {
-		return { ok: false };
-	}
-};
-
-const jsonObjectDecode = (
-	found: string,
-	context: z.RefinementCtx,
-): Record<string, unknown> | undefined =>
-	match(jsonDecode(found))
-		.with({ ok: false }, (): undefined => {
-			context.addIssue({
-				code: "custom",
-				message: ENV_VALIDATION_MESSAGE.TRANSPORT_OPTIONS_INVALID_JSON,
-			});
-			return undefined;
-		})
-		.otherwise(({ value }): Record<string, unknown> | undefined =>
-			match(value)
-				.when(isPlainObject, (found2): Record<string, unknown> => found2)
-				.otherwise((): undefined => {
-					context.addIssue({
-						code: "custom",
-						message: ENV_VALIDATION_MESSAGE.TRANSPORT_OPTIONS_NOT_OBJECT,
-					});
-					return undefined;
-				}),
-		);
-
-const jsonObjectParse = (
-	value: string | undefined,
-	context: z.RefinementCtx,
-): Record<string, unknown> | undefined =>
-	match(value)
-		.with(P.nullish, (): undefined => undefined)
-		.otherwise((found): Record<string, unknown> | undefined =>
-			jsonObjectDecode(found, context),
-		);
-
-const stringListParse = (value: string): readonly string[] =>
-	A.filterMap(value.split(","), (item): string | undefined => {
-		const trimmed = item.trim();
-		return trimmed === "" ? undefined : trimmed;
-	});
-
 export const envSchema = z
 	.object({
 		NODE_ENV: z
-			.enum(["development", "test", NODE_ENV.PRODUCTION])
-			.default("development"),
+			.enum([NODE_ENV.DEVELOPMENT, NODE_ENV.TEST, NODE_ENV.PRODUCTION])
+			.default(NODE_ENV.DEVELOPMENT),
 		PORT: z.coerce.number().int().default(3001),
 		WEB_ORIGIN: z.url().default("http://localhost:5173"),
 		WEB_DIST_PATH: z.preprocess(blankAsUndefined, z.string().min(1).optional()),
