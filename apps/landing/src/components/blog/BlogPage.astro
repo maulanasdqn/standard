@@ -1,0 +1,19 @@
+---
+import { SECTION_ID } from "../../lib/links.ts";
+import type { TLayoutProps } from "../../layouts/Layout.astro";
+import Layout from "../../layouts/Layout.astro";
+import Footer from "../Footer.astro";
+import Nav from "../Nav.astro";
+
+type Props = TLayoutProps;
+
+const props = Astro.props;
+---
+
+<Layout {...props}>
+	<Nav />
+	<main id={SECTION_ID.MAIN} class="mx-auto max-w-3xl px-6 py-20 sm:py-24">
+		<slot />
+	</main>
+	<Footer />
+</Layout>

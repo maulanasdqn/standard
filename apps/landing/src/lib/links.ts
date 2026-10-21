@@ -1,5 +1,6 @@
 import { webPathOf } from "@app/contract";
-import { LANDING_MESSAGE } from "@app/messages";
+import { BLOG_MESSAGE, LANDING_MESSAGE } from "@app/messages";
+import { BLOG_PATH } from "./blog/paths.ts";
 
 export const SECTION_ID = {
 	MAIN: "main",
@@ -12,7 +13,7 @@ export const SECTION_ID = {
 export type TSectionId = (typeof SECTION_ID)[keyof typeof SECTION_ID];
 
 export type TNavLink = {
-	readonly id: TSectionId;
+	readonly href: string;
 	readonly label: string;
 };
 
@@ -28,11 +29,17 @@ export const APP_LINK = {
 	GET_STARTED: webPathOf(WEB_ROUTE.REGISTER),
 } as const;
 
-export const NAV_LINKS: readonly TNavLink[] = [
-	{ id: SECTION_ID.FEATURES, label: LANDING_MESSAGE.NAV_FEATURES },
-	{ id: SECTION_ID.STACK, label: LANDING_MESSAGE.NAV_STACK },
-	{ id: SECTION_ID.STEPS, label: LANDING_MESSAGE.NAV_STEPS },
-	{ id: SECTION_ID.FAQ, label: LANDING_MESSAGE.NAV_FAQ },
-];
-
 export const anchorOf = (id: TSectionId): string => `#${id}`;
+
+const sectionLinkOf = (id: TSectionId, label: string): TNavLink => ({
+	href: `${HOME_PATH}${anchorOf(id)}`,
+	label,
+});
+
+export const NAV_LINKS: readonly TNavLink[] = [
+	sectionLinkOf(SECTION_ID.FEATURES, LANDING_MESSAGE.NAV_FEATURES),
+	sectionLinkOf(SECTION_ID.STACK, LANDING_MESSAGE.NAV_STACK),
+	sectionLinkOf(SECTION_ID.STEPS, LANDING_MESSAGE.NAV_STEPS),
+	sectionLinkOf(SECTION_ID.FAQ, LANDING_MESSAGE.NAV_FAQ),
+	{ href: BLOG_PATH, label: BLOG_MESSAGE.NAV_BLOG },
+];

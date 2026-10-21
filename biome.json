@@ -26,6 +26,7 @@
 			"**/apps/web-e2e/playwright.config.ts",
 			"**/apps/landing/*.config.ts",
 			"**/apps/landing/test/**/*",
+			"**/apps/landing/scripts/**/*",
 			"!**/apps/web/src/routeTree.gen.ts",
 			"!**/apps/web/src/styles.css"
 		]

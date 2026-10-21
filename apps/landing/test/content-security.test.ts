@@ -1,5 +1,6 @@
 import { A } from "@mobily/ts-belt";
 import { describe, expect, it } from "vitest";
+import { BLOG_RULES } from "../src/lib/blog/rules.ts";
 import { builtPages } from "./support/dist.ts";
 import {
 	hrefsOf,
@@ -54,6 +55,17 @@ describe("every built page", () => {
 
 			A.forEach([...scripts, ...stylesheets], (source) => {
 				expect(source, page.file).toMatch(SAME_ORIGIN_PATH);
+			});
+		});
+	});
+
+	it("carries no em dash or en dash, including any the Markdown typesetter made", (): void => {
+		A.forEach(pages, (page) => {
+			A.forEach(BLOG_RULES.bannedCodePoints, (codePoint) => {
+				expect(
+					page.html.includes(String.fromCodePoint(codePoint)),
+					page.file,
+				).toBe(false);
 			});
 		});
 	});

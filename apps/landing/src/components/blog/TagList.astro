@@ -1,0 +1,29 @@
+---
+import { A } from "@mobily/ts-belt";
+import { BLOG_MESSAGE } from "@app/messages";
+import { tagPathOf } from "../../lib/blog/paths.ts";
+import { tagLabelOf, type TBlogTag } from "../../lib/blog/tags.ts";
+
+export type TTagListProps = {
+	tags: readonly TBlogTag[];
+};
+
+type Props = TTagListProps;
+
+const props = Astro.props;
+---
+
+<ul aria-label={BLOG_MESSAGE.TAGS} class="flex flex-wrap gap-2">
+	{
+		A.map(props.tags, (tag) => (
+			<li>
+				<a
+					href={tagPathOf(tag)}
+					class="rounded-md border px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+				>
+					{tagLabelOf(tag)}
+				</a>
+			</li>
+		))
+	}
+</ul>

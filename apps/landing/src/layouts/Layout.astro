@@ -1,15 +1,18 @@
 ---
 import "../styles/global.css";
-import { APP_MESSAGE, LANDING_MESSAGE } from "@app/messages";
+import { APP_MESSAGE, BLOG_MESSAGE, LANDING_MESSAGE } from "@app/messages";
+import { RSS_PATH } from "../lib/blog/paths.ts";
 import { anchorOf, SECTION_ID } from "../lib/links.ts";
 import {
 	jsonLdOf,
 	LANGUAGE,
 	OG_TYPE,
 	ROBOTS_META,
+	type TOgType,
+	type TSchemaNode,
 	THEME_COLOR,
 	TWITTER_CARD,
-	websiteSchemaOf,
+	websiteNodeOf,
 } from "../lib/seo.ts";
 import { absoluteUrlOf, siteOf } from "../lib/site.ts";
 
@@ -17,6 +20,8 @@ export type TLayoutProps = {
 	title?: string;
 	description?: string;
 	noindex?: boolean;
+	ogType?: TOgType;
+	schemaNodes?: readonly TSchemaNode[];
 };
 
 type Props = TLayoutProps;
@@ -27,7 +32,10 @@ const title = props.title ?? LANDING_MESSAGE.META_TITLE;
 const description = props.description ?? LANDING_MESSAGE.META_DESCRIPTION;
 const canonical = absoluteUrlOf(Astro.url.pathname, site);
 const robots = props.noindex ? ROBOTS_META.NOINDEX : ROBOTS_META.INDEX;
-const jsonLd = jsonLdOf(websiteSchemaOf(site.href));
+const jsonLd = jsonLdOf([
+	websiteNodeOf(site.href),
+	...(props.schemaNodes ?? []),
+]);
 ---
 
 <!doctype html>
@@ -41,7 +49,13 @@ const jsonLd = jsonLdOf(websiteSchemaOf(site.href));
 		{!props.noindex && <link rel="canonical" href={canonical} />}
 		<meta name="theme-color" content={THEME_COLOR} />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta property="og:type" content={OG_TYPE} />
+		<link
+			rel="alternate"
+			type="application/rss+xml"
+			title={BLOG_MESSAGE.RSS_TITLE}
+			href={RSS_PATH}
+		/>
+		<meta property="og:type" content={props.ogType ?? OG_TYPE.WEBSITE} />
 		<meta property="og:site_name" content={APP_MESSAGE.NAME} />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />

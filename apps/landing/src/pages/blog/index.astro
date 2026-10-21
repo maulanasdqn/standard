@@ -1,0 +1,24 @@
+---
+import { BLOG_MESSAGE } from "@app/messages";
+import BlogPage from "../../components/blog/BlogPage.astro";
+import PostList from "../../components/blog/PostList.astro";
+import SectionHeader from "../../components/SectionHeader.astro";
+import { publishedPosts } from "../../lib/blog/posts.ts";
+import { pageTitleOf } from "../../lib/seo.ts";
+
+const posts = await publishedPosts();
+---
+
+<BlogPage
+	title={pageTitleOf(BLOG_MESSAGE.INDEX_TITLE)}
+	description={BLOG_MESSAGE.INDEX_DESCRIPTION}
+>
+	<SectionHeader
+		eyebrow={BLOG_MESSAGE.INDEX_EYEBROW}
+		title={BLOG_MESSAGE.INDEX_HEADING}
+		lede={BLOG_MESSAGE.INDEX_DESCRIPTION}
+	/>
+	<div class="mt-12">
+		<PostList posts={posts} />
+	</div>
+</BlogPage>
