@@ -1,6 +1,4 @@
-import { Guard } from "@app/components/guard/guard";
 import { ROLE_MESSAGE } from "@app/messages";
-import { PERMISSION } from "@app/permissions";
 import type { TRoleDto } from "@app/schemas";
 import type { FC, ReactElement } from "react";
 import { FormPage } from "#/routes/_authenticated/_components/form-page.tsx";
@@ -37,13 +35,11 @@ export const RolePage: FC<TRolePageProps> = (props): ReactElement => (
 			</dl>
 		}
 	>
-		<Guard permissions={[PERMISSION.ROLE_READ]}>
-			<RoleEditForm
-				key={`${props.role.key}-${props.readOnly}`}
-				role={props.role}
-				readOnly={props.readOnly}
-				editable={props.editable}
-			/>
-		</Guard>
+		<RoleEditForm
+			key={`${props.role.key}-${props.readOnly}`}
+			role={props.role}
+			readOnly={props.readOnly}
+			editable={props.editable}
+		/>
 	</FormPage>
 );
