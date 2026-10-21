@@ -1,11 +1,7 @@
 import { Input } from "@app/components/ui/input";
-import { searchQuerySchema } from "@app/schemas";
 import type { FC, ReactElement } from "react";
-import { z } from "zod";
-import {
-	type TSearchControl,
-	useSearchForm,
-} from "#/libs/forms/use-search-form.ts";
+import type { TSearchControl } from "#/libs/forms/use-search-form.ts";
+import { useListSearchForm } from "#/routes/_authenticated/_hooks/use-list-search-form.ts";
 
 export type TSearchBoxProps = {
 	control: TSearchControl;
@@ -13,10 +9,8 @@ export type TSearchBoxProps = {
 	label: string;
 };
 
-const searchBoxSchema = z.object({ search: searchQuerySchema.optional() });
-
 export const SearchBox: FC<TSearchBoxProps> = (props): ReactElement => {
-	const { form, onSubmit } = useSearchForm(searchBoxSchema, props.control);
+	const { form, onSubmit } = useListSearchForm(props.control);
 
 	return (
 		<form onSubmit={onSubmit} className="max-w-sm">
