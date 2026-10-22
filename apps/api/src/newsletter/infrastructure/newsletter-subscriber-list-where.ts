@@ -9,15 +9,16 @@ import { newsletterSubscriber } from "#/platform/db/tables/newsletter-subscriber
 
 const searchWhere = (search: string | undefined): SQL | undefined =>
 	match(search)
-		.with(P.nonNullable, (value) =>
-			containsWhere(newsletterSubscriber.email, value),
+		.with(
+			P.nonNullable,
+			(value): SQL => containsWhere(newsletterSubscriber.email, value),
 		)
-		.otherwise(() => undefined);
+		.otherwise((): undefined => undefined);
 
 const statusWhere = (status: TNewsletterStatus | undefined): SQL | undefined =>
 	match(status)
-		.with(P.nonNullable, (value) => eq(newsletterSubscriber.status, value))
-		.otherwise(() => undefined);
+		.with(P.nonNullable, (value): SQL => eq(newsletterSubscriber.status, value))
+		.otherwise((): undefined => undefined);
 
 export const newsletterSubscriberListWhere = (
 	input: TNewsletterSubscriberListInput,
