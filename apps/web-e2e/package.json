@@ -14,7 +14,7 @@
 		"@app/messages": "workspace:*",
 		"@app/permissions": "workspace:*",
 		"@app/schemas": "workspace:*",
-		"@playwright/test": "^1.64.0",
+		"@playwright/test": "^1.64.1",
 		"typescript": "catalog:"
 	},
 	"dependencies": {
