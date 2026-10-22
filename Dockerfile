@@ -1,4 +1,4 @@
-FROM node:24.16.0-alpine AS base
+FROM node:24.22.1-alpine AS base
 ENV PNPM_HOME=/pnpm
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable && corepack prepare pnpm@11.6.0 --activate
@@ -23,7 +23,7 @@ RUN pnpm --filter @app/web build && pnpm --filter @app/landing build
 FROM manifests AS production-deps
 RUN pnpm install --frozen-lockfile --prod --no-optional --filter-prod "@app/api..."
 
-FROM node:24.16.0-alpine AS runtime
+FROM node:24.22.1-alpine AS runtime
 ENV NODE_ENV=production
 ENV WEB_DIST_PATH=/app/apps/web/dist
 WORKDIR /app
