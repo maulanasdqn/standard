@@ -73,7 +73,7 @@ Trunk-based: branch off `trunk`, keep the branch short-lived, squash-merge once 
 
 Every command is reachable through `make` or `moon`, and `make help` lists every target. Nothing shells into a package directory: no `cd apps/api && pnpm ...` in the Makefile, CI, or docs. `moon ci` is what CI runs, so run it before pushing.
 
-`moon` needs the pinned toolchain: `proto install pnpm 11.6.0 && proto install node 24.16.0` if tasks fail with `missing_tool`.
+`moon` needs the pinned toolchain: `proto install pnpm 11.6.0 && proto install node 24.22.1` if tasks fail with `missing_tool`.
 
 ## Where these rules live
 

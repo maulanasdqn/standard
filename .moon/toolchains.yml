@@ -7,7 +7,7 @@ javascript:
   syncProjectWorkspaceDependencies: true
 
 node:
-  version: '24.16.0'
+  version: '24.22.1'
   installDependencies: false
 
 pnpm:
