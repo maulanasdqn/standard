@@ -1,11 +1,5 @@
 import type * as React from "react";
-import {
-	type FC,
-	type ReactElement,
-	useCallback,
-	useEffect,
-	useMemo,
-} from "react";
+import { type FC, type ReactElement, useCallback, useMemo } from "react";
 import { useStore } from "@tanstack/react-store";
 import { match, P } from "ts-pattern";
 import { useIsMobile } from "../hooks/use-mobile";
@@ -55,9 +49,7 @@ export const SidebarProvider: FC<TSidebarProviderProps> = (
 	const isMobile = useIsMobile();
 	const openMobile = useStore(sidebarStore, (state) => state.openMobile);
 	const storedOpen = useStore(sidebarStore, (state) => state.open);
-	const open = openProp ?? storedOpen;
-
-	useEffect(() => sidebarOpenSet(defaultOpen), [defaultOpen]);
+	const open = openProp ?? storedOpen ?? defaultOpen;
 
 	const setOpen = useCallback(
 		(update: TOpenUpdate): void => {
@@ -83,7 +75,7 @@ export const SidebarProvider: FC<TSidebarProviderProps> = (
 		[isMobile, setOpen, setOpenMobile],
 	);
 
-	useEffect(() => {
+	const shortcutRef = useCallback((): (() => void) => {
 		const handleKeyDown = (event: KeyboardEvent): void => {
 			match(isToggleShortcut(event))
 				.with(true, (): void => {
@@ -129,6 +121,7 @@ export const SidebarProvider: FC<TSidebarProviderProps> = (
 						className,
 					)}
 					{...rest}
+					ref={shortcutRef}
 				>
 					{children}
 				</div>

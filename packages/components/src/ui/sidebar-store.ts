@@ -3,7 +3,7 @@ import { Store } from "@tanstack/store";
 const MOBILE_BREAKPOINT = 768;
 
 type TSidebarState = {
-	open: boolean;
+	open: boolean | undefined;
 	openMobile: boolean;
 	isMobile: boolean;
 };
@@ -12,7 +12,7 @@ const isMobileViewport = (): boolean =>
 	typeof window !== "undefined" && window.innerWidth < MOBILE_BREAKPOINT;
 
 export const sidebarStore = new Store<TSidebarState>({
-	open: true,
+	open: undefined,
 	openMobile: false,
 	isMobile: isMobileViewport(),
 });

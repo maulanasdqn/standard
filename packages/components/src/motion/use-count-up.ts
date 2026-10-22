@@ -4,16 +4,21 @@ import {
 	useMotionValue,
 	useTransform,
 } from "motion/react";
-import { useEffect } from "react";
+import { useCallback } from "react";
 import { MOTION_DURATION, MOTION_EASE_OUT } from "./motion-tokens.ts";
 
-export const useCountUp = (value: number): MotionValue<number> => {
+export type TCountUp = {
+	rounded: MotionValue<number>;
+	ref: () => () => void;
+};
+
+export const useCountUp = (value: number): TCountUp => {
 	const count = useMotionValue(0);
 	const rounded = useTransform(count, (latest: number): number =>
 		Math.round(latest),
 	);
 
-	useEffect((): (() => void) => {
+	const ref = useCallback((): (() => void) => {
 		const controls = animate(count, value, {
 			duration: MOTION_DURATION.COUNT,
 			ease: MOTION_EASE_OUT,
@@ -21,5 +26,5 @@ export const useCountUp = (value: number): MotionValue<number> => {
 		return (): void => controls.stop();
 	}, [count, value]);
 
-	return rounded;
+	return { rounded, ref };
 };

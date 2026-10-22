@@ -120,6 +120,16 @@ note-list.tsx      -> renders <ul>, no useQuery/useMutation calls
 use-notes.ts        -> useNoteList(), useNoteCreate(), useNoteDelete()
 ```
 
+## No useEffect
+
+`useEffect` and `useLayoutEffect` are not used anywhere, the component kit included, and Biome refuses the import. Every case it would cover has a TanStack or React 19 shape:
+
+- Server data is a query, form state is a form, URL state is the router search; none of them is copied into local state by an effect
+- A prop that seeds shared state is the store's initial value or a fallback in the `useStore` selector (`storedOpen ?? defaultOpen`), not a write after render
+- A DOM or window listener, an animation or a timer starts in a ref callback that returns its cleanup, wrapped in `useCallback` so it re-runs only when its inputs change
+
+React hooks of any kind belong in `_hooks/*`, `libs/*` or `packages/components`, never in a route file or a `_components/*.tsx`.
+
 ## No comments
 
 Code has to read clearly enough that a comment adds nothing. Rename the variable, extract the function, or restructure the condition instead of explaining it.
