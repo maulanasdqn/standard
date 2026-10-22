@@ -2,7 +2,7 @@ import { loggerCreate, type TLogger, type TLoggerTransport } from "@app/logger";
 import { match, P } from "ts-pattern";
 import { env } from "#/platform/config/env.ts";
 
-const SERVICE = "api";
+export const API_SERVICE = "api";
 
 const transportFor = (
 	target: string | undefined,
@@ -16,7 +16,7 @@ let created: TLogger | null = null;
 
 const loggerRead = (): TLogger => {
 	created ??= loggerCreate({
-		service: SERVICE,
+		service: API_SERVICE,
 		env: env.NODE_ENV,
 		level: env.LOG_LEVEL,
 		transport: transportFor(

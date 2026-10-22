@@ -1,4 +1,5 @@
 export const UI_MESSAGE = {
+	BREADCRUMB: "Breadcrumb",
 	CLOSE: "Close",
 	MORE: "More",
 	MORE_INFO: "More information",

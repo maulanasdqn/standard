@@ -6,7 +6,9 @@ import { ChevronRight, MoreHorizontal } from "lucide-react";
 import { Slot } from "radix-ui";
 
 const Breadcrumb: FC<React.ComponentProps<"nav">> = (props): ReactElement => {
-	return <nav aria-label="breadcrumb" data-slot="breadcrumb" {...props} />;
+	return (
+		<nav aria-label={UI_MESSAGE.BREADCRUMB} data-slot="breadcrumb" {...props} />
+	);
 };
 
 const BreadcrumbList: FC<React.ComponentProps<"ol">> = (
