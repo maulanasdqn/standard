@@ -3,9 +3,8 @@ import { match, P } from "ts-pattern";
 import type { z } from "zod";
 
 const ENV_PARSE_MESSAGE = {
-	JSON_INVALID: "LOG_TRANSPORT_OPTIONS must be valid JSON.",
-	JSON_NOT_OBJECT:
-		"LOG_TRANSPORT_OPTIONS must be a JSON object, not an array, a string, or null.",
+	JSON_INVALID: "Must be valid JSON.",
+	JSON_NOT_OBJECT: "Must be a JSON object, not an array, a string, or null.",
 } as const;
 
 type TJsonDecoded = { ok: true; value: unknown } | { ok: false };
@@ -40,7 +39,7 @@ const jsonObjectDecode = (
 		})
 		.otherwise(({ value }): Record<string, unknown> | undefined =>
 			match(value)
-				.when(isPlainObject, (found2): Record<string, unknown> => found2)
+				.when(isPlainObject, (decoded): Record<string, unknown> => decoded)
 				.otherwise((): undefined => {
 					context.addIssue({
 						code: "custom",
