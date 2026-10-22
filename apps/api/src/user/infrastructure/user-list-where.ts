@@ -13,37 +13,37 @@ import { user } from "#/platform/db/tables/auth.ts";
 
 const searchWhere = (search: string | undefined): SQL | undefined =>
 	match(search)
-		.with(P.nonNullable, (value) =>
+		.with(P.nonNullable, (value): SQL | undefined =>
 			or(containsWhere(user.name, value), containsWhere(user.email, value)),
 		)
-		.otherwise(() => undefined);
+		.otherwise((): undefined => undefined);
 
 const roleWhere = (role: string | undefined): SQL | undefined =>
 	match(role)
-		.with(P.nonNullable, (value) => eq(user.role, value))
-		.otherwise(() => undefined);
+		.with(P.nonNullable, (value): SQL => eq(user.role, value))
+		.otherwise((): undefined => undefined);
 
 const statusWhere = (status: TUserStatus | undefined): SQL | undefined =>
 	match(status)
-		.with(USER_STATUS.ACTIVE, () =>
+		.with(USER_STATUS.ACTIVE, (): SQL | undefined =>
 			and(isNull(user.deactivatedAt), eq(user.emailVerified, true)),
 		)
-		.with(USER_STATUS.PENDING, () =>
+		.with(USER_STATUS.PENDING, (): SQL | undefined =>
 			and(isNull(user.deactivatedAt), eq(user.emailVerified, false)),
 		)
-		.with(USER_STATUS.DEACTIVATED, () => isNotNull(user.deactivatedAt))
-		.with(undefined, () => undefined)
+		.with(USER_STATUS.DEACTIVATED, (): SQL => isNotNull(user.deactivatedAt))
+		.with(undefined, (): undefined => undefined)
 		.exhaustive();
 
 const twoFactorWhere = (
 	filter: TUserTwoFactorFilter | undefined,
 ): SQL | undefined =>
 	match(filter)
-		.with(USER_TWO_FACTOR_FILTER.ON, () => eq(user.twoFactorEnabled, true))
-		.with(USER_TWO_FACTOR_FILTER.OFF, () =>
+		.with(USER_TWO_FACTOR_FILTER.ON, (): SQL => eq(user.twoFactorEnabled, true))
+		.with(USER_TWO_FACTOR_FILTER.OFF, (): SQL | undefined =>
 			or(eq(user.twoFactorEnabled, false), isNull(user.twoFactorEnabled)),
 		)
-		.with(undefined, () => undefined)
+		.with(undefined, (): undefined => undefined)
 		.exhaustive();
 
 export const userListWhere = (input: TUserListInput): SQL | undefined =>

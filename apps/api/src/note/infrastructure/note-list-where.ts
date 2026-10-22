@@ -22,15 +22,15 @@ const hasAttachment = sql`exists (select 1 from ${noteAttachment} where ${eq(not
 
 const searchWhere = (search: string | undefined): SQL | undefined =>
 	match(search)
-		.with(P.nonNullable, (value) =>
+		.with(P.nonNullable, (value): SQL | undefined =>
 			or(containsWhere(note.title, value), containsWhere(note.body, value)),
 		)
-		.otherwise(() => undefined);
+		.otherwise((): undefined => undefined);
 
 const titleWhere = (title: string | undefined): SQL | undefined =>
 	match(title)
-		.with(P.nonNullable, (value) => containsWhere(note.title, value))
-		.otherwise(() => undefined);
+		.with(P.nonNullable, (value): SQL => containsWhere(note.title, value))
+		.otherwise((): undefined => undefined);
 
 const dateWhere = (input: TNoteListInput): SQL | undefined => {
 	const column = DATE_COLUMN[input.dateField ?? NOTE_DATE_FIELD.CREATED_AT];
@@ -41,9 +41,9 @@ const attachmentWhere = (
 	filter: TNoteAttachmentFilter | undefined,
 ): SQL | undefined =>
 	match(filter)
-		.with(NOTE_ATTACHMENT_FILTER.WITH, () => hasAttachment)
-		.with(NOTE_ATTACHMENT_FILTER.WITHOUT, () => sql`not ${hasAttachment}`)
-		.with(undefined, () => undefined)
+		.with(NOTE_ATTACHMENT_FILTER.WITH, (): SQL => hasAttachment)
+		.with(NOTE_ATTACHMENT_FILTER.WITHOUT, (): SQL => sql`not ${hasAttachment}`)
+		.with(undefined, (): undefined => undefined)
 		.exhaustive();
 
 export const noteFilterWhere = (input: TNoteListInput): SQL | undefined =>
