@@ -1,14 +1,26 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, type RenderResult, screen } from "@testing-library/react";
 import type { ReactElement } from "react";
+import type { TSearchControl } from "#/libs/forms/use-search-form.ts";
+import type { TSearchBoxProps } from "#/routes/_authenticated/_components/search-box.tsx";
 import { describe, expect, it, vi } from "vitest";
 import { NOTE_SORT, SORT_DIRECTION } from "@app/schemas";
 import { NoteTable } from "#/routes/_authenticated/notes/_components/note-table.tsx";
 
 const SEARCH_LABEL = "Search notes";
 
-vi.mock("#/routes/_authenticated/notes/_components/note-search.tsx", () => ({
-	NoteSearch: (): ReactElement => <input aria-label={SEARCH_LABEL} />,
+vi.mock(
+	"#/routes/_authenticated/notes/_hooks/use-notes.ts",
+	async (importOriginal) => ({
+		...(await importOriginal<Record<string, unknown>>()),
+		useNoteSearch: (): TSearchControl => ({ value: "", onChange: vi.fn() }),
+	}),
+);
+
+vi.mock("#/routes/_authenticated/_components/search-box.tsx", () => ({
+	SearchBox: (props: TSearchBoxProps): ReactElement => (
+		<input aria-label={props.label} />
+	),
 }));
 
 vi.mock("#/routes/_authenticated/notes/_components/note-filters.tsx", () => ({

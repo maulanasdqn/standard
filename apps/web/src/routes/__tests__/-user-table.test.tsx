@@ -1,6 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, type RenderResult, screen } from "@testing-library/react";
 import type { ReactElement } from "react";
+import type { TSearchControl } from "#/libs/forms/use-search-form.ts";
+import type { TSearchBoxProps } from "#/routes/_authenticated/_components/search-box.tsx";
 import { describe, expect, it, vi } from "vitest";
 import { SORT_DIRECTION, USER_SORT } from "@app/schemas";
 import { UserTable } from "#/routes/_authenticated/users/_components/user-table.tsx";
@@ -11,8 +13,18 @@ vi.mock("#/routes/_authenticated/users/_components/user-filters.tsx", () => ({
 
 const SEARCH_LABEL = "Search users";
 
-vi.mock("#/routes/_authenticated/users/_components/user-search.tsx", () => ({
-	UserSearch: (): ReactElement => <input aria-label={SEARCH_LABEL} />,
+vi.mock(
+	"#/routes/_authenticated/users/_hooks/use-users.ts",
+	async (importOriginal) => ({
+		...(await importOriginal<Record<string, unknown>>()),
+		useUserSearch: (): TSearchControl => ({ value: "", onChange: vi.fn() }),
+	}),
+);
+
+vi.mock("#/routes/_authenticated/_components/search-box.tsx", () => ({
+	SearchBox: (props: TSearchBoxProps): ReactElement => (
+		<input aria-label={props.label} />
+	),
 }));
 
 const renderWithClient = (ui: ReactElement): RenderResult => {
