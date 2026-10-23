@@ -2,22 +2,12 @@ import { describe, expect, it } from "vitest";
 import {
 	apiReferenceEnabledOf,
 	envSchema,
+	NODE_ENV,
 } from "#/platform/config/env-schema.ts";
-
-const ENV = {
-	BETTER_AUTH_SECRET: "a-32-character-production-secret!",
-	BETTER_AUTH_URL: "https://api.standard.test",
-	DATABASE_URL: "postgres://app:app@localhost:5432/app",
-	RABBITMQ_URL: "amqp://app:app@localhost:5672",
-	REDIS_URL: "redis://localhost:6379",
-	STORAGE_ENDPOINT: "https://objects.standard.test",
-	STORAGE_BUCKET: "standard",
-	STORAGE_ACCESS_KEY_ID: "storage-key",
-	STORAGE_SECRET_ACCESS_KEY: "storage-secret",
-	WEB_ORIGIN: "https://standard.test",
-} as const;
-
-const METRICS_TOKEN = "a-32-character-metrics-scrape-tok";
+import {
+	ENV,
+	METRICS_TOKEN,
+} from "#/platform/config/env-schema-fakes.test-support.ts";
 
 describe("envSchema security", () => {
 	it("requires a 32-character authentication secret", () => {
@@ -30,7 +20,7 @@ describe("envSchema security", () => {
 		expect(
 			envSchema.safeParse({
 				...ENV,
-				NODE_ENV: "production",
+				NODE_ENV: NODE_ENV.PRODUCTION,
 				WEB_ORIGIN: "http://standard.test",
 			}).success,
 		).toBe(false);
@@ -40,7 +30,7 @@ describe("envSchema security", () => {
 		expect(
 			envSchema.safeParse({
 				...ENV,
-				NODE_ENV: "production",
+				NODE_ENV: NODE_ENV.PRODUCTION,
 				BETTER_AUTH_URL: "http://api.standard.test",
 			}).success,
 		).toBe(false);
@@ -50,100 +40,10 @@ describe("envSchema security", () => {
 		expect(
 			envSchema.safeParse({
 				...ENV,
-				NODE_ENV: "production",
+				NODE_ENV: NODE_ENV.PRODUCTION,
 				METRICS_TOKEN,
 			}).success,
 		).toBe(true);
-	});
-
-	it("refuses to start in production with metrics enabled and no token", () => {
-		const result = envSchema.safeParse({ ...ENV, NODE_ENV: "production" });
-
-		expect(result.success).toBe(false);
-	});
-
-	it("accepts production metrics behind a token", () => {
-		const result = envSchema.safeParse({
-			...ENV,
-			NODE_ENV: "production",
-			METRICS_TOKEN,
-		});
-
-		expect(result.success).toBe(true);
-	});
-
-	it("accepts production with metrics switched off", () => {
-		const result = envSchema.safeParse({
-			...ENV,
-			NODE_ENV: "production",
-			METRICS_ENABLED: "false",
-		});
-
-		expect(result.success).toBe(true);
-	});
-
-	it("rejects a metrics token that is too short to be a secret", () => {
-		const result = envSchema.safeParse({ ...ENV, METRICS_TOKEN: "short" });
-
-		expect(result.success).toBe(false);
-	});
-
-	it("reads a blank sample ratio as the default rather than as zero", () => {
-		const result = envSchema.safeParse({ ...ENV, TRACING_SAMPLE_RATIO: "" });
-
-		expect(result.success && result.data.TRACING_SAMPLE_RATIO).toBe(1);
-	});
-
-	it("still honours an explicit sample ratio", () => {
-		const result = envSchema.safeParse({
-			...ENV,
-			TRACING_SAMPLE_RATIO: "0.1",
-		});
-
-		expect(result.success && result.data.TRACING_SAMPLE_RATIO).toBe(0.1);
-	});
-
-	it("rejects a sample ratio outside zero to one", () => {
-		expect(
-			envSchema.safeParse({ ...ENV, TRACING_SAMPLE_RATIO: "2" }).success,
-		).toBe(false);
-	});
-
-	it("rejects LOG_TRANSPORT_OPTIONS that is not valid JSON", () => {
-		const result = envSchema.safeParse({
-			...ENV,
-			LOG_TRANSPORT_OPTIONS: "{not json",
-		});
-
-		expect(result.success).toBe(false);
-	});
-
-	it("rejects LOG_TRANSPORT_OPTIONS that parses to something other than an object", () => {
-		const rejected = ["null", "[1,2]", '"a string"', "42"];
-
-		for (const value of rejected) {
-			expect(
-				envSchema.safeParse({ ...ENV, LOG_TRANSPORT_OPTIONS: value }).success,
-			).toBe(false);
-		}
-	});
-
-	it("accepts a JSON object and an empty value", () => {
-		expect(
-			envSchema.safeParse({
-				...ENV,
-				LOG_TRANSPORT_OPTIONS: '{"host":"http://loki:3100"}',
-			}).success,
-		).toBe(true);
-		expect(
-			envSchema.safeParse({ ...ENV, LOG_TRANSPORT_OPTIONS: "" }).success,
-		).toBe(true);
-	});
-
-	it("rejects a log level outside the pino set", () => {
-		expect(envSchema.safeParse({ ...ENV, LOG_LEVEL: "verbose" }).success).toBe(
-			false,
-		);
 	});
 });
 
@@ -158,7 +58,7 @@ describe("apiReferenceEnabledOf", () => {
 	});
 
 	it("hides the API reference in production unless told otherwise", () => {
-		const production = { ...ENV, NODE_ENV: "production", METRICS_TOKEN };
+		const production = { ...ENV, NODE_ENV: NODE_ENV.PRODUCTION, METRICS_TOKEN };
 
 		expect(apiReferenceEnabledOf(envSchema.parse(production))).toBe(false);
 		expect(

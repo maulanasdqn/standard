@@ -1,20 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { envSchema } from "#/platform/config/env-schema.ts";
-
-const ENV = {
-	BETTER_AUTH_SECRET: "a-32-character-production-secret!",
-	BETTER_AUTH_URL: "https://api.standard.test",
-	DATABASE_URL: "postgres://app:app@localhost:5432/app",
-	RABBITMQ_URL: "amqp://app:app@localhost:5672",
-	REDIS_URL: "redis://localhost:6379",
-	STORAGE_ENDPOINT: "https://objects.standard.test",
-	STORAGE_BUCKET: "standard",
-	STORAGE_ACCESS_KEY_ID: "storage-key",
-	STORAGE_SECRET_ACCESS_KEY: "storage-secret",
-	WEB_ORIGIN: "https://standard.test",
-} as const;
-
-const METRICS_TOKEN = "a-32-character-metrics-scrape-tok";
+import { envSchema, NODE_ENV } from "#/platform/config/env-schema.ts";
+import {
+	ENV,
+	METRICS_TOKEN,
+} from "#/platform/config/env-schema-fakes.test-support.ts";
 
 describe("envSchema storage", () => {
 	it("refuses to start without a bucket to write to", () => {
@@ -27,7 +16,7 @@ describe("envSchema storage", () => {
 		expect(
 			envSchema.safeParse({
 				...ENV,
-				NODE_ENV: "production",
+				NODE_ENV: NODE_ENV.PRODUCTION,
 				STORAGE_ENDPOINT: "http://objects.standard.test",
 			}).success,
 		).toBe(false);
@@ -37,7 +26,7 @@ describe("envSchema storage", () => {
 		expect(
 			envSchema.safeParse({
 				...ENV,
-				NODE_ENV: "production",
+				NODE_ENV: NODE_ENV.PRODUCTION,
 				METRICS_TOKEN,
 				STORAGE_ENDPOINT: "http://objects.internal:9000",
 				STORAGE_PUBLIC_ENDPOINT: "https://objects.standard.test",
@@ -49,7 +38,7 @@ describe("envSchema storage", () => {
 		expect(
 			envSchema.safeParse({
 				...ENV,
-				NODE_ENV: "production",
+				NODE_ENV: NODE_ENV.PRODUCTION,
 				METRICS_TOKEN,
 				STORAGE_PUBLIC_ENDPOINT: "http://objects.standard.test",
 			}).success,
