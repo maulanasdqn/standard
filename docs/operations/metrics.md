@@ -16,16 +16,16 @@ Every series carries `service="api"`.
 
 **The `route` label is the matched route template, never the request path.** A label whose values are unbounded turns a time series database into an outage, so the template is what gets recorded. A request that matches no route at all is labelled with the wildcard Hono matched it against, `/*`, which is checked in the end to end suite. The normaliser's `unmatched` fallback exists for a future mount that could leave the route blank, and does not fire in this wiring.
 
-The consequence is worth stating plainly, because it limits what these numbers can answer. The RPC and REST surfaces are each mounted behind one wildcard, so every call through them collapses into a single series. Checked against a running API:
+The consequence is worth stating plainly, because it limits what these numbers can answer. The REST surface is mounted behind one wildcard, so every call through it collapses into a single series; RPC calls are labelled by procedure. A sample:
 
 ```
 http_requests_total{method="GET",route="/healthz",status="200"}  1
-http_requests_total{method="POST",route="/rpc/*",status="200"}   1
+http_requests_total{method="POST",route="/rpc/note/list",status="200"}   1
 http_requests_total{method="GET",route="/api/*",status="200"}    1
 http_requests_total{method="GET",route="/api/*",status="401"}    1
 ```
 
-So error rate and overall latency are answerable, including error rate per surface, which is what the alert in [alerting.md](alerting.md) needs. **Latency for one specific endpoint is not**, because `note.list` and `user.create` are the same series. Resolving that means labelling RPC calls by their procedure path, which is a closed set and therefore safe, unlike the REST paths that carry resource ids. That is worth doing when someone needs per-endpoint latency, and not before.
+So error rate and latency are answerable per surface and, for RPC, per endpoint. An RPC call is labelled by its procedure path (`/rpc/note/list`, `/rpc/note/attachment/upload`), which is safe because the procedure set is closed: `apps/api/src/platform/http/rpc-route-label.ts` labels a request by its path only when that path is one of the procedures `@app/contract` declares, and anything else under `/rpc` keeps the `/rpc/*` label, so a client cannot create series by inventing paths. REST paths still collapse into their mount wildcard, because they carry resource ids.
 
 ## Reaching it
 

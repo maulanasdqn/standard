@@ -17,14 +17,23 @@ describe("metrics", () => {
 		expect(body).toContain('service="api"');
 	});
 
-	it("counts an rpc call under the wildcard its router is mounted on", async (): Promise<void> => {
+	it("counts an rpc call under its own procedure path", async (): Promise<void> => {
 		await client.health.check();
 
 		const body = await (await fetch(`${BASE_URL}/metrics`)).text();
 
 		expect(body).toContain(METRIC_NAME.HTTP_REQUESTS_TOTAL);
-		expect(body).toContain('route="/rpc/*"');
+		expect(body).toContain('route="/rpc/health/check"');
 		expect(body).toContain('status="200"');
+	});
+
+	it("counts an rpc path that is no procedure under the mount wildcard", async (): Promise<void> => {
+		await fetch(`${BASE_URL}/rpc/not/a-procedure`, { method: "POST" });
+
+		const body = await (await fetch(`${BASE_URL}/metrics`)).text();
+
+		expect(body).toContain('route="/rpc/*"');
+		expect(body).not.toContain("a-procedure");
 	});
 
 	it("keeps a resource id out of the label, collapsing it into the mounted wildcard", async (): Promise<void> => {

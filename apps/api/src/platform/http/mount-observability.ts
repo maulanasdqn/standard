@@ -9,6 +9,7 @@ import { A } from "@mobily/ts-belt";
 import type { Hono } from "hono";
 import { match } from "ts-pattern";
 import { HTTP_STATUS } from "#/platform/http/http-status.ts";
+import { rpcRouteLabel } from "#/platform/http/rpc-route-label.ts";
 import { ROUTE_PATH } from "@app/contract";
 
 const REQUEST_EVENT = "request";
@@ -34,6 +35,8 @@ export const observabilityMount = (
 		const start = Date.now();
 		const method = context.req.method;
 		const path = context.req.path;
+		const routeOf = (): string =>
+			rpcRouteLabel(metricsRouteNormalise(context.req.routePath), path);
 
 		await tracingRequestRun(
 			deps.tracing,
@@ -46,11 +49,11 @@ export const observabilityMount = (
 					status = context.res.status;
 					return {
 						status,
-						route: metricsRouteNormalise(context.req.routePath),
+						route: routeOf(),
 					};
 				} finally {
 					const durMs = Date.now() - start;
-					const route = metricsRouteNormalise(context.req.routePath);
+					const route = routeOf();
 
 					const line = {
 						reqId,
