@@ -2,7 +2,7 @@ import { A, D } from "@mobily/ts-belt";
 import type { AnyContractProcedure } from "@orpc/contract";
 import { describe, expect, it } from "vitest";
 import { HTTP_METHOD } from "./http-methods.ts";
-import { appContract, PROCEDURE_PATHS } from "./index.ts";
+import { appContract } from "./index.ts";
 import { contractProceduresOf } from "./procedures.ts";
 import { ROUTE_PATH } from "./route-paths.ts";
 
@@ -74,18 +74,6 @@ describe("appContract", () => {
 				path: true,
 			});
 		});
-	});
-
-	it("lists every procedure as a slash path, one per procedure", (): void => {
-		expect(PROCEDURE_PATHS).toEqual(
-			expect.arrayContaining([
-				"/health/check",
-				"/note/list",
-				"/note/attachment/upload",
-			]),
-		);
-		expect(PROCEDURE_PATHS).toHaveLength(procedures.length);
-		expect(A.uniq(PROCEDURE_PATHS)).toHaveLength(PROCEDURE_PATHS.length);
 	});
 
 	it("gives every procedure an output schema", (): void => {

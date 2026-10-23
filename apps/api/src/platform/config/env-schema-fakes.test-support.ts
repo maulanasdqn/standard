@@ -12,3 +12,5 @@ export const ENV = {
 } as const;
 
 export const METRICS_TOKEN = "a-32-character-metrics-scrape-tok";
+
+export const NOT_AN_OBJECT = ["null", "[1,2]", '"a string"', "42"] as const;

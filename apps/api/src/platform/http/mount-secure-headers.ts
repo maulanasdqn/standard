@@ -27,7 +27,6 @@ export const secureHeadersMount = (app: Hono): void => {
 			xFrameOptions: false,
 			xPermittedCrossDomainPolicies: false,
 			xXssProtection: false,
-			removePoweredBy: false,
 		}),
 	);
 };
