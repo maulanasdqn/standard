@@ -1,27 +1,22 @@
 import { A, D } from "@mobily/ts-belt";
-import { type AnyContractProcedure, isContractProcedure } from "@orpc/contract";
+import type { AnyContractProcedure } from "@orpc/contract";
 import { describe, expect, it } from "vitest";
 import { HTTP_METHOD } from "./http-methods.ts";
-import { appContract } from "./index.ts";
+import { appContract, PROCEDURE_PATHS } from "./index.ts";
+import { contractProceduresOf } from "./procedures.ts";
 import { ROUTE_PATH } from "./route-paths.ts";
 
 const PATH_SEPARATOR = ".";
 
 type TNamedProcedure = { name: string; procedure: AnyContractProcedure };
 
-const proceduresOf = (
-	node: unknown,
-	path: readonly string[],
-): readonly TNamedProcedure[] =>
-	isContractProcedure(node)
-		? [{ name: A.join(path, PATH_SEPARATOR), procedure: node }]
-		: A.flat(
-				A.map(D.toPairs(node as Record<string, unknown>), ([key, value]) =>
-					proceduresOf(value, [...path, key]),
-				),
-			);
-
-const procedures = proceduresOf(appContract, []);
+const procedures: readonly TNamedProcedure[] = A.map(
+	contractProceduresOf(appContract),
+	(entry): TNamedProcedure => ({
+		name: A.join(entry.path, PATH_SEPARATOR),
+		procedure: entry.procedure,
+	}),
+);
 
 const routeOf = (
 	found: TNamedProcedure,
@@ -79,6 +74,18 @@ describe("appContract", () => {
 				path: true,
 			});
 		});
+	});
+
+	it("lists every procedure as a slash path, one per procedure", (): void => {
+		expect(PROCEDURE_PATHS).toEqual(
+			expect.arrayContaining([
+				"/health/check",
+				"/note/list",
+				"/note/attachment/upload",
+			]),
+		);
+		expect(PROCEDURE_PATHS).toHaveLength(procedures.length);
+		expect(A.uniq(PROCEDURE_PATHS)).toHaveLength(PROCEDURE_PATHS.length);
 	});
 
 	it("gives every procedure an output schema", (): void => {
