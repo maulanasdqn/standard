@@ -128,7 +128,7 @@ use-notes.ts        -> useNoteList(), useNoteCreate(), useNoteDelete()
 - A prop that seeds shared state is the store's initial value or a fallback in the `useStore` selector (`storedOpen ?? defaultOpen`), not a write after render
 - A DOM or window listener, an animation or a timer starts in a ref callback that returns its cleanup, wrapped in `useCallback` so it re-runs only when its inputs change
 
-React hooks of any kind belong in `_hooks/*`, `libs/*` or `packages/components`, never in a route file or a `_components/*.tsx`.
+React hooks are defined in `_hooks/*`, `libs/*` or `packages/components`. A route file or a `_components/*.tsx` only calls them and defines none of its own.
 
 ## No comments
 

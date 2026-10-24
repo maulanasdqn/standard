@@ -21,7 +21,7 @@ import { TooltipProvider } from "./tooltip";
 
 type TOpenUpdate = boolean | ((value: boolean) => boolean);
 
-type TSidebarProviderProps = React.ComponentProps<"div"> & {
+type TSidebarProviderProps = Omit<React.ComponentProps<"div">, "ref"> & {
 	defaultOpen?: boolean;
 	open?: boolean;
 	onOpenChange?: (open: boolean) => void;

@@ -7,8 +7,8 @@ const boundWhere = (
 	toWhere: (at: Date) => SQL,
 ): SQL | undefined =>
 	match(value)
-		.with(P.nonNullable, (at) => toWhere(new Date(at)))
-		.otherwise(() => undefined);
+		.with(P.nonNullable, (at): SQL => toWhere(new Date(at)))
+		.otherwise((): undefined => undefined);
 
 export const dateRangeWhere = (
 	column: AnyPgColumn,
@@ -16,6 +16,6 @@ export const dateRangeWhere = (
 	to: string | undefined,
 ): SQL | undefined =>
 	and(
-		boundWhere(from, (at) => gte(column, at)),
-		boundWhere(to, (at) => lte(column, at)),
+		boundWhere(from, (at): SQL => gte(column, at)),
+		boundWhere(to, (at): SQL => lte(column, at)),
 	);

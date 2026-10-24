@@ -1,9 +1,10 @@
 import { A } from "@mobily/ts-belt";
 import { describe, expect, it } from "vitest";
 import { envSchema } from "#/platform/config/env-schema.ts";
-import { ENV } from "#/platform/config/env-schema-fakes.test-support.ts";
-
-const NOT_AN_OBJECT = ["null", "[1,2]", '"a string"', "42"] as const;
+import {
+	ENV,
+	NOT_AN_OBJECT,
+} from "#/platform/config/env-schema-fakes.test-support.ts";
 
 describe("envSchema tracing", () => {
 	it("reads a blank sample ratio as the default rather than as zero", () => {
