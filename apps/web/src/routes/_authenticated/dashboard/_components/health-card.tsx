@@ -10,6 +10,7 @@ import { MOTION_PULSE } from "@app/components/motion/motion-tokens";
 import { motion } from "motion/react";
 import type { FC, ReactElement } from "react";
 import { match } from "ts-pattern";
+import { ApiVersionValue } from "#/routes/health/_components/api-version-value.tsx";
 import {
 	HEALTH_VIEW_STATUS,
 	type THealthViewStatus,
@@ -67,7 +68,10 @@ export const HealthCard: FC<THealthCardProps> = (props): ReactElement => (
 				<dd className="font-mono text-xs">{props.health.webVersion}</dd>
 				<dt className="text-muted-foreground">{HEALTH_MESSAGE.API_VERSION}</dt>
 				<dd className="font-mono text-xs">
-					{props.health.apiVersion ?? HEALTH_MESSAGE.VERSION_UNKNOWN}
+					<ApiVersionValue
+						status={props.health.status}
+						version={props.health.apiVersion}
+					/>
 				</dd>
 			</dl>
 		</CardContent>

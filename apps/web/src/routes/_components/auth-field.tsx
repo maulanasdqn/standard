@@ -26,7 +26,7 @@ export const AuthField: FC<TAuthFieldProps> = (props): ReactElement => (
 		id={props.id}
 		label={props.label}
 		labelAside={props.labelAside}
-		description={props.hint}
+		info={props.hint}
 		errorMap={props.errorMap}
 	>
 		{(control): ReactElement => (

@@ -2,15 +2,13 @@ import { Button } from "@app/components/ui/button";
 import {
 	Card,
 	CardContent,
-	CardDescription,
 	CardFooter,
 	CardHeader,
-	CardTitle,
 } from "@app/components/ui/card";
+import { CardHeading } from "@app/components/ui/card-heading";
 import { APP_MESSAGE, USER_MESSAGE } from "@app/messages";
 import type { TUser } from "@app/schemas";
 import { Link } from "@tanstack/react-router";
-import { Loader2 } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { ConfirmDialog } from "#/routes/_authenticated/_components/confirm-dialog.tsx";
 import { UserRoleField } from "#/routes/_authenticated/users/_components/user-role-field.tsx";
@@ -32,8 +30,9 @@ export const UserEditForm: FC<TUserEditFormProps> = (props): ReactElement => {
 		<form onSubmit={onSubmit}>
 			<Card>
 				<CardHeader>
-					<CardTitle>{USER_MESSAGE.DETAILS_TITLE}</CardTitle>
-					<CardDescription>{USER_MESSAGE.DETAILS_DESCRIPTION}</CardDescription>
+					<CardHeading info={USER_MESSAGE.DETAILS_DESCRIPTION}>
+						{USER_MESSAGE.DETAILS_TITLE}
+					</CardHeading>
 				</CardHeader>
 				<CardContent className="grid gap-6 sm:grid-cols-2">
 					<form.Field name="name">
@@ -88,8 +87,7 @@ export const UserEditForm: FC<TUserEditFormProps> = (props): ReactElement => {
 					<Button variant="outline" asChild>
 						<Link to="/users">{APP_MESSAGE.CANCEL}</Link>
 					</Button>
-					<Button type="submit" disabled={isPending}>
-						{isPending && <Loader2 className="animate-spin" />}
+					<Button type="submit" pending={isPending}>
 						{isPending ? USER_MESSAGE.SAVING : USER_MESSAGE.SAVE_CHANGES}
 					</Button>
 				</CardFooter>

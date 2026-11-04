@@ -1,11 +1,7 @@
 import { Badge } from "@app/components/ui/badge";
 import { Button } from "@app/components/ui/button";
-import {
-	Card,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@app/components/ui/card";
+import { Card, CardHeader } from "@app/components/ui/card";
+import { CardHeading } from "@app/components/ui/card-heading";
 import { USER_MESSAGE } from "@app/messages";
 import type { TUser } from "@app/schemas";
 import { ShieldOff } from "lucide-react";
@@ -27,7 +23,13 @@ export const UserTwoFactorCard: FC<TUserTwoFactorCardProps> = (
 		<Card>
 			<CardHeader className="flex flex-row items-start justify-between gap-4">
 				<div className="flex flex-col gap-1.5">
-					<CardTitle className="flex items-center gap-2">
+					<CardHeading
+						info={
+							enabled
+								? USER_MESSAGE.TWO_FACTOR_ON_DESCRIPTION
+								: USER_MESSAGE.TWO_FACTOR_OFF_DESCRIPTION
+						}
+					>
 						{USER_MESSAGE.TWO_FACTOR_TITLE}
 						<Badge variant="outline" className="gap-1.5 font-normal">
 							<span
@@ -41,18 +43,13 @@ export const UserTwoFactorCard: FC<TUserTwoFactorCardProps> = (
 								? USER_MESSAGE.TWO_FACTOR_ON
 								: USER_MESSAGE.TWO_FACTOR_OFF}
 						</Badge>
-					</CardTitle>
-					<CardDescription>
-						{enabled
-							? USER_MESSAGE.TWO_FACTOR_ON_DESCRIPTION
-							: USER_MESSAGE.TWO_FACTOR_OFF_DESCRIPTION}
-					</CardDescription>
+					</CardHeading>
 				</div>
 				{enabled && (
 					<Button
 						variant="outline"
 						size="sm"
-						disabled={twoFactor.pending}
+						pending={twoFactor.pending}
 						className="text-destructive hover:text-destructive"
 						onClick={() => twoFactor.confirm.request()}
 					>

@@ -1,11 +1,6 @@
 import { Button } from "@app/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@app/components/ui/card";
+import { Card, CardContent, CardHeader } from "@app/components/ui/card";
+import { CardHeading } from "@app/components/ui/card-heading";
 import { Skeleton } from "@app/components/ui/skeleton";
 import { AUTH_MESSAGE } from "@app/messages";
 import { A } from "@mobily/ts-belt";
@@ -31,13 +26,15 @@ export const SessionsCard: FC = (): ReactElement => {
 		<Card>
 			<CardHeader className="flex flex-row items-start justify-between gap-4">
 				<div className="flex flex-col gap-1.5">
-					<CardTitle>{AUTH_MESSAGE.SESSIONS_TITLE}</CardTitle>
-					<CardDescription>{AUTH_MESSAGE.SESSIONS_DESCRIPTION}</CardDescription>
+					<CardHeading info={AUTH_MESSAGE.SESSIONS_DESCRIPTION}>
+						{AUTH_MESSAGE.SESSIONS_TITLE}
+					</CardHeading>
 				</div>
 				<Button
 					variant="outline"
 					size="sm"
 					disabled={!own.hasOthers || own.pending}
+					pending={own.revokingOthers}
 					onClick={own.revokeOthers}
 				>
 					{AUTH_MESSAGE.SESSION_REVOKE_OTHERS}
@@ -59,7 +56,8 @@ export const SessionsCard: FC = (): ReactElement => {
 								<SessionRow
 									key={session.id}
 									session={session}
-									pending={own.pending}
+									disabled={own.pending}
+									pending={own.revokingToken === session.token}
 									onRevoke={own.revoke}
 								/>
 							))}

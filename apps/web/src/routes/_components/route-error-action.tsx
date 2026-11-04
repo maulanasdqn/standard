@@ -18,7 +18,7 @@ const RetryButton: FC = (): ReactElement => {
 	const isRetrying = useRouterState({ select: (state) => state.isLoading });
 
 	return (
-		<Button onClick={() => void router.invalidate()} disabled={isRetrying}>
+		<Button onClick={() => void router.invalidate()} pending={isRetrying}>
 			{match(isRetrying)
 				.with(true, () => ERROR_MESSAGE.RETRYING)
 				.otherwise(() => ERROR_MESSAGE.RETRY)}

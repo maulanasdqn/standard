@@ -38,6 +38,12 @@ export const MOTION_PULSE: Transition = {
 	ease: "easeOut",
 };
 
+export const MOTION_SWEEP: Transition = {
+	duration: 1.1,
+	repeat: Number.POSITIVE_INFINITY,
+	ease: "easeInOut",
+};
+
 export const MOTION_FLOAT: Transition = {
 	duration: 6,
 	repeat: Number.POSITIVE_INFINITY,

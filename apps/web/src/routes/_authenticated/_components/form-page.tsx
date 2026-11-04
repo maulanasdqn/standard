@@ -11,13 +11,14 @@ import { Button } from "@app/components/ui/button";
 import { Link, type LinkProps } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import type { FC, ReactElement, ReactNode } from "react";
+import { PageTitle } from "#/routes/_authenticated/_components/page-title.tsx";
 
 type TFormPageProps = {
 	parentLabel: string;
 	parentTo: LinkProps["to"];
 	backLabel?: string;
 	title: string;
-	description: string;
+	description?: string;
 	meta?: ReactNode;
 	children: ReactNode;
 };
@@ -41,12 +42,9 @@ export const FormPage: FC<TFormPageProps> = (props): ReactElement => (
 		</StaggerItem>
 		<StaggerItem className="flex flex-col gap-2">
 			<div className="flex items-start justify-between gap-4">
-				<div className="flex flex-col gap-1">
-					<h1 className="text-2xl font-semibold tracking-tight">
-						{props.title}
-					</h1>
-					<p className="text-sm text-muted-foreground">{props.description}</p>
-				</div>
+				<PageTitle info={props.description} className="text-2xl tracking-tight">
+					{props.title}
+				</PageTitle>
 				{props.backLabel !== undefined && (
 					<Button variant="ghost" size="sm" className="group/back" asChild>
 						<Link to={props.parentTo}>

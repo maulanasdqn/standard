@@ -22,6 +22,8 @@ export type TOwnSessions = {
 	isError: boolean;
 	hasOthers: boolean;
 	pending: boolean;
+	revokingToken: string | null;
+	revokingOthers: boolean;
 	revoke: (token: string) => void;
 	revokeOthers: () => void;
 };
@@ -86,6 +88,8 @@ export const useOwnSessions = (): TOwnSessions => {
 		isError: query.isError,
 		hasOthers: A.some(sessions, (session) => !session.current),
 		pending: revoke.isPending || revokeOthers.isPending,
+		revokingToken: revoke.isPending ? (revoke.variables ?? null) : null,
+		revokingOthers: revokeOthers.isPending,
 		revoke: (token: string): void => revoke.mutate(token),
 		revokeOthers: (): void => revokeOthers.mutate(),
 	};

@@ -29,7 +29,7 @@ export const UserRoleField: FC<TUserRoleFieldProps> = (props): ReactElement => {
 		<Field
 			id={props.id}
 			label={USER_MESSAGE.COLUMN_ROLE}
-			description={props.hint}
+			info={props.hint}
 			errors={props.errors}
 		>
 			{(control): ReactElement => (

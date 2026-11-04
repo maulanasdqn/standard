@@ -1,11 +1,12 @@
 import type * as React from "react";
 import type { FC, ReactElement } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import { Loader2 } from "lucide-react";
 import { cn } from "../lib/utils.ts";
 import { Slot } from "radix-ui";
 
 const buttonVariants = cva(
-	"inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none active:scale-[0.97] motion-reduce:active:scale-100 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+	"inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none active:scale-[0.97] motion-reduce:active:scale-100 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 data-pending:[&>svg:not([data-spinner])]:hidden aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
 	{
 		variants: {
 			variant: {
@@ -42,6 +43,7 @@ const Button: FC<
 	React.ComponentProps<"button"> &
 		VariantProps<typeof buttonVariants> & {
 			asChild?: boolean;
+			pending?: boolean;
 		}
 > = (props): ReactElement => {
 	const {
@@ -49,6 +51,9 @@ const Button: FC<
 		variant = "default",
 		size = "default",
 		asChild = false,
+		pending = false,
+		disabled,
+		children,
 		...rest
 	} = props;
 
@@ -59,9 +64,23 @@ const Button: FC<
 			data-slot="button"
 			data-variant={variant}
 			data-size={size}
+			data-pending={pending || undefined}
+			aria-busy={pending || undefined}
+			disabled={disabled || pending}
 			className={cn(buttonVariants({ variant, size, className }))}
 			{...rest}
-		/>
+		>
+			{asChild ? (
+				children
+			) : (
+				<>
+					{pending && (
+						<Loader2 data-spinner className="animate-spin" aria-hidden />
+					)}
+					{children}
+				</>
+			)}
+		</Comp>
 	);
 };
 

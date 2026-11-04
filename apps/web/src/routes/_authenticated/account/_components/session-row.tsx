@@ -7,6 +7,7 @@ import type { TOwnSession } from "#/routes/_authenticated/account/_hooks/use-own
 
 type TSessionRowProps = {
 	session: TOwnSession;
+	disabled: boolean;
 	pending: boolean;
 	onRevoke: (token: string) => void;
 };
@@ -27,7 +28,8 @@ export const SessionRow: FC<TSessionRowProps> = (props): ReactElement => (
 				<Button
 					variant="ghost"
 					size="sm"
-					disabled={props.pending}
+					disabled={props.disabled}
+					pending={props.pending}
 					onClick={() => props.onRevoke(props.session.token)}
 				>
 					{AUTH_MESSAGE.SESSION_REVOKE}

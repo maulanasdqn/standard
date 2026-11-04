@@ -5,9 +5,11 @@ import {
 	type TNoteAttachment,
 } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
+import { useIsMutating } from "@tanstack/react-query";
 import { useId, useState, type ChangeEvent, type DragEvent } from "react";
 import { toast } from "sonner";
 import { match } from "ts-pattern";
+import { orpc } from "#/libs/orpc/client.ts";
 import type { TConfirmedAction } from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
 import { useConfirmedAction } from "#/routes/_authenticated/_hooks/use-confirmed-action.ts";
 import {
@@ -21,6 +23,8 @@ export type TNoteAttachmentPanel = {
 	remaining: number;
 	isFull: boolean;
 	isUploading: boolean;
+	uploadingCount: number;
+	removingId: string | null;
 	isDragging: boolean;
 	inputId: string;
 	onInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
@@ -60,6 +64,9 @@ export const useNoteAttachmentPanel = (
 	const { data } = useNoteAttachmentList(noteId);
 	const upload = useNoteAttachmentUpload();
 	const remove = useNoteAttachmentRemove();
+	const uploadingCount = useIsMutating({
+		mutationKey: orpc.note.attachment.upload.mutationKey(),
+	});
 	const inputId = useId();
 	const [isDragging, setIsDragging] = useState(false);
 
@@ -89,6 +96,8 @@ export const useNoteAttachmentPanel = (
 		remaining,
 		isFull: remaining <= 0,
 		isUploading: upload.isPending,
+		uploadingCount,
+		removingId: remove.isPending ? (remove.variables?.id ?? null) : null,
 		isDragging,
 		inputId,
 		onInputChange: (event: ChangeEvent<HTMLInputElement>): void => {

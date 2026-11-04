@@ -34,7 +34,7 @@ export const CheckEmail: FC<TCheckEmailProps> = (props): ReactElement => {
 				<Button
 					variant="outline"
 					className="w-full"
-					disabled={verification.pending}
+					pending={verification.pending}
 					onClick={verification.resend}
 				>
 					{AUTH_MESSAGE.VERIFICATION_RESEND}

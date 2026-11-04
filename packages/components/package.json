@@ -9,6 +9,7 @@
 		"./guard/use-permissions": "./src/guard/use-permissions.ts",
 		"./hooks/use-mobile": "./src/hooks/use-mobile.ts",
 		"./lib/utils": "./src/lib/utils.ts",
+		"./skeleton/skeleton-slots": "./src/skeleton/skeleton-slots.ts",
 		"./skeleton/*": "./src/skeleton/*.tsx",
 		"./theme.css": "./theme.css",
 		"./ui/*": "./src/ui/*.tsx",

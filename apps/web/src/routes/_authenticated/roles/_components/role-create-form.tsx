@@ -2,18 +2,16 @@ import { Button } from "@app/components/ui/button";
 import {
 	Card,
 	CardContent,
-	CardDescription,
 	CardFooter,
 	CardHeader,
-	CardTitle,
 } from "@app/components/ui/card";
+import { CardHeading } from "@app/components/ui/card-heading";
 import { Field } from "@app/components/ui/field";
 import { FieldError } from "@app/components/ui/field-error";
 import { Input } from "@app/components/ui/input";
 import { Textarea } from "@app/components/ui/textarea";
 import { APP_MESSAGE, ROLE_MESSAGE } from "@app/messages";
 import { Link } from "@tanstack/react-router";
-import { Loader2 } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { ConfirmDialog } from "#/routes/_authenticated/_components/confirm-dialog.tsx";
 import { PermissionChecklist } from "#/routes/_authenticated/roles/_components/permission-checklist.tsx";
@@ -27,10 +25,9 @@ export const RoleCreateForm: FC = (): ReactElement => {
 		<form onSubmit={onSubmit}>
 			<Card>
 				<CardHeader>
-					<CardTitle>{ROLE_MESSAGE.DETAILS_TITLE}</CardTitle>
-					<CardDescription>
-						{ROLE_MESSAGE.CREATE_DETAILS_DESCRIPTION}
-					</CardDescription>
+					<CardHeading info={ROLE_MESSAGE.CREATE_DETAILS_DESCRIPTION}>
+						{ROLE_MESSAGE.DETAILS_TITLE}
+					</CardHeading>
 				</CardHeader>
 				<CardContent className="flex flex-col gap-6">
 					<div className="grid gap-6 sm:grid-cols-2">
@@ -110,8 +107,7 @@ export const RoleCreateForm: FC = (): ReactElement => {
 					<Button variant="outline" asChild>
 						<Link to="/roles">{APP_MESSAGE.CANCEL}</Link>
 					</Button>
-					<Button type="submit" disabled={isPending}>
-						{isPending && <Loader2 className="animate-spin" />}
+					<Button type="submit" pending={isPending}>
 						{isPending ? ROLE_MESSAGE.CREATING : ROLE_MESSAGE.CREATE_ACTION}
 					</Button>
 				</CardFooter>
