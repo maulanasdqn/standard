@@ -13,7 +13,7 @@
 	"dependencies": {
 		"@app/schemas": "workspace:*",
 		"@mobily/ts-belt": "catalog:",
-		"@orpc/contract": "^1.15.7",
+		"@orpc/contract": "^1.16.1",
 		"zod": "catalog:"
 	},
 	"devDependencies": {
