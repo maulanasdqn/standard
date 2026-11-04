@@ -31,6 +31,7 @@ export const RowActionsMenu: FC<TRowActionsMenuProps> = (
 					<Button
 						variant="ghost"
 						size="icon-sm"
+						pending={A.some(visible, (action) => action.pending === true)}
 						aria-label={APP_MESSAGE.ROW_ACTIONS}
 						className="data-[state=open]:bg-accent"
 					>
@@ -43,7 +44,7 @@ export const RowActionsMenu: FC<TRowActionsMenuProps> = (
 							{action.destructive && index > 0 && <DropdownMenuSeparator />}
 							<DropdownMenuItem
 								variant={action.destructive ? "destructive" : "default"}
-								disabled={action.disabled}
+								disabled={action.disabled === true || action.pending === true}
 								onSelect={action.onSelect}
 							>
 								<action.icon />

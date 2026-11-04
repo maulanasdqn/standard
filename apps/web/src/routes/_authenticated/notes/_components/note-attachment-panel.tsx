@@ -1,13 +1,10 @@
 import { PERMISSION } from "@app/permissions";
 import { Guard } from "@app/components/guard/guard";
+import { skeletonSlots } from "@app/components/skeleton/skeleton-slots";
 import { Badge } from "@app/components/ui/badge";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@app/components/ui/card";
+import { Skeleton } from "@app/components/ui/skeleton";
+import { Card, CardContent, CardHeader } from "@app/components/ui/card";
+import { CardHeading } from "@app/components/ui/card-heading";
 import { NOTE_ATTACHMENT_MESSAGE } from "@app/messages";
 import { NOTE_ATTACHMENT_MAX_PER_NOTE } from "@app/schemas";
 import { A } from "@mobily/ts-belt";
@@ -34,10 +31,9 @@ export const NoteAttachmentPanel: FC<TNoteAttachmentPanelProps> = (
 			<CardHeader>
 				<div className="flex items-start justify-between gap-4">
 					<div className="flex flex-col gap-1.5">
-						<CardTitle>{NOTE_ATTACHMENT_MESSAGE.TITLE}</CardTitle>
-						<CardDescription>
-							{NOTE_ATTACHMENT_MESSAGE.DESCRIPTION}
-						</CardDescription>
+						<CardHeading info={NOTE_ATTACHMENT_MESSAGE.DESCRIPTION}>
+							{NOTE_ATTACHMENT_MESSAGE.TITLE}
+						</CardHeading>
 					</div>
 					<Badge variant="outline">
 						{panel.items.length} / {NOTE_ATTACHMENT_MAX_PER_NOTE}
@@ -57,7 +53,7 @@ export const NoteAttachmentPanel: FC<TNoteAttachmentPanelProps> = (
 						onDrop={panel.onDrop}
 					/>
 				</Guard>
-				{match(A.isEmpty(panel.items))
+				{match(A.isEmpty(panel.items) && panel.uploadingCount === 0)
 					.with(true, () => (
 						<EmptyState message={NOTE_ATTACHMENT_MESSAGE.EMPTY} />
 					))
@@ -68,10 +64,16 @@ export const NoteAttachmentPanel: FC<TNoteAttachmentPanelProps> = (
 									<NoteAttachmentTile
 										key={attachment.id}
 										attachment={attachment}
+										removing={panel.removingId === attachment.id}
 										onRemove={panel.onRemoveRequest}
 									/>
 								))}
 							</AnimatePresence>
+							{A.map(skeletonSlots(panel.uploadingCount), (slot) => (
+								<li key={slot}>
+									<Skeleton className="aspect-square w-full rounded-xl" />
+								</li>
+							))}
 						</ul>
 					))}
 			</CardContent>

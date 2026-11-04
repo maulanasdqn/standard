@@ -81,7 +81,7 @@ export const PasswordChangeForm: FC = (): ReactElement => {
 						)}
 					</form.Field>
 					<FieldError errors={serverError ? [{ message: serverError }] : []} />
-					<Button type="submit" disabled={isPending} className="self-start">
+					<Button type="submit" pending={isPending} className="self-start">
 						{isPending
 							? AUTH_MESSAGE.PASSWORD_UPDATING
 							: AUTH_MESSAGE.PASSWORD_UPDATE}

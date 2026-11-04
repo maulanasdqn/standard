@@ -1,6 +1,7 @@
 import { HEALTH_MESSAGE } from "@app/messages";
 import type { FC, ReactElement } from "react";
 import { match } from "ts-pattern";
+import { ApiVersionValue } from "#/routes/health/_components/api-version-value.tsx";
 import {
 	HEALTH_VIEW_STATUS,
 	type THealthViewStatus,
@@ -30,6 +31,8 @@ export const HealthPanel: FC<THealthState> = (props): ReactElement => (
 		<dt className="text-muted-foreground">{HEALTH_MESSAGE.WEB_VERSION}</dt>
 		<dd>{props.webVersion}</dd>
 		<dt className="text-muted-foreground">{HEALTH_MESSAGE.API_VERSION}</dt>
-		<dd>{props.apiVersion ?? HEALTH_MESSAGE.VERSION_UNKNOWN}</dd>
+		<dd>
+			<ApiVersionValue status={props.status} version={props.apiVersion} />
+		</dd>
 	</dl>
 );

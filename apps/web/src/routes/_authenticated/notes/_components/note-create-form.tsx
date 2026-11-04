@@ -2,14 +2,12 @@ import { Button } from "@app/components/ui/button";
 import {
 	Card,
 	CardContent,
-	CardDescription,
 	CardFooter,
 	CardHeader,
-	CardTitle,
 } from "@app/components/ui/card";
+import { CardHeading } from "@app/components/ui/card-heading";
 import { APP_MESSAGE, NOTE_MESSAGE } from "@app/messages";
 import { Link } from "@tanstack/react-router";
-import { Loader2 } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { ConfirmDialog } from "#/routes/_authenticated/_components/confirm-dialog.tsx";
 import {
@@ -25,8 +23,9 @@ export const NoteCreateForm: FC = (): ReactElement => {
 		<form onSubmit={onSubmit}>
 			<Card>
 				<CardHeader>
-					<CardTitle>{NOTE_MESSAGE.DETAILS_TITLE}</CardTitle>
-					<CardDescription>{NOTE_MESSAGE.DETAILS_DESCRIPTION}</CardDescription>
+					<CardHeading info={NOTE_MESSAGE.DETAILS_DESCRIPTION}>
+						{NOTE_MESSAGE.DETAILS_TITLE}
+					</CardHeading>
 				</CardHeader>
 				<CardContent className="flex flex-col gap-6">
 					<form.Field name="title">
@@ -56,8 +55,7 @@ export const NoteCreateForm: FC = (): ReactElement => {
 					<Button variant="outline" asChild>
 						<Link to="/notes">{APP_MESSAGE.CANCEL}</Link>
 					</Button>
-					<Button type="submit" disabled={isPending}>
-						{isPending && <Loader2 className="animate-spin" />}
+					<Button type="submit" pending={isPending}>
 						{isPending ? NOTE_MESSAGE.CREATING : NOTE_MESSAGE.NEW_NOTE}
 					</Button>
 				</CardFooter>

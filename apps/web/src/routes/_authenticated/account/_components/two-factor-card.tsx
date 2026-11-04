@@ -1,12 +1,7 @@
 import { Badge } from "@app/components/ui/badge";
 import { Button } from "@app/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@app/components/ui/card";
+import { Card, CardContent, CardHeader } from "@app/components/ui/card";
+import { CardHeading } from "@app/components/ui/card-heading";
 import { AUTH_MESSAGE } from "@app/messages";
 import { ShieldCheck } from "lucide-react";
 import type { FC, ReactElement } from "react";
@@ -57,7 +52,13 @@ export const TwoFactorCard: FC = (): ReactElement => {
 	return (
 		<Card>
 			<CardHeader>
-				<CardTitle className="flex items-center gap-2">
+				<CardHeading
+					info={
+						twoFactor.enabled
+							? AUTH_MESSAGE.TWO_FACTOR_DESCRIPTION_ON
+							: AUTH_MESSAGE.TWO_FACTOR_DESCRIPTION_OFF
+					}
+				>
 					{AUTH_MESSAGE.TWO_FACTOR_TITLE}
 					<Badge variant="outline" className="gap-1.5 font-normal">
 						<span
@@ -71,12 +72,7 @@ export const TwoFactorCard: FC = (): ReactElement => {
 							? AUTH_MESSAGE.TWO_FACTOR_ON_BADGE
 							: AUTH_MESSAGE.TWO_FACTOR_OFF_BADGE}
 					</Badge>
-				</CardTitle>
-				<CardDescription>
-					{twoFactor.enabled
-						? AUTH_MESSAGE.TWO_FACTOR_DESCRIPTION_ON
-						: AUTH_MESSAGE.TWO_FACTOR_DESCRIPTION_OFF}
-				</CardDescription>
+				</CardHeading>
 			</CardHeader>
 			<CardContent>
 				{match(twoFactor.step)

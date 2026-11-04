@@ -33,7 +33,6 @@ export const FormSkeleton: FC<TFormSkeletonProps> = (props): ReactElement => {
 		<div className="flex flex-col gap-6 rounded-xl border bg-card py-6 shadow-sm">
 			<div className="flex flex-col gap-2 px-6">
 				<Skeleton className="h-5 w-36" />
-				<Skeleton className="h-4 w-72 max-w-full" />
 			</div>
 			<div
 				className={cn("grid gap-6 px-6", props.twoColumn && "sm:grid-cols-2")}

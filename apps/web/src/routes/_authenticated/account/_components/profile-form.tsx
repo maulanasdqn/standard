@@ -1,11 +1,6 @@
 import { Button } from "@app/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@app/components/ui/card";
+import { Card, CardContent, CardHeader } from "@app/components/ui/card";
+import { CardHeading } from "@app/components/ui/card-heading";
 import { Field } from "@app/components/ui/field";
 import { Input } from "@app/components/ui/input";
 import { AUTH_MESSAGE } from "@app/messages";
@@ -20,8 +15,9 @@ export const ProfileForm: FC = (): ReactElement => {
 	return (
 		<Card>
 			<CardHeader>
-				<CardTitle>{AUTH_MESSAGE.PROFILE_TITLE}</CardTitle>
-				<CardDescription>{AUTH_MESSAGE.PROFILE_DESCRIPTION}</CardDescription>
+				<CardHeading info={AUTH_MESSAGE.PROFILE_DESCRIPTION}>
+					{AUTH_MESSAGE.PROFILE_TITLE}
+				</CardHeading>
 			</CardHeader>
 			<CardContent>
 				<form
@@ -53,7 +49,7 @@ export const ProfileForm: FC = (): ReactElement => {
 						selector={(state) => [state.isSubmitting, state.isDirty] as const}
 					>
 						{([isSubmitting, isDirty]) => (
-							<Button type="submit" disabled={isSubmitting || !isDirty}>
+							<Button type="submit" disabled={!isDirty} pending={isSubmitting}>
 								{isSubmitting
 									? AUTH_MESSAGE.PROFILE_SAVING
 									: AUTH_MESSAGE.PROFILE_SAVE}

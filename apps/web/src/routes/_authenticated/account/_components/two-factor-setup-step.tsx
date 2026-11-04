@@ -62,7 +62,8 @@ export const TwoFactorSetupStep: FC<TTwoFactorSetupStepProps> = (
 				</Button>
 				<Button
 					type="submit"
-					disabled={props.twoFactor.pending || props.twoFactor.code === ""}
+					disabled={props.twoFactor.code === ""}
+					pending={props.twoFactor.pending}
 				>
 					{AUTH_MESSAGE.TWO_FACTOR_VERIFY_AND_ENABLE}
 				</Button>

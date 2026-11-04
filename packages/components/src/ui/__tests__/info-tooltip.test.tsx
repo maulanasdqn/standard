@@ -40,4 +40,12 @@ describe("InfoTooltip", () => {
 
 		expect(screen.getByRole("tooltip").textContent).toBe(CONTENT);
 	});
+
+	it("opens on a tap, where a touch screen has no hover", (): void => {
+		render(<InfoTooltip content={CONTENT} />);
+
+		fireEvent.click(screen.getByRole("button", { name: UI_MESSAGE.MORE_INFO }));
+
+		expect(screen.getByRole("tooltip").textContent).toBe(CONTENT);
+	});
 });

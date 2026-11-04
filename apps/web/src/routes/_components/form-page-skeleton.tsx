@@ -10,7 +10,7 @@ export const FormPageSkeleton: FC<TFormPageSkeletonProps> = (
 	props,
 ): ReactElement => (
 	<RouteSkeleton>
-		<PageHeaderSkeleton breadcrumb description action />
+		<PageHeaderSkeleton breadcrumb action />
 		{props.children}
 	</RouteSkeleton>
 );

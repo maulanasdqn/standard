@@ -45,7 +45,8 @@ export const TwoFactorPasswordStep: FC<TTwoFactorPasswordStepProps> = (
 			</Button>
 			<Button
 				type="submit"
-				disabled={props.twoFactor.pending || props.twoFactor.password === ""}
+				disabled={props.twoFactor.password === ""}
+				pending={props.twoFactor.pending}
 			>
 				{AUTH_MESSAGE.TWO_FACTOR_CONTINUE}
 			</Button>

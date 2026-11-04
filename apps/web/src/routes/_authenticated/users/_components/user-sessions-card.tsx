@@ -1,11 +1,6 @@
 import { Button } from "@app/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@app/components/ui/card";
+import { Card, CardContent, CardHeader } from "@app/components/ui/card";
+import { CardHeading } from "@app/components/ui/card-heading";
 import { Skeleton } from "@app/components/ui/skeleton";
 import { USER_MESSAGE } from "@app/messages";
 import { A } from "@mobily/ts-belt";
@@ -35,13 +30,15 @@ export const UserSessionsCard: FC<TUserSessionsCardProps> = (
 		<Card>
 			<CardHeader className="flex flex-row items-start justify-between gap-4">
 				<div className="flex flex-col gap-1.5">
-					<CardTitle>{USER_MESSAGE.SESSIONS_TITLE}</CardTitle>
-					<CardDescription>{USER_MESSAGE.SESSIONS_DESCRIPTION}</CardDescription>
+					<CardHeading info={USER_MESSAGE.SESSIONS_DESCRIPTION}>
+						{USER_MESSAGE.SESSIONS_TITLE}
+					</CardHeading>
 				</div>
 				<Button
 					variant="outline"
 					size="sm"
 					disabled={A.isEmpty(list) || pending}
+					pending={revokeAll.isPending}
 					onClick={() => revokeAll.mutate({ id: props.userId })}
 				>
 					{USER_MESSAGE.SESSIONS_REVOKE_ALL}
@@ -69,6 +66,10 @@ export const UserSessionsCard: FC<TUserSessionsCardProps> = (
 											variant="ghost"
 											size="sm"
 											disabled={pending}
+											pending={
+												revoke.isPending &&
+												revoke.variables?.sessionId === session.id
+											}
 											onClick={() =>
 												revoke.mutate({
 													id: props.userId,

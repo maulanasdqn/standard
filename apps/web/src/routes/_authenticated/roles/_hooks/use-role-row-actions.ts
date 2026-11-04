@@ -54,7 +54,7 @@ export const useRoleRowActions = (role: TRoleDto): TRoleRowActions => {
 				permissions: [PERMISSION.ROLE_DELETE],
 				available: roleDeletable(role),
 				destructive: true,
-				disabled: roleDelete.isPending,
+				pending: roleDelete.isPending,
 				onSelect: (): void => confirm.request(),
 			},
 		],

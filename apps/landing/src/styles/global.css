@@ -19,6 +19,12 @@
 }
 
 @layer components {
+	button[aria-busy="true"]::before {
+		@apply size-4 animate-spin rounded-full border-2 border-current border-r-transparent;
+		content: "";
+		margin-inline-end: 0.5rem;
+	}
+
 	.newsletter-status {
 		@apply mt-3 min-h-5 text-sm text-muted-foreground;
 	}

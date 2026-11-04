@@ -1,4 +1,5 @@
 import { Guard } from "@app/components/guard/guard";
+import { cn } from "@app/components/lib/utils";
 import { Button } from "@app/components/ui/button";
 import { formatBytes } from "@app/format";
 import { NOTE_ATTACHMENT_MESSAGE } from "@app/messages";
@@ -14,6 +15,7 @@ import type { FC, ReactElement } from "react";
 
 type TNoteAttachmentTileProps = {
 	attachment: TNoteAttachment;
+	removing: boolean;
 	onRemove: (id: string) => void;
 };
 
@@ -27,7 +29,11 @@ export const NoteAttachmentTile: FC<TNoteAttachmentTileProps> = (
 		animate={MOTION_VARIANT.VISIBLE}
 		exit={MOTION_VARIANT.EXIT}
 		whileHover={{ y: -3 }}
-		className="group relative overflow-hidden rounded-xl border bg-muted"
+		aria-busy={props.removing || undefined}
+		className={cn(
+			"group relative overflow-hidden rounded-xl border bg-muted",
+			props.removing && "pointer-events-none",
+		)}
 	>
 		<img
 			src={props.attachment.url}
@@ -35,7 +41,12 @@ export const NoteAttachmentTile: FC<TNoteAttachmentTileProps> = (
 			loading="lazy"
 			className="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-105"
 		/>
-		<div className="absolute inset-0 flex flex-col justify-between bg-gradient-to-t from-black/75 via-black/10 to-black/20 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
+		<div
+			className={cn(
+				"absolute inset-0 flex flex-col justify-between bg-gradient-to-t from-black/75 via-black/10 to-black/20 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100",
+				props.removing && "opacity-100",
+			)}
+		>
 			<div className="flex justify-end gap-1 p-2">
 				<Button
 					asChild
@@ -58,6 +69,7 @@ export const NoteAttachmentTile: FC<TNoteAttachmentTileProps> = (
 						size="icon"
 						variant="destructive"
 						className="size-7 rounded-full"
+						pending={props.removing}
 						aria-label={NOTE_ATTACHMENT_MESSAGE.ACTION_DELETE}
 						onClick={() => props.onRemove(props.attachment.id)}
 					>

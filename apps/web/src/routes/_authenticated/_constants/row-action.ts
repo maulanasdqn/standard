@@ -18,6 +18,7 @@ export type TRowAction = {
 	permissions: readonly TPermission[];
 	available?: boolean;
 	disabled?: boolean;
+	pending?: boolean;
 	destructive?: boolean;
 	onSelect: () => void;
 };

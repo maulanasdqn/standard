@@ -5,6 +5,7 @@ import { newsletterSubscriberListInputSchema } from "@app/schemas";
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
 import { searchLenient } from "#/libs/table/search-lenient.ts";
+import { PageTitle } from "#/routes/_authenticated/_components/page-title.tsx";
 import { SubscriberTable } from "#/routes/_authenticated/subscribers/_components/subscriber-table.tsx";
 import {
 	subscriberListOptions,
@@ -24,12 +25,9 @@ const SubscribersPage: FC = (): ReactElement => {
 
 	return (
 		<div className="flex flex-col gap-6">
-			<div className="flex flex-col gap-1">
-				<h1 className="text-xl font-semibold">{NEWSLETTER_MESSAGE.TITLE}</h1>
-				<p className="text-sm text-muted-foreground">
-					{NEWSLETTER_MESSAGE.DESCRIPTION}
-				</p>
-			</div>
+			<PageTitle info={NEWSLETTER_MESSAGE.DESCRIPTION}>
+				{NEWSLETTER_MESSAGE.TITLE}
+			</PageTitle>
 			<SubscriberTable
 				list={data}
 				sortBy={search.sortBy}

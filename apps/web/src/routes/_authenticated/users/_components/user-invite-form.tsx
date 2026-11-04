@@ -2,14 +2,13 @@ import { Button } from "@app/components/ui/button";
 import {
 	Card,
 	CardContent,
-	CardDescription,
 	CardFooter,
 	CardHeader,
-	CardTitle,
 } from "@app/components/ui/card";
+import { CardHeading } from "@app/components/ui/card-heading";
 import { APP_MESSAGE, USER_MESSAGE } from "@app/messages";
 import { Link } from "@tanstack/react-router";
-import { Loader2, Send } from "lucide-react";
+import { Send } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { UserRoleField } from "#/routes/_authenticated/users/_components/user-role-field.tsx";
 import { UserTextField } from "#/routes/_authenticated/users/_components/user-text-field.tsx";
@@ -29,8 +28,9 @@ export const UserInviteForm: FC<TUserInviteFormProps> = (
 		<form onSubmit={onSubmit} noValidate>
 			<Card>
 				<CardHeader>
-					<CardTitle>{USER_MESSAGE.DETAILS_TITLE}</CardTitle>
-					<CardDescription>{USER_MESSAGE.INVITE_DESCRIPTION}</CardDescription>
+					<CardHeading info={USER_MESSAGE.INVITE_DESCRIPTION}>
+						{USER_MESSAGE.DETAILS_TITLE}
+					</CardHeading>
 				</CardHeader>
 				<CardContent className="grid gap-6 sm:grid-cols-2">
 					<form.Field name="name">
@@ -77,8 +77,8 @@ export const UserInviteForm: FC<TUserInviteFormProps> = (
 					<Button variant="outline" asChild>
 						<Link to="/users">{APP_MESSAGE.CANCEL}</Link>
 					</Button>
-					<Button type="submit" disabled={isPending}>
-						{isPending ? <Loader2 className="animate-spin" /> : <Send />}
+					<Button type="submit" pending={isPending}>
+						<Send />
 						{isPending ? USER_MESSAGE.INVITING : USER_MESSAGE.INVITE_ACTION}
 					</Button>
 				</CardFooter>

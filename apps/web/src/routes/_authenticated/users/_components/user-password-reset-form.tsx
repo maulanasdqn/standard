@@ -2,14 +2,12 @@ import { Button } from "@app/components/ui/button";
 import {
 	Card,
 	CardContent,
-	CardDescription,
 	CardFooter,
 	CardHeader,
-	CardTitle,
 } from "@app/components/ui/card";
+import { CardHeading } from "@app/components/ui/card-heading";
 import { USER_MESSAGE } from "@app/messages";
 import type { TUser } from "@app/schemas";
-import { Loader2 } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { ConfirmDialog } from "#/routes/_authenticated/_components/confirm-dialog.tsx";
 import { UserTextField } from "#/routes/_authenticated/users/_components/user-text-field.tsx";
@@ -30,8 +28,9 @@ export const UserPasswordResetForm: FC<TUserPasswordResetFormProps> = (
 		<form onSubmit={onSubmit}>
 			<Card>
 				<CardHeader>
-					<CardTitle>{USER_MESSAGE.PASSWORD_TITLE}</CardTitle>
-					<CardDescription>{USER_MESSAGE.PASSWORD_DESCRIPTION}</CardDescription>
+					<CardHeading info={USER_MESSAGE.PASSWORD_DESCRIPTION}>
+						{USER_MESSAGE.PASSWORD_TITLE}
+					</CardHeading>
 				</CardHeader>
 				<CardContent className="grid gap-6 sm:grid-cols-2">
 					<form.Field name="password">
@@ -51,8 +50,7 @@ export const UserPasswordResetForm: FC<TUserPasswordResetFormProps> = (
 					</form.Field>
 				</CardContent>
 				<CardFooter className="justify-end border-t pt-6">
-					<Button type="submit" variant="outline" disabled={isPending}>
-						{isPending && <Loader2 className="animate-spin" />}
+					<Button type="submit" variant="outline" pending={isPending}>
 						{isPending ? USER_MESSAGE.RESETTING : USER_MESSAGE.RESET_ACTION}
 					</Button>
 				</CardFooter>

@@ -41,7 +41,7 @@ export const useNoteRowActions = (note: TNote): TNoteRowActions => {
 				icon: Trash2,
 				permissions: [PERMISSION.NOTE_DELETE],
 				destructive: true,
-				disabled: noteDelete.isPending,
+				pending: noteDelete.isPending,
 				onSelect: (): void => confirm.request(),
 			},
 		],

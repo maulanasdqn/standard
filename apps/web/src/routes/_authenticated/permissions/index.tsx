@@ -3,6 +3,7 @@ import { PERMISSION_MESSAGE } from "@app/messages";
 import { PERMISSION } from "@app/permissions";
 import { createFileRoute } from "@tanstack/react-router";
 import type { FC, ReactElement } from "react";
+import { PageTitle } from "#/routes/_authenticated/_components/page-title.tsx";
 import { PermissionMatrix } from "#/routes/_authenticated/permissions/_components/permission-matrix.tsx";
 import { roleListOptions } from "#/routes/_authenticated/roles/_hooks/use-roles.ts";
 import { ListPageSkeleton } from "#/routes/_components/list-page-skeleton.tsx";
@@ -10,19 +11,16 @@ import { ListPageSkeleton } from "#/routes/_components/list-page-skeleton.tsx";
 const PermissionsPage: FC = (): ReactElement => {
 	return (
 		<div className="flex flex-col gap-6">
-			<div className="flex flex-col gap-1">
-				<h1 className="text-xl font-semibold">{PERMISSION_MESSAGE.TITLE}</h1>
-				<p className="text-sm text-muted-foreground">
-					{PERMISSION_MESSAGE.DESCRIPTION}
-				</p>
-			</div>
+			<PageTitle info={PERMISSION_MESSAGE.DESCRIPTION}>
+				{PERMISSION_MESSAGE.TITLE}
+			</PageTitle>
 			<PermissionMatrix />
 		</div>
 	);
 };
 
 const PermissionsPending: FC = (): ReactElement => (
-	<ListPageSkeleton description toolbar={false} pagination={false} />
+	<ListPageSkeleton toolbar={false} pagination={false} />
 );
 
 export const Route = createFileRoute("/_authenticated/permissions/")({

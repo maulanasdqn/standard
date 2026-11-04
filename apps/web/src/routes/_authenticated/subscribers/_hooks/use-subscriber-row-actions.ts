@@ -32,7 +32,7 @@ export const useSubscriberRowActions = (
 				icon: Trash2,
 				permissions: [PERMISSION.NEWSLETTER_DELETE],
 				destructive: true,
-				disabled: subscriberDelete.isPending,
+				pending: subscriberDelete.isPending,
 				onSelect: (): void => confirm.request(),
 			},
 		],

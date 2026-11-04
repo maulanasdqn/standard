@@ -1,4 +1,5 @@
 import { cn } from "@app/components/lib/utils";
+import { Badge } from "@app/components/ui/badge";
 import { formatBytes } from "@app/format";
 import { NOTE_ATTACHMENT_MESSAGE } from "@app/messages";
 import {
@@ -47,19 +48,21 @@ export const NoteAttachmentDropzone: FC<TNoteAttachmentDropzoneProps> = (
 	>
 		<span className="flex size-11 items-center justify-center rounded-full bg-background text-muted-foreground shadow-sm">
 			{props.isUploading ? (
-				<Loader2 className="size-5 animate-spin" />
+				<Loader2 className="size-5 animate-spin" aria-hidden />
 			) : (
-				<ImagePlus className="size-5" />
+				<ImagePlus className="size-5" aria-hidden />
 			)}
 		</span>
 		<span className="flex flex-col gap-1">
 			<span className="text-sm font-medium">{hintOf(props)}</span>
-			<span className="text-xs text-muted-foreground">
-				{NOTE_ATTACHMENT_MESSAGE.ALLOWED_TYPES}
-			</span>
-			<span className="text-xs text-muted-foreground">
-				{NOTE_ATTACHMENT_MESSAGE.MAX_SIZE}{" "}
-				{formatBytes(NOTE_ATTACHMENT_MAX_BYTES)}
+			<span className="flex flex-wrap justify-center gap-1.5">
+				<Badge variant="outline" className="font-normal text-muted-foreground">
+					{NOTE_ATTACHMENT_MESSAGE.ALLOWED_TYPES}
+				</Badge>
+				<Badge variant="outline" className="font-normal text-muted-foreground">
+					<span className="sr-only">{NOTE_ATTACHMENT_MESSAGE.MAX_SIZE}</span>
+					{formatBytes(NOTE_ATTACHMENT_MAX_BYTES)}
+				</Badge>
 			</span>
 		</span>
 		<span className="rounded-md border bg-background px-3 py-1.5 text-xs font-medium shadow-sm">

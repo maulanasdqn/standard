@@ -67,7 +67,7 @@ export const useUserRowActions = (
 				icon: deactivated ? UserCheck : UserX,
 				permissions: [PERMISSION.USER_UPDATE],
 				available: !isSelf,
-				disabled: userDeactivate.isPending || userReactivate.isPending,
+				pending: userDeactivate.isPending || userReactivate.isPending,
 				onSelect: (): void => accessConfirm.request(),
 			},
 			{
@@ -76,7 +76,8 @@ export const useUserRowActions = (
 				icon: Trash2,
 				permissions: [PERMISSION.USER_DELETE],
 				destructive: true,
-				disabled: isSelf || userDelete.isPending,
+				disabled: isSelf,
+				pending: userDelete.isPending,
 				onSelect: (): void => confirm.request(),
 			},
 		],

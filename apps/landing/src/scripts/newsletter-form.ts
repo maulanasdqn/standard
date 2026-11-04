@@ -10,6 +10,7 @@ import {
 const HTTP_TOO_MANY_REQUESTS = 429;
 const JSON_CONTENT = "application/json";
 const SUBMIT_BUTTON = "button[type='submit']";
+const ARIA_BUSY = "aria-busy";
 
 type TOutcome = {
 	readonly state: TNewsletterState;
@@ -54,6 +55,9 @@ const send = (form: HTMLFormElement): Promise<Response> =>
 
 const setPending = (button: HTMLButtonElement, pending: boolean): void => {
 	button.disabled = pending;
+	match(pending)
+		.with(true, (): void => button.setAttribute(ARIA_BUSY, String(pending)))
+		.otherwise((): void => button.removeAttribute(ARIA_BUSY));
 	button.textContent = pending
 		? NEWSLETTER_MESSAGE.FORM_SUBMITTING
 		: NEWSLETTER_MESSAGE.FORM_SUBMIT;

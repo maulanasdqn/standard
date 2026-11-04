@@ -23,7 +23,7 @@ export const UserTextField: FC<TUserTextFieldProps> = (props): ReactElement => {
 		<Field
 			id={props.id}
 			label={props.label}
-			description={props.hint}
+			info={props.hint}
 			errors={props.errors}
 		>
 			{(control): ReactElement => (
