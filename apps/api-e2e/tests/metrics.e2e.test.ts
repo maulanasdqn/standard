@@ -36,14 +36,14 @@ describe("metrics", () => {
 		expect(body).not.toContain("a-procedure");
 	});
 
-	it("keeps a resource id out of the label, collapsing it into the mounted wildcard", async (): Promise<void> => {
+	it("labels a rest call by its contract template, keeping the resource id out", async (): Promise<void> => {
 		const id = "018f2c4e-1a2b-7c3d-9e4f-5a6b7c8d9e0f";
 
 		await fetch(`${BASE_URL}/api/notes/${id}`);
 
 		const body = await (await fetch(`${BASE_URL}/metrics`)).text();
 
-		expect(body).toContain('route="/api/*"');
+		expect(body).toContain('route="/api/notes/{id}"');
 		expect(body).not.toContain(id);
 	});
 
