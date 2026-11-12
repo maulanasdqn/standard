@@ -22,13 +22,13 @@
 		"@astrojs/rss": "^4.0.19",
 		"@mobily/ts-belt": "catalog:",
 		"@tailwindcss/typography": "^0.5.19",
-		"@tailwindcss/vite": "^4.1.18",
-		"astro": "^7.3.5",
-		"tailwindcss": "^4.1.18",
+		"@tailwindcss/vite": "^4.3.5",
+		"astro": "^7.4.8",
+		"tailwindcss": "^4.3.5",
 		"ts-pattern": "catalog:"
 	},
 	"devDependencies": {
-		"@astrojs/check": "^0.9.10",
+		"@astrojs/check": "^0.9.12",
 		"@types/node": "catalog:",
 		"typescript": "^6.0.3",
 		"vitest": "catalog:",
