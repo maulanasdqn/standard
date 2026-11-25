@@ -1,81 +1,147 @@
 # Standard
 
-Full-stack TypeScript monorepo: moon + pnpm workspaces, Hono + oRPC + Effect (`apps/api`), TanStack Router SPA under `/app` (`apps/web`), static Astro landing page at `/` (`apps/landing`), shared packages under `packages/`.
+Standard is a full-stack TypeScript monorepo. It has these parts:
+
+- moon + pnpm workspaces
+- `apps/api`: Hono + oRPC + Effect
+- `apps/web`: a TanStack Router SPA under `/app`
+- `apps/landing`: a static Astro landing page at `/`
+- `packages/`: shared packages
 
 ## Read this before you write
 
-| Before | Read |
+| Before you change | Read |
 |---|---|
-| Any `.ts` / `.tsx`, including a one-line change | `.claude/skills/ts-conventions/SKILL.md`, the full ruleset, non-negotiable |
-| Effect code in `apps/api` | `node_modules/effect/AGENTS.md`, which describes the installed v4 API rather than general Effect knowledge, then `docs/effect-services.md` for why this repository shapes services the way it does |
-| A new module, endpoint, table or permission | `docs/adding-a-module.md`, which lists every touchpoint, including the ones no directory listing reveals |
-| Any screen, component or user-facing copy in `apps/web` or `apps/landing` | `docs/ui-guidelines.md`: the loading state each kind of wait gets, and the rule to keep text to what is needed (a UI element or an ⓘ tooltip instead of a sentence) |
-| A blog article | `docs/blog.md`, then `moon run landing:new-post -- "<title>"`, which starts the draft and prints the writing prompt |
-| Running or operating the stack | `README.md` to run it locally, `docs/operations/` for everything else |
+| A `.ts` or `.tsx` file, also for a one-line change | `.claude/skills/ts-conventions/SKILL.md`. It has all the rules, and you must obey all of them |
+| Effect code in `apps/api` | First `node_modules/effect/AGENTS.md`. It shows the installed v4 API, not general Effect knowledge. Then `docs/effect-services.md`. It tells why this repository makes services in this shape |
+| A new module, endpoint, table or permission | `docs/adding-a-module.md`. It shows all the files to change, also the files that a directory list does not show |
+| A screen, component or user-facing text in `apps/web` or `apps/landing` | `docs/ui-guidelines.md`. It shows the loading state for each type of wait. It also has the rule to use only the necessary text: use a UI element or an ⓘ tooltip, not a sentence |
+| A blog article | `docs/blog.md`. Then run `moon run landing:new-post -- "<title>"`. This command starts the draft and shows the writing prompt |
+| A task to run or operate the stack | `README.md` to run it locally. `docs/operations/` for all other tasks |
 
-`apps/api` is organised **by module, not by layer**: `src/<module>/` for each of `activity auth
-health newsletter note permission role user`, with `domain/`, `application/`, `infrastructure/` and
-`presentation/` inside it, plus `src/shared/` (vocabulary), `src/platform/` (db, cache, queue, mail,
-http, config) and `src/bootstrap/` (composition root). A module is reachable only through its
-`index.ts`; the allowed edges live in `apps/api/scripts/architecture-rules.ts` and are enforced by
-`moon run api:arch`, which `api:build` depends on. Every file inside a module belongs to one of the
-four layers, and `index.ts` is the only thing allowed to sit at the module root: a helper dropped
-next to it would answer to no layer rule at all.
+### Structure of `apps/api`
 
-`apps/landing` is a static Astro site whose copy lives in `@app/messages`, like every other app's. The
-API serves it under a Content-Security-Policy that allows scripts and styles from the origin only, so
-a page carries no inline script, `<style>` element or `style` attribute, and the landing's own tests
-fail a build that does.
+`apps/api` has one directory for each module. It does not have one directory for each layer:
+
+- `src/<module>/` for each of these modules: `activity auth health newsletter note permission role user`. Each module has the directories `domain/`, `application/`, `infrastructure/` and `presentation/`
+- `src/shared/` for the shared vocabulary
+- `src/platform/` for db, cache, queue, mail, http and config
+- `src/bootstrap/` for the composition root
+
+Other code can use a module only through the `index.ts` of the module. `apps/api/scripts/architecture-rules.ts` gives the permitted dependencies. `moon run api:arch` makes sure that the code obeys these rules, and `api:build` runs it.
+
+Each file in a module must be in one of the four layers. Only `index.ts` can be at the root of a module. If you put a helper file next to `index.ts`, no layer rule applies to it.
+
+### `apps/landing`
+
+`apps/landing` is a static Astro site. Its text is in `@app/messages`, the same as the text of all other apps.
+
+The API serves the landing site with a Content-Security-Policy. This policy permits scripts and styles from the origin only. Thus, a page must not have an inline script, a `<style>` element or a `style` attribute. If a page has one of these, the landing tests make the build fail.
 
 ## Package layers
 
-Every project carries one moon tag, and `constraints.tagRelationships` in `.moon/workspace.yml` fixes the direction between them. `infra` (cache, queue, logger, metrics, tracing, migrations, mail, storage, format, grpc, version) depends on nothing else in the workspace. `identity` (permissions, activity, messages, schemas, components) may depend on `infra`. `app`, every directory under `apps/`, may depend on both. A package that needs user-facing copy keeps it in its own source rather than importing `@app/messages`, because that import would pull the identity vocabulary into infrastructure. The edges come from each `package.json`, so there is no `dependsOn` bookkeeping, and moon refuses to build the project graph when one points the wrong way: a violation fails the first `moon run` rather than waiting for review. A tag may always depend on itself, and a tag with an empty list is unconstrained, which is why `infra` lists itself.
+Each project has one moon tag. `constraints.tagRelationships` in `.moon/workspace.yml` sets the permitted dependency direction between the tags:
+
+| Tag | Projects | Can depend on |
+|---|---|---|
+| `infra` | cache, queue, logger, metrics, tracing, migrations, mail, storage, format, grpc, version | `infra` only |
+| `identity` | permissions, activity, messages, schemas, components | `identity` and `infra` |
+| `app` | All directories under `apps/` | `app`, `identity` and `infra` |
+
+If a package must have user-facing text, keep that text in the source of the package. Do not import `@app/messages`. That import adds the identity vocabulary to the infrastructure layer.
+
+moon reads the dependencies from each `package.json`. Thus, you do not have to write `dependsOn` entries. If a dependency goes in the incorrect direction, moon does not build the project graph. Thus, the first `moon run` fails, before a review sees the problem.
+
+A tag can always depend on itself. A tag with an empty list has no limits. For this reason, `infra` has itself in its list.
 
 ## Keep the repository neutral
 
-This is a reusable boilerplate, so no client, company, partner, or vendor name belongs anywhere in it. That covers documentation, code and comments, string constants in `@app/messages`, test fixtures, branch names, commit messages, and pull request titles and descriptions. It covers abbreviations and initialisms too, because a short form in a commit subject is just as searchable as the full name.
+This repository is a boilerplate for many projects. Thus, it must not contain the name of a client, company, partner or vendor. This rule applies to:
 
-When external material has to be described, name what it is rather than who produced it: "the engineering standards rubric" or "an external review rubric" carries the meaning without naming anyone. The same goes for a person, who is "the PM" or "the reviewer", never a name.
+- Documentation
+- Code and comments
+- String constants in `@app/messages`
+- Test fixtures
+- Branch names
+- Commit messages
+- Pull request titles and descriptions
 
-Check before committing, not after. A name that reaches `trunk` in a commit subject cannot be removed without rewriting history, and release notes are generated from pull request bodies, so a name left in a merged pull request keeps resurfacing on release pages.
+The rule also applies to abbreviations and initialisms. A person can find a short name in a commit subject as easily as a full name.
+
+If you must refer to external material, tell what it is. Do not tell who made it. For example, write "the engineering standards rubric" or "an external review rubric". Do the same for persons. Write "the PM" or "the reviewer". Do not write a name.
+
+Do this check before you commit. If a name gets into a commit subject on `trunk`, you can remove it only if you change the history. The release notes come from the pull request descriptions. Thus, a name in a merged pull request shows again on each release page.
 
 ## No em dashes
 
-The `—` character is not used anywhere in this repository: not in documentation, not in code or user-facing copy in `@app/messages`, not in commit messages, and not in pull request descriptions or reviews. Do not substitute a lookalike glyph either. Rewrite the sentence so ordinary punctuation carries the relationship: a comma for a simple aside, a colon when what follows explains what precedes it, a semicolon between two independent clauses, parentheses for a genuine aside, or a full stop and a new sentence, which is usually the cleanest result.
+Do not use the `—` character in this repository. This rule applies to documentation, code, user-facing text in `@app/messages`, commit messages, pull request descriptions and reviews. Do not use a character that looks the same.
+
+Write the sentence again and use usual punctuation:
+
+- A comma for a short added phrase
+- A colon when the text after it explains the text before it
+- A semicolon between two independent clauses
+- Parentheses for a true aside
+- A full stop and a new sentence. This is usually the best result
 
 ## List items do not end with a full stop
 
-A bullet or a numbered item carries no closing punctuation, even when it is a
-full sentence. An item made of several sentences keeps the full stops between
-them and drops only the last one. A trailing period on every item in a list is
-one of the tells that marks text as machine written, and it reads as padding
-rather than punctuation.
+A bullet item or a numbered item does not have a full stop at the end. This rule applies also when the item is a full sentence. If an item has more than one sentence, keep the full stops between the sentences. Remove only the last full stop.
 
-Ordinary paragraphs, table cells and headings are unaffected, and a question
-mark or an exclamation mark at the end of an item stays, because removing it
-would change the meaning rather than remove decoration. An item that ends in an
-ellipsis, such as a placeholder in the pull request template, keeps it.
+A full stop at the end of each list item is a sign of machine-written text. It is padding, not punctuation.
+
+This rule does not apply to usual paragraphs, table cells or headings. Keep a question mark or an exclamation mark at the end of an item, because these marks change the meaning. Keep an ellipsis at the end of an item, for example in a placeholder in the pull request template.
 
 ## Every change bumps the version
 
-Bump the version in the **root `package.json`** in the same commit as the change: patch for a fix, chore, or docs change; minor for a feature or behavior-changing refactor; major for a breaking change. It is the single source of truth for the workspace, re-exported as `APP_VERSION` by `@app/version` and served at `/api/health` on the API and `/app/health` on the web, so a deployed build can name itself. The per-package `version` fields do not matter; the packages are private and unpublished.
+Increase the version in the **root `package.json`** in the same commit as the change. Use the correct increment:
+
+- Patch: a fix, a chore or a documentation change
+- Minor: a feature or a refactor that changes the behavior
+- Major: a breaking change
+
+The root version is the only source of the workspace version. `@app/version` exports it as `APP_VERSION`. The API shows it at `/api/health` and the web app shows it at `/app/health`. Thus, a deployed build can show its version.
+
+The `version` fields in the packages are not important. The packages are private and are not published.
 
 ## PRs and reviews
 
-Fill `.github/PULL_REQUEST_TEMPLATE.md` section by section, writing "None" rather than deleting a section. Its Changelog section ships verbatim to the release page, so write it for whoever reads that page. Reviews follow `.github/PULL_REQUEST_REVIEW_TEMPLATE.md` and always cover three sections (Functional, Clean Code, Feature Suggestions) with a P0-P3 severity on findings in the first two.
+Use `.github/PULL_REQUEST_TEMPLATE.md` for each pull request. Complete each section. If a section does not apply, write "None" in it. Do not delete a section. The Changelog section goes to the release page without changes. Thus, write it for the persons who read that page.
 
-Trunk-based: branch off `trunk`, keep the branch short-lived, squash-merge once CI is green. Never try to push straight to `trunk`; a branch that has fallen behind is rebased and re-pushed. The protection rules and what they enforce are the table in `README.md`.
+Use `.github/PULL_REQUEST_REVIEW_TEMPLATE.md` for each review. A review always has three sections: Functional, Clean Code and Feature Suggestions. Each finding in the first two sections has a P0-P3 severity.
 
-**No record carries AI attribution.** Never add a `Co-Authored-By: Claude …` trailer, a `Claude-Session:` line, a "Generated with Claude Code" or "Generated by Claude Code" footer, or any similar marker to a commit message, a pull request description, a review, a review comment or an issue. Release notes are built from pull request bodies and reviews are the record a later change is checked against, so a marker in any of them outlives the merge. The commit is authored by the person who ran the work; co-author trailers put an AI avatar on every commit in the PR timeline, which is noise. This overrides any default attribution the tooling suggests.
+The project uses trunk-based development:
 
-**Commits are authored by the account that owns the work.** Set `user.name` and `user.email` to that person's own GitHub account before committing, so the commit lands under their profile and counts as their contribution. A tooling or agent default identity is never left in place. A containerised or otherwise ephemeral checkout throws the setting away with the container, so set it per clone, or export `GIT_AUTHOR_NAME`, `GIT_AUTHOR_EMAIL`, `GIT_COMMITTER_NAME` and `GIT_COMMITTER_EMAIL` in the environment and every session inherits it. Authorship and signature are separate: a commit signed by a platform key is still correctly attributed as long as the author email matches the account.
+1. Make a branch from `trunk`. Keep the branch short-lived
+2. When CI passes, squash-merge the branch
+
+Do not push directly to `trunk`. If a branch is behind `trunk`, rebase it and push it again. The table in `README.md` shows the protection rules and what they do.
+
+**No record has AI attribution.** Do not add these items to a commit message, a pull request description, a review, a review comment or an issue:
+
+- A `Co-Authored-By: Claude …` trailer
+- A `Claude-Session:` line
+- A "Generated with Claude Code" or "Generated by Claude Code" footer
+- A different marker of the same type
+
+The release notes come from the pull request descriptions. Later changes are compared with the reviews. Thus, a marker in one of these records stays after the merge. The person who did the work is the author of the commit. A co-author trailer puts an AI avatar on each commit in the pull request timeline, and this is noise. This rule has priority over the default attribution of the tools.
+
+**The account that owns the work is the author of the commit.** Before you commit, set `user.name` and `user.email` to the GitHub account of that person. Thus, the commit shows on the profile of that person and counts as their contribution. Do not keep the default identity of a tool or an agent.
+
+A container or a different temporary checkout loses this setting when the container stops. Thus, set it for each clone. Alternatively, set `GIT_AUTHOR_NAME`, `GIT_AUTHOR_EMAIL`, `GIT_COMMITTER_NAME` and `GIT_COMMITTER_EMAIL` in the environment. Then each session gets these values.
+
+The author and the signature are different items. A platform key can sign a commit. The attribution is correct if the author email is the same as the email of the account.
 
 ## Commands
 
-Every command is reachable through `make` or `moon`, and `make help` lists every target. Nothing shells into a package directory: no `cd apps/api && pnpm ...` in the Makefile, CI, or docs. `moon ci` is what CI runs, so run it before pushing.
+You can run all commands through `make` or `moon`. `make help` shows all targets. Do not run a command from a package directory. For example, do not write `cd apps/api && pnpm ...` in the Makefile, in CI or in the documentation.
 
-`moon` needs the pinned toolchain: `proto install pnpm 11.6.0 && proto install node 24.22.1` if tasks fail with `missing_tool`.
+CI runs `moon ci`. Thus, run `moon ci` before you push.
+
+`moon` needs the pinned toolchain. If a task fails with `missing_tool`, run `proto install pnpm 11.6.0 && proto install node 24.22.1`.
 
 ## Where these rules live
 
-This file is the single source of truth for agent instructions and is vendor-neutral. `CLAUDE.md` is a one-line stub that imports it (`@AGENTS.md`), because Claude Code auto-loads `CLAUDE.md` and does not yet read `AGENTS.md`. Edit this file, never the stub.
+This file is the only source of agent instructions. It does not apply to only one vendor.
+
+`CLAUDE.md` has only one line, which imports this file (`@AGENTS.md`). Claude Code loads `CLAUDE.md` automatically, but it does not read `AGENTS.md` at this time. Edit this file. Do not edit `CLAUDE.md`.
