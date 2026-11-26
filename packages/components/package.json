@@ -30,7 +30,7 @@
 		"lucide-react": "catalog:",
 		"motion": "catalog:",
 		"radix-ui": "^1.8.1",
-		"tailwind-merge": "^3.7.0",
+		"tailwind-merge": "^3.7.1",
 		"ts-pattern": "catalog:"
 	},
 	"peerDependencies": {
