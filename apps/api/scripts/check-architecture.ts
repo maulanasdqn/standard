@@ -2,7 +2,8 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { A } from "@mobily/ts-belt";
 import { match } from "ts-pattern";
-import { violationsFor, type TViolation } from "./architecture-check.ts";
+import { violationsFor } from "./architecture-check.ts";
+import type { TViolation } from "./architecture-violation.ts";
 
 const SRC = new URL("../src", import.meta.url).pathname;
 const EXIT_FAILURE = 1;

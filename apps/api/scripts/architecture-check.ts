@@ -21,8 +21,6 @@ import {
 	type TViolationSite,
 } from "./architecture-violation.ts";
 
-export { RULE, type TViolation } from "./architecture-violation.ts";
-
 const FIRST_LINE = 1;
 
 const rootOf = (file: string): string => file.split("/")[0] ?? file;
