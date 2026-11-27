@@ -1,17 +1,17 @@
 import { type Tracer, trace } from "@opentelemetry/api";
-import { W3CTraceContextPropagator } from "@opentelemetry/core";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 import { resourceFromAttributes } from "@opentelemetry/resources";
 import {
 	BatchSpanProcessor,
 	TraceIdRatioBasedSampler,
-} from "@opentelemetry/sdk-trace-base";
-import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
+	TracerProvider,
+} from "@opentelemetry/sdk-trace";
 import {
 	ATTR_SERVICE_NAME,
 	ATTR_SERVICE_VERSION,
 } from "@opentelemetry/semantic-conventions";
 import { match, P } from "ts-pattern";
+import { tracingRegister } from "./tracing-register.ts";
 
 export const TRACING_SAMPLE_RATIO_DEFAULT = 1;
 
@@ -35,7 +35,7 @@ const providerStart = (
 	options: TTracingOptions,
 	endpoint: string,
 ): TTracing => {
-	const provider = new NodeTracerProvider({
+	const provider = new TracerProvider({
 		resource: resourceFromAttributes({
 			[ATTR_SERVICE_NAME]: options.service,
 			[ATTR_SERVICE_VERSION]: options.version,
@@ -44,13 +44,16 @@ const providerStart = (
 			options.sampleRatio ?? TRACING_SAMPLE_RATIO_DEFAULT,
 		),
 		spanProcessors: [
-			new BatchSpanProcessor(
-				new OTLPTraceExporter({ url: endpoint, headers: options.headers }),
-			),
+			new BatchSpanProcessor({
+				exporter: new OTLPTraceExporter({
+					url: endpoint,
+					headers: options.headers,
+				}),
+			}),
 		],
 	});
 
-	provider.register({ propagator: new W3CTraceContextPropagator() });
+	tracingRegister(provider);
 
 	return {
 		enabled: true,
