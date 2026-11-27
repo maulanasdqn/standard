@@ -117,7 +117,7 @@ The project uses trunk-based development:
 
 Do not push directly to `trunk`. If a branch is behind `trunk`, rebase it and push it again. The table in `README.md` shows the protection rules and what they do.
 
-**No record has AI attribution.** Do not add these items to a commit message, a pull request description, a review, a review comment or an issue:
+**No record has AI attribution.** Do not add these items to a commit message, a pull request description or a review. Also do not add them to a review comment or an issue:
 
 - A `Co-Authored-By: Claude …` trailer
 - A `Claude-Session:` line
@@ -131,6 +131,22 @@ The release notes come from the pull request descriptions. Later changes are com
 A container or a different temporary checkout loses this setting when the container stops. Thus, set it for each clone. Alternatively, set `GIT_AUTHOR_NAME`, `GIT_AUTHOR_EMAIL`, `GIT_COMMITTER_NAME` and `GIT_COMMITTER_EMAIL` in the environment. Then each session gets these values.
 
 The author and the signature are different items. A platform key can sign a commit. The attribution is correct if the author email is the same as the email of the account.
+
+## Check the text and the code with ste
+
+`ste` checks text and code with the rules of ASD-STE100 Simplified Technical English (STE). Run `make ste-install` to install the pinned version.
+
+A check fails on an error. A warning does not stop it:
+
+- `ste check prose README.md AGENTS.md` checks these two files with the STE writing rules. The other documents do not use STE at this time
+- `ste check code apps packages` checks the code with the STE-C rules
+- `ste check commit` checks each commit message. The lefthook `commit-msg` hook runs it
+
+`make ste-check` runs the first two checks. The `pre-push` hook and CI also run it.
+
+The hook does not see the squash commit that GitHub makes. Thus, write the title of a pull request with the same rules.
+
+`.ste.json` gives the files that `ste` skips and the rules that it does not use. The C2.1 and C3.1 naming rules are off. They ask for a verb at the start of a name, but the names in this repository start with the resource, for example `noteCreate`.
 
 ## Commands
 

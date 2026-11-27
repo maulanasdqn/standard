@@ -3,7 +3,7 @@ PROTO_PINNED := $(shell sed -n 's/^proto = "\(.*\)"/\1/p' .prototools)
 
 .PHONY: help install toolchain setup services services-stop services-logs dev up \
 	api web landing worker db-migrate db-seed db-generate db-push db-studio \
-	check lint format test build ci browsers e2e e2e-api e2e-web clean \
+	check lint format test build ci ste-install ste-check browsers e2e e2e-api e2e-web clean \
 	image image-run staging-up staging-down staging-migrate
 
 help: ## List the available targets
@@ -96,6 +96,13 @@ build: ## Typecheck and build across the workspace
 
 ci: ## Everything CI runs, on affected projects
 	moon ci
+
+ste-install: ## Install the pinned ste binary in ~/.local/bin
+	./.github/scripts/ste-install.sh
+
+ste-check: ## Check README.md and AGENTS.md with the STE prose rules, and the code with the STE-C rules
+	ste check prose README.md AGENTS.md
+	ste check code apps packages
 
 browsers: ## Install the Playwright browsers
 	moon run web-e2e:install-browsers

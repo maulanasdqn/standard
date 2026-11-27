@@ -1,6 +1,6 @@
 {
 	"name": "standard",
-	"version": "1.21.2",
+	"version": "1.22.0",
 	"private": true,
 	"packageManager": "pnpm@11.6.0",
 	"type": "module",

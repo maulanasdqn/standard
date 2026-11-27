@@ -1,0 +1,10 @@
+{
+	"exclude": [
+		"**/node_modules/**",
+		"**/dist/**",
+		"**/coverage/**",
+		"**/.astro/**",
+		"**/routeTree.gen.ts"
+	],
+	"disable": ["C2.1", "C3.1"]
+}
