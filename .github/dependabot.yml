@@ -9,9 +9,6 @@ updates:
     groups:
       minor-and-patch:
         update-types: [minor, patch]
-    ignore:
-      - dependency-name: "@tanstack/react-router"
-        versions: [">= 1.170.35"]
 
   - package-ecosystem: github-actions
     directory: /
