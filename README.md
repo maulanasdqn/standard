@@ -55,11 +55,14 @@ The `.prototools` file sets the version of each tool, proto included. If your pr
 
 ### Start the stack
 
-1. Install the dependencies:
+1. Install the dependencies and `ste`:
 
    ```sh
    make install
+   make ste-install
    ```
+
+   `ste` checks the commit messages, `README.md`, `AGENTS.md` and the code with the STE rules. To also install its skills for your agent, run `ste install`.
 
 2. Copy the environment files:
 
@@ -187,6 +190,7 @@ make db-migrate | db-seed | db-studio # database
 make check | lint | test | build      # quality gates
 make e2e                              # api + web end-to-end tests
 make ci                               # all CI tasks, on the affected projects
+make ste-install | ste-check          # install ste, then check README.md, AGENTS.md and the code with the STE rules
 ```
 
 ```sh
@@ -206,8 +210,9 @@ moon ci                               # the tasks that CI runs
 The project uses trunk-based development on `trunk`:
 
 1. Make a short-lived branch from `trunk`
-2. Push the branch. Before each push, lefthook runs biome, the typecheck and the unit tests
-3. When CI passes, squash-merge the branch
+2. Commit the change. Before each commit, lefthook checks the commit message with `ste check commit`
+3. Push the branch. Before each push, lefthook runs biome, the typecheck, the unit tests and `make ste-check`
+4. When CI passes, squash-merge the branch
 
 Dependabot keeps the dependencies up to date.
 

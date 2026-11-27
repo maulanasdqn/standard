@@ -1,3 +1,8 @@
+commit-msg:
+  jobs:
+    - name: ste commit message
+      run: command -v ste >/dev/null || { echo "ste is not installed. Run make ste-install"; exit 1; }; ste check commit {1}
+
 pre-push:
   parallel: true
   jobs:
@@ -6,3 +11,6 @@ pre-push:
 
     - name: typecheck + unit tests
       run: moon run :build :test
+
+    - name: ste prose + code
+      run: command -v ste >/dev/null || { echo "ste is not installed. Run make ste-install"; exit 1; }; make ste-check

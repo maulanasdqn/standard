@@ -29,7 +29,8 @@ const SEPARATOR = " ";
 const EMPTY = "";
 const NEWLINE = "\n";
 const WHITESPACE_RUN = /\s+/g;
-const BLOCK_COMMENT = /\/\*[\s\S]*?\*\//g;
+const BLOCK_COMMENT_SOURCE = "/[*][\\s\\S]*?[*]/";
+const BLOCK_COMMENT = new RegExp(BLOCK_COMMENT_SOURCE, "g");
 
 const newlineCount = (text: string): number =>
 	text.split(NEWLINE).length - FIRST_LINE;

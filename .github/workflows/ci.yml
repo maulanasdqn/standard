@@ -51,6 +51,10 @@ jobs:
 
       - uses: ./.github/actions/setup-workspace
 
+      - run: ./.github/scripts/ste-install.sh
+
+      - run: make ste-check
+
       - run: moon ci :check :build :test --color
 
   api-e2e:
