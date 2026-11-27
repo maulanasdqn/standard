@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-STE_VERSION="0.2.1"
+STE_VERSION="0.2.2"
 STE_RELEASES="https://github.com/maulanasdqn/llm-airlines-standard/releases/download"
 INSTALL_DIR="${STE_INSTALL_DIR:-$HOME/.local/bin}"
 
@@ -21,10 +21,10 @@ target_of() {
 
 sha256_of_target() {
 	case "$1" in
-		aarch64-apple-darwin) echo "5fadef756a9a08513f879a3b202ac75ca2371da1443d821f41291d848bafb521" ;;
-		x86_64-apple-darwin) echo "1ee11f5994c93b118a6e6a819c81dc3a01c73ca18c1039b206cad965d8ba7a0b" ;;
-		aarch64-unknown-linux-musl) echo "f75273b7879d664e32b9e20c8c78d90fd0ce19637b764c3b8d0ac6cbb33f10f4" ;;
-		x86_64-unknown-linux-musl) echo "5adcbf43f45dce740740b17078977b2ebf5b18f6d28ee90b65448bccf6c9cce7" ;;
+		aarch64-apple-darwin) echo "8b8b8f34ae7556bb4005d62171d45192d05dfaf1ba054379f3fe7e63362054b9" ;;
+		x86_64-apple-darwin) echo "73c0c4313e014e48f5c56038101bd6fa454083701b4c51a471558393c3e20df5" ;;
+		aarch64-unknown-linux-musl) echo "f8abcecd20b50d28a8ecfc8ce29f5051c39fa57baea04e97113fa476290100b0" ;;
+		x86_64-unknown-linux-musl) echo "e048a707e564683f796f7c54d71091192b37b52924b34612935c4b4e31b7d369" ;;
 	esac
 }
 
