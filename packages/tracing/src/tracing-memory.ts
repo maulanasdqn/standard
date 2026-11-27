@@ -1,12 +1,12 @@
 import { context, propagation, trace } from "@opentelemetry/api";
-import { W3CTraceContextPropagator } from "@opentelemetry/core";
 import {
 	InMemorySpanExporter,
 	type ReadableSpan,
 	SimpleSpanProcessor,
-} from "@opentelemetry/sdk-trace-base";
-import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
+	TracerProvider,
+} from "@opentelemetry/sdk-trace";
 import type { TTracing } from "./tracing.ts";
+import { tracingRegister } from "./tracing-register.ts";
 
 export type TTracingMemory = TTracing & {
 	finished: () => readonly ReadableSpan[];
@@ -15,11 +15,11 @@ export type TTracingMemory = TTracing & {
 
 export const tracingMemory = (service: string): TTracingMemory => {
 	const exporter = new InMemorySpanExporter();
-	const provider = new NodeTracerProvider({
-		spanProcessors: [new SimpleSpanProcessor(exporter)],
+	const provider = new TracerProvider({
+		spanProcessors: [new SimpleSpanProcessor({ exporter })],
 	});
 
-	provider.register({ propagator: new W3CTraceContextPropagator() });
+	tracingRegister(provider);
 
 	const shutdown = async (): Promise<void> => {
 		await provider.shutdown();
