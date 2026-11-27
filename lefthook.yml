@@ -1,7 +1,7 @@
 commit-msg:
   jobs:
     - name: ste commit message
-      run: command -v ste >/dev/null || { echo "ste is not installed. Run make ste-install"; exit 1; }; ste check commit {1}
+      run: make -s ste-require && ste check commit {1}
 
 pre-push:
   parallel: true
@@ -13,4 +13,4 @@ pre-push:
       run: moon run :build :test
 
     - name: ste prose + code
-      run: command -v ste >/dev/null || { echo "ste is not installed. Run make ste-install"; exit 1; }; make ste-check
+      run: make ste-check
